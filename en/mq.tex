@@ -1,0 +1,136 @@
+\chapter{Managing change with Mercurial Queues}
+\label{chap:mq}
+
+\section{The patch management problem}
+\label{sec:mq:patch-mgmt}
+
+Here is a common scenario: you need to install a software package from
+source, but you find a bug that you must fix in the source before you
+can start using the package.  You make your changes, forget about the
+package for a while, and a few months later you need to upgrade to a
+newer version of the package.  If the newer version of the package
+still has the bug, you must extract your fix from the older source
+tree and apply it against the newer version.  This is a tedious task,
+and it's easy to make mistakes.
+
+This is a simple case of the ``patch management'' problem.  You have
+an ``upstream'' source tree that you can't change; you need to make
+some local changes on top of the upstream tree; and you'd like to be
+able to keep those changes separate, so that you can apply them to
+newer versions of the upstream source.
+
+The patch management problem arises in many situations.  Probably the
+most visible is that a user of an open source software project will
+contribute a bugfix or new feature to the project's maintainers in the
+form of a patch.
+
+Distributors of operating systems that include open source software
+often need to make changes to the packages they distribute so that
+they will build properly in their environments.
+
+When you have few changes to maintain, it is easy to manage a single
+patch using the standard \texttt{diff} and \texttt{patch} programs.
+Once the number of changes grows, it starts to makes sense to maintain
+patches as discrete ``chunks of work,'' so that for example a single
+patch will contain only one bug fix (the patch might modify several
+files, but it's doing ``only one thing''), and you may have a number
+of such patches for different bugs you need fixed and local changes
+you require.  In this situation, if you submit a bugfix patch to the
+upstream maintainers of a package and they include your fix in a
+subsequent release, you can simply drop that single patch when you're
+updating to the newer release.
+
+Maintaining a single patch against an upstream tree is a little
+tedious and error-prone, but not difficult.  However, the complexity
+of the problem grows rapidly as the number of patches you have to
+maintain increases.  With more than a tiny number of patches in hand,
+understanding which ones you have applied and maintaining them moves
+from messy to overwhelming.
+
+Fortunately, Mercurial includes a powerful extension, Mercurial Queues
+(or simply ``MQ''), that massively simplifies the patch management
+problem.
+
+\section{The prehistory of Mercurial Queues}
+\label{sec:mq:history}
+
+During the late 1990s, several Linux kernel developers started to
+maintain ``patch series'' that modified the behaviour of the Linux
+kernel.  Some of these series were focused on stability, some on
+feature coverage, and others were more speculative.
+
+The sizes of these patch series grew rapidly.  In 2002, Andrew Morton
+published some shell scripts he had been using to automate the task of
+managing his patch queues.  Andrew was successfully using these
+scripts to manage hundreds (sometimes thousands) of patches on top of
+the Linux kernel.
+
+\subsection{A patchwork quilt}
+\label{sec:mq:quilt}
+
+
+In early 2003, Andreas Gruenbacher and Martin Quinson borrowed the
+approach of Andrew's scripts and published a tool called
+\href{http://savannah.nongnu.org/projects/quilt}{``patchwork quilt''},
+or simply ``quilt''.  Because quilt substantially automated patch
+management, it rapidly gained a large following among open source
+software developers.
+
+Quilt manages a \emph{stack of patches} on top of a directory tree.
+To begin, you tell quilt to manage a directory tree; it stores away
+the names and contents of all files in the tree.  To fix a bug, you
+create a new patch (using a single command), edit the files you need
+to fix, then ``refresh'' the patch.  
+
+The refresh step causes quilt to scan the directory tree; it updates
+the patch with all of the changes you have made.  You can create
+another patch on top of the first, which will track the changes
+required to modify the tree from ``tree with one patch applied'' to
+``tree with two patches applied''.
+
+You can \emph{change} which patches are applied to the tree.  If you
+``pop'' a patch, the changes made by that patch will vanish from the
+directory tree.  Quilt remembers which patches you have popped,
+though, so you can ``push'' a popped patch again, and the directory
+tree will be restored to contain the modifications in the patch.  Most
+importantly, you can run the ``refresh'' command at any time, and the
+topmost applied patch will be updated.  This means that you can, at
+any time, change both which patches are applied and what
+modifications those patches make.
+
+Quilt knows nothing about revision control tools, so it works equally
+well on top of an unpacked tarball or a Suversion repository.
+
+\subsection{From patchwork quilt to Mercurial Queues}
+\label{sec:mq:quilt-mq}
+
+In mid-2005, Chris Mason took the features of quilt and wrote an
+extension that he called Mercurial Queues, which added quilt-like
+behaviour to Mercurial.
+
+The key difference between quilt and MQ is that quilt knows nothing
+about revision control systems, while MQ is \emph{integrated} into
+Mercurial.  Each patch that you push is represented as a Mercurial
+changeset.  Pop a patch, and the changeset goes away.
+
+This integration makes understanding patches and debugging their
+effects \emph{enormously} easier.  Since every applied patch has an
+associated changeset, you can use \hgcmdargs{log}{\emph{filename}} to
+see which changesets and patches affected a file.  You can use the
+\hgext{bisect} extension to binary-search through all changesets and
+applied patches to see where a bug got introduced or fixed.  You can
+use the \hgcmd{annotate} command to see which changeset or patch
+modified a particular line of a source file.  And so on.
+
+Because quilt does not care about revision control tools, it is still
+a tremendously useful piece of software to know about for situations
+where you cannot use Mercurial and MQ.
+\section{Section!}
+\label{sec:sec}
+
+Section!
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 
