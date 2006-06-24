@@ -70,11 +70,11 @@ the Linux kernel.
 
 
 In early 2003, Andreas Gruenbacher and Martin Quinson borrowed the
-approach of Andrew's scripts and published a tool called
-\href{http://savannah.nongnu.org/projects/quilt}{``patchwork quilt''},
-or simply ``quilt''.  Because quilt substantially automated patch
-management, it rapidly gained a large following among open source
-software developers.
+approach of Andrew's scripts and published a tool called ``patchwork
+quilt''~\cite{web:quilt}, or simply ``quilt''
+(see~\cite{gruenbacher:2005} for a paper describing it).  Because
+quilt substantially automated patch management, it rapidly gained a
+large following among open source software developers.
 
 Quilt manages a \emph{stack of patches} on top of a directory tree.
 To begin, you tell quilt to manage a directory tree; it stores away
@@ -125,10 +125,18 @@ modified a particular line of a source file.  And so on.
 Because quilt does not care about revision control tools, it is still
 a tremendously useful piece of software to know about for situations
 where you cannot use Mercurial and MQ.
-\section{Section!}
-\label{sec:sec}
+\section{Getting started with Mercurial Queues}
+\label{sec:mq:start}
 
-Section!
+Because MQ is implemented as an extension, you have to explicitly
+enable it in order to use it.  (You don't need to download anything;
+MQ ships with the standard Mercurial distribution.)  To enable it,
+edit your \filename{~/.hgrc} file, and add the following lines:
+
+\begin{verbatim}
+[extensions]
+hgext.mq =
+\end{verbatim}
 
 %%% Local Variables: 
 %%% mode: latex

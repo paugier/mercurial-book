@@ -1,4 +1,8 @@
-sources := 00book.tex mq.tex
+sources := \
+	00book.tex \
+	99book.bib \
+	99defs.tex \
+	mq.tex
 
 latex-options = \
 	-interaction batchmode \
@@ -12,6 +16,8 @@ pdf: pdf/hgbook.pdf
 pdf/hgbook.pdf: $(sources)
 	mkdir -p $(dir $@)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
+	cp 99book.bib $(dir $@)
+	cd $(dir $@) && bibtex $(basename $(notdir $@))
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 
