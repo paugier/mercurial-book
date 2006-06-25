@@ -1,0 +1,58 @@
+#!/usr/bin/python
+
+import cStringIO
+import os
+import pty
+import re
+import sys
+
+class example:
+    def __init__(self, name):
+        self.name = name
+
+    def parse(self):
+        fp = open(self.name)
+        cfp = cStringIO.StringIO()
+        for line in fp:
+            cfp.write(line)
+            if not line.rstrip().endswith('\\'):
+                yield cfp.getvalue()
+                cfp.seek(0)
+                cfp.truncate()
+        
+    name_re = re.compile('#\s*name:\s*(.*)$')
+    
+    def status(self, s):
+        sys.stdout.write(s)
+        if not s.endswith('\n'):
+            sys.stdout.flush()
+
+    def run(self):
+        ofp = None
+        self.status('running %s ' % os.path.basename(self.name))
+        for hunk in self.parse():
+            m = self.name_re.match(hunk)
+            if m:
+                self.status('.')
+                out = m.group(1)
+                assert os.sep not in out
+                if out:
+                    ofp = open('%s.%s.out' % (self.name, out), 'w')
+                else:
+                    ofp = None
+            elif ofp: ofp.write(hunk)
+        self.status('\n')
+
+def main(path='.'):
+    args = sys.argv[1:]
+    if args:
+        for a in args:
+            example(a).run()
+        return
+    for name in os.listdir(path):
+        if name == 'run-example' or name.startswith('.'): continue
+        if name.endswith('.out') or name.endswith('~'): continue
+        example(os.path.join(path, name)).run()
+
+if __name__ == '__main__':
+    main()

@@ -21,7 +21,7 @@ newer versions of the upstream source.
 
 The patch management problem arises in many situations.  Probably the
 most visible is that a user of an open source software project will
-contribute a bugfix or new feature to the project's maintainers in the
+contribute a bug fix or new feature to the project's maintainers in the
 form of a patch.
 
 Distributors of operating systems that include open source software
@@ -35,7 +35,7 @@ patches as discrete ``chunks of work,'' so that for example a single
 patch will contain only one bug fix (the patch might modify several
 files, but it's doing ``only one thing''), and you may have a number
 of such patches for different bugs you need fixed and local changes
-you require.  In this situation, if you submit a bugfix patch to the
+you require.  In this situation, if you submit a bug fix patch to the
 upstream maintainers of a package and they include your fix in a
 subsequent release, you can simply drop that single patch when you're
 updating to the newer release.
@@ -99,7 +99,7 @@ any time, change both which patches are applied and what
 modifications those patches make.
 
 Quilt knows nothing about revision control tools, so it works equally
-well on top of an unpacked tarball or a Suversion repository.
+well on top of an unpacked tarball or a Subversion repository.
 
 \subsection{From patchwork quilt to Mercurial Queues}
 \label{sec:mq:quilt-mq}
@@ -128,15 +128,19 @@ where you cannot use Mercurial and MQ.
 \section{Getting started with Mercurial Queues}
 \label{sec:mq:start}
 
-Because MQ is implemented as an extension, you have to explicitly
-enable it in order to use it.  (You don't need to download anything;
-MQ ships with the standard Mercurial distribution.)  To enable it,
-edit your \filename{~/.hgrc} file, and add the following lines:
+Because MQ is implemented as an extension, you must explicitly enable
+before you can use it.  (You don't need to download anything; MQ ships
+with the standard Mercurial distribution.)  To enable MQ, edit your
+\tildefile{.hgrc} file, and add the following lines:
 
-\begin{verbatim}
-[extensions]
-hgext.mq =
-\end{verbatim}
+\begin{codesample}
+  [extensions]
+  hgext.mq =
+\end{codesample}
+
+Once the extension is enabled, it will make a number of new commands
+available.  
+
 
 %%% Local Variables: 
 %%% mode: latex
