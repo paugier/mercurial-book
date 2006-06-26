@@ -9,6 +9,7 @@ import os
 import pty
 import re
 import shutil
+import signal
 import sys
 import tempfile
 import time
@@ -24,6 +25,7 @@ def tex_escape(s):
         
 class example:
     shell = '/bin/bash'
+    prompt = '__run_example_prompt__\n'
     pi_re = re.compile('#\$\s*(name):\s*(.*)$')
     
     def __init__(self, name):
@@ -45,18 +47,50 @@ class example:
         if not s.endswith('\n'):
             sys.stdout.flush()
 
-    def drain(self, ifp, ofp):
+    def send(self, s):
+        self.cfp.write(s)
+        self.cfp.flush()
+
+    def receive(self):
+        out = cStringIO.StringIO()
         while True:
-            s = ifp.read(4096)
-            if not s: break
-            if ofp: ofp.write(tex_escape(s))
+            s = self.cfp.readline().replace('\r\n', '\n')
+            if not s or s == self.prompt:
+                break
+            out.write(s)
+        return out.getvalue()
         
+    def sendreceive(self, s):
+        self.send(s)
+        r = self.receive()
+        if r.startswith(s):
+            r = r[len(s):]
+        return r
+    
     def run(self):
         ofp = None
         basename = os.path.basename(self.name)
         self.status('running %s ' % basename)
         tmpdir = tempfile.mkdtemp(prefix=basename)
+        rcfile = os.path.join(tmpdir, '.bashrc')
+        rcfp = open(rcfile, 'w')
+        print >> rcfp, 'PS1="%s"' % self.prompt
+        print >> rcfp, 'unset HISTFILE'
+        print >> rcfp, 'export LANG=C'
+        print >> rcfp, 'export LC_ALL=C'
+        print >> rcfp, 'export TZ=GMT'
+        print >> rcfp, 'export HGRC="%s/.hgrc"' % tmpdir
+        print >> rcfp, 'export HGRCPATH=$HGRC'
+        print >> rcfp, 'cd %s' % tmpdir
+        rcfp.close()
+        pid, fd = pty.fork()
+        if pid == 0:
+            #os.execl(self.shell, self.shell)
+            os.system('/bin/bash --noediting --noprofile --rcfile %s' % rcfile)
+            sys.exit(0)
+        self.cfp = os.fdopen(fd, 'w+')
         try:
+            self.receive()
             for hunk in self.parse():
                 # is this line a processing instruction?
                 m = self.pi_re.match(hunk)
@@ -70,22 +104,30 @@ class example:
                             ofp = open('%s.%s.out' % (self.name, out), 'w')
                         else:
                             ofp = None
-                else:
+                elif hunk.strip():
                     # it's something we should execute
-                    cin, cout = os.popen4('cd %s; %s' % (tmpdir, hunk))
-                    cin.close()
-                    if ofp:
-                        # first, print the command we ran
-                        if not hunk.startswith('#'):
-                            nl = hunk.endswith('\n')
-                            hunk = ('$ \\textbf{%s}' %
-                                    tex_escape(hunk.rstrip('\n')))
-                            if nl: hunk += '\n'
-                        ofp.write(hunk)
+                    output = self.sendreceive(hunk)
+                    if not ofp:
+                        continue
+                    # first, print the command we ran
+                    if not hunk.startswith('#'):
+                        nl = hunk.endswith('\n')
+                        hunk = ('$ \\textbf{%s}' %
+                                tex_escape(hunk.rstrip('\n')))
+                        if nl: hunk += '\n'
+                    ofp.write(hunk)
                     # then its output
-                    self.drain(cout, ofp)
+                    ofp.write(output)
             self.status('\n')
         finally:
+            try:
+                output = self.sendreceive('exit\n')
+                if ofp:
+                    ofp.write(output)
+                self.cfp.close()
+            except IOError:
+                pass
+            os.kill(pid, signal.SIGTERM)
             os.wait()
             shutil.rmtree(tmpdir)
 
