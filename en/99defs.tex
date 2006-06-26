@@ -4,6 +4,9 @@
 \newcommand{\hgcmd}[1]{``\texttt{hg #1}''}
 \newcommand{\hgcmdargs}[2]{``\texttt{hg #1 #2}''}
 
+\newsavebox{\notebox}
+\newenvironment{note}{\begin{lrbox}{\notebox}\begin{minipage}{\textwidth}\textbf{Note:}\space}{\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
+
 \DefineVerbatimEnvironment{codesample4}{Verbatim}{frame=single,gobble=4,numbers=left,commandchars=\\\{\}}
 \newcommand{\interaction}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{examples/#1.out}}
 

@@ -133,7 +133,7 @@ before you can use it.  (You don't need to download anything; MQ ships
 with the standard Mercurial distribution.)  To enable MQ, edit your
 \tildefile{.hgrc} file, and add the lines in figure~\ref{ex:mq:config}.
 
-\begin{figure}
+\begin{figure}[h]
   \begin{codesample4}
     [extensions]
     hgext.mq =
@@ -143,14 +143,53 @@ with the standard Mercurial distribution.)  To enable MQ, edit your
 \end{figure}
 
 Once the extension is enabled, it will make a number of new commands
-available.  To verify that the extension is working, follow the
-example in figure~\ref{ex:mq:enabled}.
+available.  To verify that the extension is working, you can use
+\hgcmd{help} to see if the \hgcmd{qinit} command is now available; see
+the example in figure~\ref{ex:mq:enabled}.
 
-\begin{figure}
+\begin{figure}[h]
   \interaction{mq.qinit-help.help}
   \caption{How to verify that MQ is enabled}
   \label{ex:mq:enabled}
 \end{figure}
+
+You can use MQ with \emph{any} Mercurial repository; to start, simply
+prepare the repository using the \hgcmd{qinit} command (see
+figure~\ref{ex:mq:qinit}).  This command creates an empty directory
+called \filename{.hg/patches}, where MQ will keep its metadata.  As
+with many Mercurial commands, the \hgcmd{qinit} command prints nothing
+if it succeeds.
+
+\begin{figure}[h]
+  \interaction{mq.tutorial.qinit}
+  \caption{Preparing a repository for use with MQ}
+  \label{ex:mq:qinit}
+\end{figure}
+
+\begin{figure}[h]
+  \interaction{mq.tutorial.qnew}
+  \caption{Creating a new patch}
+  \label{ex:mq:qnew}
+\end{figure}
+
+To commence work on a new patch, use the \hgcmd{qnew} command.  This
+command takes one argument, the name of the patch to create.  MQ will
+use this as the name of an actual file in the \filename{.hg/patches}
+directory, as you can see in figure~\ref{ex:mq:qnew}.
+
+Now also present in the \filename{.hg/patches} directory are two new
+files, \filename{series} and \filename{status}.  The \filename{series}
+file lists all of the patches that MQ knows about for this repository,
+with one patch per line.  The \filename{status} file lists all of the
+patches that MQ has \emph{applied} in this repository.
+
+\begin{note}
+  You may sometimes want to edit the \filename{series} file by hand;
+  for example, to change the sequence in which some patches are
+  applied.  However, manually editing the \filename{status} file is
+  almost always a bad idea, as it's easy to corrupt MQ's idea of what
+  is happening.
+\end{note}
 
 %%% Local Variables: 
 %%% mode: latex

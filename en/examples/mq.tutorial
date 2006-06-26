@@ -1,0 +1,20 @@
+echo '[extensions]' >> $HGRC
+echo 'hgext.mq =' >> $HGRC
+
+#$ name: qinit
+
+hg clone http://hg.serpentine.com/mercurial/hg mq-sandbox
+
+cd mq-sandbox
+
+hg qinit
+
+#$ name: qnew
+
+hg tip
+
+hg qnew first.patch
+
+ls .hg/patches
+
+hg tip
