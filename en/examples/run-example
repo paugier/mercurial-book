@@ -1,16 +1,36 @@
 #!/usr/bin/python
+#
+# This program takes something that resembles a shell script and runs
+# it, spitting input (commands from the script) and output into text
+# files, for use in examples.
 
 import cStringIO
 import os
 import pty
 import re
+import shutil
 import sys
+import tempfile
+import time
 
+def tex_escape(s):
+    if '\\' in s:
+        s = s.replace('\\', '\\\\')
+    if '{' in s:
+        s = s.replace('{', '\\{')
+    if '}' in s:
+        s = s.replace('}', '\\}')
+    return s
+        
 class example:
+    shell = '/bin/bash'
+    pi_re = re.compile('#\$\s*(name):\s*(.*)$')
+    
     def __init__(self, name):
         self.name = name
 
     def parse(self):
+        '''yield each hunk of input from the file.'''
         fp = open(self.name)
         cfp = cStringIO.StringIO()
         for line in fp:
@@ -20,28 +40,54 @@ class example:
                 cfp.seek(0)
                 cfp.truncate()
         
-    name_re = re.compile('#\s*name:\s*(.*)$')
-    
     def status(self, s):
         sys.stdout.write(s)
         if not s.endswith('\n'):
             sys.stdout.flush()
 
+    def drain(self, ifp, ofp):
+        while True:
+            s = ifp.read(4096)
+            if not s: break
+            if ofp: ofp.write(tex_escape(s))
+        
     def run(self):
         ofp = None
-        self.status('running %s ' % os.path.basename(self.name))
-        for hunk in self.parse():
-            m = self.name_re.match(hunk)
-            if m:
-                self.status('.')
-                out = m.group(1)
-                assert os.sep not in out
-                if out:
-                    ofp = open('%s.%s.out' % (self.name, out), 'w')
+        basename = os.path.basename(self.name)
+        self.status('running %s ' % basename)
+        tmpdir = tempfile.mkdtemp(prefix=basename)
+        try:
+            for hunk in self.parse():
+                # is this line a processing instruction?
+                m = self.pi_re.match(hunk)
+                if m:
+                    pi, rest = m.groups()
+                    if pi == 'name':
+                        self.status('.')
+                        out = rest
+                        assert os.sep not in out
+                        if out:
+                            ofp = open('%s.%s.out' % (self.name, out), 'w')
+                        else:
+                            ofp = None
                 else:
-                    ofp = None
-            elif ofp: ofp.write(hunk)
-        self.status('\n')
+                    # it's something we should execute
+                    cin, cout = os.popen4('cd %s; %s' % (tmpdir, hunk))
+                    cin.close()
+                    if ofp:
+                        # first, print the command we ran
+                        if not hunk.startswith('#'):
+                            nl = hunk.endswith('\n')
+                            hunk = ('$ \\textbf{%s}' %
+                                    tex_escape(hunk.rstrip('\n')))
+                            if nl: hunk += '\n'
+                        ofp.write(hunk)
+                    # then its output
+                    self.drain(cout, ofp)
+            self.status('\n')
+        finally:
+            os.wait()
+            shutil.rmtree(tmpdir)
 
 def main(path='.'):
     args = sys.argv[1:]
@@ -53,6 +99,7 @@ def main(path='.'):
         if name == 'run-example' or name.startswith('.'): continue
         if name.endswith('.out') or name.endswith('~'): continue
         example(os.path.join(path, name)).run()
+    print >> open(os.path.join(path, '.run'), 'w'), time.asctime()
 
 if __name__ == '__main__':
     main()

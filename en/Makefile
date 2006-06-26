@@ -4,6 +4,10 @@ sources := \
 	99defs.tex \
 	mq.tex
 
+example-sources := \
+	examples/run-example \
+	examples/mq.qinit-help
+
 latex-options = \
 	-interaction batchmode \
 	-output-directory $(dir $(1)) \
@@ -13,7 +17,7 @@ all: pdf html
 
 pdf: pdf/hgbook.pdf
 
-pdf/hgbook.pdf: $(sources)
+pdf/hgbook.pdf: $(sources) examples
 	mkdir -p $(dir $@)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	cp 99book.bib $(dir $@)
@@ -32,11 +36,18 @@ define htlatex
 	cd $(dir $(1)) && t4ht -f/$(basename $(notdir $(1)))
 endef
 
-html/onepage/hgbook.html: $(sources)
+html/onepage/hgbook.html: $(sources) examples
 	$(call htlatex,$@,$<)
 
-html/split/hgbook.html: $(sources)
+html/split/hgbook.html: $(sources) examples
 	$(call htlatex,$@,$<,2)
+
+.PHONY: examples
+
+examples: examples/.run
+
+examples/.run: $(example-sources)
+	cd examples && ./run-example
 
 clean:
 	rm -rf html pdf *.aux *.dvi *.log *.out

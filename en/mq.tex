@@ -131,16 +131,26 @@ where you cannot use Mercurial and MQ.
 Because MQ is implemented as an extension, you must explicitly enable
 before you can use it.  (You don't need to download anything; MQ ships
 with the standard Mercurial distribution.)  To enable MQ, edit your
-\tildefile{.hgrc} file, and add the following lines:
+\tildefile{.hgrc} file, and add the lines in figure~\ref{ex:mq:config}.
 
-\begin{codesample}
-  [extensions]
-  hgext.mq =
-\end{codesample}
+\begin{figure}
+  \begin{codesample4}
+    [extensions]
+    hgext.mq =
+  \end{codesample4}
+  \label{ex:mq:config}
+  \caption{Contents to add to \tildefile{.hgrc} to enable the MQ extension}
+\end{figure}
 
 Once the extension is enabled, it will make a number of new commands
-available.  
+available.  To verify that the extension is working, follow the
+example in figure~\ref{ex:mq:enabled}.
 
+\begin{figure}
+  \interaction{mq.qinit-help.help}
+  \caption{How to verify that MQ is enabled}
+  \label{ex:mq:enabled}
+\end{figure}
 
 %%% Local Variables: 
 %%% mode: latex
