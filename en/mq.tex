@@ -263,8 +263,8 @@ with MQ, as illustrated in figure~\ref{ex:mq:qseries}:
 \subsection{Manipulating the patch stack}
 
 The previous discussion implied that there must be a difference
-between ``known'' and ``applied'' patches, and there is.  MQ can know
-about a patch without it being applied in the repository.
+between ``known'' and ``applied'' patches, and there is.  MQ can
+manage a patch without it being applied in the repository.
 
 An \emph{applied} patch has a corresponding changeset in the
 repository, and the effects of the patch and changeset are visible in
@@ -286,6 +286,13 @@ directory.  See figure~\ref{ex:mq:qpop} for examples of \hgcmd{qpop}
 and \hgcmd{qpush} in action.  Notice that once we have popped a patch
 or two patches, the output of \hgcmd{qseries} remains the same, while
 that of \hgcmd{qapplied} has changed.
+
+\begin{figure}
+  \centering
+  \grafix{mq-stack}
+  \caption{Applied and unapplied patches in the MQ patch stack}
+  \label{fig:mq:stack}
+\end{figure}
 
 MQ does not limit you to pushing or popping one patch.  You can have
 no patches, all of them, or any number in between applied at some

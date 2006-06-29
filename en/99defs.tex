@@ -5,10 +5,18 @@
 \newcommand{\hgcmdargs}[2]{``\texttt{hg #1 #2}''}
 
 \newsavebox{\notebox}
-\newenvironment{note}{\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Note:}\space}{\end{minipage}\end{lrbox}\begin{center}\fbox{\usebox{\notebox}}\end{center}}
+\newenvironment{note}%
+  {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Note:}\space}%
+  {\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
 
 \DefineVerbatimEnvironment{codesample4}{Verbatim}{frame=single,gobble=4,numbers=left,commandchars=\\\{\}}
 \newcommand{\interaction}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{examples/#1.out}}
+
+\ifpdf
+  \newcommand{\grafix}[1]{\includegraphics[scale=0.2]{#1_pdf.png}}
+\else
+  \newcommand{\grafix}[1]{\includegraphics{#1.png}}
+\fi
 
 %%% Local Variables: 
 %%% mode: latex

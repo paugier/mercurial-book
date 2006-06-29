@@ -4,6 +4,9 @@ sources := \
 	99defs.tex \
 	mq.tex
 
+image-sources := \
+	mq-stack.svg
+
 example-sources := \
 	examples/run-example \
 	examples/mq.qinit-help \
@@ -18,7 +21,7 @@ all: pdf html
 
 pdf: pdf/hgbook.pdf
 
-pdf/hgbook.pdf: $(sources) examples
+pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
 	mkdir -p $(dir $@)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	cp 99book.bib $(dir $@)
@@ -42,13 +45,22 @@ define htlatex
 	perl -pi -e 's/&#x00([0-7][0-9a-f]);/chr(hex($$1))/egi' $(dir $(1))/*.html
 endef
 
-html/onepage/hgbook.html: $(sources) examples
+html/onepage/hgbook.html: $(sources) $(image-sources:%.svg=%.png) examples
 	$(call htlatex,$@,$<)
+	cp $(image-sources:%.svg=%.png) $(dir $@)
 
-html/split/hgbook.html: $(sources) examples
+html/split/hgbook.html: $(sources) $(image-sources:%.svg=%.png) examples
 	$(call htlatex,$@,$<,2)
+	cp $(image-sources:%.svg=%.png) $(dir $@)
 
-.PHONY: examples
+%.png: %.svg
+	inkscape -D -e $@ $<
+
+%_pdf.png: %.svg
+	inkscape -D -d 300 -e $@ $<
+
+%.eps: %.svg
+	inkscape -E $@ $<
 
 examples: examples/.run
 
@@ -56,4 +68,4 @@ examples/.run: $(example-sources)
 	cd examples && ./run-example
 
 clean:
-	rm -rf html pdf *.aux *.dvi *.log *.out examples/*.out examples/.run
+	rm -rf html pdf *.eps *.png *.aux *.dvi *.log *.out examples/*.out examples/.run
