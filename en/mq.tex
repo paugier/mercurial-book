@@ -133,7 +133,7 @@ before you can use it.  (You don't need to download anything; MQ ships
 with the standard Mercurial distribution.)  To enable MQ, edit your
 \tildefile{.hgrc} file, and add the lines in figure~\ref{ex:mq:config}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \begin{codesample4}
     [extensions]
     hgext.mq =
@@ -147,7 +147,7 @@ available.  To verify that the extension is working, you can use
 \hgcmd{help} to see if the \hgcmd{qinit} command is now available; see
 the example in figure~\ref{ex:mq:enabled}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.qinit-help.help}
   \caption{How to verify that MQ is enabled}
   \label{ex:mq:enabled}
@@ -161,13 +161,13 @@ called \filename{.hg/patches}, where MQ will keep its metadata.  As
 with many Mercurial commands, the \hgcmd{qinit} command prints nothing
 if it succeeds.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.tutorial.qinit}
   \caption{Preparing a repository for use with MQ}
   \label{ex:mq:qinit}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.tutorial.qnew}
   \caption{Creating a new patch}
   \label{ex:mq:qnew}
@@ -207,7 +207,7 @@ you are working on.  This command folds the changes you have made in
 the working directory into your patch, and updates its corresponding
 changeset to contain those changes.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.tutorial.qrefresh}
   \caption{Refreshing a patch}
   \label{ex:mq:qrefresh}
@@ -218,7 +218,7 @@ to ``checkpoint'' your work.  Reefresh your patch at an opportune
 time; try an experiment; and if the experiment doesn't work out,
 \hgcmd{revert} your modifications back to the last time you refreshed.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.tutorial.qrefresh2}
   \caption{Refresh a patch many times to accumulate changes}
   \label{ex:mq:qrefresh2}
@@ -233,7 +233,7 @@ figure~\ref{ex:mq:qnew2} for an example.  Notice that the patch
 contains the changes in our prior patch as part of its context (you
 can see this more clearly in the output of \hgcmd{annotate}).
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.tutorial.qnew2}
   \caption{Stacking a second patch on top of the first}
   \label{ex:mq:qnew2}
@@ -253,7 +253,7 @@ with MQ, as illustrated in figure~\ref{ex:mq:qseries}:
   recently applied).
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \interaction{mq.tutorial.qseries}
   \caption{Understanding the patch stack with \hgcmd{qseries} and
     \hgcmd{qapplied}}
@@ -269,14 +269,17 @@ manage a patch without it being applied in the repository.
 An \emph{applied} patch has a corresponding changeset in the
 repository, and the effects of the patch and changeset are visible in
 the working directory.  You can undo the application of a patch using
-the \hgcmd{qpop} command.  MQ still \emph{knows about} a popped patch,
-but it no longer has a corresponding changeset in the repository, and
-the working directory does not contain the changes made by the patch.
+the \hgcmd{qpop} command.  MQ still \emph{knows about}, or manages, a
+popped patch, but the patch no longer has a corresponding changeset in
+the repository, and the working directory does not contain the changes
+made by the patch.  Figure~\ref{fig:mq:stack} illustrates the
+difference between applied and tracked patches.
 
-\begin{figure}[h]
-  \interaction{mq.tutorial.qpop}
-  \caption{Modifying the stack of applied patches}
-  \label{ex:mq:qpop}
+\begin{figure}[ht]
+  \centering
+  \grafix{mq-stack}
+  \caption{Applied and unapplied patches in the MQ patch stack}
+  \label{fig:mq:stack}
 \end{figure}
 
 You can reapply an unapplied, or popped, patch using the \hgcmd{qpush}
@@ -287,11 +290,10 @@ and \hgcmd{qpush} in action.  Notice that once we have popped a patch
 or two patches, the output of \hgcmd{qseries} remains the same, while
 that of \hgcmd{qapplied} has changed.
 
-\begin{figure}
-  \centering
-  \grafix{mq-stack}
-  \caption{Applied and unapplied patches in the MQ patch stack}
-  \label{fig:mq:stack}
+\begin{figure}[ht]
+  \interaction{mq.tutorial.qpop}
+  \caption{Modifying the stack of applied patches}
+  \label{ex:mq:qpop}
 \end{figure}
 
 MQ does not limit you to pushing or popping one patch.  You can have
