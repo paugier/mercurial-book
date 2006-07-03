@@ -214,7 +214,7 @@ changeset to contain those changes.
 \end{figure}
 
 You can run \hgcmd{qrefresh} as often as you like, so it's a good way
-to ``checkpoint'' your work.  Reefresh your patch at an opportune
+to ``checkpoint'' your work.  Refresh your patch at an opportune
 time; try an experiment; and if the experiment doesn't work out,
 \hgcmd{revert} your modifications back to the last time you refreshed.
 
@@ -299,6 +299,25 @@ that of \hgcmd{qapplied} has changed.
 MQ does not limit you to pushing or popping one patch.  You can have
 no patches, all of them, or any number in between applied at some
 point in time.
+
+\subsection{Working on several patches at once}
+
+The \hgcmd{qrefresh} command always refreshes the \emph{topmost}
+applied patch.  This means that you can suspend work on one patch (by
+refreshing it), pop or push to make a different patch the top, and
+work on \emph{that} patch for a while.
+
+Here's an example that illustrates how you can use this ability.
+Let's say you're developing a new feature as two patches.  The first
+is a change to the core of your software, and the second--layered on
+top of the first--changes the user interface to use the code you just
+added to the core.  If you notice a bug in the core while you're
+working on the UI patch, it's easy to fix the core.  Simply
+\hgcmd{qrefresh} the UI patch to save your in-progress changes, and
+\hgcmd{qpop} down to the core patch.  Fix the core bug,
+\hgcmd{qrefresh} the core patch, and \hgcmd{qpush} back to the UI
+patch to continue where you left off.
+
 
 %%% Local Variables: 
 %%% mode: latex
