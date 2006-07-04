@@ -29,7 +29,8 @@ often need to make changes to the packages they distribute so that
 they will build properly in their environments.
 
 When you have few changes to maintain, it is easy to manage a single
-patch using the standard \texttt{diff} and \texttt{patch} programs.
+patch using the standard \texttt{diff} and \texttt{patch} programs
+(see section~\ref{sec:mq:patch} for a discussion of these tools).
 Once the number of changes grows, it starts to makes sense to maintain
 patches as discrete ``chunks of work,'' so that for example a single
 patch will contain only one bug fix (the patch might modify several
@@ -319,32 +320,43 @@ working on the UI patch, it's easy to fix the core.  Simply
 patch to continue where you left off.
 
 \section{Mercurial Queues and GNU patch}
+\label{sec:mq:patch}
 
 MQ uses the GNU \command{patch} command to apply patches.  It will
 help you to understand the data that MQ and \command{patch} work with,
 and a few aspects of how \command{patch} operates.
+
+The \command{diff} command generates a list of modifications by
+comparing two files.  The \command{patch} command applies a list of
+modifications to a file.  The kinds of files that \command{diff} and
+\command{patch} work with are referred to as both ``diffs'' and
+``patches;'' there is no difference between a diff and a patch.
 
 A patch file can start with arbitrary text; MQ uses this text as the
 commit message when creating changesets.  It treats the first line
 that starts with the string ``\texttt{diff~-}'' as the separator
 between header and content.
 
-MQ works with \emph{unified diffs} (\command{patch} can accept several
-other kinds of diff, but MQ doesn't).  A unified diff contains two
+MQ works with \emph{unified} diffs (\command{patch} can accept several
+other diff formats, but MQ doesn't).  A unified diff contains two
 kinds of header.  The \emph{file header} describes the file being
 modified; it contains the name of the file to modify.  When
-\command{patch} sees a new file header, it looks for a file of that
+\command{patch} sees a new file header, it looks for a file with that
 name to start modifying.
 
-After the file header come a series of \emph{hunks}.  Each hunk starts
-with a header; this identifies the range of line numbers within the
-file that the hunk should modify.  Following the header, a hunk starts
-and ends with a few lines of text from the unmodified file; these are
-called the \emph{context} for the hunk.  Each unmodified line begins
-with a space characters.  Within the hunk, a line that begins with
-``\texttt{-}'' means ``remove this line,'' while a line that begins
-with ``\texttt{+}'' means ``insert this line.''  For example, a line
-that is modified is represented by one deletion and one insertion.
+After the file header comes a series of \emph{hunks}.  Each hunk
+starts with a header; this identifies the range of line numbers within
+the file that the hunk should modify.  Following the header, a hunk
+starts and ends with a few (usually three) lines of text from the
+unmodified file; these are called the \emph{context} for the hunk.
+Each unmodified line begins with a space characters.  Within the hunk,
+a line that begins with ``\texttt{-}'' means ``remove this line,''
+while a line that begins with ``\texttt{+}'' means ``insert this
+line.''  For example, a line that is modified is represented by one
+deletion and one insertion.
+
+The \command{diff} command runs hunks together when there's not enough
+context between modifications to justify
 
 When \command{patch} applies a hunk, it tries a handful of
 successively less accurate strategies to try to make the hunk apply.
@@ -369,8 +381,14 @@ after the fuzz factor indicates how many lines of context
 When neither of these techniques works, \command{patch} prints a
 message saying that the hunk in question was rejected.  It saves
 rejected hunks to a file with the same name, and an added
-\filename{.rej} extension.  If \hgcmd{qpush} fails to apply a patch,
-it will print an error message and exit.
+\filename{.rej} extension.  It also saves an unmodified copy of the
+file with a \filename{.orig} extension; the copy of the file without
+any extensions will contain any changes made by hunks that \emph{did}
+apply cleanly.  If you have a patch that modifies \filename{foo} with
+six hunks, and one of them fails to apply, you will have: an
+unmodified \filename{foo.orig}, a \filename{foo.rej} containing one
+hunk, and \filename{foo}, containing the changes made by the five
+successful five hunks.
 
 \subsection{Beware the fuzz}
 
@@ -392,6 +410,48 @@ multiple versions of a source tree, it's acceptable to have a patch
 apply with some fuzz, provided you've verified the results of the
 patching process in such cases.
 
+\subsection{Handling rejection}
+
+If \hgcmd{qpush} fails to apply a patch, it will print an error
+message and exit.  If it has left \filename{.rej} files behind, it is
+usually best to fix up the rejected hunks before you push more patches
+or do any further work.
+
+If your patch \emph{used to} apply cleanly, and no longer does because
+you've changed the underlying code that your patches are based on,
+Mercurial Queues can help; see section~\ref{seq:mq:merge} for details.
+
+Unfortunately, there aren't any great techniques for dealing with
+rejected hunks.  Most often, you'll need to view the \filename{.rej}
+file and edit the target file, applying the rejected hunks by hand.
+
+If you're feeling adventurous, Neil Brown, an Australian Linux kernel
+hacker, has written a tool called \command{wiggle}~\cite{web:wiggle},
+which is more vigorous than \command{patch} in its attempts to make a
+patch apply.
+
+Another Linux kernel hacker, Chris Mason (the author of Mercurial
+Queues), wrote a similar tool called \command{rej}~\cite{web:rej},
+which takes a simple approach to automating the application of hunks
+rejected by \command{patch}.  \command{rej} can help with four common
+reasons that a hunk may be rejected:
+
+\begin{itemize}
+\item The context in the middle of a hunk has changed.
+\item A hunk is missing some context at the beginning or end.
+\item A large hunk might apply better--either entirely or in part--if
+  it was broken up into smaller hunks.
+\item A hunk removes lines with slightly different content than those
+  currently present in the file.
+\end{itemize}
+
+If you use \command{wiggle} or \command{rej}, you should be doubly
+careful to check your results when you're done.
+
+\section{Updating your patches when the underlying code changes}
+\label{sec:mq:merge}
+
+XXX.
 
 %%% Local Variables: 
 %%% mode: latex
