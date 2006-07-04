@@ -1,0 +1,41 @@
+#!/usr/bin/python
+
+import errno
+import os
+import re
+import sys
+
+hg_id = sys.argv[1][:12]
+
+dest_dir = sys.argv[2]
+
+empty_re = re.compile('^\s*$')
+line_re = re.compile('^(\w+)(.*)')
+
+try:
+    os.makedirs(dest_dir)
+except OSError, err:
+    if err.errno != errno.EEXIST:
+        raise
+
+def feedback(name, text, line):
+    return r'\marginpar{\scriptsize \href{http://www.sourcecontrol.org/book/feedback.cgi?id=%s&file=%s&line=%d}{Feedback?}}' % (hg_id, name, line)
+
+for name in sys.argv[3:]:
+    if not name.endswith('.tex'):
+        continue
+    dest_name = os.path.join(dest_dir, name)
+    ifp = open(name)
+    ofp = open(dest_name, 'w')
+    new_par = True
+    line_num = 0
+    for line in ifp:
+        line_num += 1
+        if new_par:
+            m = line_re.match(line)
+            if m:
+                line = m.group(1) + feedback(name, line, line_num) + m.group(2)
+                new_par = False
+        elif not line.strip():
+            new_par = True
+        ofp.write(line)

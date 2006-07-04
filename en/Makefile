@@ -1,3 +1,7 @@
+# This makefile requires GNU make.
+
+hg_id := $(shell hg id 2>/dev/null | sed -e 's/ tip\>//' -e 's/ /,/g' || echo external)
+
 sources := \
 	00book.tex \
 	99book.bib \
@@ -23,7 +27,7 @@ all: pdf html
 
 pdf: pdf/hgbook.pdf
 
-pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
+define pdf
 	mkdir -p $(dir $@)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	cp 99book.bib $(dir $@)
@@ -31,8 +35,17 @@ pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
 	cd $(dir $@) && makeindex $(basename $(notdir $@))
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
+endef
+
+pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
+	$(call pdf)
 
 html: html/onepage/hgbook.html html/split/hgbook.html
+
+# This is a horrible hack to work around the fact that the htlatex
+# command in tex4ht is itself a horrible hack.  I really don't want to
+# include verbatim the big wad of TeX that is repeated in that script,
+# so instead I mangle the script itself.
 
 define htlatex
 	mkdir -p $(dir $(1))
@@ -57,25 +70,40 @@ html/split/hgbook.html: $(sources) $(image-sources:%.svg=%.png) examples
 	$(call htlatex,$@,$<,2)
 	cp $(image-sources:%.svg=%.png) $(dir $@)
 
+beta: beta/pdf/hgbook.pdf beta/html/onepage/hgbook.html beta/html/split/hgbook.html
+
+beta/%.tex: %.tex
+	./fblinks $(hg_id) $(dir $@) $<
+
+beta/pdf/hgbook.pdf: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%_pdf.png) examples fblinks
+	$(call pdf)
+
+beta/html/onepage/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%.png) examples
+	$(call htlatex,$@,$<)
+	cp $(image-sources:%.svg=%.png) $(dir $@)
+
+beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%.png) examples
+	$(call htlatex,$@,$<,2)
+	cp $(image-sources:%.svg=%.png) $(dir $@)
+
+# Produce 90dpi PNGs for the web.
+
 %.png: %.svg
 	inkscape -D -e $@ $<
 
+# Produce 300dpi PNGs for PDF.
+
 %_pdf.png: %.svg
 	inkscape -D -d 300 -e $@ $<
-
-%.eps: %.svg
-	inkscape -E $@ $<
 
 examples: examples/.run
 
 examples/.run: $(example-sources)
 	cd examples && ./run-example
 
-build_id.tex:
-	echo 'in-place build' > $@
-
-build_id:
-	hg id | sed -e 's/ tip\>//' > build_id.tex
+build_id.tex: $(wildcard ../.hg/00changelog.[id])
+	echo $(hg_id) > build_id.tex
 
 clean:
-	rm -rf html pdf *.eps *.png *.aux *.dvi *.log *.out examples/*.out examples/.run buildrev.tex
+	rm -rf beta html pdf *.eps *.png *.aux *.dvi *.log *.out \
+		examples/*.out examples/.run build_id.tex
