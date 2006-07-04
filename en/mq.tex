@@ -318,6 +318,80 @@ working on the UI patch, it's easy to fix the core.  Simply
 \hgcmd{qrefresh} the core patch, and \hgcmd{qpush} back to the UI
 patch to continue where you left off.
 
+\section{Mercurial Queues and GNU patch}
+
+MQ uses the GNU \command{patch} command to apply patches.  It will
+help you to understand the data that MQ and \command{patch} work with,
+and a few aspects of how \command{patch} operates.
+
+A patch file can start with arbitrary text; MQ uses this text as the
+commit message when creating changesets.  It treats the first line
+that starts with the string ``\texttt{diff~-}'' as the separator
+between header and content.
+
+MQ works with \emph{unified diffs} (\command{patch} can accept several
+other kinds of diff, but MQ doesn't).  A unified diff contains two
+kinds of header.  The \emph{file header} describes the file being
+modified; it contains the name of the file to modify.  When
+\command{patch} sees a new file header, it looks for a file of that
+name to start modifying.
+
+After the file header come a series of \emph{hunks}.  Each hunk starts
+with a header; this identifies the range of line numbers within the
+file that the hunk should modify.  Following the header, a hunk starts
+and ends with a few lines of text from the unmodified file; these are
+called the \emph{context} for the hunk.  Each unmodified line begins
+with a space characters.  Within the hunk, a line that begins with
+``\texttt{-}'' means ``remove this line,'' while a line that begins
+with ``\texttt{+}'' means ``insert this line.''  For example, a line
+that is modified is represented by one deletion and one insertion.
+
+When \command{patch} applies a hunk, it tries a handful of
+successively less accurate strategies to try to make the hunk apply.
+This falling-back technique often makes it possible to take a patch
+that was generated against an old version of a file, and apply it
+against a newer version of that file.
+
+First, \command{patch} tries an exact match, where the line numbers,
+the context, and the text to be modified must apply exactly.  If it
+cannot make an exact match, it tries to find an exact match for the
+context, without honouring the line numbering information.  If this
+succeeds, it prints a line of output saying that the hunk was applied,
+but at some \emph{offset} from the original line number.
+
+If a context-only match fails, \command{patch} removes the first and
+last lines of the context, and tries a \emph{reduced} context-only
+match.  If the hunk with reduced context succeeds, it prints a message
+saying that it applied the hunk with a \emph{fuzz factor} (the number
+after the fuzz factor indicates how many lines of context
+\command{patch} had to trim before the patch applied).
+
+When neither of these techniques works, \command{patch} prints a
+message saying that the hunk in question was rejected.  It saves
+rejected hunks to a file with the same name, and an added
+\filename{.rej} extension.  If \hgcmd{qpush} fails to apply a patch,
+it will print an error message and exit.
+
+\subsection{Beware the fuzz}
+
+While applying a hunk at an offset, or with a fuzz factor, will often
+be completely successful, these inexact techniques naturally leave
+open the possibility of corrupting the patched file.  The most common
+cases typically involve applying a patch twice, or at an incorrect
+location in the file.  If \command{patch} or \hgcmd{qpush} ever
+mentions an offset or fuzz factor, you should make sure that the
+modified files are correct afterwards.  
+
+It's often a good idea to refresh a patch that has applied with an
+offset or fuzz factor; refreshing the patch generates new context
+information that will make it apply cleanly.  I say ``often,'' not
+``always,'' because sometimes refreshing a patch will make it fail to
+apply against a different revision of the underlying files.  In some
+cases, such as when you're maintaining a patch that must sit on top of
+multiple versions of a source tree, it's acceptable to have a patch
+apply with some fuzz, provided you've verified the results of the
+patching process in such cases.
+
 
 %%% Local Variables: 
 %%% mode: latex
