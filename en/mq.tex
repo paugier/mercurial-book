@@ -381,15 +381,15 @@ after the fuzz factor indicates how many lines of context
 
 When neither of these techniques works, \command{patch} prints a
 message saying that the hunk in question was rejected.  It saves
-rejected hunks to a file with the same name, and an added
-\sfilename{.rej} extension.  It also saves an unmodified copy of the
-file with a \sfilename{.orig} extension; the copy of the file without
-any extensions will contain any changes made by hunks that \emph{did}
-apply cleanly.  If you have a patch that modifies \filename{foo} with
-six hunks, and one of them fails to apply, you will have: an
-unmodified \filename{foo.orig}, a \filename{foo.rej} containing one
-hunk, and \filename{foo}, containing the changes made by the five
-successful five hunks.
+rejected hunks (also simply called ``rejects'') to a file with the
+same name, and an added \sfilename{.rej} extension.  It also saves an
+unmodified copy of the file with a \sfilename{.orig} extension; the
+copy of the file without any extensions will contain any changes made
+by hunks that \emph{did} apply cleanly.  If you have a patch that
+modifies \filename{foo} with six hunks, and one of them fails to
+apply, you will have: an unmodified \filename{foo.orig}, a
+\filename{foo.rej} containing one hunk, and \filename{foo}, containing
+the changes made by the five successful five hunks.
 
 \subsection{Beware the fuzz}
 
@@ -420,7 +420,7 @@ or do any further work.
 
 If your patch \emph{used to} apply cleanly, and no longer does because
 you've changed the underlying code that your patches are based on,
-Mercurial Queues can help; see section~\ref{seq:mq:merge} for details.
+Mercurial Queues can help; see section~\ref{sec:mq:merge} for details.
 
 Unfortunately, there aren't any great techniques for dealing with
 rejected hunks.  Most often, you'll need to view the \sfilename{.rej}
@@ -448,10 +448,113 @@ reasons that a hunk may be rejected:
 If you use \command{wiggle} or \command{rej}, you should be doubly
 careful to check your results when you're done.
 
+\section{Getting the best performance out of MQ}
+
+MQ is very efficient at handling a large number of patches.  I ran
+some performance experiments in mid-2006 for a talk that I gave at the
+2006 EuroPython conference~\cite{web:europython}.  I used as my data
+set the Linux 2.6.17-mm1 patch series, which consists of 1,738
+patches.  I applied thes on top of a Linux kernel repository
+containing all 27,472 revisions between Linux 2.6.12-rc2 and Linux
+2.6.17.
+
+On my old, slow laptop, I was able to
+\hgcmdargs{qpush}{\hgopt{qpush}{-a}} all 1,738 patches in 3.5 minutes,
+and \hgcmdargs{qpop}{\hgopt{qpop}{-a}} them all in 30 seconds.  I
+could \hgcmd{qrefresh} one of the biggest patches (which made 22,779
+lines of changes to 287 files) in 6.6 seconds.
+
+Clearly, MQ is well suited to working in large trees, but there are a
+few tricks you can use to get the best performance of it.
+
+First of all, try to ``batch'' operations together.  Every time you
+run \hgcmd{qpush} or \hgcmd{qpop}, these commands scan the working
+directory once to make sure you haven't made some changes and then
+forgotten to run \hgcmd{qrefresh}.  On a small tree, the time that
+this scan takes is unnoticeable.  However, on a medium-sized tree
+(containing tens of thousands of files), it can take a second or more.
+
+The \hgcmd{qpush} and \hgcmd{qpop} commands allow you to push and pop
+multiple patches at a time.  You can identify the ``destination
+patch'' that you want to end up at.  When you \hgcmd{qpush} with a
+destination specified, it will push patches until that patch is at the
+top of the applied stack.  When you \hgcmd{qpop} to a destination, MQ
+will pop patches until the destination patch \emph{is no longer}
+applied.
+
+You can identify a destination patch using either the name of the
+patch, or by number.  If you use numeric addressing, patches are
+counted from zero; this means that the first patch is zero, the second
+is one, and so on.
+
 \section{Updating your patches when the underlying code changes}
 \label{sec:mq:merge}
 
-XXX.
+It's common to have a stack of patches on top of an underlying
+repository that you don't modify directly.  If you're working on
+changes to third-party code, or on a feature that is taking longer to
+develop than the rate of change of the code beneath, you will often
+need to sync up with the underlying code, and fix up any hunks in your
+patches that no longer apply.  This is called \emph{rebasing} your
+patch series.
+
+The simplest way to do this is to \hgcmdargs{qpop}{\hgopt{qpop}{-a}}
+your patches, then \hgcmd{pull} changes into the underlying
+repository, and finally \hgcmdargs{qpush}{\hgopt{qpop}{-a}} your
+patches again.  MQ will stop pushing any time it runs across a patch
+that fails to apply during conflicts, allowing you to fix your
+conflicts, \hgcmd{qrefresh} the affected patch, and continue pushing
+until you have fixed your entire stack.
+
+This approach is easy to use and works well if you don't expect
+changes to the underlying code to affect how well your patches apply.
+If your patch stack touches code that is modified frequently or
+invasively in the underlying repository, however, fixing up rejected
+hunks by hand quickly becomes tiresome.
+
+It's possible to partially automate the rebasing process.  If your
+patches apply cleanly against some revision of the underlying repo, MQ
+can use this information to help you to resolve conflicts between your
+patches and a different revision.
+
+The process is a little involved.
+\begin{enumerate}
+\item To begin, \hgcmdargs{qpush}{-a} all of your patches on top of
+  the revision where you know that they apply cleanly.
+\item Save a backup copy of your patch directory using
+  \hgcmdargs{qsave}{\hgopt{qsave}{-e} \hgopt{qsave}{-c}}.  This prints
+  the name of the directory that it has saved the patches in.  It will
+  save the patches to a directory called
+  \sdirname{.hg/patches.\emph{N}}, where \texttt{\emph{N}} is a small
+  integer.  It also commits a ``save changeset'' on top of your
+  applied patches; this is for internal book-keeping, and records the
+  states of the \sfilename{series} and \sfilename{status} files.
+\item Use \hgcmd{pull} to bring new changes into the underlying
+  repository.  (Don't run \hgcmdargs{pull}{-u}; see below for why.)
+\item Update to the new tip revision, using
+  \hgcmdargs{update}{\hgopt{update}{-C}} to override the patches you
+  have pushed.
+\item Merge all patches using \hgcmdargs{qpush}{\hgopt{qpush}{-m}
+    \hgopt{qpush}{-a}}.  The \hgopt{qpush}{-m} option to \hgcmd{qpush}
+  tells MQ to perform a three-way merge if the patch fails to apply.
+\end{enumerate}
+
+During the \hgcmdargs{qpush}{\hgopt{qpush}{-m}}, each patch in the
+\sfilename{series} file is applied normally.  If a patch applies with
+fuzz or rejects, MQ looks at the queue you \hgcmd{qsave}d, and
+performs a three-way merge with the corresponding changeset.  This
+merge uses Mercurial's normal merge machinery, so it may pop up a GUI
+merge tool to help you to resolve problems.
+
+When you finish resolving the effects of a patch, MQ refreshes your
+patch based on the result of the merge.
+
+At the end of this process, your repository will have one extra head
+from the old patch queue, and a copy of the old patch queue will be in
+\sdirname{.hg/patches.\emph{N}}. You can remove the extra head using
+\hgcmdargs{qpop}{\hgopt{qpop}{-a} \hgopt{qpop}{-n} patches.\emph{N}}
+or \hgcmd{strip}.  You can delete \sdirname{.hg/patches.\emph{N}} once
+you are sure that you no longer need it as a backup.
 
 \section{Managing patches in a repository}
 
@@ -480,20 +583,21 @@ developers to work on the same patch series without colliding with
 each other, all on top of an underlying source base that they may or
 may not control.
 
-\subsection{MQ support for managing a patch repository}
+\subsection{MQ support for patch repositories}
 
 MQ helps you to work with the \sdirname{.hg/patches} directory as a
 repository; when you prepare a repository for working with patches
-using \hgcmdargs{qinit}, you can pass the \hgopt{qinit}{-c} option to
+using \hgcmd{qinit}, you can pass the \hgopt{qinit}{-c} option to
 create the \sdirname{.hg/patches} directory as a Mercurial repository.
 
 \begin{note}
   If you forget to use the \hgopt{qinit}{-c} option, you can simply go
   into the \sdirname{.hg/patches} directory at any time and run
   \hgcmd{init}.  Don't forget to add an entry for the
-  \filename{status} file to the \filename{.hgignore} file, though
-  (\hgopt{qinit}{-c} does this for you automatically); you
-  \emph{really} don't want to manage the \filename{status} file.
+  \sfilename{status} file to the \sfilename{.hgignore} file, though
+  (\hgcmdargs{qinit}{\hgopt{qinit}{-c}} does this for you
+  automatically); you \emph{really} don't want to manage the
+  \sfilename{status} file.
 \end{note}
 
 As a convenience, if MQ notices that the \dirname{.hg/patches}
@@ -512,9 +616,10 @@ in a few small respects.
 MQ cannot automatically detect changes that you make to the patch
 directory.  If you \hgcmd{pull}, manually edit, or \hgcmd{update}
 changes to patches or the \sfilename{series} file, you will have to
-\hgcmdargs{qpop}{-a} and then \hgcmdargs{qpush}{-a} in the underlying
-repository to see those changes show up there.  If you forget to do
-this, you can confuse MQ's idea of which patches are applied.
+\hgcmdargs{qpop}{\hgopt{qpop}{-a}} and then
+\hgcmdargs{qpush}{\hgopt{qpush}{-a}} in the underlying repository to
+see those changes show up there.  If you forget to do this, you can
+confuse MQ's idea of which patches are applied.
 
 \section{Commands for working with patches}
 
