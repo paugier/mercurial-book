@@ -158,7 +158,7 @@ You can use MQ with \emph{any} Mercurial repository, and its commands
 only operate within that repository.  To get started, simply prepare
 the repository using the \hgcmd{qinit} command (see
 figure~\ref{ex:mq:qinit}).  This command creates an empty directory
-called \filename{.hg/patches}, where MQ will keep its metadata.  As
+called \sdirname{.hg/patches}, where MQ will keep its metadata.  As
 with many Mercurial commands, the \hgcmd{qinit} command prints nothing
 if it succeeds.
 
@@ -178,20 +178,20 @@ if it succeeds.
 
 To begin work on a new patch, use the \hgcmd{qnew} command.  This
 command takes one argument, the name of the patch to create.  MQ will
-use this as the name of an actual file in the \filename{.hg/patches}
+use this as the name of an actual file in the \sdirname{.hg/patches}
 directory, as you can see in figure~\ref{ex:mq:qnew}.
 
-Also newly present in the \filename{.hg/patches} directory are two
-other files, \filename{series} and \filename{status}.  The
-\filename{series} file lists all of the patches that MQ knows about
+Also newly present in the \sdirname{.hg/patches} directory are two
+other files, \sfilename{series} and \sfilename{status}.  The
+\sfilename{series} file lists all of the patches that MQ knows about
 for this repository, with one patch per line.  Mercurial uses the
-\filename{status} file for internal book-keeping; it tracks all of the
+\sfilename{status} file for internal book-keeping; it tracks all of the
 patches that MQ has \emph{applied} in this repository.
 
 \begin{note}
-  You may sometimes want to edit the \filename{series} file by hand;
+  You may sometimes want to edit the \sfilename{series} file by hand;
   for example, to change the sequence in which some patches are
-  applied.  However, manually editing the \filename{status} file is
+  applied.  However, manually editing the \sfilename{status} file is
   almost always a bad idea, as it's easy to corrupt MQ's idea of what
   is happening.
 \end{note}
@@ -322,9 +322,10 @@ patch to continue where you left off.
 \section{Mercurial Queues and GNU patch}
 \label{sec:mq:patch}
 
-MQ uses the GNU \command{patch} command to apply patches.  It will
-help you to understand the data that MQ and \command{patch} work with,
-and a few aspects of how \command{patch} operates.
+MQ uses the GNU \command{patch} command to apply patches.  Because MQ
+doesn't hide its patch-oriented nature, it is helpful to understand
+the data that MQ and \command{patch} work with, and a few aspects of
+how \command{patch} operates.
 
 The \command{diff} command generates a list of modifications by
 comparing two files.  The \command{patch} command applies a list of
@@ -381,8 +382,8 @@ after the fuzz factor indicates how many lines of context
 When neither of these techniques works, \command{patch} prints a
 message saying that the hunk in question was rejected.  It saves
 rejected hunks to a file with the same name, and an added
-\filename{.rej} extension.  It also saves an unmodified copy of the
-file with a \filename{.orig} extension; the copy of the file without
+\sfilename{.rej} extension.  It also saves an unmodified copy of the
+file with a \sfilename{.orig} extension; the copy of the file without
 any extensions will contain any changes made by hunks that \emph{did}
 apply cleanly.  If you have a patch that modifies \filename{foo} with
 six hunks, and one of them fails to apply, you will have: an
@@ -413,7 +414,7 @@ patching process in such cases.
 \subsection{Handling rejection}
 
 If \hgcmd{qpush} fails to apply a patch, it will print an error
-message and exit.  If it has left \filename{.rej} files behind, it is
+message and exit.  If it has left \sfilename{.rej} files behind, it is
 usually best to fix up the rejected hunks before you push more patches
 or do any further work.
 
@@ -422,13 +423,12 @@ you've changed the underlying code that your patches are based on,
 Mercurial Queues can help; see section~\ref{seq:mq:merge} for details.
 
 Unfortunately, there aren't any great techniques for dealing with
-rejected hunks.  Most often, you'll need to view the \filename{.rej}
+rejected hunks.  Most often, you'll need to view the \sfilename{.rej}
 file and edit the target file, applying the rejected hunks by hand.
 
-If you're feeling adventurous, Neil Brown, an Australian Linux kernel
-hacker, has written a tool called \command{wiggle}~\cite{web:wiggle},
-which is more vigorous than \command{patch} in its attempts to make a
-patch apply.
+If you're feeling adventurous, Neil Brown, a Linux kernel hacker,
+wrote a tool called \command{wiggle}~\cite{web:wiggle}, which is more
+vigorous than \command{patch} in its attempts to make a patch apply.
 
 Another Linux kernel hacker, Chris Mason (the author of Mercurial
 Queues), wrote a similar tool called \command{rej}~\cite{web:rej},
@@ -452,6 +452,93 @@ careful to check your results when you're done.
 \label{sec:mq:merge}
 
 XXX.
+
+\section{Managing patches in a repository}
+
+Because MQ's \sdirname{.hg/patches} directory resides outside a
+Mercurial repository's working directory, the ``underlying'' Mercurial
+repository knows nothing about the management or presence of patches.
+
+This presents the interesting possibility of managing the contents of
+the patch directory as a Mercurial repository in its own right.  This
+can be a useful way to work.  For example, you can work on a patch for
+a while, \hgcmd{qrefresh} it, then \hgcmd{commit} the current state of
+the patch.  This lets you ``roll back'' to that version of the patch
+later on.
+
+In addition, you can then share different versions of the same patch
+stack among multiple underlying repositories.  I use this when I am
+developing a Linux kernel feature.  I have a pristine copy of my
+kernel sources for each of several CPU architectures, and a cloned
+repository under each that contains the patches I am working on.  When
+I want to test a change on a different architecture, I push my current
+patches to the patch repository associated with that kernel tree, pop
+and push all of my patches, and build and test that kernel.
+
+Managing patches in a repository makes it possible for multiple
+developers to work on the same patch series without colliding with
+each other, all on top of an underlying source base that they may or
+may not control.
+
+\subsection{MQ support for managing a patch repository}
+
+MQ helps you to work with the \sdirname{.hg/patches} directory as a
+repository; when you prepare a repository for working with patches
+using \hgcmdargs{qinit}, you can pass the \hgopt{qinit}{-c} option to
+create the \sdirname{.hg/patches} directory as a Mercurial repository.
+
+\begin{note}
+  If you forget to use the \hgopt{qinit}{-c} option, you can simply go
+  into the \sdirname{.hg/patches} directory at any time and run
+  \hgcmd{init}.  Don't forget to add an entry for the
+  \filename{status} file to the \filename{.hgignore} file, though
+  (\hgopt{qinit}{-c} does this for you automatically); you
+  \emph{really} don't want to manage the \filename{status} file.
+\end{note}
+
+As a convenience, if MQ notices that the \dirname{.hg/patches}
+directory is a repository, it will automatically \hgcmd{add} every
+patch that you create and import.
+
+Finally, MQ provides a shortcut command, \hgcmd{qcommit}, that runs
+\hgcmd{commit} in the \sdirname{.hg/patches} directory.  This saves
+some cumbersome typing.
+
+\subsection{A few things to watch out for}
+
+MQ's support for working with a repository full of patches is limited
+in a few small respects.
+
+MQ cannot automatically detect changes that you make to the patch
+directory.  If you \hgcmd{pull}, manually edit, or \hgcmd{update}
+changes to patches or the \sfilename{series} file, you will have to
+\hgcmdargs{qpop}{-a} and then \hgcmdargs{qpush}{-a} in the underlying
+repository to see those changes show up there.  If you forget to do
+this, you can confuse MQ's idea of which patches are applied.
+
+\section{Commands for working with patches}
+
+Once you've been working with patches for a while, you'll find
+yourself hungry for tools that will help you to understand and
+manipulate the patches you're dealing with.
+
+The \command{diffstat} command~\cite{web:diffstat} generates a
+histogram of the modifications made to each file in a patch.  It
+provides a good way to ``get a sense of'' a patch--which files it
+affects, and how much change it introduces to each file and as a
+whole.  (I find that it's a good idea to use \command{diffstat}'s
+\texttt{-p} option as a matter of course, as otherwise it will try to
+do clever things with prefixes of file names that inevitably confuse
+at least me.)
+
+The \package{patchutils} package~\cite{web:patchutils} is invaluable.
+It provides a set of small utilities that follow the ``Unix
+philosophy;'' each does one useful thing with a patch.  The
+\package{patchutils} command I use most is \command{filterdiff}, which
+extracts subsets from a patch file.  For example, given a patch that
+modifies hundreds of files across dozens of directories, a single
+invocation of \command{filterdiff} can generate a smaller patch that
+only touches files whose names match a particular glob pattern.
 
 %%% Local Variables: 
 %%% mode: latex

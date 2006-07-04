@@ -2,7 +2,9 @@ sources := \
 	00book.tex \
 	99book.bib \
 	99defs.tex \
-	mq.tex
+	intro.tex \
+	mq.tex \
+	build_id.tex
 
 image-sources := \
 	mq-stack.svg
@@ -26,6 +28,7 @@ pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	cp 99book.bib $(dir $@)
 	cd $(dir $@) && bibtex $(basename $(notdir $@))
+	cd $(dir $@) && makeindex $(basename $(notdir $@))
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 
@@ -36,6 +39,7 @@ define htlatex
 	head -2 $(shell which htlatex) > $(dir $(1))/htlatex.book
 	cp 99book.bib $(dir $@)
 	echo '(cd $(dir $@) && bibtex $(basename $(notdir $@)))' >> $(dir $(1))/htlatex.book
+	echo '(cd $(dir $@) && makeindex $(basename $(notdir $@)))' >> $(dir $(1))/htlatex.book
 	head -3 $(shell which htlatex) >> $(dir $(1))/htlatex.book
 	echo 'echo status $$$$' >>  $(dir $(1))/htlatex.book
 	chmod 755 $(dir $(1))/htlatex.book
@@ -67,5 +71,11 @@ examples: examples/.run
 examples/.run: $(example-sources)
 	cd examples && ./run-example
 
+build_id.tex:
+	echo 'in-place build' > $@
+
+build_id:
+	hg id | sed -e 's/ tip\>//' > build_id.tex
+
 clean:
-	rm -rf html pdf *.eps *.png *.aux *.dvi *.log *.out examples/*.out examples/.run
+	rm -rf html pdf *.eps *.png *.aux *.dvi *.log *.out examples/*.out examples/.run buildrev.tex

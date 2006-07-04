@@ -1,6 +1,7 @@
 \documentclass{book}
 \usepackage{enumerate}
 \usepackage{fullpage}
+\usepackage{makeidx}
 \usepackage{ifpdf}
 \usepackage{graphicx}
 \usepackage{newcent}
@@ -17,6 +18,8 @@
   version 1.0 of the Open Publication License. Please refer to
   Appendix~\ref{cha:opl} for the license text.}
 
+\makeindex
+
 \begin{document}
 
 \maketitle
@@ -29,13 +32,16 @@
 
 \pagenumbering{arabic}
 
+\include{intro}
 \include{mq}
 
 \appendix
+\include{license}
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{alpha}
 \bibliography{99book}
-\include{license}
+
+\printindex
 
 \end{document}
 
