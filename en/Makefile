@@ -1,6 +1,6 @@
 # This makefile requires GNU make.
 
-hg_id := $(shell hg id 2>/dev/null | sed -e 's/ tip\>//' -e 's/ /,/g' || echo external)
+hg_id := $(shell hg parents --template '{node|short}' | head -1)
 
 sources := \
 	00book.tex \
@@ -29,12 +29,12 @@ pdf: pdf/hgbook.pdf
 
 define pdf
 	mkdir -p $(dir $@)
-	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
+	TEXINPUTS=$(dir $<): pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	cp 99book.bib $(dir $@)
 	cd $(dir $@) && bibtex $(basename $(notdir $@))
 	cd $(dir $@) && makeindex $(basename $(notdir $@))
-	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
-	pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
+	TEXINPUTS=$(dir $<): pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
+	TEXINPUTS=$(dir $<): pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 endef
 
 pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
@@ -56,7 +56,7 @@ define htlatex
 	head -3 $(shell which htlatex) >> $(dir $(1))/htlatex.book
 	echo 'echo status $$$$' >>  $(dir $(1))/htlatex.book
 	chmod 755 $(dir $(1))/htlatex.book
-	$(dir $(1))/htlatex.book $(2) "xhtml,html4-uni,$(3)" " -cunihtf -utf8" "" "$(call latex-options,$(1))" || (rm -f $(1); exit 1)
+	TEXINPUTS=$(dir $(2)): $(dir $(1))/htlatex.book $(2) "xhtml,html4-uni,$(3)" " -cunihtf -utf8" "" "$(call latex-options,$(1))" || (rm -f $(1); exit 1)
 	cd $(dir $(1)) && tex4ht -f/$(basename $(notdir $(1))) -cvalidate -cunihtf
 	cd $(dir $(1)) && t4ht -f/$(basename $(notdir $(1)))
 	perl -pi -e 's/&#x00([0-7][0-9a-f]);/chr(hex($$1))/egi' $(dir $(1))/*.html
