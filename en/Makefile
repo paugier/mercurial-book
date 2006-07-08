@@ -16,6 +16,9 @@ image-sources := \
 example-sources := \
 	examples/run-example \
 	examples/mq.qinit-help \
+	examples/mq.diff \
+	examples/mq.tarball \
+	examples/mq.tools \
 	examples/mq.tutorial
 
 latex-options = \

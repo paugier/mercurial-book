@@ -76,6 +76,7 @@ class example:
         rcfp = open(rcfile, 'w')
         print >> rcfp, 'PS1="%s"' % self.prompt
         print >> rcfp, 'unset HISTFILE'
+        print >> rcfp, 'export EXAMPLE_DIR="%s"' % os.getcwd()
         print >> rcfp, 'export LANG=C'
         print >> rcfp, 'export LC_ALL=C'
         print >> rcfp, 'export TZ=GMT'
@@ -117,7 +118,7 @@ class example:
                         if nl: hunk += '\n'
                     ofp.write(hunk)
                     # then its output
-                    ofp.write(output)
+                    ofp.write(tex_escape(output))
             self.status('\n')
         finally:
             try:
@@ -140,7 +141,9 @@ def main(path='.'):
     for name in os.listdir(path):
         if name == 'run-example' or name.startswith('.'): continue
         if name.endswith('.out') or name.endswith('~'): continue
-        example(os.path.join(path, name)).run()
+        pathname = os.path.join(path, name)
+        if os.path.isfile(pathname):
+            example(pathname).run()
     print >> open(os.path.join(path, '.run'), 'w'), time.asctime()
 
 if __name__ == '__main__':
