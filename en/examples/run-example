@@ -86,11 +86,12 @@ class example:
         pid, fd = pty.fork()
         if pid == 0:
             #os.execl(self.shell, self.shell)
-            os.system('/bin/bash --noediting --noprofile --rcfile %s' % rcfile)
+            os.system('/bin/bash --noediting --noprofile --norc')
             sys.exit(0)
         self.cfp = os.fdopen(fd, 'w+')
         try:
-            self.receive()
+            # setup env and prompt
+            self.sendreceive('source %s\n\n' % rcfile)
             for hunk in self.parse():
                 # is this line a processing instruction?
                 m = self.pi_re.match(hunk)
