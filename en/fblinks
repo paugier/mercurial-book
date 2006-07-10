@@ -18,8 +18,8 @@ except OSError, err:
     if err.errno != errno.EEXIST:
         raise
 
-def feedback(name, text, line):
-    return r'\marginpar{\scriptsize \href{http://demesne:8000/book/feedback/submit/%s/%s/%d/}{Feedback}}' % (hg_id, name, line)
+def feedback(name, text, ctx_id):
+    return r'\marginpar{\scriptsize \href{http://demesne:8000/book/feedback/submit/%s/%s/%d/}{Feedback}}' % (hg_id, name, ctx_id)
 
 ctxs = {}
 try:
@@ -41,16 +41,18 @@ for name in sys.argv[3:]:
     ofp = open(dest_name, 'w')
     new_par = True
     line_num = 0
+    par_num = 0
     for line in ifp:
         line_num += 1
         if new_par:
             m = line_re.match(line)
             if m:
+                par_num += 1
                 ls = line.strip()
-                if ctxs.get((name, line_num)) != ls:
-                    ctxs[(name, line_num)] = ls
+                if ctxs.get((name, par_num)) != ls:
+                    ctxs[(name, par_num)] = ls
                     changes += 1
-                line = m.group(1) + feedback(name, line, line_num) + m.group(2)
+                line = m.group(1) + feedback(name, line, par_num) + m.group(2)
                 new_par = False
         elif not line.strip():
             new_par = True
