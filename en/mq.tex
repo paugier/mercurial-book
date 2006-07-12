@@ -299,9 +299,9 @@ can see this more clearly in the output of \hgcmd{annotate}).
 \end{figure}
 
 So far, with the exception of \hgcmd{qnew} and \hgcmd{qrefresh}, we've
-been careful to only use regular Mercurial commands.  However, there
-are more ``natural'' commands you can use when thinking about patches
-with MQ, as illustrated in figure~\ref{ex:mq:qseries}:
+been careful to only use regular Mercurial commands.  However, MQ
+provides many commands that are easier to use when you are thinking
+about patches, as illustrated in figure~\ref{ex:mq:qseries}:
 
 \begin{itemize}
 \item The \hgcmd{qseries} command lists every patch that MQ knows
@@ -355,9 +355,45 @@ that of \hgcmd{qapplied} has changed.
   \label{ex:mq:qpop}
 \end{figure}
 
-MQ does not limit you to pushing or popping one patch.  You can have
-no patches, all of them, or any number in between applied at some
-point in time.
+\subsection{Pushing and popping many patches}
+
+While \hgcmd{qpush} and \hgcmd{qpop} each operate on a single patch at
+a time by default, you can push and pop many patches in one go.  The
+\hgopt{qpush}{-a} option to \hgcmd{qpush} causes it to push all
+unapplied patches, while the \hgopt{qpop}{-a} option to \hgcmd{qpop}
+causes it to pop all applied patches.  (For some more ways to push and
+pop many patches, see section~\ref{sec:mq:perf} below.)
+
+\begin{figure}[ht]
+  \interaction{mq.tutorial.qpush-a}
+  \caption{Pushing all unapplied patches}
+  \label{ex:mq:qpush-a}
+\end{figure}
+
+\subsection{Safety checks, and overriding them}
+
+Several MQ commands check the working directory before they do
+anything, and fail if they find any modifications.  They do this to
+ensure that you won't lose any changes that you have made, but not yet
+incorporated into a patch.  Figure~\ref{ex:mq:add} illustrates this;
+the \hgcmd{qnew} command will not create a new patch if there are
+outstanding changes, caused in this case by the \hgcmd{add} of
+\filename{file3}.
+
+\begin{figure}[ht]
+  \interaction{mq.tutorial.add}
+  \caption{Forcibly creating a patch}
+  \label{ex:mq:add}
+\end{figure}
+
+Commands that check the working directory all take an ``I know what
+I'm doing'' option, which is always named \option{-f}.  The exact
+meaning of \option{-f} depends on the command.  For example,
+\hgcmdargs{qnew}{\hgopt{qnew}{-f}} will incorporate any outstanding
+changes into the new patch it creates, but
+\hgcmdargs{qpop}{\hgopt{qpop}{-f}} will revert modifications to any
+files affected by the patch that it is popping.  Be sure to read the
+documentation for a command's \option{-f} option before you use it!
 
 \subsection{Working on several patches at once}
 
@@ -548,6 +584,7 @@ If you use \command{wiggle} or \command{rej}, you should be doubly
 careful to check your results when you're done.
 
 \section{Getting the best performance out of MQ}
+\label{sec:mq:perf}
 
 MQ is very efficient at handling a large number of patches.  I ran
 some performance experiments in mid-2006 for a talk that I gave at the

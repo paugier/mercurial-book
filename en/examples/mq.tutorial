@@ -55,5 +55,14 @@ hg qpop
 hg qseries
 hg qapplied
 cat file1
-hg qpush
+
+#$ name: qpush-a
+
+hg qpush -a
 cat file1
+
+#$ name: add
+
+echo 'file 3, line 1' >> file3
+hg qnew add-file3.patch
+hg qnew -f add-file3.patch
