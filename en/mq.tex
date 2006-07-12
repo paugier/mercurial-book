@@ -128,6 +128,7 @@ a tremendously useful piece of software to know about for situations
 where you cannot use Mercurial and MQ.
 
 \section{Understanding patches}
+\label{sec:mq:patch}
 
 Because MQ doesn't hide its patch-oriented nature, it is helpful to
 understand what patches are, and a little about the tools that work
@@ -179,7 +180,7 @@ line.''  For example, a line that is modified is represented by one
 deletion and one insertion.
 
 We will return to ome of the more subtle aspects of patches later (in
-section~\ref{ex:mq:adv-patch}), but you should have enough information
+section~\ref{sec:mq:adv-patch}), but you should have enough information
 now to use MQ.
 
 \section{Getting started with Mercurial Queues}
@@ -380,8 +381,58 @@ patch to continue where you left off.
 \label{sec:mq:adv-patch}
 
 MQ uses the GNU \command{patch} command to apply patches, so it's
-helpful to know about a few more detailed aspects of how
-\command{patch} works.
+helpful to know a few more detailed aspects of how \command{patch}
+works, and about patches themselves.
+
+\subsection{The strip count}
+
+If you look at the file headers in a patch, you will notice that the
+pathnames usually have an extra component on the front that isn't
+present in the actual path name.  This is a holdover from the way that
+people used to generate patches (people still do this, but it's
+somewhat rare with modern revision control tools).  
+
+Alice would unpack a tarball, edit her files, then decide that she
+wanted to create a patch.  So she'd rename her working directory,
+unpack the tarball again (hence the need for the rename), and use the
+\cmdopt{diff}{-r} and \cmdopt{diff}{-N} options to \command{diff} to
+recursively generate a patch between the unmodified directory and the
+modified one.  The result would be that the name of the unmodified
+directory would be at the front of the left-hand path in every file
+header, and the name of the modified directory would be at the front
+of the right-hand path.
+
+Since someone receiving a patch from the Alices of the net would be
+unlikely to have unmodified and modified directories with exactly the
+same names, the \command{patch} command has a \cmdopt{patch}{-p}
+option that indicates the number of leading path name components to
+strip when trying to apply a patch.  This number is called the
+\emph{strip count}.
+
+An option of ``\texttt{-p1}'' means ``use a strip count of one''.  If
+\command{patch} sees a file name \filename{foo/bar/baz} in a file
+header, it will strip \filename{foo} and try to patch a file named
+\filename{bar/baz}.  (Strictly speaking, the strip count refers to the
+number of \emph{path separators} (and the components that go with them
+) to strip.  A strip count of one will turn \filename{foo/bar} into
+\filename{bar}, but \filename{/foo/bar} (notice the extra leading
+slash) into \filename{foo/bar}.)
+
+The ``standard'' strip count for patches is one; almost all patches
+contain one leading path name component that needs to be stripped.
+Mercurial's \hgcmd{diff} command generates path names in this form,
+and the \hgcmd{import} command and MQ expect patches to have a strip
+count of one.
+
+If you receive a patch from someone that you want to add to your patch
+queue, and the patch needs a strip count other than one, you cannot
+just \hgcmd{qimport} the patch, because \hgcmd{qimport} does not yet
+have a \texttt{-p} option (see~\bug{311}).  Your best bet is to
+\hgcmd{qnew} a patch of your own, then use \cmdargs{patch}{-p\emph{N}}
+to apply their patch, followed by \hgcmd{addremove} to pick up any
+files added or removed by the patch, followed by \hgcmd{qrefresh}.
+This complexity may become unnecessary; see~\bug{311} for details.
+\subsection{Strategies for applying a patch}
 
 When \command{patch} applies a hunk, it tries a handful of
 successively less accurate strategies to try to make the hunk apply.
@@ -604,6 +655,24 @@ from the old patch queue, and a copy of the old patch queue will be in
 or \hgcmd{strip}.  You can delete \sdirname{.hg/patches.\emph{N}} once
 you are sure that you no longer need it as a backup.
 
+\section{Useful things to know about}
+
+There are a number of aspects of MQ usage that don't fit tidily into
+sections of their own, but that are good to know.  Here they are, in
+one place.
+
+\begin{itemize}
+\item Normally, when you \hgcmd{qpop} a patch and \hgcmd{qpush} it
+  again, the changeset that represents the patch after the pop/push
+  will have a \emph{different identity} than the changeset that
+  represented the hash beforehand.  See section~\ref{sec:mq:cmd:qpush}
+  for information as to why this is.
+\item It's not a good idea to \hgcmd{merge} changes from another
+  branch with a patch changeset, at least if you want to maintain the
+  ``patchiness'' of that changeset and changesets below it on the
+  patch stack.  If you try to do this, it will appear to succeed, but
+  MQ will become confused.
+\end{itemize}
 \section{Managing patches in a repository}
 
 Because MQ's \sdirname{.hg/patches} directory resides outside a
@@ -617,14 +686,14 @@ a while, \hgcmd{qrefresh} it, then \hgcmd{commit} the current state of
 the patch.  This lets you ``roll back'' to that version of the patch
 later on.
 
-In addition, you can then share different versions of the same patch
-stack among multiple underlying repositories.  I use this when I am
-developing a Linux kernel feature.  I have a pristine copy of my
-kernel sources for each of several CPU architectures, and a cloned
-repository under each that contains the patches I am working on.  When
-I want to test a change on a different architecture, I push my current
-patches to the patch repository associated with that kernel tree, pop
-and push all of my patches, and build and test that kernel.
+You can then share different versions of the same patch stack among
+multiple underlying repositories.  I use this when I am developing a
+Linux kernel feature.  I have a pristine copy of my kernel sources for
+each of several CPU architectures, and a cloned repository under each
+that contains the patches I am working on.  When I want to test a
+change on a different architecture, I push my current patches to the
+patch repository associated with that kernel tree, pop and push all of
+my patches, and build and test that kernel.
 
 Managing patches in a repository makes it possible for multiple
 developers to work on the same patch series without colliding with
@@ -669,7 +738,7 @@ changes to patches or the \sfilename{series} file, you will have to
 see those changes show up there.  If you forget to do this, you can
 confuse MQ's idea of which patches are applied.
 
-\section{Commands for working with patches}
+\section{Third party tools for working with patches}
 \label{sec:mq:tools}
 
 Once you've been working with patches for a while, you'll find
@@ -801,9 +870,11 @@ print some metadata about the patch.
 
 This command prints three different kinds of number:
 \begin{itemize}
-\item a \emph{file number} to identify each file modified in the patch;
-\item the line number within a modified file that a hunk starts at; and
-\item a \emph{hunk number} to identify that hunk.
+\item (in the first column) a \emph{file number} to identify each file
+  modified in the patch;
+\item (on the next line, indented) the line number within a modified
+  file where a hunk starts; and
+\item (on the same line) a \emph{hunk number} to identify that hunk.
 \end{itemize}
 
 You'll have to use some visual inspection, and reading of the patch,
@@ -815,6 +886,18 @@ and hunk you want to extract.
 Once you have this hunk, you can concatenate it onto the end of your
 destination patch and continue with the remainder of
 section~\ref{sec:mq:combine}.
+
+\section{Differences between quilt and MQ}
+
+If you are already familiar with quilt, MQ provides a similar command
+set.  There are a few differences in the way that it works.
+
+You will already have noticed that most quilt commands have MQ
+counterparts that simply begin with a ``\texttt{q}''.  The exceptions
+are quilt's \texttt{add} and \texttt{remove} commands, the
+counterparts for which are the normal Mercurial \hgcmd{add} and
+\hgcmd{remove} commands.  There is no MQ equivalent of the quilt
+\texttt{edit} command.
 \section{MQ command reference}
 \label{sec:mq:cmdref}
 
@@ -953,6 +1036,7 @@ The \hgcmd{qprev} command prints the name of the patch in the
 This will become the topmost applied patch if you run \hgcmd{qpop}.
 
 \subsection{\hgcmd{qpush}---push patches onto the stack}
+\label{sec:mq:cmd:qpush}
 
 The \hgcmd{qpush} command adds patches onto the applied stack.  By
 default, it adds only one patch.
@@ -960,7 +1044,7 @@ default, it adds only one patch.
 This command creates a new changeset to represent each applied patch,
 and updates the working directory to apply the effects of the patches.
 
-The data used when creating a changeset are as follows:
+The default data used when creating a changeset are as follows:
 \begin{itemize}
 \item The commit date and time zone are the current date and time
   zone.  Because these data are used to compute the identity of a
@@ -973,6 +1057,8 @@ The data used when creating a changeset are as follows:
   before the first diff header.  If there is no such text, a default
   commit message is used that identifies the name of the patch.
 \end{itemize}
+If a patch contains a Mercurial patch header (XXX add link), the
+information in the patch header overrides these defaults.
 
 Options:
 \begin{itemize}
@@ -1016,15 +1102,87 @@ changeset that represents the patch.  This causes the identity of the
 changeset to differ from the previous changeset that identified the
 patch.
 
+\subsection{\hgcmd{qrestore}---restore saved queue state}
+
+XXX No idea what this does.
+
+\subsection{\hgcmd{qsave}---save current queue state}
+
+XXX Likewise.
+
+\subsection{\hgcmd{qseries}---print the entire patch series}
+
+The \hgcmd{qseries} command prints the entire patch series from the
+\sfilename{series} file.  It prints only patch names, not empty lines
+or comments.  It prints in order from first to be applied to last.
+
+\subsection{\hgcmd{qtop}---print the name of the current patch}
+
+The \hgcmd{qtop} prints the name of the topmost currently applied
+patch.
+
+\subsection{\hgcmd{qunapplied}---print patches not yet applied}
+
+The \hgcmd{qunapplied} command prints the names of patches from the
+\sfilename{series} file that are not yet applied.  It prints them in
+order from the next patch that will be pushed to the last.
+
+\subsection{\hgcmd{qversion}}
+
+The \hgcmd{qversion} command prints the version of MQ that is in use.
+
+\subsection{\hgcmd{strip}---remove a revision and descendants}
+
+The \hgcmd{strip} command removes a revision, and all of its
+descendants, from the repository.  It undoes the effects of the
+removed revisions from the repository, and updates the working
+directory to the first parent of the removed revision.
+
+The \hgcmd{strip} command saves a backup of the removed changesets in
+a bundle, so that they can be reapplied if removed in error.
+
+Options:
+\begin{itemize}
+\item[\hgopt{strip}{-b}] Save unrelated changesets that are intermixed
+  with the stripped changesets in the backup bundle.
+\item[\hgopt{strip}{-f}] If a branch has multiple heads, remove all
+  heads. XXX This should be renamed, and use \texttt{-f} to strip revs
+  when there are pending changes.
+\item[\hgopt{strip}{-n}] Do not save a backup bundle.
+\end{itemize}
 \section{MQ file reference}
 
 
 \subsection{The \sfilename{series} file}
 
+The \sfilename{series} file contains a list of the names of all
+patches that MQ can apply.  It is represented as a list of names, with
+one name saved per line.  Leading and trailing white space in each
+line are ignored.
 
+Lines may contain comments.  A comment begins with the ``\texttt{\#}''
+character, and extends to the end of the line.  Empty lines, and lines
+that contain only comments, are ignored.
+
+You will often need to edit the \sfilename{series} file by hand, hence
+the support for comments and empty lines noted above.  For example,
+you can comment out a patch temporarily, and \hgcmd{qpush} will skip
+over that patch when applying patches.  You can also change the order
+in which patches are applied by reordering their entries in the
+\sfilename{series} file.
+
+Placing the \sfilename{series} file under revision control is also
+supported; it is a good idea to place all of the patches that it
+refers to under revision control, as well.  If you create a patch
+directory using the \hgopt{qinit}{-c} option to \hgcmd{qinit}, this
+will be done for you automatically.
 \subsection{The \sfilename{status} file}
 
-
+The \sfilename{status} file contains the names and changeset hashes of
+all patches that MQ currently has applied.  Unlike the
+\sfilename{series} file, this file is not intended for editing.  You
+should not place this file under revision control, or modify it in any
+way.  It is used by MQ strictly for internal book-keeping.
 
 %%% Local Variables: 
 %%% mode: latex

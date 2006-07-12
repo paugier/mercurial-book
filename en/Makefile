@@ -6,6 +6,7 @@ sources := \
 	00book.tex \
 	99book.bib \
 	99defs.tex \
+	preface.tex \
 	intro.tex \
 	mq.tex \
 	build_id.tex
@@ -38,6 +39,7 @@ define pdf
 	cd $(dir $@) && makeindex $(basename $(notdir $@))
 	TEXINPUTS=$(dir $<): pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
 	TEXINPUTS=$(dir $<): pdflatex $(call latex-options,$@) $< || (rm -f $@; exit 1)
+	if grep 'Reference.*undefined' $(@:.pdf=.log); then exit 1; fi
 endef
 
 pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
