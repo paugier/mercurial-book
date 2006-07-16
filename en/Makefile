@@ -6,16 +6,18 @@ sources := \
 	00book.tex \
 	99book.bib \
 	99defs.tex \
-	preface.tex \
+	build_id.tex \
+	hook.tex \
 	intro.tex \
 	mq.tex \
-	build_id.tex
+	preface.tex
 
 image-sources := \
 	mq-stack.svg
 
 example-sources := \
 	examples/run-example \
+	examples/hook.simple \
 	examples/mq.qinit-help \
 	examples/mq.diff \
 	examples/mq.tarball \

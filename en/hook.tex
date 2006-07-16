@@ -1,0 +1,139 @@
+\chapter{Handling repository events with hooks}
+\label{chap:hook}
+
+Mercurial offers a powerful mechanism to let you perform automated
+actions in response to events that occur in a repository.  In some
+cases, you can even control Mercurial's response to those events.
+
+The name Mercurial uses for one of these actions is a \emph{hook}.
+Hooks are called ``triggers'' in some revision control systems, but
+the two names refer to the same idea.
+
+\section{A short tutorial on using hooks}
+\label{sec:hook:simple}
+
+It is easy to write a Mercurial hook.  Let's start with a hook that
+runs when you finish a \hgcmd{commit}, and simply prints the hash of
+the changeset you just created.  The hook is called \hook{commit}.
+
+\begin{figure}[ht]
+  \interaction{hook.simple.init}
+  \caption{A simple hook that runs when a changeset is committed}
+  \label{ex:hook:init}
+\end{figure}
+
+All hooks follow the pattern in example~\ref{ex:hook:init}.  You add
+an entry to the \rcsection{hooks} section of your \hgrc\.  On the left
+is the name of the event to trigger on; on the right is the action to
+take.  As you can see, you can run an arbitrary shell command in a
+hook.  Mercurial passes extra information to the hook using
+environment variables (look for \envar{HG\_NODE} in the example).
+
+\subsection{Performing multiple actions per event}
+
+Quite often, you will want to define more than one hook for a
+particular kind of event, as shown in example~\ref{ex:hook:ext}.
+Mercurial lets you do this by adding an \emph{extension} to the end of
+a hook's name.  You extend a hook's name by giving the name of the
+hook, followed by a full stop (the ``\texttt{.}'' character), followed
+by some more text of your choosing.  For example, Mercurial will run
+both \texttt{commit.foo} and \texttt{commit.bar} when the
+\texttt{commit} event occurs.
+
+\begin{figure}[ht]
+  \interaction{hook.simple.ext}
+  \caption{Defining a second \hook{commit} hook}
+  \label{ex:hook:ext}
+\end{figure}
+
+To give a well-defined order of execution when there are multiple
+hooks defined for an event, Mercurial sorts hooks by extension, and
+executes the hook commands in this sorted order.  In the above
+example, it will execute \texttt{commit.bar} before
+\texttt{commit.foo}, and \texttt{commit} before both.
+
+It is a good idea to use a somewhat descriptive extension when you
+define a new hook.  This will help you to remember what the hook was
+for.  If the hook fails, you'll get an error message that contains the
+hook name and extension, so using a descriptive extension could give
+you an immediate hint as to why the hook failed (see
+section~\ref{sec:hook:perm} for an example).
+
+\subsection{Controlling whether an activity can proceed}
+\label{sec:hook:perm}
+
+In our earlier examples, we used the \hook{commit} hook, which is
+run after a commit has completed.  This is one of several Mercurial
+hooks that run after an activity finishes.  Such hooks have no way of
+influencing the activity itself.
+
+Mercurial defines a number of events that occur before an activity
+starts; or after it starts, but before it finishes.  Hooks that
+trigger on these events have the added ability to choose whether the
+activity can continue, or will abort.  
+
+The \hook{pretxncommit} hook runs after a commit has all but
+completed.  In other words, the metadata representing the changeset
+has been written out to disk, but the transaction has not yet been
+allowed to complete.  The \hook{pretxncommit} hook has the ability to
+decide whether the transaction can complete, or must be rolled back.
+
+If the \hook{pretxncommit} hook exits with a status code of zero, the
+transaction is allowed to complete; the commit finishes; and the
+\hook{commit} hook is run.  If the \hook{pretxncommit} hook exits with
+a non-zero status code, the transaction is rolled back; the metadata
+representing the changeset is erased; and the \hook{commit} hook is
+not run.
+
+\begin{figure}[ht]
+  \interaction{hook.simple.pretxncommit}
+  \caption{Using the \hook{pretxncommit} hook to control commits}
+  \label{ex:hook:pretxncommit}
+\end{figure}
+
+The hook in example~\ref{ex:hook:pretxncommit} checks that a commit
+comment contains a bug ID.  If it does, the commit can complete.  If
+not, the commit is rolled back.
+
+\section{Choosing how to write a hook}
+\label{sec:hook:impl}
+
+You can write a hook either as a normal program---typically a shell
+script---or as a Python function that is called within the Mercurial
+process.
+
+Writing a hook as an external program has the advantage that it
+requires no knowledge of Mercurial's internals.  You can call normal
+Mercurial commands to get any added information you need.  The
+trade-off is that external hooks are slower than in-process hooks.
+
+An in-process Python hook has complete access to the Mercurial API,
+and does not ``shell out'' to another process, so it is inherently
+faster than an external hook.  It is also easier to obtain much of the
+information that a hook requires by using the Mercurial API than by
+running Mercurial commands.
+
+If you are comfortable with Python, or require high performance,
+writing your hooks in Python may be a good choice.  However, when you
+have a straightforward hook to write and you don't need to care about
+performance (probably the majority of hooks), a shell script is
+perfectly fine.
+
+\section{Hook parameters}
+\label{sec:hook:param}
+
+Mercurial calls each hook with a set of well-defined parameters.  In
+Python, a parameter is passed as a keyword argument to your hook
+function.  For an external program, a parameter is passed as an
+environment variable.
+
+Whether your hook is written in Python or as a shell script, the
+parameter names and values will be the same.  A boolean parameter will
+be represented as a boolean value in Python, but as the number 1 (for
+``true'') or 0 (for ``false'')
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 
