@@ -42,7 +42,7 @@ define pdf
 	if grep 'Reference.*undefined' $(@:.pdf=.log); then exit 1; fi
 endef
 
-pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%_pdf.png) examples
+pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%.pdf) examples
 	$(call pdf)
 
 html: html/onepage/hgbook.html html/split/hgbook.html
@@ -80,7 +80,7 @@ beta: beta/pdf/hgbook.pdf beta/html/onepage/hgbook.html beta/html/split/hgbook.h
 beta/%.tex: %.tex
 	./fblinks $(hg_id) $(dir $@) $<
 
-beta/pdf/hgbook.pdf: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%_pdf.png) examples fblinks
+beta/pdf/hgbook.pdf: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%.pdf) examples fblinks
 	$(call pdf)
 
 beta/html/onepage/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%.png) examples
@@ -96,10 +96,13 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 %.png: %.svg
 	inkscape -D -e $@ $<
 
-# Produce 300dpi PNGs for PDF.
+# Produce eps & pdf for the pdf
 
-%_pdf.png: %.svg
-	inkscape -D -d 300 -e $@ $<
+%.pdf: %.eps
+	epstopdf $<
+
+%.eps: %.svg
+	inkscape -D -E $@ $<
 
 examples: examples/.run
 
@@ -110,5 +113,5 @@ build_id.tex: $(wildcard ../.hg/00changelog.[id])
 	echo -n $(hg_id) > build_id.tex
 
 clean:
-	rm -rf beta html pdf *.eps *.png *.aux *.dvi *.log *.out \
+	rm -rf beta html pdf *.eps *.pdf *.png *.aux *.dvi *.log *.out \
 		examples/*.out examples/.run build_id.tex
