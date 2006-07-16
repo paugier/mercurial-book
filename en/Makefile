@@ -102,7 +102,7 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 	epstopdf $<
 
 %.eps: %.svg
-	inkscape -D -E $@ $<
+	inkscape -E $@ $<
 
 examples: examples/.run
 
