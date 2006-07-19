@@ -9,6 +9,175 @@ The name Mercurial uses for one of these actions is a \emph{hook}.
 Hooks are called ``triggers'' in some revision control systems, but
 the two names refer to the same idea.
 
+\section{An overview of hooks in Mercurial}
+
+Here is a brief list of the hooks that Mercurial supports. For each
+hook, we indicate when it is run, and a few examples of common tasks
+you can use it for.  We will revisit each of these hooks in more
+detail later.
+\begin{itemize}
+\item[\small\hook{changegroup}] This is run after a group of
+  changesets has been brought into the repository from elsewhere.  In
+  other words, it is run after a \hgcmd{pull} or \hgcmd{push} into a
+  repository, but not after a \hgcmd{commit}.  You can use this for
+  performing an action once for the entire group of newly arrived
+  changesets.  For example, you could use this hook to send out email
+  notifications, or kick off an automated build or test.
+\item[\small\hook{commit}] This is run after a new changeset has been
+  created in the local repository, typically using the \hgcmd{commit}
+  command.
+\item[\small\hook{incoming}] This is run once for each new changeset
+  that is brought into the repository from elsewhere.  Notice the
+  difference from \hook{changegroup}, which is run once per
+  \emph{group} of changesets brought in.  You can use this for the
+  same purposes as the \hook{changegroup} hook; it's simply more
+  convenient sometimes to run a hook once per group of changesets,
+  while othher times it's handier once per changeset.
+\item[\small\hook{outgoing}] This is run after a group of changesets
+  has been transmitted from this repository to another.  You can use
+  this, for example, to notify subscribers every time changes are
+  cloned or pulled from the repository.
+\item[\small\hook{prechangegroup}] This is run before starting to
+  bring a group of changesets into the repository.  It cannot see the
+  actual changesets, because they have not yet been transmitted.  If
+  it fails, the changesets will not be transmitted.  You can use this
+  hook to ``lock down'' a repository against incoming changes.
+\item[\small\hook{precommit}] This is run before starting a commit.
+  It cannot tell what files are included in the commit, or any other
+  information about the commit.  If it fails, the commit will not be
+  allowed to start.  You can use this to perform a build and require
+  it to complete successfully before a commit can proceed, or
+  automatically enforce a requirement that modified files pass your
+  coding style guidelines.
+\item[\small\hook{preoutgoing}] This is run before starting to
+  transmit a group of changesets from this repository.  You can use
+  this to lock a repository against clones or pulls from remote
+  clients.
+\item[\small\hook{pretag}] This is run before creating a tag.  If it
+  fails, the tag will not be created.  You can use this to enforce a
+  uniform tag naming convention.
+\item[\small\hook{pretxnchangegroup}] This is run after a group of
+  changesets has been brought into the local repository from another,
+  but before the transaction completes that will make the changes
+  permanent in the repository.  If it fails, the transaction will be
+  rolled back and the changes will disappear from the local
+  repository.  You can use this to automatically check newly arrived
+  changes and, for example, roll them back if the group as a whole
+  does not build or pass your test suite.
+\item[\small\hook{pretxncommit}] This is run after a new changeset has
+  been created in the local repository, but before the transaction
+  completes that will make it permanent.  Unlike the \hook{precommit}
+  hook, this hook can see which changes are present in the changeset,
+  and it can also see all other changeset metadata, such as the commit
+  message.  You can use this to require that a commit message follows
+  your local conventions, or that a changeset builds cleanly.
+\item[\small\hook{preupdate}] This is run before starting an update or
+  merge of the working directory.
+\item[\small\hook{tag}] This is run after a tag is created.
+\item[\small\hook{update}] This is run after an update or merge of the
+  working directory has finished.
+\end{itemize}
+Each of the hooks with a ``\texttt{pre}'' prefix has the ability to
+\emph{control} an activity.  If the hook succeeds, the activity may
+proceed; if it fails, the activity is either not permitted or undone,
+depending on the hook.
+
+\section{Hooks and security}
+
+\subsection{Hooks are run with your privileges}
+
+When you run a Mercurial command in a repository, and the command
+causes a hook to run, that hook runs on your system, under your user
+account, with your privilege level.  Since hooks are arbitrary pieces
+of executable code, you should treat them with an appropriate level of
+suspicion.  Do not install a hook unless you are confident that you
+know who created it and what it does.
+
+In some cases, you may be exposed to hooks that you did not install
+yourself.  If you work with Mercurial on an unfamiliar system,
+Mercurial will run hooks defined in that system's global \hgrc\ file.
+
+If you are working with a repository owned by another user, Mercurial
+will run hooks defined in that repository.  For example, if you
+\hgcmd{pull} from that repository, and its \sfilename{.hg/hgrc}
+defines a local \hook{outgoing} hook, that hook will run under your
+user account, even though you don't own that repository.
+
+\begin{note}
+  This only applies if you are pulling from a repository on a local or
+  network filesystem.  If you're pulling over http or ssh, any
+  \hook{outgoing} hook will run under the account of the server
+  process, on the server.
+\end{note}
+
+XXX To see what hooks are defined in a repository, use the
+\hgcmdargs{config}{hooks} command.  If you are working in one
+repository, but talking to another that you do not own (e.g.~using
+\hgcmd{pull} or \hgcmd{incoming}), remember that it is the other
+repository's hooks you should be checking, not your own.
+
+\subsection{Hooks do not propagate}
+
+In Mercurial, hooks are not revision controlled, and do not propagate
+when you clone, or pull from, a repository.  The reason for this is
+simple: a hook is a completely arbitrary piece of executable code.  It
+runs under your user identity, with your privilege level, on your
+machine.
+
+It would be extremely reckless for any distributed revision control
+system to implement revision-controlled hooks, as this would offer an
+easily exploitable way to subvert the accounts of users of the
+revision control system.
+
+Since Mercurial does not propagate hooks, if you are collaborating
+with other people on a common project, you should not assume that they
+are using the same Mercurial hooks as you are, or that theirs are
+correctly configured.  You should document the hooks you expect people
+to use.
+
+In a corporate intranet, this is somewhat easier to control, as you
+can for example provide a ``standard'' installation of Mercurial on an
+NFS filesystem, and use a site-wide \hgrc\ file to define hooks that
+all users will see.  However, this too has its limits; see below.
+
+\subsection{Hooks can be overridden}
+
+Mercurial allows you to override a hook definition by redefining the
+hook.  You can disable it by setting its value to the empty string, or
+change its behaviour as you wish.
+
+If you deploy a system-~or site-wide \hgrc\ file that defines some
+hooks, you should thus understand that your users can disable or
+override those hooks.
+
+\subsection{Ensuring that critical hooks are run}
+
+Sometimes you may want to enforce a policy that you do not want others
+to be able to work around.  For example, you may have a requirement
+that every changeset must pass a rigorous set of tests.  Defining this
+requirement via a hook in a site-wide \hgrc\ won't work for remote
+users on laptops, and of course local users can subvert it at will by
+overriding the hook.
+
+Instead, you can set up your policies for use of Mercurial so that
+people are expected to propagate changes through a well-known
+``canonical'' server that you have locked down and configured
+appropriately.
+
+One way to do this is via a combination of social engineering and
+technology.  Set up a restricted-access account; users can push
+changes over the network to repositories managed by this account, but
+they cannot log into the account and run normal shell commands.  In
+this scenario, a user can commit a changeset that contains any old
+garbage they want.
+
+When someone pushes a changeset to the server that everyone pulls
+from, the server will test the changeset before it accepts it as
+permanent, and reject it if it fails to pass the test suite.  If
+people only pull changes from this filtering server, it will serve to
+ensure that all changes that people pull have been automatically
+vetted.
+
 \section{A short tutorial on using hooks}
 \label{sec:hook:simple}
 
