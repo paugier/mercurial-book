@@ -381,6 +381,88 @@ depends on the hook being called, but a hook can ignore arguments it
 doesn't care about by dropping them into a keyword argument dict, as
 with \texttt{**kwargs} above.
 
+\section{Hook reference}
+
+
+\subsection{In-process hook execution}
+
+An in-process hook is called with arguments of the following form:
+\begin{codesample2}
+  def myhook(ui, repo, **kwargs):
+      pass
+\end{codesample2}
+The \texttt{ui} parameter is a \pymodclass{mercurial.ui}{ui} object.
+The \texttt{repo} parameter is a
+\pymodclass{mercurial.localrepo}{localrepository} object.  The
+names and values of the \texttt{**kwargs} parameters depend on the
+hook being invoked, with the following common features:
+\begin{itemize}
+\item If a parameter is named \texttt{node} or
+  \texttt{parent\emph{N}}, it will contain a hexadecimal changeset ID.
+  The empty string is used to represent ``null changeset ID'' instead
+  of a string of zeroes.
+\item Boolean-valued parameters are represented as Python
+  \texttt{bool} objects.
+\end{itemize}
+
+An in-process hook is called without a change to the process's working
+directory (unlike external hooks, which are run in the root of the
+repository).  It must not change the process's working directory.  If
+it were to do so, it would probably cause calls to the Mercurial API,
+or operations after the hook finishes, to fail.
+
+If a hook returns a boolean ``false'' value, it is considered to
+have succeeded.  If it returns a boolean ``true'' value or raises an
+exception, it is considered to have failed.
+
+\subsection{External hook execution}
+
+An external hook is passed to the user's shell for execution, so
+features of that shell, such as variable substitution and command
+redirection, are available.  The hook is run in the root directory of
+the repository.
+
+Hook parameters are passed to the hook as environment variables.  Each
+environment variable's name is converted in upper case and prefixed
+with the string ``\texttt{HG\_}''.  For example, if the name of a
+parameter is ``\texttt{node}'', the name of the environment variable
+representing that parameter will be ``\texttt{HG\_NODE}''.
+
+A boolean parameter is represented as the string ``\texttt{1}'' for
+``true'', ``\texttt{0}'' for ``false''.  If an environment variable is
+named \envar{HG\_NODE}, \envar{HG\_PARENT1} or \envar{HG\_PARENT2}, it
+contains a changeset ID represented as a hexadecimal string.  The
+empty string is used to represent ``null changeset ID'' instead of a
+string of zeroes.
+
+If a hook exits with a status of zero, it is considered to have
+succeeded.  If it exits with a non-zero status, it is considered to
+have failed.
+
+\subsection{The \hook{changegroup} hook}
+\label{sec:hook:changegroup}
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{node}] The changeset ID of the first changeset in the
+  group that was added.  All changesets between this and
+  \index{tags!\texttt{tip}}\texttt{tip}, inclusive, were added by a
+  single \hgcmd{pull}, \hgcmd{push} or \hgcmd{unbundle}.
+\end{itemize}
+
+
+\subsection{The \hook{commit} hook}
+\label{sec:hook:commit}
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{node}] The changeset ID of the newly committed
+  changeset.
+\item[\texttt{parent1}] The changeset ID of the first parent of the
+  newly committed changeset.
+\item[\texttt{parent2}] The changeset ID of the second parent of the
+  newly committed changeset.
+\end{itemize}
 
 %%% Local Variables: 
 %%% mode: latex
