@@ -442,27 +442,200 @@ have failed.
 \subsection{The \hook{changegroup} hook}
 \label{sec:hook:changegroup}
 
+This hook is run after a group of pre-existing changesets has been
+added to the repository, for example via a \hgcmd{pull} or
+\hgcmd{unbundle}.  This hook is run once per operation that added one
+or more changesets.
+
 Parameters to this hook:
 \begin{itemize}
-\item[\texttt{node}] The changeset ID of the first changeset in the
-  group that was added.  All changesets between this and
-  \index{tags!\texttt{tip}}\texttt{tip}, inclusive, were added by a
-  single \hgcmd{pull}, \hgcmd{push} or \hgcmd{unbundle}.
+\item[\texttt{node}] A changeset ID.  The changeset ID of the first
+  changeset in the group that was added.  All changesets between this
+  and \index{tags!\texttt{tip}}\texttt{tip}, inclusive, were added by
+  a single \hgcmd{pull}, \hgcmd{push} or \hgcmd{unbundle}.
 \end{itemize}
 
+See also: \hook{incoming} (section~\ref{sec:hook:incoming}),
+\hook{prechangegroup} (section~\ref{sec:hook:prechangegroup}),
+\hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
 
 \subsection{The \hook{commit} hook}
 \label{sec:hook:commit}
 
+This hook is run after a new changeset has been created.
+
 Parameters to this hook:
 \begin{itemize}
-\item[\texttt{node}] The changeset ID of the newly committed
-  changeset.
-\item[\texttt{parent1}] The changeset ID of the first parent of the
-  newly committed changeset.
-\item[\texttt{parent2}] The changeset ID of the second parent of the
-  newly committed changeset.
+\item[\texttt{node}] A changeset ID.  The changeset ID of the newly
+  committed changeset.
+\item[\texttt{parent1}] A changeset ID.  The changeset ID of the first
+  parent of the newly committed changeset.
+\item[\texttt{parent2}] A changeset ID.  The changeset ID of the second
+  parent of the newly committed changeset.
 \end{itemize}
+
+See also: \hook{precommit} (section~\ref{sec:hook:precommit}),
+\hook{pretxncommit} (section~\ref{sec:hook:pretxncommit})
+
+\subsection{The \hook{incoming} hook}
+\label{sec:hook:incoming}
+
+This hook is run after a pre-existing changeset has been added to the
+repository, for example via a \hgcmd{push}.  If a group of changesets
+was added in a single operation, this hook is called once for each
+added changeset.
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{node}] A changeset ID.  The ID of the newly added
+  changeset.
+\end{itemize}
+
+See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}) \hook{prechangegroup} (section~\ref{sec:hook:prechangegroup}), \hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
+
+\subsection{The \hook{outgoing} hook}
+\label{sec:hook:outgoing}
+
+This hook is run after a group of changesets has been propagated out
+of this repository, for example by a \hgcmd{push} or \hgcmd{bundle}
+command.
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{node}] A changeset ID.  The changeset ID of the first
+  changeset of the group that was sent.
+\item[\texttt{source}] A string.  The source of the of the operation.
+  If a remote client pulled changes from this repository,
+  \texttt{source} will be \texttt{serve}.  If the client that obtained
+  changes from this repository was local, \texttt{source} will be
+  \texttt{bundle}, \texttt{pull}, or \texttt{push}, depending on the
+  operation the client performed.
+\end{itemize}
+
+See also: \hook{preoutgoing} (section~\ref{sec:hook:preoutgoing})
+
+\subsection{The \hook{prechangegroup} hook}
+\label{sec:hook:prechangegroup}
+
+This hook is not passed any parameters.
+
+See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
+\hook{incoming} (section~\ref{sec:hook:incoming}), ,
+\hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
+
+\subsection{The \hook{precommit} hook}
+\label{sec:hook:precommit}
+
+This hook is invoked before Mercurial has obtained any of the metadata
+for the commit, such as the commit message or date.
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{parent1}] A changeset ID.  The changeset ID of the first
+  parent of the working directory.
+\item[\texttt{parent2}] A changeset ID.  The changeset ID of the second
+  parent of the working directory.
+\end{itemize}
+If the commit proceeds, the parents of the working directory will
+become the parents of the new changeset.
+
+See also: \hook{commit} (section~\ref{sec:hook:commit}),
+\hook{pretxncommit} (section~\ref{sec:hook:pretxncommit})
+
+\subsection{The \hook{preoutgoing} hook}
+\label{sec:hook:preoutgoing}
+
+This hook is invoked before Mercurial knows the identities of the
+changesets to be transmitted.
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{source}] A string.  The source of the operation that is
+  attempting to obtain changes from this repository.  See the
+  documentation for the \texttt{source} parameter to the
+  \hook{outgoing} hook, in section~\ref{sec:hook:outgoing}, for
+  possible values of this parameter..
+\end{itemize}
+
+See also: \hook{outgoing} (section~\ref{sec:hook:outgoing})
+
+\subsection{The \hook{pretag} hook}
+\label{sec:hook:pretag}
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{local}] A boolean.  Whether the tag is local to this
+  repository instance (i.e.~stored in \sfilename{.hg/tags}) or managed
+  by Mercurial (stored in \sfilename{.hgtags}).
+\item[\texttt{node}] A changeset ID.  The ID of the changeset to be tagged.
+\item[\texttt{tag}] A string.  The name of the tag to be created.
+\end{itemize}
+
+If the tag to be created is revision-controlled, the \hook{precommit}
+and \hook{pretxncommit} hooks (sections~\ref{sec:hook:commit}
+and~\ref{sec:hook:pretxncommit}) will also be run.
+
+See also: \hook{tag} (section~\ref{sec:hook:tag})
+
+\subsection{The \hook{pretxnchangegroup} hook}
+\label{sec:hook:pretxnchangegroup}
+
+Parameters to this hook are the same as for the \hook{changegroup}
+hook; see section~\ref{sec:hook:changegroup} for details.
+
+See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
+\hook{incoming} (section~\ref{sec:hook:incoming}),
+\hook{prechangegroup} (section~\ref{sec:hook:prechangegroup})
+
+\subsection{The \hook{pretxncommit} hook}
+\label{sec:hook:pretxncommit}
+
+Parameters to this hook are the same as for the \hook{commit} hook;
+see section~\ref{sec:hook:commit} for details.
+
+See also: \hook{precommit} (section~\ref{sec:hook:precommit})
+
+\subsection{The \hook{preupdate} hook}
+\label{sec:hook:preupdate}
+
+Parameters to this hook:
+\begin{itemize}
+\item[\texttt{parent1}] A changeset ID.  The ID of the parent that the
+  working directory is to be updated to.  If the working directory is
+  being merged, it will not change this parent.
+\item[\texttt{parent2}] A changeset ID.  Only set if the working
+  directory is being merged.  The ID of the revision that the working
+  directory is being merged with.
+\end{itemize}
+
+See also: \hook{update} (section~\ref{sec:hook:update})
+
+\subsection{The \hook{tag} hook}
+\label{sec:hook:tag}
+
+Parameters to this hook are the same as for the \hook{pretag} hook;
+see section~\ref{sec:hook:pretag} for details.
+
+If the created tag is revision-controlled, the \hook{commit} hook
+(section~\ref{sec:hook:commit}) will also be run.
+
+See also: \hook{pretag} (section~\ref{sec:hook:pretag})
+
+\subsection{The \hook{update} hook}
+\label{sec:hook:update}
+
+\begin{itemize}
+\item[\texttt{error}] A boolean.  Indicates whether the update or
+  merge completed successfully.
+\item[\texttt{parent1}] A changeset ID.  The ID of the parent that the
+  working directory was updated to.  If the working directory was
+  merged, it will not have changed this parent.
+\item[\texttt{parent2}] A changeset ID.  Only set if the working
+  directory was merged.  The ID of the revision that the working
+  directory was merged with.
+\end{itemize}
+
+See also: \hook{preupdate} (section~\ref{sec:hook:preupdate})
 
 %%% Local Variables: 
 %%% mode: latex
