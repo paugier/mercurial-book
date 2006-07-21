@@ -11,103 +11,73 @@ the two names refer to the same idea.
 
 \section{An overview of hooks in Mercurial}
 
-Here is a brief list of the hooks that Mercurial supports. For each
-hook, we indicate when it is run, and a few examples of common tasks
-you can use it for.  We will revisit each of these hooks in more
-detail later.
+Here is a brief list of the hooks that Mercurial supports.  We will
+revisit each of these hooks in more detail later, in
+section~\ref{sec:hook:ref}.
+
 \begin{itemize}
 \item[\small\hook{changegroup}] This is run after a group of
-  changesets has been brought into the repository from elsewhere.  In
-  other words, it is run after a \hgcmd{pull} or \hgcmd{push} into a
-  repository, but not after a \hgcmd{commit}.  You can use this for
-  performing an action once for the entire group of newly arrived
-  changesets.  For example, you could use this hook to send out email
-  notifications, or kick off an automated build or test.
+  changesets has been brought into the repository from elsewhere.
 \item[\small\hook{commit}] This is run after a new changeset has been
-  created in the local repository, typically using the \hgcmd{commit}
-  command.
+  created in the local repository.
 \item[\small\hook{incoming}] This is run once for each new changeset
   that is brought into the repository from elsewhere.  Notice the
   difference from \hook{changegroup}, which is run once per
-  \emph{group} of changesets brought in.  You can use this for the
-  same purposes as the \hook{changegroup} hook; it's simply more
-  convenient sometimes to run a hook once per group of changesets,
-  while othher times it's handier once per changeset.
+  \emph{group} of changesets brought in.
 \item[\small\hook{outgoing}] This is run after a group of changesets
-  has been transmitted from this repository to another.  You can use
-  this, for example, to notify subscribers every time changes are
-  cloned or pulled from the repository.
+  has been transmitted from this repository.
 \item[\small\hook{prechangegroup}] This is run before starting to
-  bring a group of changesets into the repository.  It cannot see the
-  actual changesets, because they have not yet been transmitted.  If
-  it fails, the changesets will not be transmitted.  You can use this
-  hook to ``lock down'' a repository against incoming changes.
-\item[\small\hook{precommit}] This is run before starting a commit.
-  It cannot tell what files are included in the commit, or any other
-  information about the commit.  If it fails, the commit will not be
-  allowed to start.  You can use this to perform a build and require
-  it to complete successfully before a commit can proceed, or
-  automatically enforce a requirement that modified files pass your
-  coding style guidelines.
-\item[\small\hook{preoutgoing}] This is run before starting to
-  transmit a group of changesets from this repository.  You can use
-  this to lock a repository against clones or pulls from remote
-  clients.
-\item[\small\hook{pretag}] This is run before creating a tag.  If it
-  fails, the tag will not be created.  You can use this to enforce a
-  uniform tag naming convention.
-\item[\small\hook{pretxnchangegroup}] This is run after a group of
-  changesets has been brought into the local repository from another,
-  but before the transaction completes that will make the changes
-  permanent in the repository.  If it fails, the transaction will be
-  rolled back and the changes will disappear from the local
-  repository.  You can use this to automatically check newly arrived
-  changes and, for example, roll them back if the group as a whole
-  does not build or pass your test suite.
-\item[\small\hook{pretxncommit}] This is run after a new changeset has
-  been created in the local repository, but before the transaction
-  completes that will make it permanent.  Unlike the \hook{precommit}
-  hook, this hook can see which changes are present in the changeset,
-  and it can also see all other changeset metadata, such as the commit
-  message.  You can use this to require that a commit message follows
-  your local conventions, or that a changeset builds cleanly.
-\item[\small\hook{preupdate}] This is run before starting an update or
-  merge of the working directory.
+  bring a group of changesets into the repository.
+\item[\small\hook{precommit}] Controlling. This is run before starting
+  a commit.
+\item[\small\hook{preoutgoing}] Controlling. This is run before
+  starting to transmit a group of changesets from this repository.
+\item[\small\hook{pretag}] Controlling. This is run before creating a tag.
+\item[\small\hook{pretxnchangegroup}] Controlling. This is run after a
+  group of changesets has been brought into the local repository from
+  another, but before the transaction completes that will make the
+  changes permanent in the repository.
+\item[\small\hook{pretxncommit}] Controlling. This is run after a new
+  changeset has been created in the local repository, but before the
+  transaction completes that will make it permanent.
+\item[\small\hook{preupdate}] Controlling. This is run before starting
+  an update or merge of the working directory.
 \item[\small\hook{tag}] This is run after a tag is created.
 \item[\small\hook{update}] This is run after an update or merge of the
   working directory has finished.
 \end{itemize}
-Each of the hooks with a ``\texttt{pre}'' prefix has the ability to
-\emph{control} an activity.  If the hook succeeds, the activity may
-proceed; if it fails, the activity is either not permitted or undone,
-depending on the hook.
+Each of the hooks whose description begins with the word
+``Controlling'' has the ability to determine whether an activity can
+proceed.  If the hook succeeds, the activity may proceed; if it fails,
+the activity is either not permitted or undone, depending on the hook.
 
 \section{Hooks and security}
 
 \subsection{Hooks are run with your privileges}
 
 When you run a Mercurial command in a repository, and the command
-causes a hook to run, that hook runs on your system, under your user
-account, with your privilege level.  Since hooks are arbitrary pieces
-of executable code, you should treat them with an appropriate level of
-suspicion.  Do not install a hook unless you are confident that you
-know who created it and what it does.
+causes a hook to run, that hook runs on \emph{your} system, under
+\emph{your} user account, with \emph{your} privilege level.  Since
+hooks are arbitrary pieces of executable code, you should treat them
+with an appropriate level of suspicion.  Do not install a hook unless
+you are confident that you know who created it and what it does.
 
 In some cases, you may be exposed to hooks that you did not install
 yourself.  If you work with Mercurial on an unfamiliar system,
 Mercurial will run hooks defined in that system's global \hgrc\ file.
 
 If you are working with a repository owned by another user, Mercurial
-will run hooks defined in that repository.  For example, if you
-\hgcmd{pull} from that repository, and its \sfilename{.hg/hgrc}
-defines a local \hook{outgoing} hook, that hook will run under your
-user account, even though you don't own that repository.
+can run hooks defined in that user's repository, but it will still run
+them as ``you''.  For example, if you \hgcmd{pull} from that
+repository, and its \sfilename{.hg/hgrc} defines a local
+\hook{outgoing} hook, that hook will run under your user account, even
+though you don't own that repository.
 
 \begin{note}
   This only applies if you are pulling from a repository on a local or
   network filesystem.  If you're pulling over http or ssh, any
-  \hook{outgoing} hook will run under the account of the server
-  process, on the server.
+  \hook{outgoing} hook will run under whatever account is executing
+  the server process, on the server.
 \end{note}
 
 XXX To see what hooks are defined in a repository, use the
@@ -177,6 +147,68 @@ permanent, and reject it if it fails to pass the test suite.  If
 people only pull changes from this filtering server, it will serve to
 ensure that all changes that people pull have been automatically
 vetted.
+
+\section{Using hooks with shared access to a repository}
+
+If you want to use hooks to so some automated work in a repository
+that a number of people have ahred access to, you need to be careful
+in how you do this.
+
+Mercurial only locks a repository when it is writing to the
+repository, and only the parts of Mercurial that write to the
+repository pay attention to locks.  Write locks are necessary to
+prevent multiple simultaneous writers from scribbling on each other's
+work, corrupting the repository.
+
+Because Mercurial is careful with the order in which it reads and
+writes data, it does not need to acquire a lock when it wants to read
+data from the repository.  The parts of Mercurial that read from the
+repository never pay attention to locks.  This lockless reading scheme
+greatly increases performance and concurrency.
+
+With great performance comes a trade-off, though, one which has the
+potential to cause you trouble unless you're aware of it.  To describe
+this requires a little detail about how Mercurial adds changesets to a
+repository and reads those changes.
+
+When Mercurial \emph{writes} metadata, it writes it straight into the
+destination file.  It writes file data first, then manifest data
+(which contains pointers to the new file data), then changelog data
+(which contains pointers to the new manifest data).  Before the first
+write to each file, it stores a record of where the end of the file
+was in its transaction log.  If the transaction must be rolled back,
+Mercurial simply truncates each file back to te size it was before the
+transaction began.
+
+When Mercurial \emph{reads} metadata, it reads the changelog first,
+then everything else.  Since a reader will only access parts of the
+manifest or file metadata that it can see in the changelog, it can
+never see partially written data.
+
+Some controlling hooks (\hook{pretxncommit} and
+\hook{pretxnchangegroup}) run when a transaction is almost complete.
+All of the metadata has been written, but Mercurial can still roll the
+transaction back and cause the newly-written data to disappear.
+
+If one of these hooks runs for long, it opens a window in which a
+reader can see the metadata for changesets that are, strictly
+speaking, not yet permanent.  The longer the hook runs, the bigger the
+window.
+
+A good use for the \hook{pretxnchangegroup} hook would be to
+automatically build and test incoming changes before they are accepted
+into the repository, so that you can guarantee that nobody can push
+changes to this repository that ``break the build''.  But if a client
+can pull changes while they're being tested, the usefulness of the
+test is zero; someone can pull untested changes.
+
+The safest answer to this challenge is to set up such a ``gatekeeper''
+repository as \emph{unidirectional}.  It can take changes pushed in
+from the outside, but nobody can pull changes from it.  Use the
+\hook{preoutgoing} hook to lock it down.  Configure a
+\hook{changegroup} hook so that if a build or test succeeds, the hook
+will push the new changes out to another repository that people
+\emph{can} pull from.
 
 \section{A short tutorial on using hooks}
 \label{sec:hook:simple}
@@ -382,7 +414,7 @@ doesn't care about by dropping them into a keyword argument dict, as
 with \texttt{**kwargs} above.
 
 \section{Hook reference}
-
+\label{sec:hook:ref}
 
 \subsection{In-process hook execution}
 
@@ -445,7 +477,13 @@ have failed.
 This hook is run after a group of pre-existing changesets has been
 added to the repository, for example via a \hgcmd{pull} or
 \hgcmd{unbundle}.  This hook is run once per operation that added one
-or more changesets.
+or more changesets.  This is in contrast to the \hook{incoming} hook,
+which is run once per changeset, regardless of whether the changesets
+arrive in a group.
+
+Some possible uses for this hook include kicking off an automated
+build or test of the added changesets, updating a bug database, or
+notifying subscribers that a repository contains new changes.
 
 Parameters to this hook:
 \begin{itemize}
@@ -485,6 +523,11 @@ repository, for example via a \hgcmd{push}.  If a group of changesets
 was added in a single operation, this hook is called once for each
 added changeset.
 
+You can use this hook for the same purposes as the \hook{changegroup}
+hook (section~\ref{sec:hook:changegroup}); it's simply more convenient
+sometimes to run a hook once per group of changesets, while othher
+times it's handier once per changeset.
+
 Parameters to this hook:
 \begin{itemize}
 \item[\texttt{node}] A changeset ID.  The ID of the newly added
@@ -499,6 +542,9 @@ See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}) \hook{prechang
 This hook is run after a group of changesets has been propagated out
 of this repository, for example by a \hgcmd{push} or \hgcmd{bundle}
 command.
+
+One possible use for this hook is to notify administrators that
+changes have been pulled.
 
 Parameters to this hook:
 \begin{itemize}
@@ -517,6 +563,18 @@ See also: \hook{preoutgoing} (section~\ref{sec:hook:preoutgoing})
 \subsection{The \hook{prechangegroup} hook}
 \label{sec:hook:prechangegroup}
 
+This controlling hook is run before Mercurial begins to add a group of
+changesets from another repository.
+
+This hook does not have any information about the changesets to be
+added, because it is run before transmission of those changesets is
+allowed to begin.  If this hook fails, the changesets will not be
+transmitted.
+
+One use for this hook is to prevent external changes from being added
+to a repository, for example to ``freeze'' a server-hosted branch
+temporarily or permanently.
+
 This hook is not passed any parameters.
 
 See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
@@ -526,8 +584,15 @@ See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
 \subsection{The \hook{precommit} hook}
 \label{sec:hook:precommit}
 
-This hook is invoked before Mercurial has obtained any of the metadata
-for the commit, such as the commit message or date.
+This hook is run before Mercurial begins to commit a new changeset.
+It is run before Mercurial has any of the metadata for the commit,
+such as the files to be committed, the commit message, or the commit
+date.
+
+One use for this hook is to disable the ability to commit new
+changesets, while still allowing incoming changesets.  Another is to
+run a build or test, and only allow the commit to begin if the build
+or test succeeds.
 
 Parameters to this hook:
 \begin{itemize}
@@ -548,6 +613,9 @@ See also: \hook{commit} (section~\ref{sec:hook:commit}),
 This hook is invoked before Mercurial knows the identities of the
 changesets to be transmitted.
 
+One use for this hook is to prevent changes from being transmitted to
+another repository.
+
 Parameters to this hook:
 \begin{itemize}
 \item[\texttt{source}] A string.  The source of the operation that is
@@ -561,6 +629,10 @@ See also: \hook{outgoing} (section~\ref{sec:hook:outgoing})
 
 \subsection{The \hook{pretag} hook}
 \label{sec:hook:pretag}
+
+This controlling hook is run before a tag is created.  If the hook
+succeeds, creation of the tag proceeds.  If the hook fails, the tag is
+not created.
 
 Parameters to this hook:
 \begin{itemize}
@@ -580,6 +652,26 @@ See also: \hook{tag} (section~\ref{sec:hook:tag})
 \subsection{The \hook{pretxnchangegroup} hook}
 \label{sec:hook:pretxnchangegroup}
 
+This controlling hook is run before a transaction---that manages the
+addition of a group of new changesets from outside the
+repository---completes.  If the hook succeeds, the transaction
+completes, and all of the changesets become permanent within this
+repository.  If the hook fails, the transaction is rolled back, and
+the data for the changesets is erased.
+
+This hook can access the metadata associated with the almost-added
+changesets, but it should not do anything permanent with this data.
+It must also not modify the working directory.
+
+While this hook is running, if other Mercurial processes access this
+repository, they will be able to see the almost-added changesets as if
+they are permanent.  This may lead to race conditions if you do not
+take steps to avoid them.
+
+This hook can be used to automatically vet a group of changesets.  If
+the hook fails, all of the changesets are ``rejected'' when the
+transaction rolls back.
+
 Parameters to this hook are the same as for the \hook{changegroup}
 hook; see section~\ref{sec:hook:changegroup} for details.
 
@@ -590,6 +682,21 @@ See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
 \subsection{The \hook{pretxncommit} hook}
 \label{sec:hook:pretxncommit}
 
+This controlling hook is run before a transaction---that manages a new
+commit---completes.  If the hook succeeds, the transaction completes
+and the changeset becomes permanent within this repository.  If the
+hook fails, the transaction is rolled back, and the commit data is
+erased.
+
+This hook can access the metadata associated with the almost-new
+changeset, but it should not do anything permanent with this data.  It
+must also not modify the working directory.
+
+While this hook is running, if other Mercurial processes access this
+repository, they will be able to see the almost-new changeset as if it
+is permanent.  This may lead to race conditions if you do not take
+steps to avoid them.
+
 Parameters to this hook are the same as for the \hook{commit} hook;
 see section~\ref{sec:hook:commit} for details.
 
@@ -597,6 +704,12 @@ See also: \hook{precommit} (section~\ref{sec:hook:precommit})
 
 \subsection{The \hook{preupdate} hook}
 \label{sec:hook:preupdate}
+
+This controlling hook is run before an update or merge of the working
+directory begins.  It is run only if Mercurial's normal pre-update
+checks determine that the update or merge can proceed.  If the hook
+succeeds, the update or merge may proceed; if it fails, the update or
+merge does not start.
 
 Parameters to this hook:
 \begin{itemize}
@@ -613,16 +726,23 @@ See also: \hook{update} (section~\ref{sec:hook:update})
 \subsection{The \hook{tag} hook}
 \label{sec:hook:tag}
 
+This hook is run after a tag has been created.
+
 Parameters to this hook are the same as for the \hook{pretag} hook;
 see section~\ref{sec:hook:pretag} for details.
 
 If the created tag is revision-controlled, the \hook{commit} hook
-(section~\ref{sec:hook:commit}) will also be run.
+(section~\ref{sec:hook:commit}) is run before this hook.
 
 See also: \hook{pretag} (section~\ref{sec:hook:pretag})
 
 \subsection{The \hook{update} hook}
 \label{sec:hook:update}
+
+This hook is run after an update or merge of the working directory
+completes.  Since a merge can fail (if the external \command{hgmerge}
+command fails to resolve conflicts in a file), this hook communicates
+whether the update or merge completed cleanly.
 
 \begin{itemize}
 \item[\texttt{error}] A boolean.  Indicates whether the update or
