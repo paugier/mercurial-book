@@ -148,10 +148,10 @@ people only pull changes from this filtering server, it will serve to
 ensure that all changes that people pull have been automatically
 vetted.
 
-\section{Using hooks with shared access to a repository}
+\section{Care with \texttt{pretxn} hooks in a shared-access repository}
 
 If you want to use hooks to so some automated work in a repository
-that a number of people have ahred access to, you need to be careful
+that a number of people have shared access to, you need to be careful
 in how you do this.
 
 Mercurial only locks a repository when it is writing to the
@@ -190,25 +190,42 @@ Some controlling hooks (\hook{pretxncommit} and
 All of the metadata has been written, but Mercurial can still roll the
 transaction back and cause the newly-written data to disappear.
 
-If one of these hooks runs for long, it opens a window in which a
-reader can see the metadata for changesets that are, strictly
-speaking, not yet permanent.  The longer the hook runs, the bigger the
-window.
+If one of these hooks runs for long, it opens a window of time during
+which a reader can see the metadata for changesets that are not yet
+permanent, and should not be thought of as ``really there''.  The
+longer the hook runs, the longer that window is open.
 
-A good use for the \hook{pretxnchangegroup} hook would be to
-automatically build and test incoming changes before they are accepted
-into the repository, so that you can guarantee that nobody can push
-changes to this repository that ``break the build''.  But if a client
-can pull changes while they're being tested, the usefulness of the
-test is zero; someone can pull untested changes.
+\subsection{The problem illustrated}
 
-The safest answer to this challenge is to set up such a ``gatekeeper''
-repository as \emph{unidirectional}.  It can take changes pushed in
-from the outside, but nobody can pull changes from it.  Use the
-\hook{preoutgoing} hook to lock it down.  Configure a
-\hook{changegroup} hook so that if a build or test succeeds, the hook
-will push the new changes out to another repository that people
-\emph{can} pull from.
+In principle, a good use for the \hook{pretxnchangegroup} hook would
+be to automatically build and test incoming changes before they are
+accepted into a central repository.  This could let you guarantee that
+nobody can push changes to this repository that ``break the build''.
+But if a client can pull changes while they're being tested, the
+usefulness of the test is zero; an unsuspecting someone can pull
+untested changes, potentially breaking their build.
+
+The safest technological answer to this challenge is to set up such a
+``gatekeeper'' repository as \emph{unidirectional}.  Let it take
+changes pushed in from the outside, but do not allow anyone to pull
+changes from it (use the \hook{preoutgoing} hook to lock it down).
+Configure a \hook{changegroup} hook so that if a build or test
+succeeds, the hook will push the new changes out to another repository
+that people \emph{can} pull from.
+
+In practice, putting a centralised bottleneck like this in place is
+not often a good idea, and transaction visibility has nothing to do
+with the problem.  As the size of a project---and the time it takes to
+build and test---grows, you rapidly run into a wall with this ``try
+before you buy'' approach, where you have more changesets to test than
+time in which to deal with them.  The inevitable result is frustration
+on the part of all involved.
+
+An approach that scales better is to get people to build and test
+before they push, then run automated builds and tests centrally
+\emph{after} a push, to be sure all is well.  The advantage of this
+approach is that it does not impose a limit on the rate at which the
+repository can accept changes.
 
 \section{A short tutorial on using hooks}
 \label{sec:hook:simple}
