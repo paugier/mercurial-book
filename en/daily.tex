@@ -50,12 +50,12 @@ ways to achieve this. One is to create a directory, then \hgcmd{add} a
 ``hidden'' file to that directory.  On Unix-like systems, any file
 name that begins with a period (``\texttt{.}'') is treated as hidden
 by most commands and GUI tools.  This approach is illustrated in
-figure~\ref{ex:daily:empty}.
+figure~\ref{ex:daily:hidden}.
 
 \begin{figure}[ht]
-  \interaction{daily.files.empty}
-  \caption{Simulating an empty directory}
-  \label{ex:daily:empty}
+  \interaction{daily.files.hidden}
+  \caption{Simulating an empty directory using a hidden file}
+  \label{ex:daily:hidden}
 \end{figure}
 
 Another way to tackle a need for an empty directory is to simply
@@ -65,7 +65,8 @@ create one in your automated build scripts before they will need it.
 
 If you decide that a file no longer belongs in your repository, use
 the \hgcmd{remove} command; this deletes the file, and tells Mercurial
-to stop tracking it.
+to stop tracking it.  A removed file is represented in the output of
+\hgcmd{status} with a ``\texttt{R}''.
 
 You might wonder why Mercurial requires you to explicitly tell it that
 you are deleting a file.  Earlier during the development of Mercurial,
@@ -74,13 +75,53 @@ notice automatically when you next ran a \hgcmd{commit}, and stop
 tracking the file.  In practice, this made it too easy to accidentally
 stop Mercurial from tracking a file.
 
-If you forget to run \hgcmd{remove} to delete a file, you can run
-\hgcmdopts{remove}{--after} later on, to tell Mercurial that you
-deleted the file.
+Mercurial considers a file that you have deleted, but not used
+\hgcmd{remove} to delete, to be \emph{missing}.  A missing file is
+represented with ``\texttt{!}'' in the output of \hgcmd{status}.
+Other Mercurial commands will not do anything with missing files.
+
+If you have a missing file in your repository, you can run
+\hgcmdargs{remove}{\hgopt{remove}{--after}} later on, to tell
+Mercurial that you deleted the file.  If you deleted the file by
+accident, use \hgcmdargs{revert}{\emph{filename}} to restore the file
+to its last committed state.
 
 \subsection{Useful shorthand---adding and removing files in one step}
 
+Mercurial offers a combination command, \hgcmd{addremove}, that adds
+untracked files and marks missing files as removed.  The
+\hgcmd{commit} command also provides a \hgopt{commit}{-A} option that
+performs an add-and-remove, immediately followed by a commit.  This
+lets you replace the following command sequence:
+\begin{codesample2}
+  hg add
+  hg remove --after
+  hg commit
+\end{codesample2}
+with a single command, \hgcmdargs{commit}{\hgopt{commit}{-A}}.
 
+\subsection{Renaming files}
+
+To rename a file that is tracked by Mercurial, use the \hgcmd{rename}
+command.  This command behaves similarly to the Unix \command{mv}
+command.  If the last argument is a directory, it moves all prior
+arguments into that directory.  Otherwise, it renames a single file or
+directory to the name given in the last argument.
+
+As with \hgcmd{remove}, you can tell Mercurial about a rename after
+the fact using the \hgopt{remove}{--after} option.
+
+The na\"{i}ve way to ``rename'' a file is simply to rename the file
+yourself, \hgcmd{remove} the old name, and \hgcmd{add} the new name.
+However, if you do this, Mercurial will not know that there was any
+relationship between the files in question, and it will not be able to
+merge
+
+\subsection{Copying files}
+
+You can copy a file in two ways using mercurial.  If you simply copy a
+file and then \hgcmd{add} the new file, Mercurial will not know that
+there was any relationship between the two files.  However, if you 
 
 %%% Local Variables: 
 %%% mode: latex

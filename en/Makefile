@@ -18,6 +18,7 @@ image-sources := \
 
 example-sources := \
 	examples/run-example \
+	examples/daily.files \
 	examples/hook.simple \
 	examples/mq.qinit-help \
 	examples/mq.diff \
