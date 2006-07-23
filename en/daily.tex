@@ -1,0 +1,88 @@
+\chapter{Mercurial in daily use}
+\label{chap:daily}
+
+\section{Routine file management tasks}
+
+\subsection{Telling Mercurial which files to track}
+
+Mercurial does not work with files in your repository unless you tell
+it to manage them.  The \hgcmd{status} command will tell you which
+files Mercurial doesn't know about; it uses a ``\texttt{?}'' to
+display such files.
+
+To tell Mercurial to track a file, use the \hgcmd{add} command.  Once
+you have added a file, the entry in the output of \hgcmd{status} for
+that file changes from ``\texttt{?}'' to ``\texttt{A}''.
+
+After you run a \hgcmd{commit}, the files that you added before the
+commit will no longer be listed in the output of \hgcmd{status}.  The
+reason for this is that \hgcmd{status} only tells you about
+``interesting'' files by default.  If you have a repository that
+contains thousands of files, you will rarely want to know about files
+that Mercurial is tracking, but that have not changed.  (You can still
+get this information; we'll return to this later.)
+
+\begin{figure}[ht]
+  \interaction{daily.files.add}
+  \caption{Telling Mercurial to track a file}
+  \label{ex:daily:add}
+\end{figure}
+
+Once you add a file, Mercurial will track every change you make to it
+until you either remove or rename the file.
+
+\subsubsection{Aside: Mercurial tracks files, not directories}
+
+Mercurial does not track directory information.  Instead, it tracks
+the path to a file, and creates directories along a path when it needs
+to.  This sounds like a trivial distinction, but it has one minor
+practical consequence: it is not possible to represent a completely
+empty directory in Mercurial.
+
+Empty directories are rarely useful, and there are unintrusive
+workarounds that you can use to achieve an appropriate effect.  The
+developers of Mercurial thus felt that the complexity that would be
+required to manage empty directories was not worth the limited benefit
+this feature would bring.
+
+If you need an empty directory in your repository, there are a few
+ways to achieve this. One is to create a directory, then \hgcmd{add} a
+``hidden'' file to that directory.  On Unix-like systems, any file
+name that begins with a period (``\texttt{.}'') is treated as hidden
+by most commands and GUI tools.  This approach is illustrated in
+figure~\ref{ex:daily:empty}.
+
+\begin{figure}[ht]
+  \interaction{daily.files.empty}
+  \caption{Simulating an empty directory}
+  \label{ex:daily:empty}
+\end{figure}
+
+Another way to tackle a need for an empty directory is to simply
+create one in your automated build scripts before they will need it.
+
+\subsection{How to stop tracking a file}
+
+If you decide that a file no longer belongs in your repository, use
+the \hgcmd{remove} command; this deletes the file, and tells Mercurial
+to stop tracking it.
+
+You might wonder why Mercurial requires you to explicitly tell it that
+you are deleting a file.  Earlier during the development of Mercurial,
+you could simply delete a file however you pleased; Mercurial would
+notice automatically when you next ran a \hgcmd{commit}, and stop
+tracking the file.  In practice, this made it too easy to accidentally
+stop Mercurial from tracking a file.
+
+If you forget to run \hgcmd{remove} to delete a file, you can run
+\hgcmdopts{remove}{--after} later on, to tell Mercurial that you
+deleted the file.
+
+\subsection{Useful shorthand---adding and removing files in one step}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 
