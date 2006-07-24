@@ -17,7 +17,6 @@ image-sources := \
 	mq-stack.svg
 
 example-sources := \
-	examples/run-example \
 	examples/daily.files \
 	examples/hook.simple \
 	examples/hook.ws \
@@ -111,8 +110,11 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 
 examples: examples/.run
 
-examples/.run: $(example-sources)
-	cd examples && ./run-example
+examples/.run: $(example-sources:%=%.run)
+	touch examples/.run
+
+examples/%.run: examples/% examples/run-example
+	cd examples && ./run-example $(notdir $<)
 
 build_id.tex: $(wildcard ../.hg/00changelog.[id])
 	echo -n $(hg_id) > build_id.tex
