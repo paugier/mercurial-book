@@ -20,6 +20,7 @@ example-sources := \
 	examples/run-example \
 	examples/daily.files \
 	examples/hook.simple \
+	examples/hook.ws \
 	examples/mq.qinit-help \
 	examples/mq.diff \
 	examples/mq.tarball \
