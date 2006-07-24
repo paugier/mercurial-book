@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cp $EXAMPLE_DIR/data/check_whitespace.py .
 
 hg init a
