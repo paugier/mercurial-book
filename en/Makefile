@@ -21,7 +21,7 @@ example-sources := \
 	examples/hook.simple \
 	examples/hook.ws \
 	examples/mq.qinit-help \
-	examples/mq.diff \
+	examples/mq.dodiff \
 	examples/mq.tarball \
 	examples/mq.tools \
 	examples/mq.tutorial
@@ -121,4 +121,4 @@ build_id.tex: $(wildcard ../.hg/00changelog.[id])
 
 clean:
 	rm -rf beta html pdf *.eps *.pdf *.png *.aux *.dvi *.log *.out \
-		examples/*.out examples/.run build_id.tex
+		examples/*.{out,run} examples/.run build_id.tex
