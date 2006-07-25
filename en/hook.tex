@@ -415,7 +415,20 @@ with \texttt{**kwargs} above.
 
 \section{Some hook examples}
 
-\subsection{Enforcing coding guidelines in your own repository}
+\subsection{Writing meaningful commit messages}
+
+It's hard to imagine a useful commit message being very short.  The
+simple \hook{pretxncommit} hook of figure~\ref{ex:hook:msglen.run}
+will prevent you from committing a changeset with a message that is
+less than ten bytes long.
+
+\begin{figure}[ht]
+  \interaction{hook.msglen.run}
+  \caption{A hook that forbids overly short commit messages}
+  \label{ex:hook:msglen.run}
+\end{figure}
+
+\subsection{Checking for trailing whitespace}
 
 An interesting use of a commit-related hook is to help you to write
 cleaner code.  A simple example of ``cleaner code'' is the dictum that
@@ -423,7 +436,7 @@ a change should not add any new lines of text that contain ``trailing
 whitespace''.  Trailing whitespace is a series of space and tab
 characters at the end of a line of text.  In most cases, trailing
 whitespace is unnecessary, invisible noise, but it is occasionally
-problematic, and people tend to prefer to get rid of it.
+problematic, and people often prefer to get rid of it.
 
 You can use either the \hook{precommit} or \hook{pretxncommit} hook to
 tell whether you have a trailing whitespace problem.  If you use the
@@ -453,7 +466,58 @@ Figure~\ref{ex:hook:ws.simple} introduces a simple \hook{pretxncommit}
 hook that checks for trailing whitespace.  This hook is short, but not
 very helpful.  It exits with an error status if a change adds a line
 with trailing whitespace to any file, but does not print any
-information that might help us to identify the offending file or line.
+information that might help us to identify the offending file or
+line.  It also has the nice property of not paying attention to
+unmodified lines; only lines that introduce new trailing whitespace
+cause problems.
+
+\begin{figure}[ht]
+  \interaction{hook.ws.better}
+  \caption{A better trailing whitespace hook}
+  \label{ex:hook:ws.better}
+\end{figure}
+
+The example of figure~\ref{ex:hook:ws.better} is much more complex,
+but also more useful.  It parses a unified diff to see if any lines
+add trailing whitespace, and prints the name of the file and the line
+number of each such occurrence.  Even better, if the change adds
+trailing whitespace, this hook saves the commit comment and prints the
+name of the save file before exiting and telling Mercurial to roll the
+transaction back, so you can use
+\hgcmdargs{commit}{\hgopt{commit}{-l}~\emph{filename}} to reuse the
+saved commit message once you've corrected the problem.
+
+As a final aside, note in figure~\ref{ex:hook:ws.better} the use of
+\command{perl}'s in-place editing feature to get rid of trailing
+whitespace from a file.  This is concise and useful enough that I will
+reproduce it here.
+\begin{codesample2}
+  perl -pi -e 's,\\s+$,,' filename
+\end{codesample2}
+
+\section{Bundled hooks}
+
+Mercurial ships with several bundled hooks.  You can find them in the
+\dirname{hgext} directory of a Mercurial source tree.  If you are
+using a Mercurial binary package, the hooks will be located in the
+\dirname{hgext} directory of wherever your package installer put
+Mercurial.
+
+\subsection{\hgext{acl}---access control for parts of a repository}
+
+The \hgext{acl} extension lets you control which remote users are
+allowed to push changesets to a networked server.  You can protect any
+portion of a repository (including the entire repo), so that a
+specific remote user can push changes that do not affect the protected
+portion.
+
+This extension implements access control based on the identity of the
+user performing a push, \emph{not} on who committed the changesets
+they're pushing.  (If access control based on committer was to work
+properly, it would require commits to be cryptographically signed,
+which is an onerous and hence unusual policy to enforce.)
+
+XXX More help.
 
 \section{Hook reference}
 \label{sec:hook:ref}

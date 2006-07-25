@@ -1,31 +1,44 @@
 #!/usr/bin/python
 
-import os, re, sys
+import re
 
-count = 0
+def trailing_whitespace(difflines):
+    added, linenum, header = [], 0, False
 
-for line in os.popen('hg export tip'):
-    # remember the name of the file that this diff affects
-    m = re.match(r'^--- [^/]/([^\t])', line)
-    if m: 
-	filename = m.group(1)
-	continue
-    # remember the line number
-    m = re.match(r'^@@ -(\d+),')
-    if m:
-        linenum = m.group(1)
-        continue
-    linenum += 1
-    # check for an added line with trailing whitespace
-    m = re.match(r'^\+.*\s$', line)
-    if m:
-	print >> sys.stderr, ('%s:%d: trailing whitespace introduced' %
-                              (filename, linenum))
-        count += 1
+    for line in difflines:
+        if header:
+            if line.startswith('+++ '):
+                header = False
+            else:
+                # remember the name of the file that this diff affects
+                m = re.match(r'--- [^/]/([^\t])', line)
+                if m: filename = m.group(1)
+            continue
+        if line.startswith('diff '):
+            header = True
+            continue
+        # hunk header - save the line number
+        m = re.match(r'@@ -(\d+),', line)
+        if m:
+            linenum = int(m.group(1))
+            continue
+        # hunk body - check for an added line with trailing whitespace
+        m = re.match(r'\+.*\s$', line)
+        if m:
+            added.append((filename, linenum))
+        if line and line[0] in ' +':
+            linenum += 1
+    return added
 
-if count:
-    # save the commit message so we don't need to retype it
-    os.system('hg tip --template "{desc}" > .hg/commit.save')
-    print >> sys.stderr, 'commit message saved to .hg/commit.save'
-
-sys.exit(count)
+if __name__ == '__main__':
+    import os, sys
+    
+    added = trailing_whitespace(os.popen('hg export tip'))
+    if added:
+        for filename, linenum in added:
+            print >> sys.stderr, ('%s, line %d: trailing whitespace added' %
+                                  (filename, linenum))
+        # save the commit message so we don't need to retype it
+        os.system('hg tip --template "{desc}" > .hg/commit.save')
+        print >> sys.stderr, 'commit message saved to .hg/commit.save'
+        sys.exit(1)
