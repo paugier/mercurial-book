@@ -1,0 +1,131 @@
+\chapter{Basic Concepts}
+\label{chap:concepts}
+
+This chapter introduces some of the basic concepts behind distributed
+version control systems such as Mercurial.
+
+\section{Repository}
+\label{sec:concepts:repo}
+The repository is a directory where Mercurial stores the history for the
+files under revision control.
+
+\subsection{Where?}
+% where is this repository you speak of?
+XXX
+
+\subsection{How?}
+% How are the changes stored?
+XXX
+
+\subsection{Structure}
+\label{sec:concepts:structure}
+% What's the structure of the repository?
+A typical Mercurial repository is a directory which contains a checked out
+working copy (see section~\ref{sec:concepts:workingcopy}) as well as
+\sdirname{.hg} directory.  Figure~\ref{ex:concepts:dirlist} shows the
+contents of a freshly created repository.  This repository does not contain
+any revisions. Let's take a look at a repository that has history for
+several files.
+Figure~\ref{ex:concepts:dirlist2} shows the contents of a repository keeping
+history on two files.  We see the checked out copies of the files
+\filename{foo} and \filename{bar}, as well as the files containing their
+histories \filename{foo.i} and \filename{bar.i}, respectively. Additionally,
+we see the \filename{changelog.i} and \filename{00manifest.i} files. These
+contain the repository-wide revision data, such as the commit message, and
+the list of files in the repository during the commit.
+
+\begin{figure}[ht]
+  \interaction{concepts.dirlist}
+  \caption{Contents of a freshly created repository}
+  \label{ex:concepts:dirlist}
+\end{figure}
+
+\begin{figure}[ht]
+  \interaction{concepts.dirlist2}
+  \caption{Contents of a repository tracking two files}
+  \label{ex:concepts:dirlist2}
+\end{figure}
+
+\subsection{hgrc}
+% .hg/hgrc
+XXX
+
+\subsection{Creating a Repository}
+% hg init
+Creating a repository is quick and painless.  One uses the \hgcmd{init}
+command as figure~\ref{ex:concepts:hginit} demonstrates.  The one argument
+passed to the \hgcmd{init} command is the name of the repository. The name
+can be any string usable as a directory name.
+
+\begin{caution}
+If you do not specify a name of the repository, the current working
+directory will be used instead.
+\end{caution}
+
+\begin{figure}[ht]
+  \interaction{concepts.hginit}
+  \caption{Creating a new repository}
+  \label{ex:concepts:hginit}
+\end{figure}
+
+\subsection{Remote Repositories}
+\label{sec:concepts:remoterepo}
+In addition to repositories stored on the local file system, Mercurial
+supports so called \emph{remote repositories}.  These remote repositories
+can be accessed via several different methods.  See
+section~\ref{sec:XXX:remotesetup} for instructions how to set up remote
+repositories.
+% XXX: reference the proper section!
+
+\subsubsection{SSH}
+\label{sec:concepts:remoterepo:ssh}
+Mercurial can use \command{ssh} to send and receive changes. The remote
+repository is identified by an URL. The basic format for the URL is:
+
+\begin{verbatim}
+ssh://[user@]host/path
+\end{verbatim}
+
+Where \cmdargs{user} is optional, and the \cmdargs{path} is path to the
+repository --- either an absolute or relative to the user's home directory
+--- on the remote host with hostname: \cmdargs{host}.
+
+\begin{note}
+If the path for the remote repository is absolute there will be two
+consecutive slashes.  E.g., if the remote path is \dirname{/repos/hgbook},
+the URL would look something like the following:
+
+\begin{verbatim}
+ssh://someuser@remotebox//repos/hgbook
+\end{verbatim}
+
+Relative paths have only one slash and are relative to the user's home
+directory.
+\end{note}
+
+\subsubsection{HTTP \& HTTPS}
+\label{sec:concepts:remoterepo:http}
+The other protocol supported is HTTP as well as HTTPS.  The repository URL
+is very much like that of the \command{ssh}.
+
+\begin{verbatim}
+http://[user@]remotebox/path
+\end{verbatim}
+
+Just as before, the username is optional.
+% XXX: is it optional for both push & pull or just for pull?
+This time however, the path is relative to the HTTP server root.  
+
+\section{Working Copy}
+\label{sec:concepts:workingcopy}
+XXX
+
+\section{Revisions}
+\label{sec:concepts:revs}
+XXX
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End:
+

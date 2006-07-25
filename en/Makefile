@@ -7,6 +7,7 @@ sources := \
 	99book.bib \
 	99defs.tex \
 	build_id.tex \
+	concepts.tex \
 	hook.tex \
 	intro.tex \
 	mq.tex \
@@ -18,6 +19,7 @@ image-sources := \
 example-sources := \
 	examples/run-example \
 	examples/hook.simple \
+	examples/concepts \
 	examples/mq.qinit-help \
 	examples/mq.diff \
 	examples/mq.tarball \
