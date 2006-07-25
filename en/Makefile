@@ -19,6 +19,7 @@ image-sources := \
 
 example-sources := \
 	examples/daily.files \
+	examples/hook.msglen \
 	examples/hook.simple \
 	examples/hook.ws \
 	examples/concepts \
