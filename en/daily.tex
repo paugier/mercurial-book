@@ -1,0 +1,129 @@
+\chapter{Mercurial in daily use}
+\label{chap:daily}
+
+\section{Routine file management tasks}
+
+\subsection{Telling Mercurial which files to track}
+
+Mercurial does not work with files in your repository unless you tell
+it to manage them.  The \hgcmd{status} command will tell you which
+files Mercurial doesn't know about; it uses a ``\texttt{?}'' to
+display such files.
+
+To tell Mercurial to track a file, use the \hgcmd{add} command.  Once
+you have added a file, the entry in the output of \hgcmd{status} for
+that file changes from ``\texttt{?}'' to ``\texttt{A}''.
+
+After you run a \hgcmd{commit}, the files that you added before the
+commit will no longer be listed in the output of \hgcmd{status}.  The
+reason for this is that \hgcmd{status} only tells you about
+``interesting'' files by default.  If you have a repository that
+contains thousands of files, you will rarely want to know about files
+that Mercurial is tracking, but that have not changed.  (You can still
+get this information; we'll return to this later.)
+
+\begin{figure}[ht]
+  \interaction{daily.files.add}
+  \caption{Telling Mercurial to track a file}
+  \label{ex:daily:add}
+\end{figure}
+
+Once you add a file, Mercurial will track every change you make to it
+until you either remove or rename the file.
+
+\subsubsection{Aside: Mercurial tracks files, not directories}
+
+Mercurial does not track directory information.  Instead, it tracks
+the path to a file, and creates directories along a path when it needs
+to.  This sounds like a trivial distinction, but it has one minor
+practical consequence: it is not possible to represent a completely
+empty directory in Mercurial.
+
+Empty directories are rarely useful, and there are unintrusive
+workarounds that you can use to achieve an appropriate effect.  The
+developers of Mercurial thus felt that the complexity that would be
+required to manage empty directories was not worth the limited benefit
+this feature would bring.
+
+If you need an empty directory in your repository, there are a few
+ways to achieve this. One is to create a directory, then \hgcmd{add} a
+``hidden'' file to that directory.  On Unix-like systems, any file
+name that begins with a period (``\texttt{.}'') is treated as hidden
+by most commands and GUI tools.  This approach is illustrated in
+figure~\ref{ex:daily:hidden}.
+
+\begin{figure}[ht]
+  \interaction{daily.files.hidden}
+  \caption{Simulating an empty directory using a hidden file}
+  \label{ex:daily:hidden}
+\end{figure}
+
+Another way to tackle a need for an empty directory is to simply
+create one in your automated build scripts before they will need it.
+
+\subsection{How to stop tracking a file}
+
+If you decide that a file no longer belongs in your repository, use
+the \hgcmd{remove} command; this deletes the file, and tells Mercurial
+to stop tracking it.  A removed file is represented in the output of
+\hgcmd{status} with a ``\texttt{R}''.
+
+You might wonder why Mercurial requires you to explicitly tell it that
+you are deleting a file.  Earlier during the development of Mercurial,
+you could simply delete a file however you pleased; Mercurial would
+notice automatically when you next ran a \hgcmd{commit}, and stop
+tracking the file.  In practice, this made it too easy to accidentally
+stop Mercurial from tracking a file.
+
+Mercurial considers a file that you have deleted, but not used
+\hgcmd{remove} to delete, to be \emph{missing}.  A missing file is
+represented with ``\texttt{!}'' in the output of \hgcmd{status}.
+Other Mercurial commands will not do anything with missing files.
+
+If you have a missing file in your repository, you can run
+\hgcmdargs{remove}{\hgopt{remove}{--after}} later on, to tell
+Mercurial that you deleted the file.  If you deleted the file by
+accident, use \hgcmdargs{revert}{\emph{filename}} to restore the file
+to its last committed state.
+
+\subsection{Useful shorthand---adding and removing files in one step}
+
+Mercurial offers a combination command, \hgcmd{addremove}, that adds
+untracked files and marks missing files as removed.  The
+\hgcmd{commit} command also provides a \hgopt{commit}{-A} option that
+performs an add-and-remove, immediately followed by a commit.  This
+lets you replace the following command sequence:
+\begin{codesample2}
+  hg add
+  hg remove --after
+  hg commit
+\end{codesample2}
+with a single command, \hgcmdargs{commit}{\hgopt{commit}{-A}}.
+
+\subsection{Renaming files}
+
+To rename a file that is tracked by Mercurial, use the \hgcmd{rename}
+command.  This command behaves similarly to the Unix \command{mv}
+command.  If the last argument is a directory, it moves all prior
+arguments into that directory.  Otherwise, it renames a single file or
+directory to the name given in the last argument.
+
+As with \hgcmd{remove}, you can tell Mercurial about a rename after
+the fact using the \hgopt{remove}{--after} option.
+
+The na\"{i}ve way to ``rename'' a file is simply to rename the file
+yourself, \hgcmd{remove} the old name, and \hgcmd{add} the new name.
+However, if you do this, Mercurial will not know that there was any
+relationship between the files in question, and it will not be able to
+merge
+
+\subsection{Copying files}
+
+You can copy a file in two ways using mercurial.  If you simply copy a
+file and then \hgcmd{add} the new file, Mercurial will not know that
+there was any relationship between the two files.  However, if you 
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

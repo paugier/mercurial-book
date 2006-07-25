@@ -1,26 +1,80 @@
-\newcommand{\bug}[1]{\index{Mercurial issue!no.~#1}\href{http://www.selenic.com/mercurial/bts/issue#1}{Mercurial issue no.~#1}}
+% Bug ID.
+\newcommand{\bug}[1]{\index{Mercurial bug
+    database!\href{http://www.selenic.com/mercurial/bts/issue#1}{bug
+      ~#1}}\href{http://www.selenic.com/mercurial/bts/issue#1}{Mercurial
+    bug no.~#1}}
+
+% File name in the user's home directory.
 \newcommand{\tildefile}[1]{\texttt{\~{}/#1}}
+
+% File name.
 \newcommand{\filename}[1]{\texttt{#1}}
+
+% Directory name.
 \newcommand{\dirname}[1]{\texttt{#1}}
+
+% File name, with index entry.
+% The ``s'' prefix comes from ``special''.
 \newcommand{\sfilename}[1]{\index{\texttt{#1} file}\texttt{#1}}
+
+% Directory name, with index entry.
 \newcommand{\sdirname}[1]{\index{\texttt{#1} directory}\texttt{#1}}
+
+% Mercurial extension.
 \newcommand{\hgext}[1]{\index{\texttt{#1} extension}\texttt{#1}}
+
+% Mercurial command.
 \newcommand{\hgcmd}[1]{\index{\texttt{#1} command}``\texttt{hg #1}''}
-\newcommand{\command}[1]{\index{\texttt{#1} command}\texttt{#1}}
-\newcommand{\cmdargs}[2]{\index{\texttt{#1} command}``\texttt{#1 #2}''}
+
+% Mercurial command, with arguments.
 \newcommand{\hgcmdargs}[2]{\index{\texttt{#1} command}``\texttt{hg #1 #2}''}
+
+% Shell/system command.
+\newcommand{\command}[1]{\index{\texttt{#1} command}\texttt{#1}}
+
+% Shell/system command, with arguments.
+\newcommand{\cmdargs}[2]{\index{\texttt{#1} command}``\texttt{#1 #2}''}
+
+% Mercurial command option.
 \newcommand{\hgopt}[2]{\index{\texttt{#1} command!\texttt{#2} option}\texttt{#2}}
+
+% Mercurial global option.
+\newcommand{\hggopt}[1]{\index{global options!\texttt{#1} option}\texttt{#1}}
+
+% Shell/system command option.
 \newcommand{\cmdopt}[2]{\index{\texttt{#1} command!\texttt{#2} option}\texttt{#2}}
+
+% Command option.
 \newcommand{\option}[1]{\texttt{#1}}
+
+% Software package.
 \newcommand{\package}[1]{\index{\texttt{#1} package}\texttt{#1}}
+
+% Section name from a hgrc file.
 \newcommand{\rcsection}[1]{\index{\texttt{hgrc} file!\texttt{#1} section}\texttt{[#1]}}
+
+% Named item in a hgrc file section.
 \newcommand{\rcitem}[2]{\index{\texttt{hgrc} file!\texttt{#1}
     section!\texttt{#2} entry}\texttt{#1.#2}}
+
+% hgrc file.
 \newcommand{\hgrc}{\index{\texttt{hgrc} file}\texttt{hgrc}}
+
+% Hook name.
 \newcommand{\hook}[1]{\index{\texttt{#1} hook}\index{hooks!\texttt{#1}}\texttt{#1}}
+
+% Environment variable.
 \newcommand{\envar}[1]{\index{\texttt{#1} environment
     variable}\index{environment variables!\texttt{#1}}\texttt{#1}}
 
+% Python module.
+\newcommand{\pymod}[1]{\index{\texttt{#1} module}\texttt{#1}}
+
+% Python class in a module.
+\newcommand{\pymodclass}[2]{\index{\texttt{#1} module!\texttt{#2}
+    class}\texttt{#1.#2}}
+
+% Note: blah blah.
 \newsavebox{\notebox}
 \newenvironment{note}%
   {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Note:}\space}%
@@ -29,11 +83,18 @@
   {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Caution:}\space}%
   {\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
 
+% Code sample, eating 4 characters of leading space.
 \DefineVerbatimEnvironment{codesample4}{Verbatim}{frame=single,gobble=4,numbers=left,commandchars=\\\{\}}
+
+% Code sample, eating 2 characters of leading space.
+\DefineVerbatimEnvironment{codesample2}{Verbatim}{frame=single,gobble=2,numbers=left,commandchars=\\\{\}}
+
+% Interaction from the examples directory.
 \newcommand{\interaction}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{examples/#1.out}}
 
+% Graphics inclusion.
 \ifpdf
-  \newcommand{\grafix}[1]{\includegraphics[scale=0.2]{#1_pdf.png}}
+  \newcommand{\grafix}[1]{\includegraphics{#1}}
 \else
   \newcommand{\grafix}[1]{\includegraphics{#1.png}}
 \fi

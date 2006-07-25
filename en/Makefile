@@ -8,6 +8,7 @@ sources := \
 	99defs.tex \
 	build_id.tex \
 	concepts.tex \
+	daily.tex \
 	hook.tex \
 	intro.tex \
 	mq.tex \
@@ -17,11 +18,12 @@ image-sources := \
 	mq-stack.svg
 
 example-sources := \
-	examples/run-example \
+	examples/daily.files \
 	examples/hook.simple \
+	examples/hook.ws \
 	examples/concepts \
 	examples/mq.qinit-help \
-	examples/mq.diff \
+	examples/mq.dodiff \
 	examples/mq.tarball \
 	examples/mq.tools \
 	examples/mq.tutorial
@@ -110,12 +112,15 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 
 examples: examples/.run
 
-examples/.run: $(example-sources)
-	cd examples && ./run-example
+examples/.run: $(example-sources:%=%.run)
+	touch examples/.run
+
+examples/%.run: examples/% examples/run-example
+	cd examples && ./run-example $(notdir $<)
 
 build_id.tex: $(wildcard ../.hg/00changelog.[id])
 	echo -n $(hg_id) > build_id.tex
 
 clean:
 	rm -rf beta html pdf *.eps *.pdf *.png *.aux *.dvi *.log *.out \
-		examples/*.out examples/.run build_id.tex
+		examples/*.{out,run} examples/.run build_id.tex

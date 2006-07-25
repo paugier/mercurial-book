@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#$ name: add
+
+hg init a
+cd a
+echo content > filename
+mkdir subdir
+echo something > subdir/otherfile
+hg status
+
+#$ name: hidden
+
+mkdir empty
+touch empty/.hidden
+hg add empty/.hidden
+hg commit -m 'Manage an empty-looking directory'
+ls empty
+cd ..
+hg clone a b
+ls b
+ls b/empty
