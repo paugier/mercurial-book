@@ -69,7 +69,6 @@ the Linux kernel.
 \subsection{A patchwork quilt}
 \label{sec:mq:quilt}
 
-
 In early 2003, Andreas Gruenbacher and Martin Quinson borrowed the
 approach of Andrew's scripts and published a tool called ``patchwork
 quilt''~\cite{web:quilt}, or simply ``quilt''
@@ -114,18 +113,44 @@ about revision control systems, while MQ is \emph{integrated} into
 Mercurial.  Each patch that you push is represented as a Mercurial
 changeset.  Pop a patch, and the changeset goes away.
 
-This integration makes understanding patches and debugging their
-effects \emph{enormously} easier.  Since every applied patch has an
-associated changeset, you can use \hgcmdargs{log}{\emph{filename}} to
-see which changesets and patches affected a file.  You can use the
-\hgext{bisect} extension to binary-search through all changesets and
-applied patches to see where a bug got introduced or fixed.  You can
-use the \hgcmd{annotate} command to see which changeset or patch
-modified a particular line of a source file.  And so on.
-
 Because quilt does not care about revision control tools, it is still
 a tremendously useful piece of software to know about for situations
 where you cannot use Mercurial and MQ.
+
+\section{The huge advantage of MQ}
+
+I cannot overstate the value that MQ offers through the unification of
+patches and revision control.
+
+A major reaon that patches have persisted in the free software and
+open source world---in spite of the availability of increasingly
+capable revision control tools over the years---is the \emph{agility}
+they offer.  
+
+Traditional revision control tools make a permanent, irreversible
+record of everything that you do.  While this has great value, it's
+also somewhat stifling.  If you want to perform a wild-eyed
+experiment, you have to be careful in how you go about it, or you risk
+leaving unneeded---or worse, misleading or destabilising---traces of
+your missteps and errors in the permanent revision record.
+
+By contrast, MQ's marriage of distributed revision control with
+patches makes it much easier to isolate your work.  Your patches live
+on top of normal revision history, and you can make them disappear or
+reappear at will.  If you don't like a patch, you can drop it.  If a
+patch isn't quite as you want it to be, simply fix it---as many times
+as you need to, until you have refined it into the form you desire.
+
+As an example, the integration of patches with revision control makes
+understanding patches and debugging their effects---and their
+interplay with the code they're based on---\emph{enormously} easier.
+Since every applied patch has an associated changeset, you can use
+\hgcmdargs{log}{\emph{filename}} to see which changesets and patches
+affected a file.  You can use the \hgext{bisect} extension to
+binary-search through all changesets and applied patches to see where
+a bug got introduced or fixed.  You can use the \hgcmd{annotate}
+command to see which changeset or patch modified a particular line of
+a source file.  And so on.
 
 \section{Understanding patches}
 \label{sec:mq:patch}
@@ -596,7 +621,8 @@ containing all 27,472 revisions between Linux 2.6.12-rc2 and Linux
 
 On my old, slow laptop, I was able to
 \hgcmdargs{qpush}{\hgopt{qpush}{-a}} all 1,738 patches in 3.5 minutes,
-and \hgcmdargs{qpop}{\hgopt{qpop}{-a}} them all in 30 seconds.  I
+and \hgcmdargs{qpop}{\hgopt{qpop}{-a}} them all in 30 seconds.  (On a
+newer laptop, the time to push all patches dropped to two minutes.)  I
 could \hgcmd{qrefresh} one of the biggest patches (which made 22,779
 lines of changes to 287 files) in 6.6 seconds.
 
@@ -615,8 +641,7 @@ multiple patches at a time.  You can identify the ``destination
 patch'' that you want to end up at.  When you \hgcmd{qpush} with a
 destination specified, it will push patches until that patch is at the
 top of the applied stack.  When you \hgcmd{qpop} to a destination, MQ
-will pop patches until the destination patch \emph{is no longer}
-applied.
+will pop patches until the destination patch is at the top.
 
 You can identify a destination patch using either the name of the
 patch, or by number.  If you use numeric addressing, patches are
@@ -692,6 +717,60 @@ from the old patch queue, and a copy of the old patch queue will be in
 or \hgcmd{strip}.  You can delete \sdirname{.hg/patches.\emph{N}} once
 you are sure that you no longer need it as a backup.
 
+\section{Identifying patches}
+
+MQ commands that work with patches let you refer to a patch either by
+using its name or by a number.  By name is obvious enough; pass the
+name \filename{foo.patch} to \hgcmd{qpush}, for example, and it will
+push patches until \filename{foo.patch} is applied.
+
+Referring to a patch by index isn't much different.  The first patch
+printed in the output of \hgcmd{qseries} is patch zero (yes, it's one
+of those start-at-zero counting systems); the second is patch one; and
+so on
+
+MQ also makes it easy to work with patches when you are using normal
+Mercurial commands.  Every command that accepts a changeset ID will
+also accept the name of an applied patch.  MQ augments the tags
+normally in the repository with an eponymous one for each applied
+patch.  In addition, the special tags \index{tags!special tag
+  names!\texttt{qbase}}\texttt{qbase} and \index{tags!special tag
+  names!\texttt{qtip}}\texttt{qtip} identify the ``bottom-most'' and
+topmost applied patches, respectively.
+
+These additions to Mercurial's normal tagging capabilities make
+dealing with patches even more of a breeze.
+\begin{itemize}
+\item Want to patchbomb a mailing list with your latest series of
+  changes?
+  \begin{codesample4}
+    hg email qbase:qtip
+  \end{codesample4}
+\item Need to see all of the patches since \texttt{foo.patch} that
+  have touched files in a subdirectory of your tree?
+  \begin{codesample4}
+    hg log -r foo.patch:qtip \emph{subdir}
+  \end{codesample4}
+\end{itemize}
+
+Because MQ makes the names of patches available to the rest of
+Mercurial through its normal internal tag machinery, you don't need to
+type in the entire name of a patch when you want to identify it by
+name.
+
+\begin{figure}[ht]
+  \interaction{mq.id.out}
+  \caption{Using MQ's tag features to work with patches}
+  \label{ex:mq:id}
+\end{figure}
+
+Another nice consequence of representing patch names as tags is that
+when you run the \hgcmd{log} command, it will display a patch's name
+as a tag, simply as part of its normal output.  This makes it easy to
+visually distinguish applied patches from underlying ``normal''
+revisions.  Figure~\ref{ex:mq:id} shows a few normal Mercurial
+commands in use with applied patches.
+
 \section{Useful things to know about}
 
 There are a number of aspects of MQ usage that don't fit tidily into
@@ -710,6 +789,7 @@ one place.
   patch stack.  If you try to do this, it will appear to succeed, but
   MQ will become confused.
 \end{itemize}
+
 \section{Managing patches in a repository}
 
 Because MQ's \sdirname{.hg/patches} directory resides outside a
@@ -935,6 +1015,7 @@ are quilt's \texttt{add} and \texttt{remove} commands, the
 counterparts for which are the normal Mercurial \hgcmd{add} and
 \hgcmd{remove} commands.  There is no MQ equivalent of the quilt
 \texttt{edit} command.
+
 \section{MQ command reference}
 \label{sec:mq:cmdref}
 
@@ -1038,11 +1119,11 @@ effects of the patches.
 
 This command takes an optional argument, which it uses as the name or
 index of the patch to pop to.  If given a name, it will pop patches
-until the named patch is no longer applied.  If given a number,
-\hgcmd{qpop} treats the number as an index into the entries in the
-series file, counting from zero (empty lines and lines containing only
-comments do not count).  It pops patches until the patch identified by
-the given index is no longer applied.
+until the named patch is the topmost applied patch.  If given a
+number, \hgcmd{qpop} treats the number as an index into the entries in
+the series file, counting from zero (empty lines and lines containing
+only comments do not count).  It pops patches until the patch
+identified by the given index is the topmost applied patch.
 
 The \hgcmd{qpop} command does not read or write patches or the
 \sfilename{series} file.  It is thus safe to \hgcmd{qpop} a patch that
@@ -1066,6 +1147,7 @@ Options:
 
 The \hgcmd{qpop} command removes one line from the end of the
 \sfilename{status} file for each patch that it pops.
+
 \subsection{\hgcmd{qprev}---print the name of the previous patch}
 
 The \hgcmd{qprev} command prints the name of the patch in the

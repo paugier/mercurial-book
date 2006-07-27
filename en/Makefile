@@ -23,6 +23,7 @@ example-sources := \
 	examples/hook.ws \
 	examples/mq.qinit-help \
 	examples/mq.dodiff \
+	examples/mq.id \
 	examples/mq.tarball \
 	examples/mq.tools \
 	examples/mq.tutorial
