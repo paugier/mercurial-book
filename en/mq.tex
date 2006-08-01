@@ -1043,13 +1043,25 @@ This command is shorthand for \hgcmdargs{commit}{--cwd .hg/patches}.
 
 The \hgcmd{qdelete} command removes the entry for a patch from the
 \sfilename{series} file in the \sdirname{.hg/patches} directory.  It
-does not delete the patch file, nor does it pop the patch if the patch
-is already applied.
+does not pop the patch if the patch is already applied.  By default,
+it does not delete the patch file; use the \hgopt{qdel}{-f} option to
+do that.
+
+Options:
+\begin{itemize}
+\item[\hgopt{qdel}{-f}] Delete the patch file.
+\end{itemize}
 
 \subsection{\hgcmd{qdiff}---print a diff of the topmost applied patch}
 
 The \hgcmd{qdiff} command prints a diff of the topmost applied patch.
 It is equivalent to \hgcmdargs{diff}{-r-2:-1}.
+
+\subsection{\hgcmd{qheader}---display the header/description of a patch}
+
+The \hgcmd{qheader} command prints the header, or description, of a
+patch.  By default, it prints the header of the topmost applied patch.
+Given an argument, it prints the header of the named patch.
 
 \subsection{\hgcmd{qimport}---import a third-party patch into the queue}
 
@@ -1221,6 +1233,25 @@ changeset that represents the patch.  This causes the identity of the
 changeset to differ from the previous changeset that identified the
 patch.
 
+Options:
+\begin{itemize}
+\item[\hgopt{qrefresh}{-e}] Modify the commit and patch description,
+  using the preferred text editor.
+\item[\hgopt{qrefresh}{-m}] Modify the commit message and patch
+  description, using the given text.
+\item[\hgopt{qrefresh}{-l}] Modify the commit message and patch
+  description, using text from the given file.
+\end{itemize}
+
+\subsection{\hgcmd{qrename}---rename a patch}
+
+The \hgcmd{qrename} command renames a patch, and changes the entry for
+the patch in the \sfilename{series} file.
+
+With a single argument, \hgcmd{qrename} renames the topmost applied
+patch.  With two arguments, it renames its first argument to its
+second.
+
 \subsection{\hgcmd{qrestore}---restore saved queue state}
 
 XXX No idea what this does.
@@ -1269,8 +1300,8 @@ Options:
   when there are pending changes.
 \item[\hgopt{strip}{-n}] Do not save a backup bundle.
 \end{itemize}
-\section{MQ file reference}
 
+\section{MQ file reference}
 
 \subsection{The \sfilename{series} file}
 
@@ -1295,6 +1326,7 @@ supported; it is a good idea to place all of the patches that it
 refers to under revision control, as well.  If you create a patch
 directory using the \hgopt{qinit}{-c} option to \hgcmd{qinit}, this
 will be done for you automatically.
+
 \subsection{The \sfilename{status} file}
 
 The \sfilename{status} file contains the names and changeset hashes of
