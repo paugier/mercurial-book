@@ -151,7 +151,7 @@ vetted.
 \section{Using hooks with shared access to a repository}
 
 If you want to use hooks to so some automated work in a repository
-that a number of people have ahred access to, you need to be careful
+that a number of people have shared access to, you need to be careful
 in how you do this.
 
 Mercurial only locks a repository when it is writing to the
@@ -177,7 +177,7 @@ destination file.  It writes file data first, then manifest data
 (which contains pointers to the new manifest data).  Before the first
 write to each file, it stores a record of where the end of the file
 was in its transaction log.  If the transaction must be rolled back,
-Mercurial simply truncates each file back to te size it was before the
+Mercurial simply truncates each file back to the size it was before the
 transaction began.
 
 When Mercurial \emph{reads} metadata, it reads the changelog first,
@@ -492,7 +492,7 @@ As a final aside, note in figure~\ref{ex:hook:ws.better} the use of
 whitespace from a file.  This is concise and useful enough that I will
 reproduce it here.
 \begin{codesample2}
-  perl -pi -e 's,\\s+$,,' filename
+  perl -pi -e 's,\\s+\$,,' filename
 \end{codesample2}
 
 \section{Bundled hooks}
@@ -631,7 +631,7 @@ added changeset.
 
 You can use this hook for the same purposes as the \hook{changegroup}
 hook (section~\ref{sec:hook:changegroup}); it's simply more convenient
-sometimes to run a hook once per group of changesets, while othher
+sometimes to run a hook once per group of changesets, while other
 times it's handier once per changeset.
 
 Parameters to this hook:
