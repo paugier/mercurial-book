@@ -606,7 +606,11 @@ reasons that a hunk may be rejected:
 \end{itemize}
 
 If you use \command{wiggle} or \command{rej}, you should be doubly
-careful to check your results when you're done.
+careful to check your results when you're done.  In fact,
+\command{rej} enforces this method of double-checking the tool's
+output, by automatically dropping you into a merge program when it has
+done its job, so that you can verify its work and finish off any
+remaining merges.
 
 \section{Getting the best performance out of MQ}
 \label{sec:mq:perf}
@@ -722,7 +726,12 @@ you are sure that you no longer need it as a backup.
 MQ commands that work with patches let you refer to a patch either by
 using its name or by a number.  By name is obvious enough; pass the
 name \filename{foo.patch} to \hgcmd{qpush}, for example, and it will
-push patches until \filename{foo.patch} is applied.
+push patches until \filename{foo.patch} is applied.  
+
+As a shortcut, you can refer to a patch using both a name and a
+numeric offset; \texttt{foo.patch-2} means ``two patches before
+\texttt{foo.patch}'', while \texttt{bar.patch+4} means ``four patches
+after \texttt{bar.patch}''.
 
 Referring to a patch by index isn't much different.  The first patch
 printed in the output of \hgcmd{qseries} is patch zero (yes, it's one
@@ -946,23 +955,17 @@ Finally, you can apply your patches on top of the new tree.
 \subsection{Combining entire patches}
 \label{sec:mq:combine}
 
-It's easy to combine entire patches.
+MQ provides a command, \hgcmd{qfold} that lets you combine entire
+patches.  This ``folds'' the patches you name, in the order you name
+them, into the topmost applied patch, and concatenates their
+descriptions onto the end of its description.  The patches that you
+fold must be unapplied before you fold them.
 
-\begin{enumerate}
-\item \hgcmd{qpop} your applied patches until neither patch is
-  applied.
-\item Concatenate the patches that you want to combine together:
-  \begin{codesample4}
-    cat patch-to-drop.patch >> patch-to-augment.patch
-  \end{codesample4}
-  The description from the first patch (if you have one) will be used
-  as the commit comment when you \hgcmd{qpush} the combined patch.
-  Edit the patch description if you need to.
-\item Use the \hgcmd{qdel} command to delete the patch you're dropping
-  from the \sfilename{series} file.
-\item \hgcmd{qpush} the combined patch.  Fix up any rejects.
-\item \hgcmd{qrefresh} the combined patch to tidy it up.
-\end{enumerate}
+The order in which you fold patches matters.  If your topmost applied
+patch is \texttt{foo}, and you \hgcmd{qfold} \texttt{bar} and
+\texttt{quux} into it, you will end up with a patch that has the same
+effect as if you applied first \texttt{foo}, then \texttt{bar},
+followed by \texttt{quux}.
 
 \subsection{Merging part of one patch into another}
 
@@ -1056,6 +1059,33 @@ Options:
 
 The \hgcmd{qdiff} command prints a diff of the topmost applied patch.
 It is equivalent to \hgcmdargs{diff}{-r-2:-1}.
+
+\subsection{\hgcmd{qfold}---merge (``fold'') several patches into one}
+
+The \hgcmd{qfold} command merges multiple patches into the topmost
+applied patch, so that the topmost applied patch makes the union of
+all of the changes in the patches in question.
+
+The patches to fold must not be applied; \hgcmd{qfold} will exit with
+an error if any is.  The order in which patches are folded is
+significant; \hgcmdargs{qfold}{a b} means ``apply the current topmost
+patch, followed by \texttt{a}, followed by \texttt{b}''.
+
+The comments from the folded patches are appended to the comments of
+the destination patch, with each block of comments separated by three
+asterisk (``\texttt{*}'') characters.  Use the \hgopt{qfold}{-e}
+option to edit the commit message for the combined patch/changeset
+after the folding has completed.
+
+Options:
+\begin{itemize}
+\item[\hgopt{qfold}{-e}] Edit the commit message and patch description
+  for the newly folded patch.
+\item[\hgopt{qfold}{-l}] Use the contents of the given file as the new
+  commit message and patch description for the folded patch.
+\item[\hgopt{qfold}{-m}] Use the given text as the new commit message
+  and patch description for the folded patch.
+\end{itemize}
 
 \subsection{\hgcmd{qheader}---display the header/description of a patch}
 
