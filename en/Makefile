@@ -7,6 +7,7 @@ sources := \
 	99book.bib \
 	99defs.tex \
 	build_id.tex \
+	concepts.tex \
 	daily.tex \
 	hook.tex \
 	intro.tex \
@@ -21,6 +22,7 @@ example-sources := \
 	examples/hook.msglen \
 	examples/hook.simple \
 	examples/hook.ws \
+	examples/concepts \
 	examples/mq.qinit-help \
 	examples/mq.dodiff \
 	examples/mq.id \
