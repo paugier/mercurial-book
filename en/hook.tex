@@ -535,16 +535,16 @@ The \rcsection{acl} section has only one entry, \rcitem{acl}{sources},
 which lists the sources of incoming changesets that the hook should
 pay attention to.  You don't normally need to configure this section.
 \begin{itemize}
-\item[\texttt{serve}] Control incoming changesets that are arriving
+\item[\rcitem{acl}{serve}] Control incoming changesets that are arriving
   from a remote repository over http or ssh.  This is the default
   value of \rcitem{acl}{sources}, and usually the only setting you'll
   need for this configuration item.
-\item[\texttt{pull}] Control incoming changesets that are arriving via
-  a pull from a local repository.
-\item[\texttt{push}] Control incoming changesets that are arriving via
-  a push from a local repository.
-\item[\texttt{bundle}] Control incoming changesets that are arriving
-  from another repository via a bundle.
+\item[\rcitem{acl}{pull}] Control incoming changesets that are
+  arriving via a pull from a local repository.
+\item[\rcitem{acl}{push}] Control incoming changesets that are
+  arriving via a push from a local repository.
+\item[\rcitem{acl}{bundle}] Control incoming changesets that are
+  arriving from another repository via a bundle.
 \end{itemize}
 
 The \rcsection{acl.allow} section controls the users that are allowed to
@@ -649,33 +649,36 @@ from~\cite{web:mysql-python}.
 Configuration information for this hook lives in the
 \rcsection{bugzilla} section of your \hgrc.
 \begin{itemize}
-\item[\texttt{version}] The version of Bugzilla installed on the
-  server.  The database schema that Bugzilla uses changes
+\item[\rcitem{bugzilla}{version}] The version of Bugzilla installed on
+  the server.  The database schema that Bugzilla uses changes
   occasionally, so this hook has to know exactly which schema to use.
   At the moment, the only version supported is \texttt{2.16}.
-\item[\texttt{host}] The hostname of the MySQL server that stores your
-  Bugzilla data.  The database must be configured to allow connections
-  from whatever host you are running the \hook{bugzilla} hook on.
-\item[\texttt{user}] The username with which to connect to the MySQL
-  server.  The database must be configured to allow this user to
-  connect from whatever host you are running the \hook{bugzilla} hook
-  on.  This user must be able to access and modify Bugzilla tables.
-  The default value of this item is \texttt{bugs}, which is the
-  standard name of the Bugzilla user in a MySQL database.
-\item[\texttt{password}] The MySQL password for the user you
+\item[\rcitem{bugzilla}{host}] The hostname of the MySQL server that
+  stores your Bugzilla data.  The database must be configured to allow
+  connections from whatever host you are running the \hook{bugzilla}
+  hook on.
+\item[\rcitem{bugzilla}{user}] The username with which to connect to
+  the MySQL server.  The database must be configured to allow this
+  user to connect from whatever host you are running the
+  \hook{bugzilla} hook on.  This user must be able to access and
+  modify Bugzilla tables.  The default value of this item is
+  \texttt{bugs}, which is the standard name of the Bugzilla user in a
+  MySQL database.
+\item[\rcitem{bugzilla}{password}] The MySQL password for the user you
   configured above.  This is stored as plain text, so you should make
   sure that unauthorised users cannot read the \hgrc\ file where you
   store this information.
-\item[\texttt{db}] The name of the Bugzilla database on the MySQL
-  server.  The default value of this item is \texttt{bugs}, which is
-  the standard name of the MySQL database where Bugzilla stores its
-  data.
-\item[\texttt{notify}] If you want Bugzilla to send out a notification
-  email to subscribers after this hook has added a comment to a bug,
-  you will need this hook to run a command whenever it updates the
-  database.  The command to run depends on where you have installed
-  Bugzilla, but it will typically look something like this, if you
-  have Bugzilla installed in \dirname{/var/www/html/bugzilla}:
+\item[\rcitem{bugzilla}{db}] The name of the Bugzilla database on the
+  MySQL server.  The default value of this item is \texttt{bugs},
+  which is the standard name of the MySQL database where Bugzilla
+  stores its data.
+\item[\rcitem{bugzilla}{notify}] If you want Bugzilla to send out a
+  notification email to subscribers after this hook has added a
+  comment to a bug, you will need this hook to run a command whenever
+  it updates the database.  The command to run depends on where you
+  have installed Bugzilla, but it will typically look something like
+  this, if you have Bugzilla installed in
+  \dirname{/var/www/html/bugzilla}:
   \begin{codesample4}
     cd /var/www/html/bugzilla && ./processmail %s nobody@nowhere.com
   \end{codesample4}
@@ -706,8 +709,8 @@ tell the \hgext{bugzilla} hook to read the information from an
 external \filename{usermap} file.  In the latter case, you can store
 \filename{usermap} data by itself in (for example) a user-modifiable
 repository.  This makes it possible to let your users maintain their
-own \texttt{usermap} entries.  The main \hgrc\ file might look like
-this:
+own \rcitem{bugzilla}{usermap} entries.  The main \hgrc\ file might
+look like this:
 \begin{codesample2}
   # regular hgrc file refers to external usermap file
   [bugzilla]
@@ -728,12 +731,6 @@ specify it in the form of a Mercurial template.  Several \hgrc\
 entries (still in the \rcsection{bugzilla} section) control this
 behaviour.
 \begin{itemize}
-\item[\texttt{hgweb}] The base string to use when constructing a URL
-  that will let users browse from a Bugzilla comment to view a
-  changeset.  Example:
-  \begin{codesample4}
-    hgweb = http://hg.domain.com/
-  \end{codesample4}
 \item[\texttt{strip}] The number of leading path elements to strip
   from a repository's path name to construct a partial path for a URL.
   For example, if the repositories on your server live under
@@ -748,6 +745,16 @@ behaviour.
   above) and \texttt{webroot} (the path constructed using
   \texttt{strip} above).
 \end{itemize}
+
+In addition, you can add a \rcitem{web}{baseurl} item to the
+\rcsection{web} section of your \hgrc.  The \hgext{bugzilla} hook will
+make this available when expanding a template, as the base string to
+use when constructing a URL that will let users browse from a Bugzilla
+comment to view a changeset.  Example:
+\begin{codesample2}
+  [web]
+  baseurl = http://hg.domain.com/
+\end{codesample2}
 
 Here is an example set of \hgext{bugzilla} hook config information.
 \begin{codesample2}
@@ -931,7 +938,7 @@ Do not forget that by default, the \hgext{notify} extension \emph{will
 setting \rcitem{notify}{test} to \texttt{false}.  Until you do that,
 it simply prints the message it \emph{would} send.
 
-\section{Hook reference}
+\section{Information for writers of hooks}
 \label{sec:hook:ref}
 
 \subsection{In-process hook execution}
@@ -1049,7 +1056,9 @@ following forms:
   client.
 \end{itemize}
 
-\subsection{The \hook{changegroup} hook}
+\section{Hook reference}
+
+\subsection{\hook{changegroup}---after remote changesets added}
 \label{sec:hook:changegroup}
 
 This hook is run after a group of pre-existing changesets has been
@@ -1079,7 +1088,7 @@ See also: \hook{incoming} (section~\ref{sec:hook:incoming}),
 \hook{prechangegroup} (section~\ref{sec:hook:prechangegroup}),
 \hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
 
-\subsection{The \hook{commit} hook}
+\subsection{\hook{commit}---after a new changeset is created}
 \label{sec:hook:commit}
 
 This hook is run after a new changeset has been created.
@@ -1097,7 +1106,7 @@ Parameters to this hook:
 See also: \hook{precommit} (section~\ref{sec:hook:precommit}),
 \hook{pretxncommit} (section~\ref{sec:hook:pretxncommit})
 
-\subsection{The \hook{incoming} hook}
+\subsection{\hook{incoming}---after one remote changeset is added}
 \label{sec:hook:incoming}
 
 This hook is run after a pre-existing changeset has been added to the
@@ -1122,7 +1131,7 @@ Parameters to this hook:
 
 See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}) \hook{prechangegroup} (section~\ref{sec:hook:prechangegroup}), \hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
 
-\subsection{The \hook{outgoing} hook}
+\subsection{\hook{outgoing}---after changesets are propagated}
 \label{sec:hook:outgoing}
 
 This hook is run after a group of changesets has been propagated out
@@ -1149,7 +1158,7 @@ Parameters to this hook:
 
 See also: \hook{preoutgoing} (section~\ref{sec:hook:preoutgoing})
 
-\subsection{The \hook{prechangegroup} hook}
+\subsection{\hook{prechangegroup}---before starting to add remote changesets}
 \label{sec:hook:prechangegroup}
 
 This controlling hook is run before Mercurial begins to add a group of
@@ -1178,7 +1187,7 @@ See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
 \hook{incoming} (section~\ref{sec:hook:incoming}), ,
 \hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
 
-\subsection{The \hook{precommit} hook}
+\subsection{\hook{precommit}---before starting to commit a changeset}
 \label{sec:hook:precommit}
 
 This hook is run before Mercurial begins to commit a new changeset.
@@ -1204,7 +1213,7 @@ become the parents of the new changeset.
 See also: \hook{commit} (section~\ref{sec:hook:commit}),
 \hook{pretxncommit} (section~\ref{sec:hook:pretxncommit})
 
-\subsection{The \hook{preoutgoing} hook}
+\subsection{\hook{preoutgoing}---before starting to propagate changesets}
 \label{sec:hook:preoutgoing}
 
 This hook is invoked before Mercurial knows the identities of the
@@ -1227,7 +1236,7 @@ Parameters to this hook:
 
 See also: \hook{outgoing} (section~\ref{sec:hook:outgoing})
 
-\subsection{The \hook{pretag} hook}
+\subsection{\hook{pretag}---before tagging a changeset}
 \label{sec:hook:pretag}
 
 This controlling hook is run before a tag is created.  If the hook
@@ -1249,7 +1258,8 @@ and~\ref{sec:hook:pretxncommit}) will also be run.
 
 See also: \hook{tag} (section~\ref{sec:hook:tag})
 
-\subsection{The \hook{pretxnchangegroup} hook}
+\subsection{\hook{pretxnchangegroup}---before completing addition of
+  remote changesets}
 \label{sec:hook:pretxnchangegroup}
 
 This controlling hook is run before a transaction---that manages the
@@ -1288,7 +1298,7 @@ See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
 \hook{incoming} (section~\ref{sec:hook:incoming}),
 \hook{prechangegroup} (section~\ref{sec:hook:prechangegroup})
 
-\subsection{The \hook{pretxncommit} hook}
+\subsection{\hook{pretxncommit}---before completing commit of new changeset}
 \label{sec:hook:pretxncommit}
 
 This controlling hook is run before a transaction---that manages a new
@@ -1318,7 +1328,7 @@ Parameters to this hook:
 
 See also: \hook{precommit} (section~\ref{sec:hook:precommit})
 
-\subsection{The \hook{preupdate} hook}
+\subsection{\hook{preupdate}---before updating or merging working directory}
 \label{sec:hook:preupdate}
 
 This controlling hook is run before an update or merge of the working
@@ -1339,7 +1349,7 @@ Parameters to this hook:
 
 See also: \hook{update} (section~\ref{sec:hook:update})
 
-\subsection{The \hook{tag} hook}
+\subsection{\hook{tag}---after tagging a changeset}
 \label{sec:hook:tag}
 
 This hook is run after a tag has been created.
@@ -1359,7 +1369,7 @@ If the created tag is revision-controlled, the \hook{commit} hook
 
 See also: \hook{pretag} (section~\ref{sec:hook:pretag})
 
-\subsection{The \hook{update} hook}
+\subsection{\hook{update}---after updating or merging working directory}
 \label{sec:hook:update}
 
 This hook is run after an update or merge of the working directory
