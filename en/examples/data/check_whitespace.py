@@ -7,18 +7,18 @@ def trailing_whitespace(difflines):
 
     for line in difflines:
         if header:
+            # remember the name of the file that this diff affects
+            m = re.match(r'(?:---|\+\+\+) ([^\t]+)', line)
+            if m and m.group(1) != '/dev/null':
+                filename = m.group(1).split('/', 1)[-1]
             if line.startswith('+++ '):
                 header = False
-            else:
-                # remember the name of the file that this diff affects
-                m = re.match(r'--- [^/]/([^\t])', line)
-                if m: filename = m.group(1)
             continue
         if line.startswith('diff '):
             header = True
             continue
         # hunk header - save the line number
-        m = re.match(r'@@ -(\d+),', line)
+        m = re.match(r'@@ -\d+,\d+ \+(\d+),', line)
         if m:
             linenum = int(m.group(1))
             continue
