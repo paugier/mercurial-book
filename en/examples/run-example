@@ -85,11 +85,17 @@ class example:
         print >> rcfp, 'export HGRCPATH=$HGRC'
         print >> rcfp, 'cd %s' % tmpdir
         rcfp.close()
+        sys.stdout.flush()
+        sys.stderr.flush()
         pid, fd = pty.fork()
         if pid == 0:
-            #os.execl(self.shell, self.shell)
-            os.system('/bin/bash --noediting --noprofile --norc')
-            sys.exit(0)
+            cmdline = ['/bin/bash', '--noediting', '--noprofile', '--norc']
+            try:
+                os.execv(cmdline[0], cmdline)
+            except OSError, err:
+                print >> sys.stderr, '%s: %s' % (cmdline[0], err.strerror)
+                sys.stderr.flush()
+                os._exit(0)
         self.cfp = os.fdopen(fd, 'w+')
         try:
             # setup env and prompt
