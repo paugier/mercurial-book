@@ -25,7 +25,7 @@ def tex_escape(s):
     return s
         
 class example:
-    shell = '/bin/bash'
+    shell = '/usr/bin/env bash'
     prompt = '__run_example_prompt__\n'
     pi_re = re.compile('#\$\s*(name):\s*(.*)$')
     
@@ -89,7 +89,8 @@ class example:
         sys.stderr.flush()
         pid, fd = pty.fork()
         if pid == 0:
-            cmdline = ['/bin/bash', '--noediting', '--noprofile', '--norc']
+            cmdline = ['/usr/bin/env', 'bash', '--noediting', '--noprofile',
+                       '--norc']
             try:
                 os.execv(cmdline[0], cmdline)
             except OSError, err:
