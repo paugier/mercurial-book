@@ -1,6 +1,6 @@
 # This makefile requires GNU make.
 
-hg_id := $(shell hg parents --template '{node|short}\n' | head -1)
+hg_id := $(shell hg parents --template '{node|short}\n')
 
 sources := \
 	00book.tex \
