@@ -26,3 +26,6 @@ echo 'a ' >> a
 hg commit -A -m 'add new line with trailing whitespace'
 perl -pi -e 's,\s+$,,' a
 hg commit -A -m 'trimmed trailing whitespace'
+
+#$ name:
+exit 0
