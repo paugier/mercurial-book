@@ -5,9 +5,11 @@
 # files, for use in examples.
 
 import cStringIO
+import errno
 import os
 import pty
 import re
+import select
 import shutil
 import signal
 import stat
@@ -26,7 +28,7 @@ def tex_escape(s):
         
 class example:
     shell = '/usr/bin/env bash'
-    prompt = '__run_example_prompt__\n'
+    prompt = '__run_example_prompt__ '
     pi_re = re.compile(r'#\$\s*(name):\s*(.*)$')
     
     def __init__(self, name):
@@ -49,17 +51,23 @@ class example:
             sys.stdout.flush()
 
     def send(self, s):
-        self.cfp.write(s)
-        self.cfp.flush()
+        while s:
+            count = os.write(self.cfd, s)
+            s = s[count:]
 
     def receive(self):
         out = cStringIO.StringIO()
         while True:
-            s = self.cfp.readline().replace('\r\n', '\n')
-            if not s or s == self.prompt:
-                break
+            try:
+                s = os.read(self.cfd, 1024)
+            except OSError, err:
+                if err.errno == errno.EIO:
+                    return ''
+                raise
             out.write(s)
-        return out.getvalue()
+            s = out.getvalue()
+            if s.endswith(self.prompt):
+                return s.replace('\r\n', '\n')[:-len(self.prompt)]
         
     def sendreceive(self, s):
         self.send(s)
@@ -87,7 +95,7 @@ class example:
         rcfp.close()
         sys.stdout.flush()
         sys.stderr.flush()
-        pid, fd = pty.fork()
+        pid, self.cfd = pty.fork()
         if pid == 0:
             cmdline = ['/usr/bin/env', 'bash', '--noediting', '--noprofile',
                        '--norc']
@@ -97,11 +105,12 @@ class example:
                 print >> sys.stderr, '%s: %s' % (cmdline[0], err.strerror)
                 sys.stderr.flush()
                 os._exit(0)
-        self.cfp = os.fdopen(fd, 'w+')
         try:
             try:
+                # eat first prompt string from shell
+                os.read(self.cfd, 1024)
                 # setup env and prompt
-                self.sendreceive('source %s\n\n' % rcfile)
+                self.sendreceive('source %s\n' % rcfile)
                 for hunk in self.parse():
                     # is this line a processing instruction?
                     m = self.pi_re.match(hunk)
@@ -141,7 +150,7 @@ class example:
                     output = self.sendreceive('exit\n')
                     if ofp:
                         ofp.write(output)
-                    self.cfp.close()
+                    os.close(self.cfd)
                 except IOError:
                     pass
                 os.kill(pid, signal.SIGTERM)
