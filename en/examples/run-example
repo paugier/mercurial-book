@@ -99,7 +99,6 @@ class example:
                 os._exit(0)
         self.cfp = os.fdopen(fd, 'w+')
         try:
-            clean_exit = True
             try:
                 # setup env and prompt
                 self.sendreceive('source %s\n\n' % rcfile)
@@ -133,10 +132,11 @@ class example:
                 self.status('\n')
                 open(self.name + '.run', 'w')
             except:
-                clean_exit = False
+                print >> sys.stderr, '(killed)'
+                os.kill(pid, signal.SIGKILL)
+                pid, rc = os.wait()
                 raise
-        finally:
-            if clean_exit:
+            else:
                 try:
                     output = self.sendreceive('exit\n')
                     if ofp:
@@ -144,17 +144,16 @@ class example:
                     self.cfp.close()
                 except IOError:
                     pass
-            os.kill(pid, signal.SIGTERM)
-            time.sleep(0.1)
-            os.kill(pid, signal.SIGKILL)
-            pid, rc = os.wait()
-            if rc:
-                if os.WIFEXITED(rc):
-                    print >> sys.stderr, '(exit %s)' % os.WEXITSTATUS(rc)
-                elif os.WIFSIGNALED(rc):
-                    print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
+                os.kill(pid, signal.SIGTERM)
+                pid, rc = os.wait()
+                if rc:
+                    if os.WIFEXITED(rc):
+                        print >> sys.stderr, '(exit %s)' % os.WEXITSTATUS(rc)
+                    elif os.WIFSIGNALED(rc):
+                        print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
+                return rc
+        finally:
             shutil.rmtree(tmpdir)
-            return rc
 
 def main(path='.'):
     args = sys.argv[1:]
