@@ -12,7 +12,8 @@ sources := \
 	hook.tex \
 	intro.tex \
 	mq.tex \
-	preface.tex
+	preface.tex \
+	template.tex
 
 image-sources := \
 	mq-stack.svg
@@ -22,7 +23,6 @@ example-sources := \
 	examples/hook.msglen \
 	examples/hook.simple \
 	examples/hook.ws \
-	examples/concepts \
 	examples/mq.qinit-help \
 	examples/mq.dodiff \
 	examples/mq.id \
