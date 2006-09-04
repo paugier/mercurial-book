@@ -16,14 +16,24 @@ import sys
 import tempfile
 import time
 
+tex_subs = {
+    '\\': '\\textbackslash{}',
+    '{': '\\{',
+    '}': '\\}',
+    }
+
+def gensubs(s):
+    start = 0
+    for i, c in enumerate(s):
+        sub = tex_subs.get(c)
+        if sub:
+            yield s[start:i]
+            start = i + 1
+            yield sub
+    yield s[start:]
+
 def tex_escape(s):
-    if '\\' in s:
-        s = s.replace('\\', '\\\\')
-    if '{' in s:
-        s = s.replace('{', '\\{')
-    if '}' in s:
-        s = s.replace('}', '\\}')
-    return s
+    return ''.join(gensubs(s))
         
 class example:
     shell = '/usr/bin/env bash'
