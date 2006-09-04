@@ -6,6 +6,7 @@
 
 import cStringIO
 import errno
+import getopt
 import os
 import pty
 import re
@@ -40,8 +41,9 @@ class example:
     prompt = '__run_example_prompt__ '
     pi_re = re.compile(r'#\$\s*(name):\s*(.*)$')
     
-    def __init__(self, name):
+    def __init__(self, name, verbose):
         self.name = name
+        self.verbose = verbose
 
     def parse(self):
         '''yield each hunk of input from the file.'''
@@ -60,19 +62,33 @@ class example:
             sys.stdout.flush()
 
     def send(self, s):
+        if self.verbose:
+            print >> sys.stderr, '>', self.debugrepr(s)
         while s:
             count = os.write(self.cfd, s)
             s = s[count:]
 
+    def debugrepr(self, s):
+        rs = repr(s)
+        limit = 60
+        if len(rs) > limit:
+            return ('%s%s ... [%d bytes]' % (rs[:limit], rs[0], len(s)))
+        else:
+            return rs
+            
     def receive(self):
         out = cStringIO.StringIO()
         while True:
             try:
+                if self.verbose:
+                    sys.stderr.write('< ')
                 s = os.read(self.cfd, 1024)
             except OSError, err:
                 if err.errno == errno.EIO:
                     return ''
                 raise
+            if self.verbose:
+                print >> sys.stderr, self.debugrepr(s)
             out.write(s)
             s = out.getvalue()
             if s.endswith(self.prompt):
@@ -90,6 +106,12 @@ class example:
         basename = os.path.basename(self.name)
         self.status('running %s ' % basename)
         tmpdir = tempfile.mkdtemp(prefix=basename)
+
+        rcfile = os.path.join(tmpdir, '.hgrc')
+        rcfp = open(rcfile, 'w')
+        print >> rcfp, '[ui]'
+        print >> rcfp, "username = Bryan O'Sullivan <bos@serpentine.com>"
+        
         rcfile = os.path.join(tmpdir, '.bashrc')
         rcfp = open(rcfile, 'w')
         print >> rcfp, 'PS1="%s"' % self.prompt
@@ -174,7 +196,11 @@ class example:
             shutil.rmtree(tmpdir)
 
 def main(path='.'):
-    args = sys.argv[1:]
+    opts, args = getopt.getopt(sys.argv[1:], 'v', ['verbose'])
+    verbose = False
+    for o, a in opts:
+        if o in ('-v', '--verbose'):
+            verbose = True
     errs = 0
     if args:
         for a in args:
@@ -185,7 +211,7 @@ def main(path='.'):
                 errs += 1
                 continue
             if stat.S_ISREG(st.st_mode) and st.st_mode & 0111:
-                if example(a).run():
+                if example(a, verbose).run():
                     errs += 1
             else:
                 print >> sys.stderr, '%s: not a file, or not executable' % a
@@ -198,7 +224,7 @@ def main(path='.'):
         pathname = os.path.join(path, name)
         st = os.lstat(pathname)
         if stat.S_ISREG(st.st_mode) and st.st_mode & 0111:
-            if example(pathname).run():
+            if example(pathname, verbose).run():
                 errs += 1
     print >> open(os.path.join(path, '.run'), 'w'), time.asctime()
     return errs
