@@ -28,7 +28,8 @@ example-sources := \
 	examples/mq.id \
 	examples/mq.tarball \
 	examples/mq.tools \
-	examples/mq.tutorial
+	examples/mq.tutorial \
+	examples/template.simple
 
 latex-options = \
 	-interaction batchmode \
