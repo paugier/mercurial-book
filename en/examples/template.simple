@@ -85,3 +85,8 @@ hg log -r1 --template '{node|short}\n'
 #$ name: combine
 
 hg log -r1 --template 'description:\n\t{desc|strip|fill68|tabindent}\n'
+
+#$ name: rev
+
+echo 'changeset = "rev: {rev}\n"' > rev
+hg log -l1 --style ./rev

@@ -129,6 +129,7 @@ class example:
         rcfile = os.path.join(tmpdir, '.bashrc')
         rcfp = open(rcfile, 'w')
         print >> rcfp, 'PS1="%s"' % self.prompt
+        print >> rcfp, 'PS2="%s"' % self.prompt
         print >> rcfp, 'unset HISTFILE'
         print >> rcfp, 'export EXAMPLE_DIR="%s"' % os.getcwd()
         print >> rcfp, 'export LANG=C'

@@ -29,7 +29,8 @@ example-sources := \
 	examples/mq.tarball \
 	examples/mq.tools \
 	examples/mq.tutorial \
-	examples/template.simple
+	examples/template.simple \
+	examples/template.svnstyle
 
 latex-options = \
 	-interaction batchmode \

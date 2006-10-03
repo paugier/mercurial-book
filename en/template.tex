@@ -11,7 +11,7 @@ customise the entire appearance of the built-in web interface.
 
 Packaged with Mercurial are some output styles that you can use
 immediately.  A style is simply a precanned template that someone
-wrote.
+wrote and installed somewhere that Mercurial can find.
 
 Before we take a look at Mercurial's bundled styles, let's review its
 normal output.
@@ -33,7 +33,7 @@ Project's changelog guidelines\cite{web:changelog}.
 You will not be shocked to learn that Mercurial's default output style
 is named \texttt{default}.
 
-\subsection{Setting an output style to use}
+\subsection{Setting a default style}
 
 You can modify the output style that Mercurial will use for every
 command by editing your \hgrc\ file, naming the style you would
@@ -101,7 +101,7 @@ and ``\texttt{\}}''), it will try to replace the braces and text with
 the expansion of whatever is inside.  To print a literal curly brace,
 you must escape it, as described in section~\ref{sec:template:escape}.
 
-\section{Basic template keywords}
+\section{Common template keywords}
 \label{sec:template:keyword}
 
 You can start writing simple templates immediately using the keywords
@@ -172,14 +172,20 @@ As indicated above, if you want the expansion of a template to contain
 a literal ``\Verb+\+'', ``\Verb+{+'', or ``\Verb+{+'' character, you
 must escape it.
 
-\section{Filtering expanded keywords}
+\section{Filtering keywords to change their results}
 \label{sec:template:filter}
 
-Some of the results of template expansion are not entirely easy to
+Some of the results of template expansion are not immediately easy to
 use.  Mercurial lets you specify an optional chain of \emph{filters}
 to modify the result of expanding a keyword.  You have already seen a
 common filter, \tplkwfilt{date}{isodate}, in action above, to make a
 date readable.
+
+Below is a list of the most commonly used filters that Mercurial
+supports.  While some filters can be applied to any text, others can
+only be used in specific circumstances.  The name of each filter is
+followed first by an indication of where it can be used, then a
+description of its effect.
 
 \begin{itemize}
 \item[\tplfilter{addbreaks}] Any text. Add an XHTML ``\Verb+<br/>+''
@@ -280,9 +286,185 @@ Note the use of ``\Verb+\t+'' (a tab character) in the template to
 force the first line to be indented; this is necessary since
 \tplkword{tabindent} indents all lines \emph{except} the first.
 
-Keep in mind that the order of filters in a chain is significant.
-Using \Verb+fill68|tabindent+ gives very different results from
+Keep in mind that the order of filters in a chain is significant.  The
+first filter is applied to the result of the keyword; the second to
+the result of the first filter; and so on.  For example, using
+\Verb+fill68|tabindent+ gives very different results from
 \Verb+tabindent|fill68+.
+
+
+\section{From templates to styles}
+
+A command line template provides a quick and simple way to format some
+output.  Templates can become verbose, though, and it's useful to be
+able to give a template a name.  A style file is a template with a
+name, stored in a file.
+
+More than that, using a style file unlocks the power of Mercurial's
+templating engine in ways that are not possible using the command line
+\hgopt{log}{--template} option.
+
+\subsection{The simplest of style files}
+
+Our simple style file contains just one line:
+
+\interaction{template.simple.rev}
+
+This tells Mercurial, ``if you're printing a changeset, use the text
+on the right as the template''.
+
+\subsection{Style file syntax}
+
+The syntax rules for a style file are simple.
+
+\begin{itemize}
+\item The file is processed one line at a time.
+
+\item Leading and trailing white space are ignored.
+
+\item Empty lines are skipped.
+
+\item If a line starts with either of the characters ``\texttt{\#}'' or
+  ``\texttt{;}'', the entire line is treated as a comment, and skipped
+  as if empty.
+
+\item A line starts with a keyword.  This must start with an
+  alphabetic character or underscore, and can subsequently contain any
+  alphanumeric character or underscore.  (In regexp notation, a
+  keyword must match \Verb+[A-Za-z_][A-Za-z0-9_]*+.)
+
+\item The next element must be an ``\texttt{=}'' character, which can
+  be preceded or followed by an arbitrary amount of white space.
+
+\item If the rest of the line starts and ends with matching quote
+  characters (either single or double quote), it is treated as a
+  template body.
+
+\item If the rest of the line \emph{does not} start with a quote
+  character, it is treated as the name of a file; the contents of this
+  file will be read and used as a template body.
+\end{itemize}
+
+\section{Style files by example}
+
+To illustrate how to write a style file, we will construct a few by
+example.  Rather than provide a complete style file and walk through
+it, we'll mirror the usual process of developing a style file by
+starting with something very simple, and walking through a series of
+successively more complete examples.
+
+\subsection{Identifying mistakes in style files}
+
+If Mercurial encounters a problem in a style file you are working on,
+it prints a terse error message that, once you figure out what it
+means, is actually quite useful.
+
+\interaction{template.svnstyle.syntax.input}
+
+Notice that \filename{broken.style} attempts to define a
+\texttt{changeset} keyword, but forgets to give any content for it.
+When instructed to use this style file, Mercurial promptly complains.
+
+\interaction{template.svnstyle.syntax.error}
+
+This error message looks intimidating, but it is not too hard to
+follow.
+
+\begin{itemize}
+\item The first component is simply Mercurial's way of saying ``I am
+  giving up''.
+  \begin{codesample4}
+    \textbf{abort:} broken.style:1: parse error
+  \end{codesample4}
+
+\item Next comes the name of the style file that contains the error.
+  \begin{codesample4}
+    abort: \textbf{broken.style}:1: parse error
+  \end{codesample4}
+
+\item Following the file name is the line number where the error was
+  encountered.
+  \begin{codesample4}
+    abort: broken.style:\textbf{1}: parse error
+  \end{codesample4}
+
+\item Finally, a description of what went wrong.
+  \begin{codesample4}
+    abort: broken.style:1: \textbf{parse error}
+  \end{codesample4}
+  The description of the problem is not always clear (as in this
+  case), but even when it is cryptic, it is almost always trivial to
+  visually inspect the offending line in the style file and see what
+  is wrong.
+\end{itemize}
+
+\subsection{Uniquely identifying a repository}
+
+If you would like to be able to identify a Mercurial repository
+``fairly uniquely'' using a short string as an identifier, you can
+use the first revision in the repository.
+\interaction{template.svnstyle.id} 
+This is not guaranteed to be unique, but it is nevertheless useful in
+many cases.
+\begin{itemize}
+\item It will not work in a completely empty repository, because such
+  a repository does not have a revision~zero.
+\item Neither will it work in the (extremely rare) case where a
+  repository is a merge of two or more formerly independent
+  repositories, and you still have those repositories around.
+\end{itemize}
+Here are some uses to which you could put this identifier:
+\begin{itemize}
+\item As a key into a table for a database that manages repositories
+  on a server.
+\item As half of a \{\emph{repository~ID}, \emph{revision~ID}\} tuple.
+  Save this information away when you run an automated build or other
+  activity, so that you can ``replay'' the build later if necessary.
+\end{itemize}
+
+\subsection{Mimicking Subversion's output}
+
+Let's try to emulate the default output format used by another
+revision control tool, Subversion.
+\interaction{template.svnstyle.short}
+
+Since Subversion's output style is fairly simple, it is easy to
+copy-and-paste a hunk of its output into a file, and replace the text
+produced above by Subversion with the template values we'd like to see
+expanded.
+\interaction{template.svnstyle.template}
+
+There are a few small ways in which this template deviates from the
+output produced by Subversion.
+\begin{itemize}
+\item Subversion prints a ``readable'' date (the ``\texttt{Wed, 27 Sep
+    2006}'' in the example output above) in parentheses.  Mercurial's
+  templating engine does not provide a way to display a date in this
+  format without also printing the time and time zone.
+\item We emulate Subversion's printing of ``separator'' lines full of
+  ``\texttt{-}'' characters by ending the template with such a line.
+  We use the templating engine's \tplkword{header} keyword to print a
+  separator line as the first line of output (see below), thus
+  achieving similar output to Subversion.
+\item Subversion's output includes a count in the header of the number
+  of lines in the commit message.  We cannot replicate this in
+  Mercurial; the templating engine does not currently provide a filter
+  that counts the number of items it is passed.
+\end{itemize}
+It took me no more than a minute or two of work to replace literal
+text from an example of Subversion's output with some keywords and
+filters to give the template above.  The style file simply refers to
+the template.
+\interaction{template.svnstyle.style}
+
+We could have included the text of the template file directly in the
+style file by enclosing it in quotes and replacing the newlines with
+``\texttt{\\n}'' sequences, but it would have made the style file too
+difficult to read.  Readability is a good guide when you're trying to
+decide whether some text belongs in a style file, or in a template
+file that the style file points to.  If the style file will look too
+big or cluttered if you insert a literal piece of text, drop it into a
+template instead.
 
 %%% Local Variables: 
 %%% mode: latex
