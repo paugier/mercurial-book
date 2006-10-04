@@ -13,7 +13,8 @@ sources := \
 	intro.tex \
 	mq.tex \
 	preface.tex \
-	template.tex
+	template.tex \
+	tour.tex
 
 image-sources := \
 	mq-stack.svg
