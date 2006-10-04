@@ -21,18 +21,18 @@ image-sources := \
 	mq-stack.svg
 
 example-sources := \
-	examples/daily.files \
-	examples/hook.msglen \
-	examples/hook.simple \
-	examples/hook.ws \
-	examples/mq.qinit-help \
-	examples/mq.dodiff \
-	examples/mq.id \
-	examples/mq.tarball \
-	examples/mq.tools \
-	examples/mq.tutorial \
-	examples/template.simple \
-	examples/template.svnstyle
+	daily.files \
+	hook.msglen \
+	hook.simple \
+	hook.ws \
+	mq.qinit-help \
+	mq.dodiff \
+	mq.id \
+	mq.tarball \
+	mq.tools \
+	mq.tutorial \
+	template.simple \
+	template.svnstyle
 
 latex-options = \
 	-interaction batchmode \
@@ -118,7 +118,7 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 
 examples: examples/.run
 
-examples/.run: $(example-sources:%=%.run)
+examples/.run: $(example-sources:%=examples/%.run)
 	touch examples/.run
 
 examples/%.run: examples/% examples/run-example
