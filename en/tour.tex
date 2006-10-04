@@ -4,13 +4,17 @@
 \section{Installing Mercurial on your system}
 \label{sec:tour:install}
 
+Prebuilt binary packages of Mercurial are available for every popular
+operating system.  These make it easy to start using Mercurial on your
+computer immediately.
+
 \subsection{Linux}
 
-All major Linux distributions provide a prebuilt Mercurial package.
 Because each Linux distribution has its own packaging tools, policies,
 and rate of development, it's difficult to give a comprehensive set of
-instructions on how to install Mercurial binaries, and the version of
-Mercurial that you will end up with can vary widely.  
+instructions on how to install Mercurial binaries.  The version of
+Mercurial that you will end up with can vary depending on how active
+the person is who maintains the package for your distribution.
 
 To keep things simple, I will focus on installing Mercurial from the
 command line under the most popular Linux distributions.  Most of
@@ -18,43 +22,41 @@ these distributions provide graphical package managers that will let
 you install Mercurial with a single click; the package name to look
 for is \texttt{mercurial}.
 
-\subsubsection{Debian}
+\begin{itemize}
+\item[Debian]
+  \begin{codesample4}
+    apt-get install mercurial
+  \end{codesample4}
 
-\begin{codesample2}
-  apt-get install mercurial
-\end{codesample2}
+\item[Fedora Core]
+  \begin{codesample4}
+    yum install mercurial
+  \end{codesample4}
 
-\subsubsection{Fedora Core}
+\item[Gentoo]
+  \begin{codesample4}
+    emerge mercurial
+  \end{codesample4}
 
-\begin{codesample2}
-  yum install mercurial
-\end{codesample2}
+\item[OpenSUSE]
+  \begin{codesample4}
+    yum install mercurial
+  \end{codesample4}
 
-\subsubsection{Gentoo}
-
-\begin{codesample2}
-  emerge mercurial
-\end{codesample2}
-
-\subsubsection{OpenSUSE}
-
-\begin{codesample2}
-  yum install mercurial
-\end{codesample2}
-
-\subsubsection{Ubuntu}
-
-\begin{codesample2}
-  apt-get install mercurial
-\end{codesample2}
+\item[Ubuntu] Ubuntu's Mercurial package is particularly old, and you
+  should not use it.  If you know how, you can rebuild and install the
+  Debian package.  It's probably easier to build Mercurial from source
+  and simply run that; see section~\ref{sec:srcinstall:unixlike} for
+  details.
+\end{itemize}
 
 \subsection{Mac OS X}
 
 Lee Cantey publishes an installer of Mercurial for Mac OS~X at
 \url{http://mercurial.berkwood.com}.  This package works on both
-Intel- and Power-based Macs, but requires you to install Universal
-Python before you can use it.  This is easy to do; simply follow the
-instructions on Lee's site.
+Intel-~and Power-based Macs.  Before you can use it, you must install
+a compatible version of Universal MacPython~\cite{web:macpython}.  This
+is easy to do; simply follow the instructions on Lee's site.
 
 \subsection{Solaris}
 
@@ -72,6 +74,7 @@ dependencies; it ``just works''.
   with Unix users, you must do a little additional configuration
   work. XXX Flesh this out.
 \end{note}
+
 
 %%% Local Variables: 
 %%% mode: latex

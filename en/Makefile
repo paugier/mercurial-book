@@ -13,6 +13,7 @@ sources := \
 	intro.tex \
 	mq.tex \
 	preface.tex \
+	srcinstall.tex \
 	template.tex \
 	tour.tex
 
