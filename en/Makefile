@@ -32,7 +32,8 @@ example-sources := \
 	mq.tools \
 	mq.tutorial \
 	template.simple \
-	template.svnstyle
+	template.svnstyle \
+	tour
 
 latex-options = \
 	-interaction batchmode \

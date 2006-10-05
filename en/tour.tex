@@ -75,6 +75,62 @@ dependencies; it ``just works''.
   work. XXX Flesh this out.
 \end{note}
 
+\section{Getting started}
+
+To begin, we'll use the \hgcmd{version} command to find out whether
+Mercurial is actually installed properly.  The actual version
+information that it prints isn't so important; it's whether it prints
+anything at all that we care about.
+\interaction{tour.version}
+
+\subsection{Built-in help}
+
+Mercurial provides a built-in help system.  This invaluable for those
+times when you find yourself stuck trying to remember how to run a
+command.  If you are completely stuck, simply run \hgcmd{help}; it
+will print a brief list of commands, along with a description of what
+each does.  If you ask for help on a specific command (as below), it
+prints more detailed information.
+\interaction{tour.help}
+For a more impressive level of detail (which you won't usually need)
+run \hgcmdargs{help}{\hggopt{-v}}.  The \hggopt{-v} option is short
+for \hggopt{--verbose}, and tells Mercurial to print more information
+than it usually would.
+
+\section{Working with a repository}
+
+In Mercurial, everything happens inside a \emph{repository}.  The
+repository for a project contains all of the files that ``belong to''
+that project, along with a historical record of the project's files.
+
+There's nothing particularly magical about a repository; it is simply
+a directory tree in your filesystem that Mercurial treats as special.
+You can rename delete a repository any time you like, using either the
+command line or your file browser.
+
+\subsection{Making a copy of a repository}
+
+\emph{Copying} a repository is just a little bit special.  While you
+could use a normal file copying command to make a copy of a
+repository, it's best to use a built-in command that Mercurial
+provides.  This command is called \hgcmd{clone}, because it creates an
+identical copy of an existing repository.
+\interaction{tour.clone}
+If our clone succeeded, we should now have a local directory called
+\dirname{hello}.  This directory will contain some files.
+\interaction{tour.ls}
+These files have the same contents and history in our repository as
+they do in the repository we cloned.
+
+Every Mercurial repository is complete, self-contained, and
+independent.  It contains its own private copy of a project's files
+and history.  A cloned repository remembers the location of the
+repository it was cloned from, but it does not communicate with that
+repository, or any other, unless you tell it to.
+
+What this means for now is that we're free to experiment with our
+repository, safe in the knowledge that it's a private ``sandbox'' that
+won't affect anyone else.
 
 %%% Local Variables: 
 %%% mode: latex
