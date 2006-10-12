@@ -434,11 +434,11 @@ Bringing changes into a repository is a simple matter of running the
 \interaction{tour.pull}
 As you can see from the before-and-after output of \hgcmd{tip}, we
 have successfully pulled changes into our repository.  There remains
-one step before we can work with those changes.
+one step before we can see these changes in the working directory.
 
-\section{Updating the working directory}
+\subsection{Updating the working directory}
 
-We have so far glossed over the relatioship between a repository and
+We have so far glossed over the relationship between a repository and
 its working directory.  The \hgcmd{pull} command that we ran in
 section~\ref{sec:tour:pull} brought changes into the repository, but
 if we check, there's no sign of those changes in the working
@@ -462,6 +462,13 @@ option to \hgcmd{pull}.
 \begin{codesample2}
   hg pull -u
 \end{codesample2}
+If you look back at the output of \hgcmd{pull} in
+section~\ref{sec:tour:pull} when we ran it without \hgopt{pull}{-u},
+you can see that it printed a helpful reminder that we'd have to take
+an explicit step to update the working directory:
+\begin{codesample2}
+  (run 'hg update' to get a working copy)
+\end{codesample2}
 
 To find out what revision the working directory is at, use the
 \hgcmd{parents} command.
@@ -471,6 +478,27 @@ revision number or changeset~ID to the \hgcmd{update} command.
 \interaction{tour.older}
 If you omit an explicit revision, \hgcmd{update} will update to the
 tip revision.
+
+\subsection{Pushing changes to another repository}
+
+Mercurial lets us push changes to another repository, from the
+repository we're currently visiting.  As with the example of
+\hgcmd{pull} above, we'll create a temporary repository to push our
+changes into.
+\interaction{tour.clone-push}
+The \hgcmd{outgoing} command tells us what changes would be pushed
+into another repository.
+\interaction{tour.outgoing}
+And the \hgcmd{push} command does the actual push.
+\interaction{tour.push}
+As with \hgcmd{pull}, the \hgcmd{push} command does not update the
+working directory in the repository that it's pushing changes into.
+(Unlike \hgcmd{pull}, \hgcmd{push} does not provide a \texttt{-u}
+option that updates the other repository's working directory.)
+
+What happens if we try to pull or push changes and the receiving
+repository already has those changes?  Nothing too exciting.
+\interaction{tour.push.nothing}
 
 %%% Local Variables: 
 %%% mode: latex
