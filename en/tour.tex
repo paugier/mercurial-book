@@ -108,7 +108,7 @@ a directory tree in your filesystem that Mercurial treats as special.
 You can rename delete a repository any time you like, using either the
 command line or your file browser.
 
-\subsection{Making a copy of a repository}
+\subsection{Making a local copy of a repository}
 
 \emph{Copying} a repository is just a little bit special.  While you
 could use a normal file copying command to make a copy of a
@@ -131,6 +131,105 @@ repository, or any other, unless you tell it to.
 What this means for now is that we're free to experiment with our
 repository, safe in the knowledge that it's a private ``sandbox'' that
 won't affect anyone else.
+
+\subsection{What's in a repository?}
+
+When we take a more detailed look inside a repository, we can see that
+it contains a directory named \dirname{.hg}.  This is where Mercurial
+keeps all of its metadata for the repository.
+\interaction{tour.ls-a}
+
+The contents of the \dirname{.hg} directory and its subdirectories are
+private to Mercurial.  Every other file and directory in the
+repository is yours to do with as you please.
+
+To introduce a little terminology, the \dirname{.hg} directory is the
+``real'' repository, and all of the files and directories that coexist
+with it are said to live in the ``working directory''.  An easy way to
+remember the distinction is that the \emph{repository} contains the
+\emph{history} of your project, while the \emph{working directory}
+contains a \emph{snapshot} of your project at a particular point in
+history.
+
+\section{A tour through history}
+
+One of the first things we might want to do with a new, unfamiliar
+repository is understand its history.  The \hgcmd{log} command gives
+us a view of history.
+\interaction{tour.log}
+By default, this command prints a brief paragraph of output for each
+change to the project that was recorded.  In Mercurial terminology, we
+call each of these recorded events a \emph{changeset}, because it can
+contain a record of changes to several files.
+
+The fields in a record of output from \hgcmd{log} are as follows.
+\begin{itemize}
+\item[\texttt{changeset}] This field has the format of a number,
+  followed by a colon, followed by a hexadecimal string.  These are
+  \emph{identifiers} for the changeset.  There are two identifiers
+  because the number is shorter and easier to type than the hex
+  string.
+\item[\texttt{user}] The identity of the person who created the
+  changeset.  This is a free-form field, but it most often contains a
+  person's name and email address.
+\item[\texttt{date}] The date and time on which the changeset was
+  created, and the timezone in which it was created.  (Thef date and
+  time are local to that timezone; they display what time and date it
+  was for the person who created the changeset.)
+\item[\texttt{summary}] The first line of the text message that the
+  creator of the changeset entered to describe the changeset.
+\end{itemize}
+The default output printed by \hgcmd{log} is purely a summary; it is
+missing a lot of detail.
+
+\subsection{Changesets, revisions, and identification}
+
+English being a notoriously sloppy language, we have a variety of
+terms that have the same meaning.  If you are talking about Mercurial
+history with other people, you will find that the word ``changeset''
+is often compressed to ``change'' or ``cset'', and sometimes a
+changeset is referred to as a ``revision'' or a ``rev''.
+
+While it doesn't matter what \emph{word} you use to refer to the
+concept of ``a~changeset'', the \emph{identifier} that you use to
+refer to ``a~\emph{specific} changeset'' is of great importance.
+Recall that the \texttt{changeset} field in the output from
+\hgcmd{log} identifies a changeset using both a number and a
+hexadecimal string.  The number is \emph{only valid in that
+  repository}, while the hex string is the \emph{permanent, unchanging
+  identifier} that will always identify that changeset in every copy
+of the repository.
+
+This distinction is important.  If you send someone an email talking
+about ``revision~33'', there's a high likelihood that their
+revision~33 will \emph{not be the same} as yours.  The reason for this
+is that a revision number depends on the order in which changes
+arrived in a repository, and there is no guarantee that the same
+changes will happen in the same order in different repositories.
+Three changes $a,b,c$ can easily appear in one repository as $0,1,2$,
+while in another as $1,0,2$.
+
+Mercurial uses revision numbers purely as a convenient shorthand.  If
+you need to discuss a changeset with someone, or make a record of a
+changeset for some other reason (for example, in a bug report), use
+the hexadecimal identifier.
+
+\subsection{Viewing specific revisions}
+
+To narrow the output of \hgcmd{log} down to a single revision, use the
+\hgopt{log}{-r} option.  You can use either a revision number or a
+long-form changeset identifier, and you can provide as many revisions
+as you want.
+\interaction{tour.log-r}
+
+If you want to see the history of several revisions without having to
+list each one, you can use \emph{range notation}; this lets you
+express the idea ``I want all revisions between $a$ and $b$,
+inclusive''.
+\interaction{tour.log.range}
+Mercurial also honours the order in which you specify revisions, so
+\hgcmdargs{log}{-r 2:4} prints $2,3,4$ while \hgcmdargs{log}{-r 4:2}
+prints $4,3,2$.
 
 %%% Local Variables: 
 %%% mode: latex
