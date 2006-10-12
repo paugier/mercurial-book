@@ -145,8 +145,8 @@ repository is yours to do with as you please.
 
 To introduce a little terminology, the \dirname{.hg} directory is the
 ``real'' repository, and all of the files and directories that coexist
-with it are said to live in the ``working directory''.  An easy way to
-remember the distinction is that the \emph{repository} contains the
+with it are said to live in the \emph{working directory}.  An easy way
+to remember the distinction is that the \emph{repository} contains the
 \emph{history} of your project, while the \emph{working directory}
 contains a \emph{snapshot} of your project at a particular point in
 history.
@@ -217,10 +217,9 @@ the hexadecimal identifier.
 \subsection{Viewing specific revisions}
 
 To narrow the output of \hgcmd{log} down to a single revision, use the
-\hgopt{log}{-r} option.  You can use either a revision number or a
-long-form changeset identifier, and you can provide as many revisions
-as you want.
-\interaction{tour.log-r}
+\hgopt{log}{-r} (or \hgopt{log}{--rev}) option.  You can use either a
+revision number or a long-form changeset identifier, and you can
+provide as many revisions as you want.  \interaction{tour.log-r}
 
 If you want to see the history of several revisions without having to
 list each one, you can use \emph{range notation}; this lets you
@@ -230,6 +229,248 @@ inclusive''.
 Mercurial also honours the order in which you specify revisions, so
 \hgcmdargs{log}{-r 2:4} prints $2,3,4$ while \hgcmdargs{log}{-r 4:2}
 prints $4,3,2$.
+
+\subsection{More detailed information}
+
+While the summary information printed by \hgcmd{log} is useful if you
+already know what you're looking for, you may need to see a complete
+description of the change, or a list of the files changed, if you're
+trying to decide whether a changeset is the one you're looking for.
+The \hgcmd{log} command's \hggopt{-v} (or \hggopt{--verbose})
+option gives you this extra detail.
+\interaction{tour.log-v}
+
+If you want to see both the description and content of a change, add
+the \hgopt{log}{-p} (or \hgopt{log}{--patch}) option.  This displays
+the content of a change as a \emph{unified diff} (if you've never seen
+a unified diff before, see section~\ref{sec:mq:patch} for an overview).
+\interaction{tour.log-vp}
+
+\section{All about command options}
+
+Let's take a brief break from exploring Mercurial commands to discuss
+a pattern in the way that they work; you may find this useful to keep
+in mind as we continiue our tour.
+
+Mercurial has a consistent and straightforward approach to dealing
+with the options that you can pass to commands.  It follows the
+conventions for options that are common to modern Linux and Unix
+systems.
+\begin{itemize}
+\item Every option has a long name.  For example, as we've already
+  seen, the \hgcmd{log} command accepts a \hgopt{log}{--rev} option.
+\item Most options have short names, too.  Instead of
+  \hgopt{log}{--rev}, we can use \hgopt{log}{-r}.  (The reason that
+  some options don't have short names is that the options in question
+  are rarely used.)
+\item Long options start with two dashes (e.g.~\hgopt{log}{--rev}),
+  while short options start with one (e.g.~\hgopt{log}{-r}).
+\item Option naming and usage is consistent across commands.  For
+  example, every command that lets you specify a changeset~ID or
+  revision number accepts both \hgopt{log}{-r} and \hgopt{log}{--rev}
+  arguments.
+\end{itemize}
+In the examples throughout this book, I use short options instead of
+long.  This just reflects my own preference, so don't read anything
+significant into it.
+
+Most commands that print output of some kind will print more output
+when passed a \hggopt{-v} (or \hggopt{--verbose}) option, and less
+when passed \hggopt{-q} (or \hggopt{--quiet}).
+
+\section{Making and reviewing changes}
+
+Now that we have a grasp of viewing history in Mercurial, let's take a
+look at making some changes and examining them.
+
+The first thing we'll do is isolate our experiment in a repository of
+its own.  We use the \hgcmd{clone} command, but we don't need to
+clone a copy of the remote repository.  Since we already have a copy
+of it locally, we can just clone that instead.  This is much faster
+than cloning over the network, and cloning a local repository uses
+less disk space in most cases, too.
+\interaction{tour.reclone}
+As an aside, it's often good practice to keep a ``pristine'' copy of a
+remote repository around, which you can then make temporary clones of
+to create sandboxes for each task you want to work on.  This lets you
+work on multiple tasks in parallel, each isolated from the others
+until it's complete and you're ready to integrate it back.  Because
+local clones are so cheap, there's almost no overhead to cloning and
+destroying repositories whenever you want.
+
+In our \dirname{my-hello} repository, we have a file
+\filename{hello.c} that contains the classic ``hello, world'' program.
+Let's use the ancient and venerable \command{sed} command to edit this
+file so that it prints a second line of output.  (I'm only using
+\command{sed} to do this because it's easy to write a scripted example
+this way.  Since you're not under the same constraint, you probably
+won't want to use \command{sed}; simply use your preferred text editor to
+do the same thing.)
+\interaction{tour.sed}
+
+Mercurial's \hgcmd{status} command will tell us what Mercurial knows
+about the files in the repository.
+\interaction{tour.status}
+The \hgcmd{status} command prints no output for some files, but a line
+starting with ``\texttt{M}'' for \filename{hello.c}.  Unless you tell
+it to, \hgcmd{status} will not print any output for files that have
+not been modified.  
+
+The ``\texttt{M}'' indicates that Mercurial has noticed that we
+modified \filename{hello.c}.  Notice that we didn't need to
+\emph{inform} Mercurial that we were going to modify the file before
+we started, or that we had modified the file after we were done; it
+was able to figure this out itself.
+
+It's a little bit helpful to know that we've modified
+\filename{hello.c}, but we might prefer to know exactly \emph{what}
+changes we've made to it.  To do this, we use the \hgcmd{diff}
+command.
+\interaction{tour.diff}
+
+\section{Recording changes in a new changeset}
+
+We can modify files, build and test our changes, and use
+\hgcmd{status} and \hgcmd{diff} to review our changes, until we're
+satisfied with what we've done and arrive at a natural stopping point
+where we want to record our work in a new changeset.
+
+The \hgcmd{commit} command lets us create a new changeset; we'll
+usually refer to this as ``making a commit'' or ``committing''.  
+
+\subsection{Writing a commit message}
+
+When we commit a change, Mercurial drops us into a text editor, to
+enter a message that will describe the modifications we've made in
+this changeset.  This is called the \emph{commit message}.  It will be
+a record for readers of what we did and why, and it will be printed by
+\hgcmd{log} after we've finished committing.
+\interaction{tour.commit}
+
+The editor that the \hgcmd{commit} command drops us into will contain
+an empty line, followed by a number of lines starting with
+``\texttt{HG:}''.
+\begin{codesample2}
+  \emph{empty line}
+  HG: changed hello.c
+\end{codesample2}
+Mercurial ignores the lines that start with ``\texttt{HG:}''; it uses
+them only to tell us which files it's recording changes to.  Modifying
+or deleting these lines has no effect.
+
+\subsection{Writing a good commit message}
+
+Since \hgcmd{log} only prints the first line of a commit message by
+default, it's best to write a commit message whose first line stands
+alone.  Here's a real example of a commit message that \emph{doesn't}
+follow this guideline, and hence has a summary that is not readable.
+\begin{codesample2}
+  changeset:   73:584af0e231be
+  user:        Censored Person <censored.person@example.org>
+  date:        Tue Sep 26 21:37:07 2006 -0700
+  summary:     include buildmeister/commondefs.   Add an exports and install
+\end{codesample2}
+
+As far as the remainder of the contents of the commit message are
+concerned, there are no hard-and-fast rules.  Mercurial itself doesn't
+interpret or care about the contents of the commit message, though
+your project may have policies that dictate a certain kind of
+formatting.
+
+My personal preference is for short, but informative, commit messages
+that tell me something that I can't figure out with a quick glance at
+the output of \hgcmdargs{log}{--patch}.
+
+\subsection{Aborting a commit}
+
+If you decide that you don't want to commit while in the middle of
+editing a commit message, simply exit from your editor without saving
+the file that it's editing.  This will cause nothing to happen to
+either the repository or the working directory.
+
+If we run the \hgcmd{commit} command without any arguments, it records
+all of the changes we've made, as reported by \hgcmd{status} and
+\hgcmd{diff}.
+
+\subsection{Admiring our new handywork}
+
+Once we've finished the commit, we can use the \hgcmd{tip} command to
+display the changeset we just created.  This command produces output
+that is identical to \hgcmd{log}, but it only displays the newest
+revision in the repository.
+\interaction{tour.tip}
+We refer to the newest revision in the repository as the tip revision,
+or simply the tip.
+
+\section{Sharing changes}
+
+We mentioned earlier that repositories in Mercurial are
+self-contained.  This means that the changeset we just created exists
+only in our \dirname{my-hello} repository.  Let's look at a few ways
+that we can propagate this change into other repositories.
+
+\subsection{Pulling changes from another repository}
+\label{sec:tour:pull}
+
+To get started, let's clone our original \dirname{hello} repository,
+which does not contain the change we just committed.  We'll call our
+temporary repository \dirname{hello-pull}.
+\interaction{tour.clone-pull}
+
+We'll use the \hgcmd{pull} command to bring changes from
+\dirname{my-hello} into \dirname{hello-pull}.  However, blindly
+pulling unknown changes into a repository is a somewhat scary
+prospect.  Mercurial provides the \hgcmd{incoming} command to tell us
+what changes the \hgcmd{pull} command \emph{would} pull into the
+repository, without actually pulling the changes in.
+\interaction{tour.incoming}
+(Of course, someone could cause more changesets to appear in the
+repository that we ran \hgcmd{incoming} in, before we get a chance to
+\hgcmd{pull} the changes, so that we could end up pulling changes that we
+didn't expect.)
+
+Bringing changes into a repository is a simple matter of running the
+\hgcmd{pull} command, and telling it which repository to pull from.
+\interaction{tour.pull}
+As you can see from the before-and-after output of \hgcmd{tip}, we
+have successfully pulled changes into our repository.  There remains
+one step before we can work with those changes.
+
+\section{Updating the working directory}
+
+We have so far glossed over the relatioship between a repository and
+its working directory.  The \hgcmd{pull} command that we ran in
+section~\ref{sec:tour:pull} brought changes into the repository, but
+if we check, there's no sign of those changes in the working
+directory.  This is because \hgcmd{pull} does not (by default) touch
+the working directory.  Instead, we use the \hgcmd{update} command to
+do this.
+\interaction{tour.update}
+
+It might seem a bit strange that \hgcmd{pull} doesn't update the
+working directory automatically.  There's actually a good reason for
+this: you can use \hgcmd{update} to update the working directory to
+the state it was in at \emph{any revision} in the history of the
+repository.  If you had the working directory updated to an old
+revision---to hunt down the origin of a bug, say---and ran a
+\hgcmd{pull} which automatically updated the working directory to a
+new revision, you might not be terribly happy.
+
+However, since pull-then-update is such a common thing to do,
+Mercurial lets you combine the two by passing the \hgopt{pull}{-u}
+option to \hgcmd{pull}.
+\begin{codesample2}
+  hg pull -u
+\end{codesample2}
+
+To find out what revision the working directory is at, use the
+\hgcmd{parents} command.
+\interaction{tour.parents}
+To update the working directory to a particular revision, give a
+revision number or changeset~ID to the \hgcmd{update} command.
+\interaction{tour.older}
+If you omit an explicit revision, \hgcmd{update} will update to the
+tip revision.
 
 %%% Local Variables: 
 %%% mode: latex

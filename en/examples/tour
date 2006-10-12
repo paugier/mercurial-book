@@ -35,3 +35,73 @@ hg log -r 1 -r 4
 #$ name: log.range
 
 hg log -r 2:4
+
+#$ name: log-v
+
+hg log -v -r 3
+
+#$ name: log-vp
+
+hg log -v -p -r 2
+
+#$ name: reclone
+
+cd ..
+hg clone hello my-hello
+cd my-hello
+
+#$ name: sed
+
+sed -i '/printf/a\\tprintf("hello again!\\n");' hello.c
+
+#$ name: status
+
+ls
+hg status
+
+#$ name: diff
+
+hg diff
+
+#$ name:
+
+export HGEDITOR='echo Added an extra line of output >'
+
+#$ name: commit
+
+hg commit
+
+#$ name: tip
+
+hg tip -vp
+
+#$ name: clone-pull
+
+cd ..
+hg clone hello hello-pull
+
+#$ name: incoming
+
+cd hello-pull
+hg incoming ../my-hello
+
+#$ name: pull
+
+hg tip
+hg pull ../my-hello
+hg tip
+
+#$ name: update
+
+grep printf hello.c
+hg update tip
+grep printf hello.c
+
+#$ name: parents
+
+hg parents
+
+#$ name: older
+
+hg update 2
+hg parents
