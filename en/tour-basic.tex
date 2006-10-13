@@ -182,6 +182,12 @@ The fields in a record of output from \hgcmd{log} are as follows.
 The default output printed by \hgcmd{log} is purely a summary; it is
 missing a lot of detail.
 
+Figure~\ref{fig:tour:history} provides a graphical representation of
+the history of the \dirname{hello} repository, to make it a little
+easier to see which direction history is ``flowing'' in.  We'll be
+returning to this figure several times in this chapter and the chapter
+that follows.
+
 \begin{figure}[ht]
   \centering
   \grafix{tour-history}
@@ -189,24 +195,29 @@ missing a lot of detail.
   \label{fig:tour:history}
 \end{figure}
 
-\subsection{Changesets, revisions, and identification}
+\subsection{Changesets, revisions, and talking to other 
+  people}
 
-English being a notoriously sloppy language, we have a variety of
-terms that have the same meaning.  If you are talking about Mercurial
-history with other people, you will find that the word ``changeset''
-is often compressed to ``change'' or ``cset'', and sometimes a
-changeset is referred to as a ``revision'' or a ``rev''.
+As English is a notoriously sloppy language, and computer science has
+a history of terminological confusion, revision control has a variety
+of terms that have the same meaning.  If you are talking about
+Mercurial history with other people, you will find that the word
+``changeset'' is often compressed to ``change'' or (when written)
+``cset'', and sometimes a changeset is referred to as a ``revision''
+or a ``rev''.
 
 While it doesn't matter what \emph{word} you use to refer to the
 concept of ``a~changeset'', the \emph{identifier} that you use to
 refer to ``a~\emph{specific} changeset'' is of great importance.
 Recall that the \texttt{changeset} field in the output from
 \hgcmd{log} identifies a changeset using both a number and a
-hexadecimal string.  The number is \emph{only valid in that
-  repository}, while the hex string is the \emph{permanent, unchanging
-  identifier} that will always identify that changeset in every copy
-of the repository.
-
+hexadecimal string.
+\begin{itemize}
+\item The revision number is \emph{only valid in that repository},
+\item while the hex string is the \emph{permanent, unchanging
+    identifier} that will always identify that exact changeset in
+  \emph{every} copy of the repository.
+\end{itemize}
 This distinction is important.  If you send someone an email talking
 about ``revision~33'', there's a high likelihood that their
 revision~33 will \emph{not be the same} as yours.  The reason for this
@@ -324,10 +335,10 @@ it to, \hgcmd{status} will not print any output for files that have
 not been modified.  
 
 The ``\texttt{M}'' indicates that Mercurial has noticed that we
-modified \filename{hello.c}.  Notice that we didn't need to
-\emph{inform} Mercurial that we were going to modify the file before
-we started, or that we had modified the file after we were done; it
-was able to figure this out itself.
+modified \filename{hello.c}.  We didn't need to \emph{inform}
+Mercurial that we were going to modify the file before we started, or
+that we had modified the file after we were done; it was able to
+figure this out itself.
 
 It's a little bit helpful to know that we've modified
 \filename{hello.c}, but we might prefer to know exactly \emph{what}
