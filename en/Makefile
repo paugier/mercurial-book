@@ -19,7 +19,8 @@ sources := \
 	tour-merge.tex
 
 image-sources := \
-	mq-stack.svg
+	mq-stack.svg \
+	tour-history.svg
 
 example-sources := \
 	daily.files \
