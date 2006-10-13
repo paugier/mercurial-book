@@ -15,7 +15,8 @@ sources := \
 	preface.tex \
 	srcinstall.tex \
 	template.tex \
-	tour.tex
+	tour-basic.tex \
+	tour-merge.tex
 
 image-sources := \
 	mq-stack.svg
