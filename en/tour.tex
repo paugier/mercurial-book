@@ -477,7 +477,8 @@ To update the working directory to a particular revision, give a
 revision number or changeset~ID to the \hgcmd{update} command.
 \interaction{tour.older}
 If you omit an explicit revision, \hgcmd{update} will update to the
-tip revision.
+tip revision, as shown by the second call to \hgcmd{update} in the
+example above.
 
 \subsection{Pushing changes to another repository}
 
@@ -511,6 +512,63 @@ In this example, we can see what changes we could push to the remote
 repository, but the repository is understandably not set up to let
 anonymous users push to it.
 \interaction{tour.push.net}
+
+\section{Merging streams of work}
+
+We've now covered cloning a repository, making changes in a
+repository, and pulling or pushing changes from one repository into
+another.  Our next step is \emph{merging} changes from separate
+repositories.
+
+Merging is a fundamental part of working with a distributed revision
+control tool.
+\begin{itemize}
+\item Alice and Bob each have a personal copy of a repository for a
+  project they're collaborating on.  Alice fixes a bug in her
+  repository; Bob adds a new feature in his.  They want the shared
+  repository to contain both the bug fix and the new feature.
+\item I frequently work on several different tasks for a single
+  project at once, each safely isolated in its own repository.
+  Working this way means that I often need to merge one piece of my
+  own work with another.
+\end{itemize}
+
+Because merging is such a common thing to need to do, Mercurial makes
+it easy.  Let's walk through the process.  We'll begin by cloning yet
+another repository (see how often they spring up?) and making a change
+in it.
+\interaction{tour.merge.clone}
+We should now have two copies of \filename{hello.c} with different
+contents.
+\interaction{tour.merge.cat}
+
+We already know that pulling changes from our \dirname{my-hello}
+repository will have no effect on the working directory.
+\interaction{tour.merge.pull}
+However, the \hgcmd{pull} command says something about ``heads''.  
+
+A head is a change that has no descendants.  The tip revision is thus
+a head, but a repository can contain more than one head.  We can view
+them using the \hgcmd{heads} command.
+\interaction{tour.merge.heads}
+What happens if we try to use the normal \hgcmd{update} command to
+update to the new tip?
+\interaction{tour.merge.update}
+Mercurial is telling us that the \hgcmd{update} command won't do a
+merge.  Instead, we use the \hgcmd{merge} command to merge the two
+heads.
+\interaction{tour.merge.merge}
+This updates the working directory so that it contains changes from
+both heads, which is reflected in both the output of \hgcmd{parents}
+and the contents of \filename{hello.c}.
+\interaction{tour.merge.parents}
+Whenever we've done a merge, \hgcmd{parents} will display two parents
+until we \hgcmd{commit} the results of the merge.
+\interaction{tour.merge.commit}
+We now have a new tip revision; notice that it has \emph{both} of
+our former heads as its parents.  These are the same revisions that
+were previously displayed by \hgcmd{parents}.
+\interaction{tour.merge.tip}
 
 %%% Local Variables: 
 %%% mode: latex
