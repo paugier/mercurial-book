@@ -27,17 +27,46 @@ another repository (see how often they spring up?) and making a change
 in it.
 \interaction{tour.merge.clone}
 We should now have two copies of \filename{hello.c} with different
-contents.
+contents.  The histories of the two repositories have also diverged,
+as illustrated in figure~\ref{fig:tour-merge:sep-repos}.
 \interaction{tour.merge.cat}
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-sep-repos}
+  \caption{Divergent recent histories of the \dirname{my-hello} and
+    \dirname{my-new-hello} repositories}
+  \label{fig:tour-merge:sep-repos}
+\end{figure}
 
 We already know that pulling changes from our \dirname{my-hello}
 repository will have no effect on the working directory.
 \interaction{tour.merge.pull}
 However, the \hgcmd{pull} command says something about ``heads''.  
 
-A head is a change that has no descendants.  The tip revision is thus
-a head, but a repository can contain more than one head.  We can view
-them using the \hgcmd{heads} command.
+A head is a change that has no descendants, or children, as they're
+also known.  The tip revision is thus a head, because the newest
+revision in a repository doesn't have any children, but a repository
+can contain more than one head.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-pull}
+  \caption{Repository contents after pulling from \dirname{my-hello} into
+    \dirname{my-new-hello}}
+  \label{fig:tour-merge:pull}
+\end{figure}
+
+In figure~\ref{fig:tour-merge:pull}, you can see the effect of the
+pull from \dirname{my-hello} into \dirname{my-new-hello}.  The history
+that was already present in \dirname{my-new-hello} is untouched, but a
+new revision has been added.  By referring to
+figure~\ref{fig:tour-merge:sep-repos}, we can see that the
+\emph{changeset ID} remains the same in the new repository, but the
+\emph{revision number} has changed.  (This, incidentally, is a fine
+example of why it's not safe to use revision numbers when discussing
+changesets.)  We can view the heads in a repository using the
+\hgcmd{heads} command.
 \interaction{tour.merge.heads}
 What happens if we try to use the normal \hgcmd{update} command to
 update to the new tip?

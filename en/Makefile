@@ -20,7 +20,9 @@ sources := \
 
 image-sources := \
 	mq-stack.svg \
-	tour-history.svg
+	tour-history.svg \
+	tour-merge-sep-repos.svg \
+	tour-merge-pull.svg
 
 example-sources := \
 	daily.files \
