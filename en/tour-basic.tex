@@ -356,6 +356,55 @@ where we want to record our work in a new changeset.
 The \hgcmd{commit} command lets us create a new changeset; we'll
 usually refer to this as ``making a commit'' or ``committing''.  
 
+\subsection{Setting up a username}
+
+When you try to run \hgcmd{commit} for the first time, it may succeed
+immediately, or it may fail with an error message that looks like
+this.
+\interaction{tour.commit-no-user}
+If it succeeds for you, the chances are that either you already have a
+file called \sfilename{.hgrc} in your home directory, or an
+environment variable set named \envar{EMAIL}.
+
+When you commit, Mercurial wants to know what your name is, so that it
+can record it.  If you have created a \sfilename{.hgrc} file, it will
+look in there.  If it doesn't find something suitable, it will see if
+your \envar{EMAIL} address is set.  If neither of these is present, it
+will produce the error message you can see above.
+
+\subsubsection{Creating a Mercurial configuration file}
+
+To set a user name, use your favourite editor to create a file called
+\sfilename{.hgrc} in your home directory.  Mercurial will use this
+file to look up your personalised configuration settings.  The initial
+contents of your \sfilename{.hgrc} should look like this.
+\begin{codesample2}
+  # This is a Mercurial configuration file.
+  [ui]
+  username = Firstname Lastname <email.address@domain.net>
+\end{codesample2}
+The ``\texttt{[ui]}'' line begins a \emph{section} of the config file,
+so you can read the ``\texttt{username = ...}'' line as meaning ``set
+the value of the \texttt{username} item in the \texttt{ui} section''.
+A section continues until a new section begins, or the end of the
+file.  Mercurial ignores empty lines and treats any text from
+``\texttt{\#}'' to the end of a line as a comment.
+
+\subsubsection{Choosing a user name}
+
+You can use any text you like as the value of the \texttt{username}
+config item, since this information is for reading by other people,
+but for interpreting by Mercurial.  The convention that most people
+follow is to use their name and email address, as in the example
+above.
+
+\begin{note}
+  Mercurial's built-in web server obfuscates email addresses, to make
+  it more difficult for the email harvesting tools that spammers use.
+  This reduces the likelihood that you'll start receiving more junk
+  email if you publish a Mercurial repository on the web.
+\end{note}
+
 \subsection{Writing a commit message}
 
 When we commit a change, Mercurial drops us into a text editor, to
@@ -410,7 +459,7 @@ If we run the \hgcmd{commit} command without any arguments, it records
 all of the changes we've made, as reported by \hgcmd{status} and
 \hgcmd{diff}.
 
-\subsection{Admiring our new handywork}
+\subsection{Admiring our new handiwork}
 
 Once we've finished the commit, we can use the \hgcmd{tip} command to
 display the changeset we just created.  This command produces output

@@ -44,6 +44,8 @@ repository will have no effect on the working directory.
 \interaction{tour.merge.pull}
 However, the \hgcmd{pull} command says something about ``heads''.  
 
+\subsection{Head changesets}
+
 A head is a change that has no descendants, or children, as they're
 also known.  The tip revision is thus a head, because the newest
 revision in a repository doesn't have any children, but a repository
@@ -68,6 +70,9 @@ example of why it's not safe to use revision numbers when discussing
 changesets.)  We can view the heads in a repository using the
 \hgcmd{heads} command.
 \interaction{tour.merge.heads}
+
+\subsection{Performing the merge}
+
 What happens if we try to use the normal \hgcmd{update} command to
 update to the new tip?
 \interaction{tour.merge.update}
@@ -89,6 +94,9 @@ This updates the working directory so that it contains changes from
 \emph{both} heads, which is reflected in both the output of
 \hgcmd{parents} and the contents of \filename{hello.c}.
 \interaction{tour.merge.parents}
+
+\subsection{Committing the results of the merge}
+
 Whenever we've done a merge, \hgcmd{parents} will display two parents
 until we \hgcmd{commit} the results of the merge.
 \interaction{tour.merge.commit}
@@ -101,6 +109,59 @@ what happens to the working directory during the merge, and how this
 affects the repository when the commit happens.  During the merge, the
 working directory has two parent changesets, and these become the
 parents of the new changeset.
+
+\section{Merging conflicting changes}
+
+Most merges are simple affairs, but sometimes you'll find yourself
+merging a change that you made with another, where both modify the
+same portions of the same files.  Unless both modifications are
+identical, this results in a \emph{conflict}, where you have to decide
+how to reconcile the different changes into something coherent.
+
+\section{Using an extension to simplify merging}
+
+The process of merging changes as outlined above is straightforward,
+but requires running three commands in sequence.
+\begin{codesample2}
+  hg pull
+  hg merge
+  hg commit -m 'Merged remote changes'
+\end{codesample2}
+In the case of the final commit, you also need to come up with a
+commit message, which is almost always going to be a piece of
+uninteresting ``boilerplate'' text.
+
+It would be nice to reduce the number of steps needed, if this were
+possible.  Indeed, Mercurial is distributed with an extension called
+\hgext{fetch} that does just this.
+
+Mercurial provides a flexible extension mechanism that lets people
+extend its functionality, while keeping the core of Mercurial small
+and easy to deal with.  Some extensions add new commands that you can
+use from the command line, while others work ``behind the scenes,''
+for example adding capabilities to the server.
+
+The \hgext{fetch} extension adds a new command called, not
+surprisingly, \hgcmd{fetch}.  This extension acts as a combination of
+\hgcmd{pull}, \hgcmd{update} and \hgcmd{merge}.  It begins by pulling
+changes from another repository into the current repository.  If it
+finds that the changes added a new head to the repository, it begins a
+merge, then commits the result of the merge with an
+automatically-generated commit message.  If no new heads were added,
+it updates the working directory to the new tip changeset.
+
+Enabling the \hgext{fetch} extension is easy.  Edit your
+\sfilename{.hgrc}, and either go to the \rcsection{extensions} section
+or create an \rcsection{extensions} section.  Then add a line that
+simply reads ``\Verb+fetch +''.
+\begin{codesample2}
+  [extensions]
+  fetch =
+\end{codesample2}
+(Normally, on the right-hand side of the ``\texttt{=}'' would appear
+the location of the extension, but since the \hgext{fetch} extension
+is in the standard distribution, Mercurial knows where to search for
+it.)
 
 %%% Local Variables: 
 %%% mode: latex

@@ -66,6 +66,16 @@ hg diff
 #$ name:
 
 export HGEDITOR='echo Added an extra line of output >'
+HGRCPATH_ORIG=$HGRCPATH
+export HGRCPATH=
+
+#$ name: commit-no-user
+
+hg commit
+
+#$ name:
+
+export HGRCPATH=$HGRCPATH_ORIG
 
 #$ name: commit
 
