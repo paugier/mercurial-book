@@ -22,7 +22,8 @@ image-sources := \
 	mq-stack.svg \
 	tour-history.svg \
 	tour-merge-sep-repos.svg \
-	tour-merge-pull.svg
+	tour-merge-pull.svg \
+	tour-merge-merge.svg
 
 example-sources := \
 	daily.files \

@@ -72,12 +72,22 @@ What happens if we try to use the normal \hgcmd{update} command to
 update to the new tip?
 \interaction{tour.merge.update}
 Mercurial is telling us that the \hgcmd{update} command won't do a
-merge.  Instead, we use the \hgcmd{merge} command to merge the two
-heads.
+merge; it won't update the working directory when it thinks we might
+be wanting to do a merge, unless we force it to do so.  Instead, we
+use the \hgcmd{merge} command to merge the two heads.
 \interaction{tour.merge.merge}
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-merge}
+  \caption{Working directory and repository during merge, and
+    following commit}
+  \label{fig:tour-merge:merge}
+\end{figure}
+
 This updates the working directory so that it contains changes from
-both heads, which is reflected in both the output of \hgcmd{parents}
-and the contents of \filename{hello.c}.
+\emph{both} heads, which is reflected in both the output of
+\hgcmd{parents} and the contents of \filename{hello.c}.
 \interaction{tour.merge.parents}
 Whenever we've done a merge, \hgcmd{parents} will display two parents
 until we \hgcmd{commit} the results of the merge.
