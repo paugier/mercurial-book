@@ -39,7 +39,8 @@ def tex_escape(s):
         
 class example:
     shell = '/usr/bin/env bash'
-    prompt = '__run_example_prompt__ '
+    ps1 = '__run_example_ps1__ '
+    ps2 = '__run_example_ps2__ '
     pi_re = re.compile(r'#\$\s*(name):\s*(.*)$')
     
     timeout = 5
@@ -99,21 +100,23 @@ class example:
                 s = self.read()
             except OSError, err:
                 if err.errno == errno.EIO:
-                    return ''
+                    return '', ''
                 raise
             if self.verbose:
                 print >> sys.stderr, self.debugrepr(s)
             out.write(s)
             s = out.getvalue()
-            if s.endswith(self.prompt):
-                return s.replace('\r\n', '\n')[:-len(self.prompt)]
+            if s.endswith(self.ps1):
+                return self.ps1, s.replace('\r\n', '\n')[:-len(self.ps1)]
+            if s.endswith(self.ps2):
+                return self.ps2, s.replace('\r\n', '\n')[:-len(self.ps2)]
         
     def sendreceive(self, s):
         self.send(s)
-        r = self.receive()
+        ps, r = self.receive()
         if r.startswith(s):
             r = r[len(s):]
-        return r
+        return ps, r
     
     def run(self):
         ofp = None
@@ -128,8 +131,8 @@ class example:
         
         rcfile = os.path.join(tmpdir, '.bashrc')
         rcfp = open(rcfile, 'w')
-        print >> rcfp, 'PS1="%s"' % self.prompt
-        print >> rcfp, 'PS2="%s"' % self.prompt
+        print >> rcfp, 'PS1="%s"' % self.ps1
+        print >> rcfp, 'PS2="%s"' % self.ps2
         print >> rcfp, 'unset HISTFILE'
         print >> rcfp, 'export EXAMPLE_DIR="%s"' % os.getcwd()
         print >> rcfp, 'export LANG=C'
@@ -153,12 +156,19 @@ class example:
                 os._exit(0)
         self.poll.register(self.cfd, select.POLLIN | select.POLLERR |
                            select.POLLHUP)
+
+        prompts = {
+            '': '',
+            self.ps1: '$',
+            self.ps2: '>',
+            }
+
         try:
             try:
                 # eat first prompt string from shell
                 self.read()
                 # setup env and prompt
-                self.sendreceive('source %s\n' % rcfile)
+                ps, output = self.sendreceive('source %s\n' % rcfile)
                 for hunk in self.parse():
                     # is this line a processing instruction?
                     m = self.pi_re.match(hunk)
@@ -174,18 +184,20 @@ class example:
                                 ofp = None
                     elif hunk.strip():
                         # it's something we should execute
-                        output = self.sendreceive(hunk)
+                        newps, output = self.sendreceive(hunk)
                         if not ofp:
                             continue
                         # first, print the command we ran
                         if not hunk.startswith('#'):
                             nl = hunk.endswith('\n')
-                            hunk = ('$ \\textbf{%s}' %
-                                    tex_escape(hunk.rstrip('\n')))
+                            hunk = ('%s \\textbf{%s}' %
+                                    (prompts[ps],
+                                     tex_escape(hunk.rstrip('\n'))))
                             if nl: hunk += '\n'
                         ofp.write(hunk)
                         # then its output
                         ofp.write(tex_escape(output))
+                    ps = newps
                 self.status('\n')
                 open(self.name + '.run', 'w')
             except:
@@ -195,7 +207,7 @@ class example:
                 raise
             else:
                 try:
-                    output = self.sendreceive('exit\n')
+                    ps, output = self.sendreceive('exit\n')
                     if ofp:
                         ofp.write(output)
                     os.close(self.cfd)

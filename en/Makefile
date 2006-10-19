@@ -19,11 +19,15 @@ sources := \
 	tour-merge.tex
 
 image-sources := \
+	kdiff3.png \
 	mq-stack.svg \
 	tour-history.svg \
-	tour-merge-sep-repos.svg \
+	tour-merge-conflict.svg \
+	tour-merge-merge.svg \
 	tour-merge-pull.svg \
-	tour-merge-merge.svg
+	tour-merge-sep-repos.svg
+
+image-svg := $(filter %.svg,$(image-sources))
 
 example-sources := \
 	daily.files \
@@ -38,7 +42,8 @@ example-sources := \
 	mq.tutorial \
 	template.simple \
 	template.svnstyle \
-	tour
+	tour \
+	tour-merge-conflict
 
 latex-options = \
 	-interaction batchmode \
@@ -134,5 +139,7 @@ build_id.tex: $(wildcard ../.hg/00changelog.[id])
 	echo -n $(hg_id) > build_id.tex
 
 clean:
-	rm -rf beta html pdf *.eps *.pdf *.png *.aux *.dvi *.log *.out \
+	rm -rf beta html pdf \
+		$(image-svg:%.svg=%.pdf) \
+		$(image-svg:%.svg=%.png) \
 		examples/*.{out,run} examples/.run build_id.tex

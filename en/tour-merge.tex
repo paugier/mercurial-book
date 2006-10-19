@@ -113,12 +113,126 @@ parents of the new changeset.
 \section{Merging conflicting changes}
 
 Most merges are simple affairs, but sometimes you'll find yourself
-merging a change that you made with another, where both modify the
-same portions of the same files.  Unless both modifications are
-identical, this results in a \emph{conflict}, where you have to decide
-how to reconcile the different changes into something coherent.
+merging changes where each modifies the same portions of the same
+files.  Unless both modifications are identical, this results in a
+\emph{conflict}, where you have to decide how to reconcile the
+different changes into something coherent.
 
-\section{Using an extension to simplify merging}
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-conflict}
+  \caption{Conflicting changes to a document}
+  \label{fig:tour-merge:conflict}
+\end{figure}
+
+Figure~\ref{fig:tour-merge:conflict} illustrates an instance of two
+conflicting changes to a document.  We started with a single version
+of the file; then we made some changes; while someone else made
+different changes to the same text.  Our task in resolving the
+conflicting changes is to decide what the file should look like.
+
+Mercurial doesn't have a built-in facility for handling conflicts.
+Instead, it runs an external program called \command{hgmerge}.  This
+is a shell script that is bundled with Mercurial; you can change it to
+behave however you please.  What it does by default is try to find one
+of several different merging tools that are likely to be installed on
+your system.  It first tries a few fully automatic merging tools; if
+these don't succeed (because the resolution process requires human
+guidance) or aren't present, the script tries a few different
+graphical merging tools.
+
+It's also possible to get Mercurial to run another program or script
+instead of \command{hgmerge}, by setting the \envar{HGMERGE}
+environment variable to the name of your preferred program.
+
+\subsection{Using a graphical merge tool}
+
+My preferred graphical merge tool is \command{kdiff3}, which I'll use
+to describe the features that are common to graphical file merging
+tools.  You can see a screenshot of \command{kdiff3} in action in
+figure~\ref{fig:tour-merge:kdiff3}.  The kind of merge it is
+performing is called a \emph{three-way merge}, because there are three
+different versions of the file of interest to us.  The tool thus
+splits the upper portion of the window into three panes:
+\begin{itemize}
+\item At the left is the \emph{base} version of the file, i.e.~the
+  most recent version from which the two versions we're trying to
+  merge are descended.
+\item In the middle is ``our'' version of the file, with the contents
+  that we modified.
+\item On the right is ``their'' version of the file, the one that
+  from the changeset that we're trying to merge with.
+\end{itemize}
+In the pane below these is the current \emph{result} of the merge.
+Our task is to replace all of the red text, which indicates unresolved
+conflicts, with some sensible merger of the ``ours'' and ``theirs''
+versions of the file.
+
+All four of these panes are \emph{locked together}; if we scroll
+vertically or horizontally in any of them, the others are updated to
+display the corresponding sections of their respective files.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{kdiff3}
+  \caption{Using \command{kdiff3} to merge versions of a file}
+  \label{fig:tour-merge:kdiff3}
+\end{figure}
+
+For each conflicting portion of the file, we can choose to resolve
+thhe conflict using some combination of text from the base version,
+ours, or theirs.  We can also manually edit the merged file at any
+time, in case we need to make further modifications.
+
+There are \emph{many} file merging tools available, too many to cover
+here.  They vary in which platforms they are available for, and in
+their particular strengths and weaknesses.  Most are tuned for merging
+files containing plain text, while a few are aimed at specialised file
+formats (generally XML).
+
+\subsection{A worked example}
+
+In this example, we will reproduce the file modification history of
+figure~\ref{fig:tour-merge:conflict} above.  Let's begin by creating a
+repository with a base version of our document.
+\interaction{tour-merge-conflict.wife}
+We'll clone the repository and make a change to the file.
+\interaction{tour-merge-conflict.cousin}
+And another clone, to simulate someone else making a change to the
+file.  (This hints at the idea that it's not all that unusual to merge
+with yourself when you isolate tasks in separate repositories, and
+indeed to find and resolve conflicts while doing so.)
+\interaction{tour-merge-conflict.son}
+Having created two different versions of the file, we'll set up an
+environment suitable for running our merge.
+\interaction{tour-merge-conflict.pull}
+
+In this example, I won't use Mercurial's normal \command{hgmerge}
+program to do the merge, because it would drop my nice automated
+example-running tool into a graphical user interface.  Instead, I'll
+set \envar{HGMERGE} to tell Mercurial to use the non-interactive
+\command{merge} command.  This is bundled with many Unix-like systems.
+If you're following this example on your computer, don't bother
+setting \envar{HGMERGE}.
+\interaction{tour-merge-conflict.merge}
+Because \command{merge} can't resolve the conflicting changes, it
+leaves \emph{merge markers} inside the file that has conflicts,
+indicating which lines have conflicts, and whether they came from our
+version of the file or theirs.
+
+Mercurial can tell from the way \command{merge} exits that it wasn't
+able to merge successfully, so it tells us what commands we'll need to
+run if we want to redo the merging operation.  This could be useful
+if, for example, we were running a graphical merge tool and quit
+because we were confused or realised we had made a mistake.
+
+If automatic or manual merges fail, there's nothing to prevent us from
+``fixing up'' the affected files ourselves, and committing the results
+of our merge:
+\interaction{tour-merge-conflict.commit}
+
+\section{Simplifying the pull-merge-commit 
+  sequence}
 
 The process of merging changes as outlined above is straightforward,
 but requires running three commands in sequence.
@@ -127,9 +241,9 @@ but requires running three commands in sequence.
   hg merge
   hg commit -m 'Merged remote changes'
 \end{codesample2}
-In the case of the final commit, you also need to come up with a
-commit message, which is almost always going to be a piece of
-uninteresting ``boilerplate'' text.
+In the case of the final commit, you also need to enter a commit
+message, which is almost always going to be a piece of uninteresting
+``boilerplate'' text.
 
 It would be nice to reduce the number of steps needed, if this were
 possible.  Indeed, Mercurial is distributed with an extension called
