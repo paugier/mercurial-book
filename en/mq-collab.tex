@@ -1,0 +1,164 @@
+\chapter{Advanced uses of Mercurial Queues}
+
+While it's easy to pick up straightforward uses of Mercurial Queues,
+use of a little discipline and some of MQ's less frequently used
+capabilities makes it possible to work in complicated development
+environments.
+
+In this chapter, I will discuss a technique I have developed to manage
+the development of an Infiniband device driver for the Linux kernel.
+The driver in question is large (at least as drivers go), with 25,000
+lines of code spread across 35 source files.  It is maintained by a
+small team of developers.
+
+While much of the material in this chapter is specific to Linux, the
+same principles apply to any code base for which you're not the
+primary owner, and upon which you need to do a lot of development.
+
+\section{The problem of many targets}
+
+The Linux kernel changes rapidly, and has never been internally
+stable; developers frequently make drastic changes between releases.
+This means that a version of the driver that works well with a
+particular released version of the kernel will not even \emph{compile}
+correctly against, typically, any other version.
+
+To maintain a driver, we have to keep a number of distinct versions of
+Linux in mind.
+\begin{itemize}
+\item One target is the main Linux kernel development tree.
+  Maintenance of the code is in this case partly shared by other
+  developers in the kernel community, who make ``drive-by''
+  modifications to the driver as they develop and refine kernel
+  subsystems.
+\item We also maintain a number of ``backports'' to older versions of
+  the Linux kernel, to support the needs of customers who are running
+  older Linux distributions that do not incorporate our drivers.
+\item Finally, we make software releases on a schedule that is
+  necessarily not aligned with those used by Linux distributors and
+  kernel developers, so that we can deliver new features to customers
+  without forcing them to upgrade their entire kernels or
+  distributions.
+\end{itemize}
+
+\subsection{Tempting approaches that don't work well}
+
+There are two ``standard'' ways to maintain a piece of software that
+has to target many different environments.
+
+The first is to maintain a number of branches, each intended for a
+single target.  The trouble with this approach is that you must
+maintain iron discipline in the flow of changes between repositories.
+A new feature or bug fix must start life in a ``pristine'' repository,
+then percolate out to every backport repository.  Backport changes are
+more limited in the branches they should propagate to; a backport
+change that is applied to a branch where it doesn't belong will
+probably stop the driver from compiling.
+
+The second is to maintain a single source tree filled with conditional
+statements that turn chunks of code on or off depending on the
+intended target.  Because these ``ifdefs'' are not allowed in the
+Linux kernel tree, a manual or automatic process must be followed to
+strip them out and yield a clean tree.  A code base maintained in this
+fashion rapidly becomes a rat's nest of conditional blocks that are
+difficult to understand and maintain.
+
+Neither of these approaches is well suited to a situation where you
+don't ``own'' the canonical copy of a source tree.  In the case of a
+Linux driver that is distributed with the standard kernel, Linus's
+tree contains the copy of the code that will be treated by the world
+as canonical.  The upstream version of ``my'' driver can be modified
+by people I don't know, without me even finding out about it until
+after the changes show up in Linus's tree.  
+
+These approaches have the added weakness of making it difficult to
+generate well-formed patches to submit upstream.
+
+In principle, Mercurial Queues seems like a good candidate to manage a
+development scenario such as the above.  While this is indeed the
+case, MQ contains a few added features that make the job more
+pleasant.
+
+\section{Conditionally applying patches with guards}
+
+Perhaps the best way to maintain sanity with so many targets is to be
+able to choose specific patches to apply for a given situation.  MQ
+provides a feature called ``guards'' (which originates with quilt's
+\texttt{guards} command) that does just this.  To start off, let's
+create a simple repository for experimenting in.
+\interaction{mq.guards.init}
+This gives us a tiny repository that contains two patches that don't
+have any dependencies on each other, because they touch different files.
+
+The idea behind conditional application is that you can ``tag'' a
+patch with a \emph{guard}, which is simply a text string of your
+choosing, then tell MQ to select specific guards to use when applying
+patches.  MQ will then either apply, or skip over, a guarded patch,
+depending on the guards that you have selected.
+
+A patch can have an arbitrary number of guards;
+each one is \emph{positive} (``apply this patch if this guard is
+selected'') or \emph{negative} (``skip this patch if this guard is
+selected'').  A patch with no guards is always applied.
+
+\section{Controlling the guards on a patch}
+
+The \hgcmd{qguard} command lets you determine which guards should
+apply to a patch, or display the guards that are already in effect.
+Without any arguments, it displays the guards on the current topmost
+patch.
+\interaction{mq.guards.qguard}
+To set a positive guard on a patch, prefix the name of the guard with
+a ``\texttt{+}''.
+\interaction{mq.guards.qguard.pos}
+To set a negative guard on a patch, prefix the name of the guard with
+a ``\texttt{-}''.
+\interaction{mq.guards.qguard.neg}
+
+\begin{note}
+  The \hgcmd{qguard} command \emph{sets} the guards on a patch; it
+  doesn't \emph{modify} them.  What this means is that if you run
+  \hgcmdargs{qguard}{+a +b} on a patch, then \hgcmdargs{qguard}{+c} on
+  the same patch, the \emph{only} guard that will be set on it
+  afterwards is \texttt{+c}.
+\end{note}
+
+Mercurial stores guards in the \sfilename{series} file; the form in
+which they are stored is easy both to understand and to edit by hand.
+(In other words, you don't have to use the \hgcmd{qguard} command if
+you don't want to; it's okay to simply edit the \sfilename{series}
+file.)
+\interaction{mq.guards.series}
+
+\section{Selecting the guards to use}
+
+The \hgcmd{qselect} command determines which guards are active at a
+given time.  The effect of this is to determine which patches MQ will
+apply the next time you run \hgcmd{qpush}.  It has no other effect; in
+particular, it doesn't do anything to patches that are already
+applied.
+
+With no arguments, the \hgcmd{qselect} command lists the guards
+currently in effect, one per line of output.  Each argument is treated
+as the name of a guard to apply.
+\interaction{mq.guards.qselect.foo}
+In case you're interested, the currently selected guards are stored in
+the \sfilename{guards} file.
+\interaction{mq.guards.qselect.cat}
+We can see the effect the selected guards have when we run
+\hgcmd{qpush}.
+\interaction{mq.guards.qselect.qpush}
+
+A guard cannot start with a ``\texttt{+}'' or ``\texttt{-}''
+character.
+\interaction{mq.guards.qselect.error}
+Changing the selected guards changes the patches that are applied.
+\interaction{mq.guards.qselect.quux}
+You can see here that negative guards take precedence over positive
+guards.
+\interaction{mq.guards.qselect.foobar}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

@@ -12,6 +12,8 @@ sources := \
 	hook.tex \
 	intro.tex \
 	mq.tex \
+	mq-collab.tex \
+	mq-ref.tex \
 	preface.tex \
 	srcinstall.tex \
 	template.tex \
@@ -34,6 +36,7 @@ example-sources := \
 	hook.msglen \
 	hook.simple \
 	hook.ws \
+	mq.guards \
 	mq.qinit-help \
 	mq.dodiff \
 	mq.id \
