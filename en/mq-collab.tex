@@ -154,15 +154,12 @@ We can see the effect the selected guards have when we run
 \interaction{mq.guards.qselect.qpush}
 
 A guard cannot start with a ``\texttt{+}'' or ``\texttt{-}''
-character.  The name of a guard must start with an alphabetic
-character (upper or lower case) or an underscore.  The rest of the
-guard's name can contain any of these characters, or a digit.  These
-rules are similar to those used for variable naming in most popular
-programming languages.  If you try to use a guard with an invalid
-name, MQ will complain:
-\interaction{mq.guards.qselect.error}
+character.  The name of a guard must not contain white space, but most
+othter characters are acceptable.  If you try to use a guard with an
+invalid name, MQ will complain:
+\interaction{mq.guards.qselect.error} 
 Changing the selected guards changes the patches that are applied.
-\interaction{mq.guards.qselect.quux}
+\interaction{mq.guards.qselect.quux} 
 You can see in the example below that negative guards take precedence
 over positive guards.
 \interaction{mq.guards.qselect.foobar}
@@ -250,9 +247,132 @@ closely as possible.  This is why we keep accepted patches around for
 a while.
 
 The ``backport'' and ``do not ship'' patches float at the end of the
-\sfilename{series} file in part because they'll never be shipped
-upstream.  Additionally, the backport patches must be applied on top
-of all other patches.
+\sfilename{series} file.  The backport patches must be applied on top
+of all other patches, and the ``do not ship'' patches might as well
+stay out of harm's way.
+
+\section{Maintaining the patch series}
+
+In my work, I use a number of guards to control which patches are to
+be applied.
+
+\begin{itemize}
+\item ``Accepted'' patches are guarded with \texttt{accepted}.  I
+  enable this guard most of the time.  When I'm applying the patches
+  on top of a tree where the patches are already present, I can turn
+  this patch off, and the paptches that follow it will apply cleanly.
+\item Patches that are ``finished'', but not yet submitted, have no
+  guards.  If I'm applying the patch stack to a copy of the upstream
+  tree, I don't need to enable any guards in order to get a reasonably
+  safe source tree.
+\item Those patches that need reworking before being resubmitted are
+  guarded with \texttt{rework}.
+\item For those patches that are still under development, I use
+  \texttt{devel}.
+\item A backport patch may have several guards, one for each version
+  of the kernel to which it applies.  For example, a patch that
+  backports a piece of code to~2.6.9 will have a~\texttt{2.6.9} guard.
+\end{itemize}
+This variety of guards gives me considerable flexibility in
+qdetermining what kind of source tree I want to end up with.  For most
+situations, the selection of appropriate guards is automated during
+the build process, but I can manually tune the guards to use for less
+common circumstances.
+
+\subsection{The art of writing backport patches}
+
+Using MQ, writing a backport patch is a simple process.  All such a
+patch has to do is modify a piece of code that uses a kernel feature
+not present in the older version of the kernel, so that the driver
+continues to work correctly under that older version.
+
+A useful goal when writing a good backport patch is to make your code
+look as if it was written for the older version of the kernel you're
+targeting.  The less obtrusive the patch, the easier it will be to
+understand and maintain.  If you're writing a collection of backport
+patches to avoid the ``rat's nest'' effect of lots of
+\texttt{\#ifdef}s (hunks of source code that are only used
+conditionally) in your code, don't introduce version-dependent
+\texttt{\#ifdef}s into the patches.  Instead, write several patches,
+each of which makes unconditional changes, and control their
+application using guards.
+
+There are two reasons to divide backport patches into a distinct
+group, away from the ``regular'' patches whose effects they modify.
+The first is that intermingling the two makes it more difficult to use
+a tool like the \hgext{patchbomb} extension to automate the process of
+submitting the patches to an upstream maintainer.  The second is that
+a backport patch could perturb the context in which a subsequent
+regular patch is applied, making it impossible to apply the regular
+patch cleanly \emph{without} the earlier backport patch already being
+applied.
+
+\section{Useful tips for developing with MQ}
+
+\subsection{Organising patches in directories}
+
+If you're working on a substantial project with MQ, it's not difficult
+to accumulate a large number of patches.  For example, I have one
+patch repository that contains over 250 patches.
+
+If you can group these patches into separate logical categories, you
+can if you like store them in different directories; MQ has no
+problems with patch names that contain path separators.
+
+\subsection{Viewing the history of a patch}
+\label{mq-collab:tips:interdiff}
+
+If you're developing a set of patches over a long time, it's a good
+idea to maintain them in a repository, as discussed in
+section~\ref{sec:mq:repo}.  If you do so, you'll quickly discover that
+using the \hgcmd{diff} command to look at the history of changes to a
+patch is unworkable.  This is in part because you're looking at the
+second derivative of the real code (a diff of a diff), but also
+because MQ adds noise to the process by modifying time stamps and
+directory names when it updates a patch.
+
+However, you can use the \hgext{extdiff} extension, which is bundled
+with Mercurial, to turn a diff of two versions of a patch into
+something readable.  To do this, you will need a third-party package
+called \package{patchutils}~\cite{web:patchutils}.  This provides a
+command named \command{interdiff}, which shows the differences between
+two diffs as a diff.  Used on two versions of the same diff, it
+generates a diff that represents the diff from the first to the second
+version.
+
+You can enable the \hgext{extdiff} extension in the usual way, by
+adding a line to the \rcsection{extensions} section of your \hgrc.
+\begin{codesample2}
+  [extensions]
+  extdiff =
+\end{codesample2}
+The \command{interdiff} command expects to be passed the names of two
+files, but the \hgext{extdiff} extension passes the program it runs a
+pair of directories, each of which can contain an arbitrary number of
+files.  We thus need a small program that will run \command{interdiff}
+on each pair of files in these two directories.  This program is
+available as \sfilename{hg-interdiff} in the \dirname{examples}
+directory of the source code repository that accompanies this book.
+\excode{hg-interdiff}
+
+With the \sfilename{hg-interdiff} program in your shell's search path,
+you can run it as follows, from inside an MQ patch directory:
+\begin{codesample2}
+  hg extdiff -p hg-interdiff -r A:B my-change.patch
+\end{codesample2}
+Since you'll probably want to use this long-winded command a lot, you
+can get \hgext{hgext} to make it available as a normal Mercurial
+command, again by editing your \hgrc.
+\begin{codesample2}
+  [extdiff]
+  cmd.interdiff = hg-interdiff
+\end{codesample2}
+This directs \hgext{hgext} to make an \texttt{interdiff} command
+available, so you can now shorten the previous invocation of
+\hgcmd{extdiff} to something a little more wieldy.
+\begin{codesample2}
+  hg interdiff -r A:B my-change.patch
+\end{codesample2}
 
 %%% Local Variables: 
 %%% mode: latex
