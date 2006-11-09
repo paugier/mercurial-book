@@ -21,6 +21,7 @@ sources := \
 	tour-merge.tex
 
 image-sources := \
+	filelog.svg \
 	kdiff3.png \
 	mq-stack.svg \
 	tour-history.svg \
