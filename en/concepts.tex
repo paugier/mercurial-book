@@ -6,7 +6,15 @@ Mercurial is built are simple enough that it's easy to understand how
 the software really works.  Knowing this certainly isn't necessary,
 but I find it useful to have a ``mental model'' of what's going on.
 
-\section{Tracking the history of a single file}
+This understanding gives me confidence that Mercurial has been
+carefully designed to be both \emph{safe} and \emph{efficient}.  And
+just as importantly, if I have a good idea what the software is doing
+when I perform a revision control task, I'm less likely to be
+surprised by its behaviour.
+
+\section{Mercurial's historical record}
+
+\subsection{Tracking the history of a single file}
 
 When Mercurial tracks modifications to a file, it stores the history
 of that file in a metadata object called a \emph{filelog}.  Each entry
@@ -16,13 +24,13 @@ the \sdirname{.hg/data} directory.  A filelog contains two kinds of
 information: revision data, and an index to help Mercurial to find a
 revision efficiently.  
 
-For small files without much history, the revision data and index are
-combined in a single file (with a ``\texttt{.i}'' suffix).  A file
-that is large, or has a lot of history, has its filelog stored as
-separate data (``\texttt{.d}'' suffix) and index (``\texttt{.i}''
-suffix) files.  The correspondence between a file in the working
-directory and the filelog that tracks its history in the repository is
-illustrated in figure~\ref{fig:concepts:filelog}.
+A file that is large, or has a lot of history, has its filelog stored
+in separate data (``\texttt{.d}'' suffix) and index (``\texttt{.i}''
+suffix) files.  For small files without much history, the revision
+data and index are combined in a single ``\texttt{.i}'' file.  The
+correspondence between a file in the working directory and the filelog
+that tracks its history in the repository is illustrated in
+figure~\ref{fig:concepts:filelog}.
 
 \begin{figure}[ht]
   \centering
@@ -31,6 +39,219 @@ illustrated in figure~\ref{fig:concepts:filelog}.
     filelogs in repository}
   \label{fig:concepts:filelog}
 \end{figure}
+
+\subsection{Managing tracked files}
+
+Mercurial uses a structure called a \emph{manifest} to collect
+together information about the files that it tracks.  Each entry in
+the manifest contains information about the files present in a single
+changeset.  An entry records which files are present in the changeset,
+the revision of each file, and a few other pieces of file metadata.
+
+\subsection{Recording changeset information}
+
+The \emph{changelog} contains information about each changeset.  Each
+revision records who committed a change, the changeset comment, other
+pieces of changeset-related information, and the revision of the
+manifest to use.
+
+\subsection{Relationships between revisions}
+
+Within a changelog, a manifest, or a filelog, each revision stores a
+pointer to its immediate parent (or to its two parents, if it's a
+merge revision).  As I mentioned above, there are also relationships
+between revisions \emph{across} these structures, and they are
+hierarchical in nature.
+
+For every changeset in a repository, there is exactly one revision
+stored in the changelog.  Each revision of the changelog contains a
+pointer to a single revision of the manifest.  A revision of the
+manifest stores a pointer to a single revision of each filelog tracked
+when that changeset was created.  These relationships are illustrated
+in figure~\ref{fig:concepts:metadata}.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{metadata}
+  \caption{Metadata relationships}
+  \label{fig:concepts:metadata}
+\end{figure}
+
+Note that there is not a ``one to one'' relationship between revisions
+in these different metadata files.  If the manifest hasn't changed
+between two changesets, their changelog entries will point to the same
+revision of the manifest.  If a file that Mercurial tracks hasn't
+changed between two changesets, the entry for that file in the two
+revisions of the manifest will point to the same revision of its
+filelog.
+
+\section{An efficient, unified, safe storage mechanism}
+
+The underpinnings of changelogs, manifests, and filelogs are provided
+by a single structure called the \emph{revlog}.
+
+\subsection{Efficient storage}
+
+The revlog provides efficient storage of revisions using a
+\emph{delta} mechanism.  Instead of storing a complete copy of a file
+for each revision, it stores the changes needed to transform an older
+revision into the new revision.  For many kinds of file data, these
+deltas are typically a fraction of a percent of the size of a full
+copy of a file.
+
+Some obsolete revision control systems can only work with deltas of
+text files.  They must either store binary files as complete snapshots
+or encoded into a text representation, both of which are wasteful
+approaches.  Mercurial can efficiently handle deltas of files with
+arbitrary binary contents; it doesn't need to treat text as special.
+
+\subsection{Safe operation}
+
+Mercurial only ever \emph{appends} data to the end of a revlog file.
+It never modifies a section of a file after it has written it.  This
+is both more robust and efficient than schemes that need to modify or
+rewrite data.
+
+In addition, Mercurial treats every write as part of a
+\emph{transaction} that can span a number of files.  A transaction is
+\emph{atomic}: either the entire transaction succeeds and its effects
+are all visible to readers in one go, or the whole thing is undone.
+This guarantee of atomicity means that if you're running two copies of
+Mercurial, where one is reading data and one is writing it, the reader
+will never see a partially written result that might confuse it.
+
+The fact that Mercurial only appends to files makes it easier to
+provide this transactional guarantee.  The easier it is to do stuff
+like this, the more confident you should be that it's done correctly.
+
+\subsection{Fast retrieval}
+
+Mercurial cleverly avoids a pitfall common to all earlier
+revision control systems: the problem of \emph{inefficient retrieval}.
+Most revision control systems store the contents of a revision as an
+incremental series of modifications against a ``snapshot''.  To
+reconstruct a specific revision, you must first read the snapshot, and
+then every one of the revisions between the snapshot and your target
+revision.  The more history that a file accumulates, the more
+revisions you must read, hence the longer it takes to reconstruct a
+particular revision.
+
+The innovation that Mercurial applies to this problem is simple but
+effective.  Once the cumulative amount of delta information stored
+since the last snapshot exceeds a fixed threshold, it stores a new
+snapshot (compressed, of course), instead of another delta.  This
+makes it possible to reconstruct \emph{any} revision of a file
+quickly.  This approach works so well that it has subsequently been
+copied by several other revision control systems.
+
+\subsubsection{Aside: the influence of video compression}
+
+If you're familiar with video compression or have ever watched a TV
+feed through a digital cable or satellite service, you may know that
+most video compression schemes store each frame of video as a delta
+against its predecessor frame.  In addition, these schemes use
+``lossy'' compression techniques to increase the compression ratio, so
+visual errors accumulate over the course of a number of inter-frame
+deltas.
+
+Because it's possible for a video stream to ``drop out'' occasionally
+due to signal glitches, and to limit the accumulation of artefacts
+introduced by the lossy compression process, video encoders
+periodically insert a complete frame (called a ``key frame'') into the
+video stream; the next delta is generated against that frame.  This
+means that if the video signal gets interrupted, it will resume once
+the next key frame is received.  Also, the accumulation of encoding
+errors restarts anew with each key frame.
+
+\subsection{Clever compression}
+
+When appropriate, Mercurial will store both snapshots and deltas in
+compressed form.  It does this by always \emph{trying to} compress a
+snapshot or delta, but only storing the compressed version if it's
+smaller than the uncompressed version.
+
+This means that Mercurial does ``the right thing'' when storing a file
+whose native form is compressed, such as a \texttt{zip} archive or a
+JPEG image.  When these types of files are compressed a second time,
+the resulting file is usually bigger than the once-compressed form,
+and so Mercurial will store the plain \texttt{zip} or JPEG.
+
+Deltas between revisions of a compressed file are usually larger than
+snapshots of the file, and Mercurial again does ``the right thing'' in
+these cases.  It finds that such a delta exceeds the threshold at
+which it should store a complete snapshot of the file, so it stores
+the snapshot, again saving space compared to a naive delta-only
+approach.
+
+\subsection{Strong integrity}
+
+Along with delta or snapshot information, a revlog entry contains a
+cryptographic hash of the data that it represents.  This makes it
+difficult to forge the contents of a revision, and easy to detect
+accidental corruption.
+
+Mercurial checks these hashes when retrieving file revisions and when
+pulling changes from a repository.  If it encounters an integrity
+problem, it will complain and stop whatever it's doing.
+
+In addition to the effect it has on retrieval efficiency, Mercurial's
+use of periodic snapshots makes it more robust against partial data
+corruption.  If a revlog becomes partly corrupted due to a hardware
+error or system bug, it's often possible to reconstruct some or most
+revisions from the uncorrupted sections of the revlog, both before and
+after the corrupted section.  This would not be possible with a
+delta-only storage model.
+
+\subsection{Read/write ordering and atomicity}
+
+Appending to files isn't the whole story when it comes to guaranteeing
+that a reader won't see a partial write.  If you recall
+figure~\ref{fig:concepts:metadata}, revisions in the changelog point to
+revisions in the manifest, and revisions in the manifest point to
+revisions in filelogs.  This hierarchy is deliberate.
+
+A writer starts a transaction by writing filelog and manifest data,
+and doesn't write any changelog data until those are finished.  A
+reader starts by reading changelog data, then manifest data, followed
+by filelog data.
+
+Since the writer has always finished writing filelog and manifest data
+before it writes to the changelog, a reader will never read a pointer
+to a partially written manifest revision from the changelog, and it will
+never read a pointer to a partially written filelog revision from the
+manifest.
+
+\subsection{Concurrent access}
+
+The read/write ordering and atomicity guarantees mean that Mercurial
+never needs to \emph{lock} a repository when it's reading data, even
+if the repository is being written to while the read is occurring.
+This has a big effect on scalability; you can have an arbitrary number
+of Mercurial processes safely reading data from a repository safely
+all at once, no matter whether it's being written to or not.
+
+The lockless nature of reading means that if you're sharing a
+repository on a multi-user system, you don't need to grant other local
+users permission to \emph{write} to your repository in order for them
+to be able to clone it or pull changes from it; they only need
+\emph{read} permission.  (This is \emph{not} a common feature among
+revision control systems, so don't take it for granted!  Most require
+readers to be able to lock a repository to access it safely, and this
+requires write permission on at least one directory, which of course
+makes for all kinds of nasty and annoying security and administrative
+problems.)
+
+Mercurial uses a locking mechanism to ensure that only one process can
+write to a repository at a time.  This locking mechanism is safe even
+over filesystems that are notoriously unsafe for locking, such as NFS.
+If a repository is locked, a writer will wait for a while to retry if
+the repository becomes unlocked, but if the repository remains locked
+for too long, the process attempting to write will time out after a
+while.  This means that your daily automated scripts won't get stuck
+forever and pile up if a system crashes unnoticed, for example.  (Yes,
+the timeout is configurable, from zero to infinity.)
+
+
 
 %%% Local Variables: 
 %%% mode: latex

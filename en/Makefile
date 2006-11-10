@@ -23,6 +23,7 @@ sources := \
 image-sources := \
 	filelog.svg \
 	kdiff3.png \
+	metadata.svg \
 	mq-stack.svg \
 	tour-history.svg \
 	tour-merge-conflict.svg \
