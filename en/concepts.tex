@@ -8,9 +8,9 @@ but I find it useful to have a ``mental model'' of what's going on.
 
 This understanding gives me confidence that Mercurial has been
 carefully designed to be both \emph{safe} and \emph{efficient}.  And
-just as importantly, if I have a good idea what the software is doing
-when I perform a revision control task, I'm less likely to be
-surprised by its behaviour.
+just as importantly, if it's easy for me to retain a good idea of what
+the software is doing when I perform a revision control task, I'm less
+likely to be surprised by its behaviour.
 
 \section{Mercurial's historical record}
 
@@ -179,7 +179,10 @@ errors restarts anew with each key frame.
 Along with delta or snapshot information, a revlog entry contains a
 cryptographic hash of the data that it represents.  This makes it
 difficult to forge the contents of a revision, and easy to detect
-accidental corruption.
+accidental corruption.  The hash that Mercurial uses is SHA-1, which
+is 160 bits long.  Although all revision data is hashed, the changeset
+hashes that you see as an end user are from revisions of the
+changelog.  Manifest and file hashes are only used behind the scenes.
 
 Mercurial checks these hashes when retrieving file revisions and when
 pulling changes from a repository.  If it encounters an integrity
@@ -329,7 +332,34 @@ the dirstate file, then renames the temporary file atomically to
 \filename{dirstate}.  The file named \filename{dirstate} is thus
 guaranteed to be complete, not partially written.
 
+\subsection{Avoiding seeks}
 
+Critical to Mercurial's performance is the avoidance of seeks of the
+disk head, since any seek is far more expensive than even a
+comparatively large read operation.
+
+This is why, for example, the dirstate is stored in a single file.  If
+there were a dirstate file per directory that Mercurial tracked, the
+disk would seek once per directory.  Instead, Mercurial reads the
+entire single dirstate file in one step.
+
+Mercurial also uses a ``copy on write'' scheme when cloning a
+repository on local storage.  Instead of copying every revlog file
+from the old repository into the new repository, it makes a ``hard
+link'', which is a shorthand way to say ``these two names point to the
+same file''.  When Mercurial is about to write to one of a revlog's
+files, it checks to see if the number of names pointing at the file is
+greater than one.  If it is, more than one repository is using the
+file, so Mercurial makes a new copy of the file that is private to
+this repository.
+
+A few revision control developers have pointed out that this idea of
+making a complete private copy of a file is not very efficient in its
+use of storage.  While this is true, storage is cheap, and this method
+gives the highest performance while deferring most book-keeping to the
+operating system.  An alternative scheme would most likely reduce
+performance and increase the complexity of the software, each of which
+is much more important to the ``feel'' of day-to-day use.
 
 %%% Local Variables: 
 %%% mode: latex
