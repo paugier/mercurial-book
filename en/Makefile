@@ -25,6 +25,7 @@ image-sources := \
 	kdiff3.png \
 	metadata.svg \
 	mq-stack.svg \
+	revlog.svg \
 	snapshot.svg \
 	tour-history.svg \
 	tour-merge-conflict.svg \

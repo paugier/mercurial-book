@@ -12,6 +12,10 @@ just as importantly, if it's easy for me to retain a good idea of what
 the software is doing when I perform a revision control task, I'm less
 likely to be surprised by its behaviour.
 
+In this chapter, we'll initially cover the core concepts behind
+Mercurial's design, then continue to discuss some of the interesting
+details of its implementation.
+
 \section{Mercurial's historical record}
 
 \subsection{Tracking the history of a single file}
@@ -174,19 +178,23 @@ means that if the video signal gets interrupted, it will resume once
 the next key frame is received.  Also, the accumulation of encoding
 errors restarts anew with each key frame.
 
-\subsection{Strong integrity}
+\subsection{Identification and strong integrity}
 
 Along with delta or snapshot information, a revlog entry contains a
 cryptographic hash of the data that it represents.  This makes it
 difficult to forge the contents of a revision, and easy to detect
-accidental corruption.  The hash that Mercurial uses is SHA-1, which
-is 160 bits long.  Although all revision data is hashed, the changeset
-hashes that you see as an end user are from revisions of the
-changelog.  Manifest and file hashes are only used behind the scenes.
+accidental corruption.  
 
-Mercurial checks these hashes when retrieving file revisions and when
-pulling changes from a repository.  If it encounters an integrity
-problem, it will complain and stop whatever it's doing.
+Hashes provide more than a mere check against corruption; they are
+used as the identifiers for revisions.  The changeset identification
+hashes that you see as an end user are from revisions of the
+changelog.  Although filelogs and the manifest also use hashes,
+Mercurial only uses these behind the scenes.
+
+Mercurial verifies that hashes are correct when it retrieves file
+revisions and when it pulls changes from another repository.  If it
+encounters an integrity problem, it will complain and stop whatever
+it's doing.
 
 In addition to the effect it has on retrieval efficiency, Mercurial's
 use of periodic snapshots makes it more robust against partial data
@@ -219,6 +227,35 @@ to read the actual contents of the file to see if they've changed.
 Storing these few extra pieces of information dramatically reduces the
 amount of data that Mercurial needs to read, which yields large
 performance improvements compared to other revision control systems.
+
+\section{Revision history, branching,
+  and merging}
+
+Every entry in a Mercurial revlog knows the identity of its immediate
+ancestor revision, usually referred to as its \emph{parent}.  In fact,
+a revision contains room for not one parent, but two.  Mercurial uses
+a special hash, called the ``null ID'', to represent the idea ``there
+is no parent here''.  This hash is simply a string of zeroes.
+
+In figure~\ref{fig:concepts:revlog}, you can see an example of the
+conceptual structure of a revlog.  Filelogs, manifests, and changelogs
+all have this same structure; they differ only in the kind of data
+stored in each delta or snapshot.
+
+The first revision in a revlog (at the bottom of the image) has the
+null ID in both of its parent slots.  For a ``normal'' revision, its
+first parent slot contains the ID of its parent revision, and its
+second contains the null ID, indicating that the revision has only one
+real parent.  Any two revisions that have the same parent ID are
+branches.  A revision that represents a merge between branches has two
+normal revision IDs in its parent slots.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{revlog}
+  \caption{}
+  \label{fig:concepts:revlog}
+\end{figure}
 
 \section{Other interesting design features}
 
