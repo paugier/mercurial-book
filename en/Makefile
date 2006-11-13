@@ -31,7 +31,9 @@ image-sources := \
 	tour-merge-conflict.svg \
 	tour-merge-merge.svg \
 	tour-merge-pull.svg \
-	tour-merge-sep-repos.svg
+	tour-merge-sep-repos.svg \
+	wdir.svg \
+	wdir-after-commit.svg
 
 image-svg := $(filter %.svg,$(image-sources))
 

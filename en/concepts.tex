@@ -206,17 +206,79 @@ delta-only storage model.
 
 \section{The working directory}
 
-Mercurial's good ideas are not confined to the repository; it also
-needs to manage the working directory.  The \emph{dirstate} contains
-Mercurial's knowledge of the working directory.  This details which
-revision(s) the working directory is updated to, and all files that
-Mercurial is tracking in the working directory.
+In the working directory, Mercurial stores a snapshot of the files
+from the repository as of a particular changeset.
+
+The working directory ``knows'' which changeset it contains.  When you
+update the working directory to contain a particular changeset,
+Mercurial looks up the appropriate revision of the manifest to find
+out which files it was tracking at the time that changeset was
+committed, and which revision of each file was then current.  It then
+recreates a copy of each of those files, with the same contents it had
+when the changeset was committed.
+
+The \emph{dirstate} contains Mercurial's knowledge of the working
+directory.  This details which changeset the working directory is
+updated to, and all of the files that Mercurial is tracking in the
+working directory.
+
+Just as a revision of a revlog has room for two parents, so that it
+can represent either a normal revision (with one parent) or a merge of
+two earlier revisions, the dirstate has slots for two parents.  When
+you use the \hgcmd{update} command, the changeset that you update to
+is stored in the ``first parent'' slot, and the null ID in the second.
+When you \hgcmd{merge} with another changeset, the first parent
+remains unchanged, and the second parent is filled in with the
+changeset you're merging with.  The \hgcmd{parents} command tells you
+what the parents of the dirstate are.
+
+\subsection{What happens when you commit}
+
+The dirstate stores parent information for more than just book-keeping
+purposes.  Mercurial uses the parents of the dirstate as \emph{the
+  parents of a new changeset} when you perform a commit.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir}
+  \caption{The working directory can have two parents}
+  \label{fig:concepts:wdir}
+\end{figure}
+
+Figure~\ref{fig:concepts:wdir} shows the normal state of the working
+directory, where it has a single changeset as parent.  That changeset
+is the \emph{tip}, the newest changeset in the repository that has no
+children.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir-after-commit}
+  \caption{The working directory gains new parents after a commit}
+  \label{fig:concepts:wdir-after-commit}
+\end{figure}
+
+It's useful to think of the working directory as ``the changeset I'm
+about to commit''.  Any files that you tell Mercurial that you've
+added, removed, renamed, or copied will be reflected in that
+changeset, as will modifications to any files that Mercurial is
+already tracking; the new changeset will have the parents of the
+working directory as its parents.
+
+After a commit, Mercurial will update the parents of the working
+directory, so that the first parent is the ID of the new changeset,
+and the second is the null ID.  This is illustrated in
+figure~\ref{fig:concepts:wdir-after-commit}.
+
+\subsection{Other contents of the dirstate}
 
 Because Mercurial doesn't force you to tell it when you're modifying a
 file, it uses the dirstate to store some extra information so it can
 determine efficiently whether you have modified a file.  For each file
 in the working directory, it stores the time that it last modified the
 file itself, and the size of the file at that time.  
+
+When you explicitly \hgcmd{add}, \hgcmd{remove}, \hgcmd{rename} or
+\hgcmd{copy} files, the dirstate is updated each time.
 
 When Mercurial is checking the states of files in the working
 directory, it first checks a file's modification time.  If that has
