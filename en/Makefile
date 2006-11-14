@@ -41,6 +41,7 @@ image-sources := \
 image-svg := $(filter %.svg,$(image-sources))
 
 example-sources := \
+	daily.copy \
 	daily.files \
 	hook.msglen \
 	hook.simple \

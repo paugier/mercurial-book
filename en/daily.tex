@@ -1,9 +1,7 @@
 \chapter{Mercurial in daily use}
 \label{chap:daily}
 
-\section{Routine file management tasks}
-
-\subsection{Telling Mercurial which files to track}
+\section{Telling Mercurial which files to track}
 
 Mercurial does not work with files in your repository unless you tell
 it to manage them.  The \hgcmd{status} command will tell you which
@@ -13,29 +11,52 @@ display such files.
 To tell Mercurial to track a file, use the \hgcmd{add} command.  Once
 you have added a file, the entry in the output of \hgcmd{status} for
 that file changes from ``\texttt{?}'' to ``\texttt{A}''.
+\interaction{daily.files.add}
 
 After you run a \hgcmd{commit}, the files that you added before the
 commit will no longer be listed in the output of \hgcmd{status}.  The
 reason for this is that \hgcmd{status} only tells you about
-``interesting'' files by default.  If you have a repository that
+``interesting'' files---those that you have modified or told Mercurial
+to do something with---by default.  If you have a repository that
 contains thousands of files, you will rarely want to know about files
 that Mercurial is tracking, but that have not changed.  (You can still
 get this information; we'll return to this later.)
 
-\begin{figure}[ht]
-  \interaction{daily.files.add}
-  \caption{Telling Mercurial to track a file}
-  \label{ex:daily:add}
-\end{figure}
+Once you add a file, Mercurial doesn't do anything with it
+immediately.  Instead, it will take a snapshot of the file's state the
+next time you perform a commit.  It will then continue to track the
+changes you make to the file every time you commit, until you remove
+the file.
 
-Once you add a file, Mercurial will track every change you make to it
-until you either remove or rename the file.
+\subsection{Explicit versus implicit file naming}
 
-\subsubsection{Aside: Mercurial tracks files, not directories}
+A useful behaviour that Mercurial has is that if you pass the name of
+a directory to a command, every Mercurial command will treat this as
+``I want to operate on every file in this directory and its
+subdirectories''.
+\interaction{daily.files.add-dir}
+Notice in this example that Mercurial printed the names of the files
+it added, whereas it didn't do so when we added the file named
+\filename{a} in the earlier example.
+
+What's going on is that in the former case, we explicitly named the
+file to add on the command line, so the assumption that Mercurial
+makes in such cases is that we know what you were doing, and it
+doesn't print any output.
+
+However, when we \emph{imply} the names of files by giving the name of
+a directory, Mercurial takes the extra step of printing the name of
+each file that it does something with.  This makes it more clear what
+is happening, and reduces the likelihood of a silent and nasty
+surprise.  This behaviour is common to most Mercurial commands.
+
+\subsection{Aside: Mercurial tracks files, not directories}
 
 Mercurial does not track directory information.  Instead, it tracks
-the path to a file, and creates directories along a path when it needs
-to.  This sounds like a trivial distinction, but it has one minor
+the path to a file.  Before creating a file, it first creates any
+missing directory components of the path.  After it deletes a file, it
+then deletes any empty directories that were in the deleted file's
+path.  This sounds like a trivial distinction, but it has one minor
 practical consequence: it is not possible to represent a completely
 empty directory in Mercurial.
 
@@ -61,67 +82,168 @@ figure~\ref{ex:daily:hidden}.
 Another way to tackle a need for an empty directory is to simply
 create one in your automated build scripts before they will need it.
 
-\subsection{How to stop tracking a file}
+\section{How to stop tracking a file}
 
-If you decide that a file no longer belongs in your repository, use
+Once you decide that a file no longer belongs in your repository, use
 the \hgcmd{remove} command; this deletes the file, and tells Mercurial
 to stop tracking it.  A removed file is represented in the output of
 \hgcmd{status} with a ``\texttt{R}''.
+\interaction{daily.files.remove}
 
-You might wonder why Mercurial requires you to explicitly tell it that
-you are deleting a file.  Earlier during the development of Mercurial,
-you could simply delete a file however you pleased; Mercurial would
-notice automatically when you next ran a \hgcmd{commit}, and stop
-tracking the file.  In practice, this made it too easy to accidentally
-stop Mercurial from tracking a file.
+\subsection{Missing files}
 
 Mercurial considers a file that you have deleted, but not used
 \hgcmd{remove} to delete, to be \emph{missing}.  A missing file is
 represented with ``\texttt{!}'' in the output of \hgcmd{status}.
-Other Mercurial commands will not do anything with missing files.
+Mercurial commands will not generally do anything with missing files.
+\interaction{daily.files.missing}
 
-If you have a missing file in your repository, you can run
-\hgcmdargs{remove}{\hgopt{remove}{--after}} later on, to tell
-Mercurial that you deleted the file.  If you deleted the file by
-accident, use \hgcmdargs{revert}{\emph{filename}} to restore the file
-to its last committed state.
+If your repository contains a file that \hgcmd{status} reports as
+missing, and you want the file to stay gone, you can run
+\hgcmdargs{remove}{\hgopt{remove}{--after}} at any time later on, to
+tell Mercurial that you really did mean to remove the file.
+\interaction{daily.files.remove-after}
 
-\subsection{Useful shorthand---adding and removing files in one step}
+On the other hand, if you deleted the missing file by accident, use
+\hgcmdargs{revert}{\emph{filename}} to recover the file.  It will
+reappear, in unmodified form.
+\interaction{daily.files.recover-missing}
+
+\subsection{Aside: why tell Mercurial explicitly to 
+  remove a file?}
+
+You might wonder why Mercurial requires you to explicitly tell it that
+you are deleting a file.  Early during the development of Mercurial,
+it let you delete a file however you pleased; Mercurial would notice
+the absence of the file automatically when you next ran a
+\hgcmd{commit}, and stop tracking the file.  In practice, this made it
+too easy to accidentally remove a file without noticing.
+
+\subsection{Useful shorthand---adding and removing files
+  in one step}
 
 Mercurial offers a combination command, \hgcmd{addremove}, that adds
-untracked files and marks missing files as removed.  The
-\hgcmd{commit} command also provides a \hgopt{commit}{-A} option that
-performs an add-and-remove, immediately followed by a commit.  This
-lets you replace the following command sequence:
-\begin{codesample2}
-  hg add
-  hg remove --after
-  hg commit
-\end{codesample2}
-with a single command, \hgcmdargs{commit}{\hgopt{commit}{-A}}.
+untracked files and marks missing files as removed.  
+\interaction{daily.files.addremove}
+The \hgcmd{commit} command also provides a \hgopt{commit}{-A} option
+that performs this same add-and-remove, immediately followed by a
+commit.
+\interaction{daily.files.commit-addremove}
 
-\subsection{Renaming files}
+\section{Copying files}
+
+Mercurial provides a \hgcmd{copy} command that lets you make a new
+copy of a file.  When you copy a file using this command, Mercurial
+makes a record of the fact that the new file is a copy of the original
+file.  It treats these copied files specially when you merge your work
+with someone else's.
+
+What happens during a merge is that changes ``follow'' a copy.  To
+best illustrate what this means, let's create an example.  We'll start
+with the usual tiny repository that contains a single file.
+\interaction{daily.copy.init}
+We need to do some work in parallel, so that we'll have something to
+merge.  So let's clone our repository.
+\interaction{daily.copy.clone}
+Back in our initial repository, let's use the \hgcmd{copy} command to
+make a copy of the first file we created.
+\interaction{daily.copy.copy}
+
+If we look at the output of the \hgcmd{status} command afterwards, the
+copied file looks just like a normal added file.
+\interaction{daily.copy.status}
+But if we pass the \hgopt{status}{-C} option to \hgcmd{status}, it
+prints another line of output: this is the file that our newly-added
+file was copied \emph{from}.
+\interaction{daily.copy.status-copy}
+
+Now, back in the repository we cloned, let's make a change in
+parallel.  We'll add a line of content to the original file that we
+created.
+\interaction{daily.copy.other}
+Now we have a modified \filename{file} in this repository.  When we
+pull the changes from the first repository, and merge the two heads,
+Mercurial will propagate the changes that we made locally to
+\filename{file} into its copy, \filename{new-file}.
+\interaction{daily.copy.merge}
+
+\subsection{Why should changes follow copies?}
+\label{sec:daily:why-copy}
+
+This behaviour, of changes to a file propagating out to copies of the
+file, might seem esoteric, but in most cases it's highly desirable.
+
+First of all, remember that this propagation \emph{only} happens when
+you merge.  So if you \hgcmd{copy} a file, and subsequently modify the
+original file during the normal course of your work, nothing will
+happen.
+
+The second thing to know is that modifications will only propagate
+across a copy as long as the repository that you're pulling changes
+from \emph{doesn't know} about the copy.
+
+The reason that Mercurial does this is as follows.  Let's say I make
+an important bug fix in a source file, and commit my changes.
+Meanwhile, you've decided to \hgcmd{copy} the file in your repository,
+without knowing about the bug or having seen the fix, and you have
+started hacking on your copy of the file.
+
+If you pulled and merged my changes, and Mercurial \emph{didn't}
+propagate changes across copies, your source file would now contain
+the bug, and unless you remembered to propagate the bug fix by hand,
+the bug would \emph{remain} in your copy of the file.
+
+By automatically propagating the change that fixed the bug from the
+original file to the copy, Mercurial prevents this class of problem.
+To my knowledge, Mercurial is the \emph{only} revision control system
+that propagates changes across copies like this.
+
+Once your change history has a record that the copy and subsequent
+merge occurred, there's usually no further need to propagate changes
+from the original file to the copied file, and that's why Mercurial
+only propagates changes across copies until this point, and no
+further.
+
+\subsection{How to make changes \emph{not} follow a copy}
+
+If, for some reason, you decide that this business of automatically
+propagating changes across copies is not for you, simply use your
+system's normal file copy command (on Unix-like systems, that's
+\command{cp}) to make a copy of a file, then \hgcmd{add} the new copy
+by hand.  Before you do so, though, please do reread
+section~\ref{sec:daily:why-copy}, and make an informed decision that
+this behaviour is not appropriate to your specific case.
+
+\subsection{Behaviour of the \hgcmd{copy} command}
+
+The \hgcmd{copy} command acts similarly to the Unix \command{cp}
+command.  The last argument is the \emph{destination}, and all prior
+arguments are \emph{sources}.
+If you pass it a single file as the source, and the destination
+does not exist, it creates a new file with that name.
+\interaction{daily.copy.simple}
+If the destination is a directory, Mercurial copies its sources into
+that directory.
+\interaction{daily.copy.dir-dest}
+Copying a directory is recursive, and preserves the directory
+structure of the source.
+\interaction{daily.copy.dir-src}
+If the source and destination are both directories, the source tree is
+recreated in the destination directory.
+\interaction{daily.copy.dir-src-dest}
+
+\section{Renaming files}
 
 To rename a file that is tracked by Mercurial, use the \hgcmd{rename}
 command.  This command behaves similarly to the Unix \command{mv}
-command.  If the last argument is a directory, it moves all prior
-arguments into that directory.  Otherwise, it renames a single file or
-directory to the name given in the last argument.
+command (and in fact you can use the alias \hgcmd{mv} if you wish).
+If the last argument is a directory, \hgcmd{rename} moves all files
+identified by earlier arguments into that directory.  Otherwise, it
+renames a single file or directory to the name given in the last
+argument.
 
 As with \hgcmd{remove}, you can tell Mercurial about a rename after
 the fact using the \hgopt{remove}{--after} option.
-
-The na\"{i}ve way to ``rename'' a file is simply to rename the file
-yourself, \hgcmd{remove} the old name, and \hgcmd{add} the new name.
-However, if you do this, Mercurial will not know that there was any
-relationship between the files in question, and it will not be able to
-merge
-
-\subsection{Copying files}
-
-You can copy a file in two ways using mercurial.  If you simply copy a
-file and then \hgcmd{add} the new file, Mercurial will not know that
-there was any relationship between the two files.  However, if you 
 
 %%% Local Variables: 
 %%% mode: latex
