@@ -33,7 +33,10 @@ image-sources := \
 	tour-merge-pull.svg \
 	tour-merge-sep-repos.svg \
 	wdir.svg \
-	wdir-after-commit.svg
+	wdir-after-commit.svg \
+	wdir-branch.svg \
+	wdir-merge.svg \
+	wdir-pre-branch.svg
 
 image-svg := $(filter %.svg,$(image-sources))
 
