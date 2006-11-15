@@ -165,6 +165,8 @@ makes a record of the fact that the new file is a copy of the original
 file.  It treats these copied files specially when you merge your work
 with someone else's.
 
+\subsection{The results of copying during a merge}
+
 What happens during a merge is that changes ``follow'' a copy.  To
 best illustrate what this means, let's create an example.  We'll start
 with the usual tiny repository that contains a single file.
@@ -306,6 +308,13 @@ respective changes, my modifications to the file under its original
 name will be propagated into the file under its new name.  (This is
 something you might expect to ``simply work,'' but not all revision
 control systems actually do this.)
+
+Whereas having changes follow a copy is a feature where you can
+perhaps nod and say ``yes, that might be useful,'' it should be clear
+that having them follow a rename is definitely important.  Without
+this facility, it would simply be too easy for changes to become
+orphaned when files are renamed.
+
 
 %%% Local Variables: 
 %%% mode: latex

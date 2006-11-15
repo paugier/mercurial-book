@@ -18,7 +18,8 @@ sources := \
 	srcinstall.tex \
 	template.tex \
 	tour-basic.tex \
-	tour-merge.tex
+	tour-merge.tex \
+	undo.tex
 
 image-sources := \
 	filelog.svg \
@@ -54,6 +55,7 @@ example-sources := \
 	mq.tarball \
 	mq.tools \
 	mq.tutorial \
+	rollback \
 	template.simple \
 	template.svnstyle \
 	tour \

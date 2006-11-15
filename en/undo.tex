@@ -1,0 +1,117 @@
+\chapter{Finding and fixing your mistakes}
+\label{chap:undo}
+
+To err might be human, but to really handle the consequences well
+takes a top-notch revision control system.  In this chapter, we'll
+discuss some of the techniques you can use when you find that a
+problem has crept into your project.  Mercurial has some highly
+capable features that will help you to isolate the sources of
+problems, and to handle them appropriately.
+
+\section{Easily recovered errors}
+
+\subsection{The accidental commit}
+
+I have the occasional but persistent problem of typing rather more
+quickly than I can think, which sometimes results in me committing a
+changeset that is either incomplete or plain wrong.  In my case, the
+usual kind of incomplete changeset is one in which I've created a new
+source file, but forgotten to \hgcmd{add} it.  A ``plain wrong''
+changeset is not as common, but no less annoying.
+
+\subsection{Rolling back a transaction}
+
+In section~\ref{sec:concepts:txn}, I mentioned that Mercurial treats
+each modification of a repository as a \emph{transaction}.  Every time
+you commit a changeset or pull changes from another repository,
+Mercurial remembers what you did.  You can undo, or \emph{roll back},
+exactly one of these actions using the \hgcmd{rollback} command.
+
+Here's a mistake that I often find myself making: committing a change
+in which I've created a new file, but forgotten to \hgcmd{add} it.
+\interaction{rollback.commit}
+Looking at the output of \hgcmd{status} after the commit immediately
+confirms the error.
+\interaction{rollback.status}
+The commit captured the changes to the file \filename{a}, but not the
+new file \filename{b}.  If I were to push this changeset to a
+repository that I shared with a colleague, the chances are high that
+something in \filename{a} would refer to \filename{b}, which would not
+be present in their repository when they pulled my changes.  I would
+thus become the object of some indignation.
+
+However, luck is with me---I've caught my error before I pushed the
+changeset.  I use the \hgcmd{rollback} command, and Mercurial makes
+that last changeset vanish.
+\interaction{rollback.rollback}
+Notice that the changeset is no longer present in the repository's
+history, and the working directory once again thinks that the file
+\filename{a} is modified.  The changeset has been completely erased.
+I can now safely \hgcmd{add} the file \filename{b}, and rerun my
+commit.
+\interaction{rollback.add}
+
+\subsection{The erroneous pull}
+
+It's common practice with Mercurial to maintain separate development
+branches of a project in different repositories.  Your development
+team might have one shared repository for your project's ``0.9''
+release, and another, containing different changes, for the ``1.0''
+release.
+
+Given this, you can imagine that the consequences could be messy if
+you had a local ``0.9'' repository, and accidentally pulled changes
+from the shared ``1.0'' repository into it.  At worst, you could be
+paying insufficient attention, and push those changes into the shared
+``0.9'' tree, confusing your entire team (but don't worry, we'll
+return to this horror scenario later).  However, it's more likely that
+you'll notice immediately, because Mercurial will display the URL it's
+pulling from, or you will see it pull a suspiciously large number of
+changes into the repository.
+
+The \hgcmd{rollback} command will work nicely to expunge all of the
+changesets that you just pulled.  Mercurial groups all changes from
+one \hgcmd{pull} into a single transaction, so one \hgcmd{rollback} is
+all you need to undo this mistake.
+
+\subsection{Rolling back is useless once you've pushed}
+
+The value of the \hgcmd{rollback} command drops to zero once you've
+pushed your changes to another repository.  Rolling back a change
+makes it disappear entirely, but \emph{only} in the repository in
+which you perform the \hgcmd{rollback}.  Because a rollback eliminates
+history, there's no way for the disappearance of a change to propagate
+between repositories.
+
+If you've pushed a change to another repository---particularly if it's
+a shared repository---it has essentially ``escaped into the wild,''
+and you'll have to recover from your mistake in a different way.  What
+will happen if you push a changeset somewhere, then roll it back, then
+pull from the repository you pushed to, is that the changeset will
+reappear in your repository.
+
+(If you absolutely know for sure that the change you want to roll back
+is the most recent change in the repository that you pushed to,
+\emph{and} you know that nobody else could have pulled it from that
+repository, you can roll back the changeset there, too, but you really
+should really not rely on this working reliably.  If you do this,
+sooner or later a change really will make it into a repository that
+you don't directly control (or have forgotten about), and come back to
+bite you.)
+
+\subsection{You can only roll back once}
+
+Mercurial stores exactly one transaction in its transaction log; that
+transaction is the most recent one that occurred in the repository.
+This means that you can only roll back one transaction.  If you expect
+to be able to roll back one transaction, then its predecessor, this is
+not the behaviour you will get.
+\interaction{rollback.twice}
+Once you've rolled back one transaction in a repository, you can't
+roll back again in that repository until you perform another commit or
+pull.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 
