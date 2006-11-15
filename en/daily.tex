@@ -90,6 +90,33 @@ to stop tracking it.  A removed file is represented in the output of
 \hgcmd{status} with a ``\texttt{R}''.
 \interaction{daily.files.remove}
 
+After you \hgcmd{remove} a file, Mercurial will no longer track
+changes to that file, even if you recreate a file with the same name
+in your working directory.  If you do recreate a file with the same
+name and want Mercurial to track the new file, simply \hgcmd{add} it.
+Mercurial will know that the newly added file is not related to the
+old file of the same name.
+
+\subsection{Removing a file does not affect its history}
+
+It is important to understand that removing a file has only two
+effects.
+\begin{itemize}
+\item It removes the current version of the file from the working
+  directory.
+\item It stops Mercurial from tracking changes to the file, from the
+  time of the next commit.
+\end{itemize}
+Removing a file \emph{does not} in any way alter the \emph{history} of
+the file.
+
+If you update the working directory to a changeset in which a file
+that you have removed was still tracked, it will reappear in the
+working directory, with the contents it had when you committed that
+changeset.  If you then update the working directory to a later
+changeset, in which the file had been removed, Mercurial will once
+again remove the file from the working directory.
+
 \subsection{Missing files}
 
 Mercurial considers a file that you have deleted, but not used
@@ -216,11 +243,17 @@ this behaviour is not appropriate to your specific case.
 
 \subsection{Behaviour of the \hgcmd{copy} command}
 
+When you use the \hgcmd{copy} command, Mercurial makes a copy of each
+source file as it currently stands in the working directory.  This
+means that if you make some modifications to a file, then copy it
+without first having committed those changes, the new copy will
+contain your modifications.
+
 The \hgcmd{copy} command acts similarly to the Unix \command{cp}
-command.  The last argument is the \emph{destination}, and all prior
-arguments are \emph{sources}.
-If you pass it a single file as the source, and the destination
-does not exist, it creates a new file with that name.
+command (you can use the \hgcmd{cp} alias if you prefer).  The last
+argument is the \emph{destination}, and all prior arguments are
+\emph{sources}.  If you pass it a single file as the source, and the
+destination does not exist, it creates a new file with that name.
 \interaction{daily.copy.simple}
 If the destination is a directory, Mercurial copies its sources into
 that directory.
@@ -232,18 +265,47 @@ If the source and destination are both directories, the source tree is
 recreated in the destination directory.
 \interaction{daily.copy.dir-src-dest}
 
+As with the \hgcmd{rename} command, if you copy a file manually and
+then want Mercurial to know that you've copied the file, simply use
+the \hgopt{--after} option to \hgcmd{copy}.
+\interaction{daily.copy.after}
+
 \section{Renaming files}
 
-To rename a file that is tracked by Mercurial, use the \hgcmd{rename}
-command.  This command behaves similarly to the Unix \command{mv}
-command (and in fact you can use the alias \hgcmd{mv} if you wish).
-If the last argument is a directory, \hgcmd{rename} moves all files
-identified by earlier arguments into that directory.  Otherwise, it
-renames a single file or directory to the name given in the last
-argument.
+It's rather more common to need to rename a file than to make a copy
+of it.  The reason I discussed the \hgcmd{copy} command before talking
+about renaming files is that Mercurial treats a rename in essentially
+the same way as a copy.  Therefore, knowing what Mercurial does when
+you copy a file tells you what to expect when you rename a file.
 
-As with \hgcmd{remove}, you can tell Mercurial about a rename after
-the fact using the \hgopt{remove}{--after} option.
+When you use the \hgcmd{rename} command, Mercurial makes a copy of
+each source file, then deletes it and marks the file as removed.
+\interaction{daily.rename.rename}
+The \hgcmd{status} command shows the newly copied file as added, and
+the copied-from file as removed.
+\interaction{daily.rename.status}
+As with the results of a \hgcmd{copy}, we must use the
+\hgopt{status}{-C} option to \hgcmd{status} to see that the added file
+is really being tracked by Mercurial as a copy of the original, now
+removed, file.
+\interaction{daily.rename.status-copy}
+
+As with \hgcmd{remove} and \hgcmd{copy}, you can tell Mercurial about
+a rename after the fact using the \hgopt{rename}{--after} option.  In
+most other respects, the behaviour of the \hgcmd{rename} command, and
+the options it accepts, are similar to the \hgcmd{copy} command.
+
+\subsection{Renaming files and merging changes}
+
+Since Mercurial's rename is implemented as copy-and-remove, the same
+propagation of changes happens when you merge after a rename as after
+a copy.
+
+If I modify a file, and you rename it to a new name, then we merge our
+respective changes, my modifications to the file under its original
+name will be propagated into the file under its new name.  (This is
+something you might expect to ``simply work,'' but not all revision
+control systems actually do this.)
 
 %%% Local Variables: 
 %%% mode: latex
