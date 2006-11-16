@@ -45,6 +45,7 @@ example-sources := \
 	daily.copy \
 	daily.files \
 	daily.rename \
+	daily.revert \
 	hook.msglen \
 	hook.simple \
 	hook.ws \

@@ -8,7 +8,7 @@ problem has crept into your project.  Mercurial has some highly
 capable features that will help you to isolate the sources of
 problems, and to handle them appropriately.
 
-\section{Easily recovered errors}
+\section{Erasing local history}
 
 \subsection{The accidental commit}
 
@@ -46,9 +46,10 @@ that last changeset vanish.
 \interaction{rollback.rollback}
 Notice that the changeset is no longer present in the repository's
 history, and the working directory once again thinks that the file
-\filename{a} is modified.  The changeset has been completely erased.
-I can now safely \hgcmd{add} the file \filename{b}, and rerun my
-commit.
+\filename{a} is modified.  The commit and rollback have left the
+working directory exactly as it was prior to the commit; the changeset
+has been completely erased.  I can now safely \hgcmd{add} the file
+\filename{b}, and rerun my commit.
 \interaction{rollback.add}
 
 \subsection{The erroneous pull}
@@ -110,6 +111,75 @@ not the behaviour you will get.
 Once you've rolled back one transaction in a repository, you can't
 roll back again in that repository until you perform another commit or
 pull.
+
+\section{Reverting the mistaken change}
+
+If you make a modification to a file, and decide that you really
+didn't want to change the file at all, the \hgcmd{revert} command is
+the one you'll need.  It looks at the changeset that's the parent of
+the working directory, and restores the contents of the file to their
+state as of that changeset.  (That's a long-winded way of saying that,
+in the normal case, it undoes your modifications.)
+
+Let's illustrate how the \hgcmd{revert} command works with yet another
+small example.  We'll begin by modifying a file that Mercurial is
+already tracking.
+\interaction{daily.revert.modify}
+If we don't want that change, we can simply \hgcmd{revert} the file.
+\interaction{daily.revert.unmodify}
+The \hgcmd{revert} command provides us with an extra degree of safety
+by saving our modified file with a \filename{.orig} extension.
+\interaction{daily.revert.status}
+
+\subsection{File management errors}
+\label{sec:undo:mgmt}
+
+The \hgcmd{revert} command is useful for more than just modified
+files.  It lets you reverse the results of all of Mercurial's file
+management commands---\hgcmd{add}, \hgcmd{remove}, and so on.
+
+If you \hgcmd{add} a file, then decide that in fact you don't want
+Mercurial to track it, use \hgcmd{revert} to undo the add.  Don't
+worry; Mercurial will not modify the file in any way.  It will just
+``unmark'' the file.
+\interaction{daily.revert.add}
+
+Similarly, if you ask Mercurial to \hgcmd{remove} a file, you can use
+\hgcmd{revert} to restore it to the contents it had as of the parent
+of the working directory.
+\interaction{daily.revert.remove}
+This works just as well for a file that you deleted by hand, without
+telling Mercurial (recall that in Mercurial terminology, this kind of
+file is called ``missing'').
+\interaction{daily.revert.missing}
+
+If you revert a \hgcmd{copy}, the copied-to file remains in your
+working directory afterwards, unmodified.
+\interaction{daily.revert.copy}
+
+\subsubsection{A slightly special case: reverting a rename}
+
+If you \hgcmd{rename} a file, there is one small detail that
+you should remember.  When you \hgcmd{revert} a rename, it's not
+enough to provide the name of the renamed-to file, as you can see
+here.
+\interaction{daily.revert.rename}
+As you can see from the output of \hgcmd{status}, the renamed-to file
+is no longer identified as added, but the renamed-\emph{from} file is
+still removed!  This is counter-intuitive (at least to me), but at
+least it's easy to deal with.
+\interaction{daily.revert.rename-orig}
+So remember, to revert a \hgcmd{rename}, you must provide \emph{both}
+the source and destination names.  
+
+(By the way, if you rename a file, then modify the renamed-to file,
+then revert both components of the rename, when Mercurial restores the
+file that was removed as part of the rename, it will be unmodified.
+If you need the modifications in the renamed-to file to show up in the
+renamed-from file, don't forget to copy them over.)
+
+These fiddly aspects of reverting a rename arguably consitute a small
+bug in Mercurial.
 
 %%% Local Variables: 
 %%% mode: latex
