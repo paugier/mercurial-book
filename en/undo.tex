@@ -154,7 +154,9 @@ file is called ``missing'').
 \interaction{daily.revert.missing}
 
 If you revert a \hgcmd{copy}, the copied-to file remains in your
-working directory afterwards, unmodified.
+working directory afterwards, untracked.  Since a copy doesn't affect
+the copied-from file in any way, Mercurial doesn't do anything with
+the copied-from file.
 \interaction{daily.revert.copy}
 
 \subsubsection{A slightly special case: reverting a rename}
@@ -178,7 +180,7 @@ file that was removed as part of the rename, it will be unmodified.
 If you need the modifications in the renamed-to file to show up in the
 renamed-from file, don't forget to copy them over.)
 
-These fiddly aspects of reverting a rename arguably consitute a small
+These fiddly aspects of reverting a rename arguably constitute a small
 bug in Mercurial.
 
 %%% Local Variables: 
