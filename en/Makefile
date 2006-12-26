@@ -33,15 +33,22 @@ image-sources := \
 	tour-merge-merge.svg \
 	tour-merge-pull.svg \
 	tour-merge-sep-repos.svg \
+	undo-manual.dot \
+	undo-manual-merge.dot \
+	undo-non-tip.dot \
+	undo-simple.dot \
 	wdir.svg \
 	wdir-after-commit.svg \
 	wdir-branch.svg \
 	wdir-merge.svg \
 	wdir-pre-branch.svg
 
+image-dot := $(filter %.dot,$(image-sources))
 image-svg := $(filter %.svg,$(image-sources))
+image-png := $(filter %.png,$(image-sources))
 
 example-sources := \
+	backout \
 	daily.copy \
 	daily.files \
 	daily.rename \
@@ -82,7 +89,9 @@ define pdf
 	if grep 'Reference.*undefined' $(@:.pdf=.log); then exit 1; fi
 endef
 
-pdf/hgbook.pdf: $(sources) $(image-sources:%.svg=%.pdf) examples
+image-pdf := $(image-dot:%.dot=%.pdf) $(image-svg:%.svg=%.pdf) $(image-png)
+
+pdf/hgbook.pdf: $(sources) $(image-pdf) examples
 	$(call pdf)
 
 html: html/onepage/hgbook.html html/split/hgbook.html
@@ -107,11 +116,13 @@ define htlatex
 	perl -pi -e 's/&#x00([0-7][0-9a-f]);/chr(hex($$1))/egi' $(dir $(1))/*.html
 endef
 
-html/onepage/hgbook.html: $(sources) $(image-sources:%.svg=%.png) examples
+image-html := $(image-dot:%.dot=%.png) $(image-svg:%.svg=%.png) $(image-png)
+
+html/onepage/hgbook.html: $(sources) $(image-html) examples
 	$(call htlatex,$@,$<)
 	cp $(image-sources:%.svg=%.png) $(dir $@)
 
-html/split/hgbook.html: $(sources) $(image-sources:%.svg=%.png) examples
+html/split/hgbook.html: $(sources) $(image-html) examples
 	$(call htlatex,$@,$<,2)
 	cp $(image-sources:%.svg=%.png) $(dir $@)
 
@@ -136,6 +147,9 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 %.png: %.svg
 	inkscape -D -e $@ $<
 
+%.svg: %.dot
+	dot -Tsvg -o $@ $<
+
 # Produce eps & pdf for the pdf
 
 %.pdf: %.eps
@@ -143,6 +157,9 @@ beta/html/split/hgbook.html: $(sources:%.tex=beta/%.tex) $(image-sources:%.svg=%
 
 %.eps: %.svg
 	inkscape -E $@ $<
+
+%.eps: %.dot
+	dot -Tps -o $@ $<
 
 examples: examples/.run
 
@@ -157,6 +174,8 @@ build_id.tex: $(wildcard ../.hg/00changelog.[id])
 
 clean:
 	rm -rf beta html pdf \
+		$(image-dot:%.dot=%.pdf) \
+		$(image-dot:%.dot=%.png) \
 		$(image-svg:%.svg=%.pdf) \
 		$(image-svg:%.svg=%.png) \
 		examples/*.{out,run} examples/.run build_id.tex
