@@ -20,6 +20,7 @@ source file, but forgotten to \hgcmd{add} it.  A ``plain wrong''
 changeset is not as common, but no less annoying.
 
 \subsection{Rolling back a transaction}
+\label{sec:undo:rollback}
 
 In section~\ref{sec:concepts:txn}, I mentioned that Mercurial treats
 each modification of a repository as a \emph{transaction}.  Every time
@@ -207,6 +208,13 @@ incorrect.  Mercurial lets you ``back out'' an entire changeset
 automatically, and building blocks that let you reverse part of a
 changeset by hand.
 
+Before you read this section, here's something to keep in mind: the
+\hgcmd{backout} command undoes changes by \emph{adding} history, not
+by modifying or erasing it.  It's the right tool to use if you're
+fixing bugs, but not if you're trying to undo some change that has
+catastrophic consequences.  To deal with those, see
+section~\ref{sec:undo:aaaiiieee}.
+
 \subsection{Backing out a changeset}
 
 The \hgcmd{backout} command lets you ``undo'' the effects of an entire
@@ -350,7 +358,7 @@ figure~\ref{fig:undo:backout-manual-merge}.
   \label{fig:undo:backout-manual-merge}
 \end{figure}
 
-\subsection{A rationale}
+\subsection{Why \hgcmd{backout} works as it does}
 
 Here's a brief description of how the \hgcmd{backout} command works.
 \begin{enumerate}
@@ -395,6 +403,52 @@ discussion of the \command{patch} command).  Also, Mercurial's merge
 machinery will handle files and directories being renamed, permission
 changes, and modifications to binary files, none of which
 \command{patch} can deal with.
+
+\section{Changes that should never have been}
+\label{sec:undo:aaaiiieee}
+
+Most of the time, the \hgcmd{backout} command is exactly what you need
+if you want to undo the effects of a change.  It leaves a permanent
+record of exactly what you did, both when committing the original
+changeset and when you cleaned up after it.
+
+On rare occasions, though, you may find that you've committed a change
+that really should not be present in the repository at all.  For
+example, it would be very unusual, and usually considered a mistake,
+to commit a software project's object files as well as its source
+files.  Object files have almost no intrinsic value, and they're
+\emph{big}, so they increase the size of the repository and the amount
+of time it takes to clone or pull changes.
+
+Before I discuss the options that you have if you commit a ``brown
+paper bag'' change (the kind that's so bad that you want to pull a
+brown paper bag over your head), let me first discuss some approaches
+that probably won't work.
+
+Since Mercurial treats history as accumulative---every change builds
+on top of all changes that preceded it---you generally can't just make
+disastrous changes disappear.  The one exception is when you've just
+committed a change, and it hasn't been pushed or pulled into another
+repository.  That's when you can safely use the \hgcmd{rollback}
+command, as I detailed in section~\ref{sec:undo:rollback}.
+
+After you've pushed a bad change to another repository, you
+\emph{could} still use \hgcmd{rollback} to make your local copy of the
+change disappear, but it won't have the consequences you want.  The
+change will still be present in the remote repository, so it will
+reappear in your local repository the next time you pull.
+
+If a situation like this arises, and you know which repositories your
+bad change has propagated into, you can \emph{try} to get rid of the
+changeefrom \emph{every} one of those repositories.  This is, of
+course, not a satisfactory solution: if you miss even a single
+repository while you're expunging, the change is still ``in the
+wild'', and could propagate further.
+
+If you've committed one or more changes \emph{after} the change that
+you'd like to see disappear, your options are further reduced.
+Mercurial doesn't provide a way to ``punch a hole'' in history,
+leaving changesets intact.
 
 %%% Local Variables: 
 %%% mode: latex
