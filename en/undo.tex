@@ -620,17 +620,17 @@ We now run our test in the working directory.  We use the
 \command{grep} command to see if our ``bad'' file is present in the
 working directory.  If it is, this revision is bad; if not, this
 revision is good.
-\interaction{search.step1}
+\interaction{bisect.search.step1}
 
 This test looks like a perfect candidate for automation, so let's turn
 it into a shell function.
-\interaction{search.mytest}
+\interaction{bisect.search.mytest}
 We can now run an entire test step with a single command,
 \texttt{mytest}.
-\interaction{search.step2}
+\interaction{bisect.search.step2}
 A few more invocations of our canned test step command, and we're
 done.
-\interaction{search.rest}
+\interaction{bisect.search.rest}
 
 Even though we had~40 changesets to search through, the \hgext{bisect}
 extension let us find the changeset that introduced our ``bug'' with
@@ -647,7 +647,7 @@ the information it was using to drive your search.  The extension
 doesn't use much space, so it doesn't matter if you forget to run this
 command.  However, \hgext{bisect} won't let you start a new search in
 that repository until you do a \hgcmdargs{bisect}{reset}.
-\interaction{search.reset}
+\interaction{bisect.search.reset}
 
 \section{Tips for finding bugs effectively}
 

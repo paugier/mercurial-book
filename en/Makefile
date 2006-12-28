@@ -49,6 +49,7 @@ image-png := $(filter %.png,$(image-sources))
 
 example-sources := \
 	backout \
+	bisect \
 	daily.copy \
 	daily.files \
 	daily.rename \
