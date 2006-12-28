@@ -454,6 +454,296 @@ XXX This needs filling out.  The \texttt{hg-replay} script in the
 \texttt{examples} directory works, but doesn't handle merge
 changesets.  Kind of an important omission.
 
+\section{Finding the source of a bug}
+
+While it's all very well to be able to back out a changeset that
+introduced a bug, this requires that you know which changeset to back
+out.  Mercurial provides an invaluable extension, called
+\hgext{bisect}, that helps you to automate this process and accomplish
+it very efficiently.
+
+The idea behind the \hgext{bisect} extension is that a changeset has
+introduced some change of behaviour that you can identify with a
+simple binary test.  You don't know which piece of code introduced the
+change, but you know how to test for the presence of the bug.  The
+\hgext{bisect} extension uses your test to direct its search for the
+changeset that introduced the code that caused the bug.
+
+Here are a few scenarios to help you understand how you might apply this
+extension.
+\begin{itemize}
+\item The most recent version of your software has a bug that you
+  remember wasn't present a few weeks ago, but you don't know when it
+  was introduced.  Here, your binary test checks for the presence of
+  that bug.
+\item You fixed a bug in a rush, and now it's time to close the entry
+  in your team's bug database.  The bug database requires a changeset
+  ID when you close an entry, but you don't remember which changeset
+  you fixed the bug in.  Once again, your binary test checks for the
+  presence of the bug.
+\item Your software works correctly, but runs~15\% slower than the
+  last time you measured it.  You want to know which changeset
+  introduced the performance regression.  In this case, your binary
+  test measures the performance of your software, to see whether it's
+  ``fast'' or ``slow''.
+\item The sizes of the components of your project that you ship
+  exploded recently, and you suspect that something changed in the way
+  you build your project.
+\end{itemize}
+
+From these examples, it should be clear that the \hgext{bisect}
+extension is not useful only for finding the sources of bugs.  You can
+use it to find any ``emergent property'' of a repository (anything
+that you can't find from a simple text search of the files in the
+tree) for which you can write a binary test.
+
+We'll introduce a little bit of terminology here, just to make it
+clear which parts of the search process are your responsibility, and
+which are Mercurial's.  A \emph{test} is something that \emph{you} run
+when \hgext{bisect} chooses a changeset.  A \emph{probe} is what
+\hgext{bisect} runs to tell whether a revision is good.  Finally,
+we'll use the word ``bisect'', as both a noun and a verb, to stand in
+for the phrase ``search using the \hgext{bisect} extension''.
+
+One simple way to automate the searching process would be simply to
+probe every changeset.  However, this scales poorly.  If it took ten
+minutes to test a single changeset, and you had 10,000 changesets in
+your repository, the exhaustive approach would take on average~35
+\emph{days} to find the changeset that introduced a bug.  Even if you
+knew that the bug was introduced by one of the last 500 changesets,
+and limited your search to those, you'd still be looking at over 40
+hours to find the changeset that introduced your bug.
+
+What the \emph{bisect} extension does is use its knowledge of the
+``shape'' of your project's revision history to perform a search in
+time proportional to the \emph{logarithm} of the number of changesets
+to check (the kind of search it performs is called a dichotomic
+search).  With this approach, searching through 10,000 changesets will
+take less than two hours, even at ten minutes per test.  Limit your
+search to the last 500 changesets, and it will take less than an hour.
+
+The \hgext{bisect} extension is aware of the ``branchy'' nature of a
+Mercurial project's revision history, so it has no problems dealing
+with branches, merges, or multiple heads in a repoository.  It can
+prune entire branches of history with a single probe, which is how it
+operates so efficiently.
+
+\subsection{Using the \hgext{bisect} extension}
+
+Here's an example of \hgext{bisect} in action.  To keep the core of
+Mercurial simple, \hgext{bisect} is packaged as an extension; this
+means that it won't be present unless you explicitly enable it.  To do
+this, edit your \hgrc\ and add the following section header (if it's
+not already present):
+\begin{codesample2}
+  [extensions]
+\end{codesample2}
+Then add a line to this section to enable the extension:
+\begin{codesample2}
+  hbisect =
+\end{codesample2}
+\begin{note}
+  That's right, there's a ``\texttt{h}'' at the front of the name of
+  the \hgext{bisect} extension.  The reason is that Mercurial is
+  written in Python, and uses a standard Python package called
+  \texttt{bisect}.  If you omit the ``\texttt{h}'' from the name
+  ``\texttt{hbisect}'', Mercurial will erroneously find the standard
+  Python \texttt{bisect} package, and try to use it as a Mercurial
+  extension.  This won't work, and Mercurial will crash repeatedly
+  until you fix the spelling in your \hgrc.  Ugh.
+\end{note}
+
+Now let's create a repository, so that we can try out the
+\hgext{bisect} extension in isolation.
+\interaction{bisect.init}
+We'll simulate a project that has a bug in it in a simple-minded way:
+create trivial changes in a loop, and nominate one specific change
+that will have the ``bug''.  This loop creates 50 changesets, each
+adding a single file to the repository.  We'll represent our ``bug''
+with a file that contains the text ``i have a gub''.
+\interaction{bisect.commits}
+
+The next thing that we'd like to do is figure out how to use the
+\hgext{bisect} extension.  We can use Mercurial's normal built-in help
+mechanism for this.
+\interaction{bisect.help}
+
+The \hgext{bisect} extension works in steps.  Each step proceeds as follows.
+\begin{enumerate}
+\item You run your binary test.
+  \begin{itemize}
+  \item If the test succeeded, you tell \hgext{bisect} by running the
+    \hgcmdargs{bisect}{good} command.
+  \item If it failed, use the \hgcmdargs{bisect}{bad} command to let
+    the \hgext{bisect} extension know.
+  \end{itemize}
+\item The extension uses your information to decide which changeset to
+  test next.
+\item It updates the working directory to that changeset, and the
+  process begins again.
+\end{enumerate}
+The process ends when \hgext{bisect} identifies a unique changeset
+that marks the point where your test transitioned from ``succeeding''
+to ``failing''.
+
+To start the search, we must run the \hgcmdargs{bisect}{init} command.
+\interaction{bisect.search.init}
+
+In our case, the binary test we use is simple: we check to see if any
+file in the repository contains the string ``i have a gub''.  If it
+does, this changeset contains the change that ``caused the bug''.  By
+convention, a changeset that has the property we're searching for is
+``bad'', while one that doesn't is ``good''.
+
+Most of the time, the revision to which the working directory is
+synced (usually the tip) already exhibits the problem introduced by
+the buggy change, so we'll mark it as ``bad''.
+\interaction{bisect.search.bad-init}
+
+Our next task is to nominate a changeset that we know \emph{doesn't}
+have the bug; the \hgext{bisect} extension will ``bracket'' its search
+between the first pair of good and bad changesets.  In our case, we
+know that revision~10 didn't have the bug.  (I'll have more words
+about choosing the first ``good'' changeset later.)
+\interaction{bisect.search.good-init}
+
+Notice that this command printed some output.
+\begin{itemize}
+\item It told us how many changesets it must consider before it can
+  identify the one that introduced the bug, and how many tests that
+  will require.
+\item It updated the working directory to the next changeset to test,
+  and told us which changeset it's testing.
+\end{itemize}
+
+We now run our test in the working directory.  We use the
+\command{grep} command to see if our ``bad'' file is present in the
+working directory.  If it is, this revision is bad; if not, this
+revision is good.
+\interaction{search.step1}
+
+This test looks like a perfect candidate for automation, so let's turn
+it into a shell function.
+\interaction{search.mytest}
+We can now run an entire test step with a single command,
+\texttt{mytest}.
+\interaction{search.step2}
+A few more invocations of our canned test step command, and we're
+done.
+\interaction{search.rest}
+
+Even though we had~40 changesets to search through, the \hgext{bisect}
+extension let us find the changeset that introduced our ``bug'' with
+only five tests.  Because the number of tests that the \hgext{bisect}
+extension grows logarithmically with the number of changesets to
+search, the advantage that it has over the ``brute force'' search
+approach increases with every changeset you add.
+
+\subsection{Cleaning up after your search}
+
+When you're finished using the \hgext{bisect} extension in a
+repository, you can use the \hgcmdargs{bisect}{reset} command to drop
+the information it was using to drive your search.  The extension
+doesn't use much space, so it doesn't matter if you forget to run this
+command.  However, \hgext{bisect} won't let you start a new search in
+that repository until you do a \hgcmdargs{bisect}{reset}.
+\interaction{search.reset}
+
+\section{Tips for finding bugs effectively}
+
+\subsection{Give consistent input}
+
+The \hgext{bisect} extension requires that you correctly report the
+result of every test you perform.  If you tell it that a test failed
+when it really succeeded, it \emph{might} be able to detect the
+inconsistency.  If it can identify an inconsistency in your reports,
+it will tell you that a particular changeset is both good and bad.
+However, it can't do this perfectly; it's about as likely to report
+the wrong changeset as the source of the bug.
+
+\subsection{Automate as much as possible}
+
+When I started using the \hgext{bisect} extension, I tried a few times
+to run my tests by hand, on the command line.  This is an approach
+that I, at least, am not suited to.  After a few tries, I found that I
+was making enough mistakes that I was having to restart my searches
+several times before finally getting correct results.  
+
+My initial problems with driving the \hgext{bisect} extension by hand
+occurred even with simple searches on small repositories; if the
+problem you're looking for is more subtle, or the number of tests that
+\hgext{bisect} must perform increases, the likelihood of operator
+error ruining the search is much higher.  Once I started automating my
+tests, I had much better results.
+
+The key to automated testing is twofold:
+\begin{itemize}
+\item always test for the same symptom, and
+\item always feed consistent input to the \hgcmd{bisect} command.
+\end{itemize}
+In my tutorial example above, the \command{grep} command tests for the
+symptom, and the \texttt{if} statement takes the result of this check
+and ensures that we always feed the same input to the \hgcmd{bisect}
+command.  The \texttt{mytest} function marries these together in a
+reproducible way, so that every test is uniform and consistent.
+
+\subsection{Check your results}
+
+Because the output of a \hgext{bisect} search is only as good as the
+input you give it, don't take the changeset it reports as the
+absolute truth.  A simple way to cross-check its report is to manually
+run your test at each of the following changesets:
+\begin{itemize}
+\item The changeset that it reports as the first bad revision.  Your
+  test should still report this as bad.
+\item The parent of that changeset (either parent, if it's a merge).
+  Your test should report this changeset as good.
+\item A child of that changeset.  Your test should report this
+  changeset as bad.
+\end{itemize}
+
+\subsection{Beware interference between bugs}
+
+It's possible that your search for one bug could be disrupted by the
+presence of another.  For example, let's say your software crashes at
+revision 100, and worked correctly at revision 50.  Unknown to you,
+someone else introduced a different crashing bug at revision 60, and
+fixed it at revision 80.  This could distort your results in one of
+several ways.
+
+It is possible that this other bug completely ``masks'' yours, which
+is to say that it occurs before your bug has a chance to manifest
+itself.  If you can't avoid that other bug (for example, it prevents
+your project from building), and so can't tell whether your bug is
+present in a particular changeset, the \hgext{bisect} extension cannot
+help you directly.  Instead, you'll need to manually avoid the
+changesets where that bug is present, and do separate searches
+``around'' it.
+
+A different problem could arise if your test for a bug's presence is
+not specific enough.  If you checks for ``my program crashes'', then
+both your crashing bug and an unrelated crashing bug that masks it
+will look like the same thing, and mislead \hgext{bisect}.
+
+\subsection{Bracket your search lazily}
+
+Choosing the first ``good'' and ``bad'' changesets that will mark the
+end points of your search is often easy, but it bears a little
+discussion neverthheless.  From the perspective of \hgext{bisect}, the
+``newest'' changeset is conventionally ``bad'', and the older
+changeset is ``good''.
+
+If you're having trouble remembering when a suitable ``good'' change
+was, so that you can tell \hgext{bisect}, you could do worse than
+testing changesets at random.  Just remember to eliminate contenders
+that can't possibly exhibit the bug (perhaps because the feature with
+the bug isn't present yet) and those where another problem masks the
+bug (as I discussed above).
+
+Even if you end up ``early'' by thousands of changesets or months of
+history, you will only add a handful of tests to the total number that
+\hgext{bisect} must perform, thanks to its logarithmic behaviour.
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "00book"
