@@ -7,6 +7,7 @@ sources := \
 	99book.bib \
 	99defs.tex \
 	build_id.tex \
+	cmdref.tex \
 	concepts.tex \
 	daily.tex \
 	hook.tex \
