@@ -10,6 +10,7 @@ sources := \
 	cmdref.tex \
 	concepts.tex \
 	daily.tex \
+	filenames.tex \
 	hook.tex \
 	intro.tex \
 	mq.tex \
@@ -51,10 +52,12 @@ image-png := $(filter %.png,$(image-sources))
 example-sources := \
 	backout \
 	bisect \
+	cmdref \
 	daily.copy \
 	daily.files \
 	daily.rename \
 	daily.revert \
+	filenames \
 	hook.msglen \
 	hook.simple \
 	hook.ws \

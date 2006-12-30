@@ -117,10 +117,13 @@
 \fi
 
 % Reference entry for a command.
-\newcommand{\cmdref}[1]{\section{#1}\label{cmdref:#1}\index{\texttt{#1} command}``\texttt{hg #1}''}
+\newcommand{\cmdref}[2]{\section{\hgcmd{#1}---#2}\label{cmdref:#1}\index{\texttt{#1} command}}
 
-% Reference entry for a command option.
-\newcommand{\optref}[2]{\index{\texttt{#1} command!\texttt{#2} option}\texttt{#2}}
+% Reference entry for a command option with long and short forms.
+\newcommand{\optref}[3]{\subsubsection{\hgopt{#1}{--#3}, also \hgopt{#1}{-#2}}}
+
+% Reference entry for a command option with only long form.
+\newcommand{\loptref}[2]{\subsubsection{\hgopt{#1}{--#2} option}}
 
 %%% Local Variables: 
 %%% mode: latex
