@@ -29,6 +29,16 @@
 % Mercurial command, with arguments.
 \newcommand{\hgcmdargs}[2]{\index{\texttt{#1} command}``\texttt{hg #1 #2}''}
 
+\newcommand{\tplkword}[1]{\index{\texttt{#1} template keyword}\index{template keywords!\texttt{#1}}\texttt{#1}}
+
+\newcommand{\tplkwfilt}[2]{\index{\texttt{#1} template keyword!\texttt{#2}
+    filter}\index{template filters!\texttt{#2}}\index{\texttt{#2}
+    template filter}\texttt{#2}}
+
+\newcommand{\tplfilter}[1]{\index{template
+    filters!\texttt{#1}}\index{\texttt{#1} template
+    filter}\texttt{#1}}
+
 % Shell/system command.
 \newcommand{\command}[1]{\index{\texttt{#1} command}\texttt{#1}}
 
@@ -55,7 +65,7 @@
 
 % Named item in a hgrc file section.
 \newcommand{\rcitem}[2]{\index{\texttt{hgrc} file!\texttt{#1}
-    section!\texttt{#2} entry}\texttt{#1.#2}}
+    section!\texttt{#2} entry}\texttt{#2}}
 
 % hgrc file.
 \newcommand{\hgrc}{\index{\texttt{hgrc} file}\texttt{hgrc}}
@@ -74,10 +84,17 @@
 \newcommand{\pymodclass}[2]{\index{\texttt{#1} module!\texttt{#2}
     class}\texttt{#1.#2}}
 
+% Python function in a module.
+\newcommand{\pymodfunc}[2]{\index{\texttt{#1} module!\texttt{#2}
+    function}\texttt{#1.#2}}
+
 % Note: blah blah.
 \newsavebox{\notebox}
 \newenvironment{note}%
   {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Note:}\space}%
+  {\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
+\newenvironment{caution}%
+  {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Caution:}\space}%
   {\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
 
 % Code sample, eating 4 characters of leading space.
@@ -89,12 +106,24 @@
 % Interaction from the examples directory.
 \newcommand{\interaction}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{examples/#1.out}}
 
+% Example code from the examples directory.
+\newcommand{\excode}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{../examples/#1}}
+
 % Graphics inclusion.
 \ifpdf
   \newcommand{\grafix}[1]{\includegraphics{#1}}
 \else
   \newcommand{\grafix}[1]{\includegraphics{#1.png}}
 \fi
+
+% Reference entry for a command.
+\newcommand{\cmdref}[2]{\section{\hgcmd{#1}---#2}\label{cmdref:#1}\index{\texttt{#1} command}}
+
+% Reference entry for a command option with long and short forms.
+\newcommand{\optref}[3]{\subsubsection{\hgopt{#1}{--#3}, also \hgopt{#1}{-#2}}}
+
+% Reference entry for a command option with only long form.
+\newcommand{\loptref}[2]{\subsubsection{\hgopt{#1}{--#2} option}}
 
 %%% Local Variables: 
 %%% mode: latex
