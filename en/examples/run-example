@@ -37,11 +37,20 @@ def gensubs(s):
 def tex_escape(s):
     return ''.join(gensubs(s))
         
+def maybe_unlink(name):
+    try:
+        os.unlink(name)
+        return True
+    except OSError, err:
+        if err.errno != errno.ENOENT:
+            raise
+    return False
+
 class example:
     shell = '/usr/bin/env bash'
     ps1 = '__run_example_ps1__ '
     ps2 = '__run_example_ps2__ '
-    pi_re = re.compile(r'#\$\s*(name):\s*(.*)$')
+    pi_re = re.compile(r'#\$\s*(name|ignore):\s*(.*)$')
     
     timeout = 5
 
@@ -126,11 +135,7 @@ class example:
 
         # remove the marker file that we tell make to use to see if
         # this run succeeded
-        try:
-            os.unlink(self.name + '.run')
-        except OSError, err:
-            if err.errno != errno.ENOENT:
-                raise
+        maybe_unlink(self.name + '.run')
 
         rcfile = os.path.join(tmpdir, '.hgrc')
         rcfp = open(rcfile, 'w')
@@ -172,6 +177,13 @@ class example:
             self.ps2: '>',
             }
 
+        ignore = [
+            r'\d+:[0-9a-f]{12}', # changeset number:hash
+            r'^(?:---|\+\+\+) .*', # diff header with dates
+            r'^date:.*', # date
+            r'^diff -r.*', # "diff -r" is followed by hash
+            ]
+
         try:
             try:
                 # eat first prompt string from shell
@@ -187,10 +199,16 @@ class example:
                             self.status('.')
                             out = rest
                             assert os.sep not in out
+                            if ofp is not None:
+                                ofp.close()
+                                self.rename_output(ofp_basename, ignore)
                             if out:
-                                ofp = open('%s.%s.out' % (self.name, out), 'w')
+                                ofp_basename = '%s.%s' % (self.name, out)
+                                ofp = open(ofp_basename + '.tmp', 'w')
                             else:
                                 ofp = None
+                        elif pi == 'ignore':
+                            ignore.append(rest)
                     elif hunk.strip():
                         # it's something we should execute
                         newps, output = self.sendreceive(hunk)
@@ -233,6 +251,41 @@ class example:
                 return rc
         finally:
             shutil.rmtree(tmpdir)
+
+    def rename_output(self, base, ignore):
+        mangle_re = re.compile('(?:' + '|'.join(ignore) + ')')
+        def mangle(s):
+            return mangle_re.sub('', s)
+        def matchfp(fp1, fp2):
+            while True:
+                s1 = mangle(fp1.readline())
+                s2 = mangle(fp2.readline())
+                if cmp(s1, s2):
+                    break
+                if not s1:
+                    return True
+            return False
+
+        oldname = base + '.out'
+        tmpname = base + '.tmp'
+        errname = base + '.err'
+        errfp = open(errname, 'w+')
+        for line in open(tmpname):
+            errfp.write(mangle_re.sub('', line))
+        os.unlink(tmpname)
+        errfp.seek(0)
+        try:
+            oldfp = open(oldname)
+        except IOError, err:
+            if err.errno != errno.ENOENT:
+                raise
+            os.rename(errname, oldname)
+            return
+        if matchfp(oldfp, errfp):
+            os.unlink(errname)
+        else:
+            print >> sys.stderr, '\nOutput of %s has changed!' % base
+            os.system('diff -u %s %s 1>&2' % (oldname, errname))
 
 def main(path='.'):
     opts, args = getopt.getopt(sys.argv[1:], 'v', ['verbose'])
