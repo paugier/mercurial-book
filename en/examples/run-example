@@ -124,6 +124,14 @@ class example:
         self.status('running %s ' % basename)
         tmpdir = tempfile.mkdtemp(prefix=basename)
 
+        # remove the marker file that we tell make to use to see if
+        # this run succeeded
+        try:
+            os.unlink(self.name + '.run')
+        except OSError, err:
+            if err.errno != errno.ENOENT:
+                raise
+
         rcfile = os.path.join(tmpdir, '.hgrc')
         rcfp = open(rcfile, 'w')
         print >> rcfp, '[ui]'
@@ -200,7 +208,6 @@ class example:
                         ofp.write(tex_escape(output))
                     ps = newps
                 self.status('\n')
-                open(self.name + '.run', 'w')
             except:
                 print >> sys.stderr, '(killed)'
                 os.kill(self.pid, signal.SIGKILL)
@@ -221,6 +228,8 @@ class example:
                         print >> sys.stderr, '(exit %s)' % os.WEXITSTATUS(rc)
                     elif os.WIFSIGNALED(rc):
                         print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
+                else:
+                    open(self.name + '.run', 'w')
                 return rc
         finally:
             shutil.rmtree(tmpdir)
