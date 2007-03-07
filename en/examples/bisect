@@ -3,6 +3,11 @@
 echo '[extensions]' >> $HGRC
 echo 'hbisect =' >> $HGRC
 
+# XXX There's some kind of horrible nondeterminism in the execution of
+# bisect at the moment.  Ugh.
+
+#$ ignore: .*
+
 #$ name: init
 
 hg init mybug
