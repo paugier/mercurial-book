@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #$ name: init
+#$ ignore: [0-9a-f]{40}
 
 hg init hook-test
 cd hook-test
@@ -12,8 +13,9 @@ hg add a
 hg commit -m 'testing commit hook'
 
 #$ name: ext
+#$ ignore: ^date of commit.*
 
-echo 'commit.when = echo "date of commit:"; date' >> .hg/hgrc
+echo 'commit.when = echo -n "date of commit: "; date' >> .hg/hgrc
 echo a >> a
 hg commit -m 'i have two hooks'
 
