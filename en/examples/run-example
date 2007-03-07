@@ -279,7 +279,7 @@ class example:
         errfp = open(errname, 'w+')
         for line in open(tmpname):
             errfp.write(mangle_re.sub('', line))
-        os.unlink(tmpname)
+        os.rename(tmpname, base + '.lxo')
         errfp.seek(0)
         try:
             oldfp = open(oldname)

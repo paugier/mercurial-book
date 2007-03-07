@@ -183,4 +183,4 @@ clean:
 		$(image-dot:%.dot=%.png) \
 		$(image-svg:%.svg=%.pdf) \
 		$(image-svg:%.svg=%.png) \
-		examples/*.{out,run} examples/.run build_id.tex
+		examples/*.{lxo,run} examples/.run build_id.tex
