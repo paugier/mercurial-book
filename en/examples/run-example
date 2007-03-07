@@ -182,7 +182,12 @@ class example:
             r'^(?:---|\+\+\+) .*', # diff header with dates
             r'^date:.*', # date
             r'^diff -r.*', # "diff -r" is followed by hash
+            r'^# Date \d+ \d+', # hg patch header
+            r'^# Node ID [0-9a-f]{40}', # hg patch header
+            r'^# Parent  [0-9a-f]{40}', # hg patch header
             ]
+
+        err = False
 
         try:
             try:
@@ -201,7 +206,7 @@ class example:
                             assert os.sep not in out
                             if ofp is not None:
                                 ofp.close()
-                                self.rename_output(ofp_basename, ignore)
+                                err = self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
                                 ofp = open(ofp_basename + '.tmp', 'w')
@@ -234,8 +239,10 @@ class example:
             else:
                 try:
                     ps, output = self.sendreceive('exit\n')
-                    if ofp:
+                    if ofp is not None:
                         ofp.write(output)
+                        ofp.close()
+                        err = self.rename_output(ofp_basename, ignore)
                     os.close(self.cfd)
                 except IOError:
                     pass
@@ -248,7 +255,7 @@ class example:
                         print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
                 else:
                     open(self.name + '.run', 'w')
-                return rc
+                return rc or err
         finally:
             shutil.rmtree(tmpdir)
 
@@ -286,6 +293,7 @@ class example:
         else:
             print >> sys.stderr, '\nOutput of %s has changed!' % base
             os.system('diff -u %s %s 1>&2' % (oldname, errname))
+            return True
 
 def main(path='.'):
     opts, args = getopt.getopt(sys.argv[1:], 'v', ['verbose'])
