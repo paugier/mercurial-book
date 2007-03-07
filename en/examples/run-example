@@ -179,12 +179,12 @@ class example:
 
         ignore = [
             r'\d+:[0-9a-f]{12}', # changeset number:hash
+            r'[0-9a-f]{40}', # long changeset hash
+            r'[0-9a-f]{12}', # short changeset hash
             r'^(?:---|\+\+\+) .*', # diff header with dates
             r'^date:.*', # date
-            r'^diff -r.*', # "diff -r" is followed by hash
+            #r'^diff -r.*', # "diff -r" is followed by hash
             r'^# Date \d+ \d+', # hg patch header
-            r'^# Node ID [0-9a-f]{40}', # hg patch header
-            r'^# Parent  [0-9a-f]{40}', # hg patch header
             ]
 
         err = False
