@@ -203,7 +203,11 @@ class example:
                         if pi == 'name':
                             self.status('.')
                             out = rest
-                            assert out not in ('err', 'lxo', 'out', 'run', 'tmp')
+                            if out in ('err', 'lxo', 'out', 'run', 'tmp'):
+                                print >> sys.stderr, ('%s: illegal section '
+                                                      'name %r' %
+                                                      (self.name, out))
+                                return 1
                             assert os.sep not in out
                             if ofp is not None:
                                 ofp.close()
