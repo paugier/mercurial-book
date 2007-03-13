@@ -169,9 +169,18 @@ build_id.tex: $(wildcard ../.hg/00changelog.[id])
 	echo -n $(hg_id) > build_id.tex
 
 clean:
-	rm -rf html pdf \
+	rm -rf dist html pdf \
 		$(image-dot:%.dot=%.pdf) \
 		$(image-dot:%.dot=%.png) \
 		$(image-svg:%.svg=%.pdf) \
 		$(image-svg:%.svg=%.png) \
 		examples/*.{lxo,run} examples/.run build_id.tex
+
+install: pdf split
+	rm -rf dist
+	mkdir -p dist
+	cp pdf/hgbook.pdf dist
+	cp html/split/*.{css,html,png} dist
+
+rsync: install
+	rsync -avz --delete dist sp.red-bean.com:public_html/hgbook
