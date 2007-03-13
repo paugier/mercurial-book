@@ -203,6 +203,7 @@ class example:
                         if pi == 'name':
                             self.status('.')
                             out = rest
+                            assert out not in ('err', 'lxo', 'out', 'run', 'tmp')
                             assert os.sep not in out
                             if ofp is not None:
                                 ofp.close()
