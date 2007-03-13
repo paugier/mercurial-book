@@ -62,6 +62,7 @@ example-sources := \
 	hook.msglen \
 	hook.simple \
 	hook.ws \
+	issue29 \
 	mq.guards \
 	mq.qinit-help \
 	mq.dodiff \
@@ -69,6 +70,7 @@ example-sources := \
 	mq.tarball \
 	mq.tools \
 	mq.tutorial \
+	rename.divergent \
 	rollback \
 	template.simple \
 	template.svnstyle \

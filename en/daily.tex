@@ -303,11 +303,11 @@ Since Mercurial's rename is implemented as copy-and-remove, the same
 propagation of changes happens when you merge after a rename as after
 a copy.
 
-If I modify a file, and you rename it to a new name, then we merge our
-respective changes, my modifications to the file under its original
-name will be propagated into the file under its new name.  (This is
-something you might expect to ``simply work,'' but not all revision
-control systems actually do this.)
+If I modify a file, and you rename it to a new name, and then we merge
+our respective changes, my modifications to the file under its
+original name will be propagated into the file under its new name.
+(This is something you might expect to ``simply work,'' but not all
+revision control systems actually do this.)
 
 Whereas having changes follow a copy is a feature where you can
 perhaps nod and say ``yes, that might be useful,'' it should be clear
@@ -315,6 +315,56 @@ that having them follow a rename is definitely important.  Without
 this facility, it would simply be too easy for changes to become
 orphaned when files are renamed.
 
+\subsection{Divergent renames and merging}
+
+The case of diverging names occurs when two developers start with a
+file---let's call it \filename{foo}---in their respective
+repositories.
+
+\interaction{rename.divergent.clone}
+Anne renames the file to \filename{bar}.
+\interaction{rename.divergent.rename.anne}
+Meanwhile, Bob renames it to \filename{quux}.
+\interaction{rename.divergent.rename.bob}
+
+I like to think of this as a conflict because each developer has
+expressed different intentions about what the file ought to be named.
+
+What do you think should happen when they merge their work?
+Mercurial's actual behaviour is that it always preserves \emph{both}
+names when it merges changesets that contain divergent renames.
+\interaction{rename.divergent.merge}
+
+I personally find this behaviour quite surprising, which is why I
+wanted to explicitly mention it here.  I would have expected Mercurial
+to prompt me with a three-way choice instead: do I want to keep only
+\filename{bar}, only \filename{quux}, or both?
+
+In practice, when you rename a source file, it is likely that you will
+also modify another file (such as a makefile) that knows how to build
+the source file.  So what will happen if Anne renames a file and edits
+\filename{Makefile} to build it under its new name, while Bob does the
+same, but chooses a different name for the file, is that after the
+merge, there will be two copies of the source file in the working
+directory under different names, \emph{and} a conflict in the section
+of the \filename{Makefile} that both Bob and Anne edited.
+
+This behaviour is considered surprising by other people, too:
+see~\bug{455} for details.
+
+\subsection{Convergent renames and merging}
+
+Another kind of rename conflict occurs when two people choose to
+rename different \emph{source} files to the same \emph{destination}.
+In this case, Mercurial runs its normal merge machinery, and lets you
+guide it to a suitable resolution.
+
+\subsection{Other name-related corner cases}
+
+Mercurial has a longstanding bug in which it fails to handle a merge
+where one side has a file with a given name, while another has a
+directory with the same name.  This is documented as~\bug{29}.
+\interaction{issue29.go}
 
 %%% Local Variables: 
 %%% mode: latex
