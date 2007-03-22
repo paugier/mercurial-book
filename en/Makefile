@@ -77,6 +77,10 @@ example-sources := \
 	tour \
 	tour-merge-conflict
 
+dist-sources := \
+	../html/index.html.var \
+	../html/index.en.html
+
 latex-options = \
 	-interaction batchmode \
 	-output-directory $(dir $(1)) \
@@ -178,11 +182,12 @@ clean:
 		$(image-svg:%.svg=%.png) \
 		examples/*.{lxo,run} examples/.run build_id.tex
 
-install: pdf split
+install: pdf split $(dist-sources)
 	rm -rf dist
 	mkdir -p dist
 	cp pdf/hgbook.pdf dist
 	cp html/split/*.{css,html,png} dist
+	cp $(dist-sources) dist
 
 rsync: install
 	rsync -avz --delete dist sp.red-bean.com:public_html/hgbook
