@@ -8,6 +8,7 @@ sources := \
 	99defs.tex \
 	build_id.tex \
 	cmdref.tex \
+	collab.tex \
 	concepts.tex \
 	daily.tex \
 	filenames.tex \
@@ -78,6 +79,7 @@ example-sources := \
 	tour-merge-conflict
 
 dist-sources := \
+	../html/hgicon.png \
 	../html/index.html.var \
 	../html/index.en.html
 
