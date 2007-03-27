@@ -6,8 +6,6 @@ echo 'hbisect =' >> $HGRC
 # XXX There's some kind of horrible nondeterminism in the execution of
 # bisect at the moment.  Ugh.
 
-#$ ignore: .*
-
 #$ name: init
 
 hg init mybug
@@ -39,6 +37,8 @@ hg bisect init
 #$ name: search.bad-init
 
 hg bisect bad
+
+#$ drop_output: yes
 
 #$ name: search.good-init
 
