@@ -46,6 +46,13 @@ def maybe_unlink(name):
             raise
     return False
 
+def find_path_to(program):
+    for p in os.environ.get('PATH', os.defpath).split(os.pathsep):
+        name = os.path.join(p, program)
+        if os.access(name, os.X_OK):
+            return p
+    return None
+        
 class example:
     shell = '/usr/bin/env bash'
     ps1 = '__run_example_ps1__ '
@@ -147,6 +154,16 @@ class example:
         print >> rcfp, 'PS1="%s"' % self.ps1
         print >> rcfp, 'PS2="%s"' % self.ps2
         print >> rcfp, 'unset HISTFILE'
+        path = ['/usr/bin', '/bin']
+        hg = find_path_to('hg')
+        if hg and hg not in path:
+            path.append(hg)
+        def re_export(envar):
+            v = os.getenv(envar)
+            if v is not None:
+                print >> rcfp, 'export ' + envar + '=' + v
+        print >> rcfp, 'export PATH=' + ':'.join(path)
+        re_export('PYTHONPATH')
         print >> rcfp, 'export EXAMPLE_DIR="%s"' % os.getcwd()
         print >> rcfp, 'export HGMERGE=merge'
         print >> rcfp, 'export LANG=C'
@@ -160,8 +177,8 @@ class example:
         sys.stderr.flush()
         self.pid, self.cfd = pty.fork()
         if self.pid == 0:
-            cmdline = ['/usr/bin/env', 'bash', '--noediting', '--noprofile',
-                       '--norc']
+            cmdline = ['/usr/bin/env', '-i', 'bash', '--noediting',
+                       '--noprofile', '--norc']
             try:
                 os.execv(cmdline[0], cmdline)
             except OSError, err:

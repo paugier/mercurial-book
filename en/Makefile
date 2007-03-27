@@ -78,6 +78,9 @@ example-sources := \
 	tour \
 	tour-merge-conflict
 
+example-prereqs := \
+	/usr/bin/merge
+
 dist-sources := \
 	../html/hgicon.png \
 	../html/index.html.var \
@@ -161,7 +164,7 @@ html/split/hgbook.html: $(sources) $(image-html) examples hgbook.css bookhtml.cf
 %.eps: %.dot
 	dot -Tps -o $@ $<
 
-examples: examples/.run
+examples: $(example-prereqs) examples/.run
 
 examples/.run: $(example-sources:%=examples/%.run)
 	touch examples/.run
