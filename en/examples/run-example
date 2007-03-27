@@ -324,7 +324,9 @@ def main(path='.'):
                 print >> sys.stderr, '%s: not a file, or not executable' % a
                 errs += 1
         return errs
-    for name in os.listdir(path):
+    names = os.listdir(path)
+    names.sort()
+    for name in names:
         if name == 'run-example' or name.startswith('.'): continue
         if name.endswith('.out') or name.endswith('~'): continue
         if name.endswith('.run'): continue
