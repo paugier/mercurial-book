@@ -99,21 +99,22 @@ class example:
             
     timeout = 5
 
-    def read(self):
+    def read(self, hint):
         events = self.poll.poll(self.timeout * 1000)
         if not events:
-            print >> sys.stderr, '[timed out after %d seconds]' % self.timeout
+            print >> sys.stderr, ('[%stimed out after %d seconds]' %
+                                  (hint, self.timeout))
             os.kill(self.pid, signal.SIGHUP)
             return ''
         return os.read(self.cfd, 1024)
         
-    def receive(self):
+    def receive(self, hint):
         out = cStringIO.StringIO()
         while True:
             try:
                 if self.verbose:
                     sys.stderr.write('< ')
-                s = self.read()
+                s = self.read(hint)
             except OSError, err:
                 if err.errno == errno.EIO:
                     return '', ''
@@ -127,9 +128,9 @@ class example:
             if s.endswith(self.ps2):
                 return self.ps2, s.replace('\r\n', '\n')[:-len(self.ps2)]
         
-    def sendreceive(self, s):
+    def sendreceive(self, s, hint):
         self.send(s)
-        ps, r = self.receive()
+        ps, r = self.receive(hint)
         if r.startswith(s):
             r = r[len(s):]
         return ps, r
@@ -205,13 +206,15 @@ class example:
             ]
 
         err = False
+        read_hint = ''
 
         try:
             try:
                 # eat first prompt string from shell
-                self.read()
+                self.read(read_hint)
                 # setup env and prompt
-                ps, output = self.sendreceive('source %s\n' % rcfile)
+                ps, output = self.sendreceive('source %s\n' % rcfile,
+                                              read_hint)
                 for hunk in self.parse():
                     # is this line a processing instruction?
                     m = self.pi_re.match(hunk)
@@ -231,6 +234,7 @@ class example:
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
+                                read_hint = ofp_basename + ' '
                                 ofp = open(ofp_basename + '.tmp', 'w')
                             else:
                                 ofp = None
@@ -238,7 +242,7 @@ class example:
                             ignore.append(rest)
                     elif hunk.strip():
                         # it's something we should execute
-                        newps, output = self.sendreceive(hunk)
+                        newps, output = self.sendreceive(hunk, read_hint)
                         if not ofp:
                             continue
                         # first, print the command we ran
@@ -260,7 +264,7 @@ class example:
                 raise
             else:
                 try:
-                    ps, output = self.sendreceive('exit\n')
+                    ps, output = self.sendreceive('exit\n', read_hint)
                     if ofp is not None:
                         ofp.write(output)
                         ofp.close()
