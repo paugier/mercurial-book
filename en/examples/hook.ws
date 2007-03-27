@@ -3,7 +3,7 @@
 hg init a
 cd a
 echo '[hooks]' > .hg/hgrc
-echo "pretxncommit.whitespace = hg export tip | (! grep -qP '^\\+.*[ \\t]$')" >> .hg/hgrc
+echo "pretxncommit.whitespace = hg export tip | (! egrep -q '^\\+.*[ \\t]$')" >> .hg/hgrc
 
 #$ name: simple
 
