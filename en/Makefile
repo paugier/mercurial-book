@@ -110,14 +110,16 @@ pdf/hgbook.pdf: $(sources) $(image-pdf) examples
 
 html: onepage split
 
-onepage: html/onepage/hgbook.html
+htlatex := /usr/bin/htlatex
 
-split: html/split/hgbook.html
+onepage: $(htlatex) html/onepage/hgbook.html
+
+split: $(htlatex) html/split/hgbook.html
 
 # This is a horrible hack to work around the fact that the htlatex
 # command in tex4ht is itself a horrible hack.  I really don't want to
 # include verbatim the big wad of TeX that is repeated in that script,
-# so instead I mangle the script itself.
+# but I've given up and run a hacked copy as htlatex.book here.
 
 define htlatex
 	mkdir -p $(dir $(1))
