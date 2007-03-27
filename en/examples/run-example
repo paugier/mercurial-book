@@ -50,7 +50,7 @@ class example:
     shell = '/usr/bin/env bash'
     ps1 = '__run_example_ps1__ '
     ps2 = '__run_example_ps2__ '
-    pi_re = re.compile(r'#\$\s*(drop_output|name|ignore):\s*(.*)$')
+    pi_re = re.compile(r'#\$\s*(name|ignore):\s*(.*)$')
     
     timeout = 5
 
@@ -189,8 +189,6 @@ class example:
 
         err = False
 
-        drop_output = False
-
         try:
             try:
                 # eat first prompt string from shell
@@ -221,12 +219,10 @@ class example:
                                 ofp = None
                         elif pi == 'ignore':
                             ignore.append(rest)
-                        elif pi == 'drop_output':
-                            drop_output = dict(yes=1,no=0)[rest.lower()]
                     elif hunk.strip():
                         # it's something we should execute
                         newps, output = self.sendreceive(hunk)
-                        if not ofp or drop_output:
+                        if not ofp:
                             continue
                         # first, print the command we ran
                         if not hunk.startswith('#'):
