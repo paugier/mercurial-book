@@ -211,7 +211,7 @@ class example:
                             assert os.sep not in out
                             if ofp is not None:
                                 ofp.close()
-                                err = self.rename_output(ofp_basename, ignore)
+                                err |= self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
                                 ofp = open(ofp_basename + '.tmp', 'w')
@@ -247,20 +247,21 @@ class example:
                     if ofp is not None:
                         ofp.write(output)
                         ofp.close()
-                        err = self.rename_output(ofp_basename, ignore)
+                        err |= self.rename_output(ofp_basename, ignore)
                     os.close(self.cfd)
                 except IOError:
                     pass
                 os.kill(self.pid, signal.SIGTERM)
                 pid, rc = os.wait()
-                if rc:
+                err = err or rc
+                if err:
                     if os.WIFEXITED(rc):
                         print >> sys.stderr, '(exit %s)' % os.WEXITSTATUS(rc)
                     elif os.WIFSIGNALED(rc):
                         print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
                 else:
                     open(self.name + '.run', 'w')
-                return rc or err
+                return err
         finally:
             shutil.rmtree(tmpdir)
 
@@ -292,9 +293,10 @@ class example:
             if err.errno != errno.ENOENT:
                 raise
             os.rename(errname, oldname)
-            return
+            return False
         if matchfp(oldfp, errfp):
             os.unlink(errname)
+            return False
         else:
             print >> sys.stderr, '\nOutput of %s has changed!' % base
             os.system('diff -u %s %s 1>&2' % (oldname, errname))
