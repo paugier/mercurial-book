@@ -24,7 +24,7 @@ cp $EXAMPLE_DIR/data/check_whitespace.py .hg
 cat .hg/hgrc
 echo 'a ' >> a
 hg commit -A -m 'add new line with trailing whitespace'
-perl -pi -e 's,\s+$,,' a
+sed -i 's, *$,,' a
 hg commit -A -m 'trimmed trailing whitespace'
 
 #$ name:
