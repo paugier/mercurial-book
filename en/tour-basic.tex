@@ -358,21 +358,41 @@ usually refer to this as ``making a commit'' or ``committing''.
 
 \subsection{Setting up a username}
 
-When you try to run \hgcmd{commit} for the first time, it may succeed
-immediately, or it may fail with an error message that looks like
-this.
-\interaction{tour.commit-no-user}
-If it succeeds for you, the chances are that either you already have a
-file called \sfilename{.hgrc} in your home directory, or an
-environment variable set named \envar{EMAIL}.
+When you try to run \hgcmd{commit} for the first time, it is not
+guaranteed to succeed.  Mercurial records your name and address with
+each change that you commit, so that you and others will later be able
+to tell who made each change.  Mercurial tries to automatically figure
+out a sensible username to commit the change with.  It will attempt
+each of the following methods, in order:
+\begin{enumerate}
+\item If you specify a \hgopt{commit}{-u} option to the \hgcmd{commit}
+  command on the command line, followed by a username, this is always
+  given the highest precedence.
+\item If you have set the \envar{HGUSER} environment variable, this is
+  checked next.
+\item If you create a file in your home directory called
+  \sfilename{.hgrc}, with a \rcitem{ui}{username} entry, that will be
+  used next.  To see what the contents of this file should look like,
+  refer to section~\ref{sec:tour-basic:username} below.
+\item If you have set the \envar{EMAIL} environment variable, this
+  will be used next.
+\item Mercurial will query your system to find out your local user
+  name and host name, and construct a username from these components.
+  Since this often results in a username that is not very useful, it
+  will print a warning if it has to do this.
+\end{enumerate}
+If all of these mechanisms fail, Mercurial will fail, printing an
+error message.  In this case, it will not let you commit until you set
+up a username.
 
-When you commit, Mercurial wants to know what your name is, so that it
-can record it.  If you have created a \sfilename{.hgrc} file, it will
-look in there.  If it doesn't find something suitable, it will see if
-your \envar{EMAIL} address is set.  If neither of these is present, it
-will produce the error message you can see above.
+You should think of the \envar{HGUSER} environment variable and the
+\hgopt{commit}{-u} option to the \hgcmd{commit} command as ways to
+\emph{override} Mercurial's default selection of username.  For normal
+use, the simplest and most robust way to set a username for yourself
+is by creating a \sfilename{.hgrc} file; see below for details.
 
 \subsubsection{Creating a Mercurial configuration file}
+\label{sec:tour-basic:username}
 
 To set a user name, use your favourite editor to create a file called
 \sfilename{.hgrc} in your home directory.  Mercurial will use this
