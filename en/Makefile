@@ -1,7 +1,5 @@
 # This makefile requires GNU make.
 
-hg_id := $(shell hg parents --template '{node|short}\n')
-
 sources := \
 	00book.tex \
 	99book.bib \
@@ -12,6 +10,7 @@ sources := \
 	concepts.tex \
 	daily.tex \
 	filenames.tex \
+	hg_id.tex \
 	hook.tex \
 	intro.tex \
 	mq.tex \
@@ -90,6 +89,13 @@ latex-options = \
 	-interaction batchmode \
 	-output-directory $(dir $(1)) \
 	-jobname $(basename $(notdir $(1)))
+
+hg = $(shell which hg)
+
+hg-id = $(shell hg parents --template '{node|short}\n')
+
+hg-version = $(shell hg version -q | \
+		     sed 's,.*(version \(unknown\|[a-f0-9]*\)),\1,')
 
 all: pdf html
 
@@ -173,7 +179,10 @@ examples/%.run: examples/% examples/run-example
 	cd examples && ./run-example $(notdir $<)
 
 build_id.tex: $(wildcard ../.hg/00changelog.[id])
-	echo -n $(hg_id) > build_id.tex
+	echo -n $(hg-id) > build_id.tex
+
+hg_id.tex: $(hg)
+	echo -n $(hg-version) > hg_id.tex
 
 clean:
 	rm -rf dist html pdf \
@@ -181,7 +190,7 @@ clean:
 		$(image-dot:%.dot=%.png) \
 		$(image-svg:%.svg=%.pdf) \
 		$(image-svg:%.svg=%.png) \
-		examples/*.{lxo,run} examples/.run build_id.tex
+		examples/*.{lxo,run} examples/.run build_id.tex hg_id.tex
 
 install: pdf split $(dist-sources)
 	rm -rf dist
