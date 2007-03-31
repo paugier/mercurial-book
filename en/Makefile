@@ -24,6 +24,7 @@ sources := \
 	undo.tex
 
 image-sources := \
+	feature-branches.dot \
 	filelog.svg \
 	kdiff3.png \
 	metadata.svg \
@@ -53,6 +54,7 @@ image-png := $(filter %.png,$(image-sources))
 example-sources := \
 	backout \
 	bisect \
+	branching \
 	cmdref \
 	daily.copy \
 	daily.files \

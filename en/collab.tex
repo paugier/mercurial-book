@@ -74,7 +74,7 @@ about $n$ different repositories to pull from.
 
 \subsection{A single central repository}
 
-For smaller projects, migrating from a centralised revision control
+For smaller projects migrating from a centralised revision control
 tool, perhaps the easiest way to get started is to have changes flow
 through a single shared central repository.  This is also the
 most common ``building block'' for more ambitious workflow schemes.
@@ -84,7 +84,7 @@ pull changes from it whenever they need to, and some (perhaps all)
 developers have permission to push a change back when they're ready
 for other people to see it.
 
-Under this model, it can still sometimes make sense for people to pull
+Under this model, it can still often make sense for people to pull
 changes directly from each other, without going through the central
 repository.  Consider a case in which I have a tentative bug fix, but
 I am worried that if I were to publish it to the central repository,
@@ -101,6 +101,97 @@ publish a read-only copy of the repository over HTTP using CGI, as in
 section~\ref{sec:collab:cgi}.  Publishing over HTTP satisfies the
 needs of people who don't have push access, and those who want to use
 web browsers to browse the repository's history.
+
+\subsection{Working with multiple branches}
+
+Projects of any significant size naturally tend to make progress on
+several fronts simultaneously.  In the case of software, it's common
+for a project to go through periodic official releases.  A release
+might then go into ``maintenance mode'' for a while after its first
+publication; maintenance releases tend to contain only bug fixes, not
+new features.  In parallel with these maintenance releases, one or
+more future releases may be under development.  People normally use
+the word ``branch'' to refer to one of these many slightly different
+directions in which development is proceeding.
+
+Mercurial is particularly well suited to managing a number of
+simultaneous, but not identical, branches.  Each ``development
+direction'' can live in its own central repository, and you can merge
+changes from one to another as the need arises.  Because repositories
+are independent of each other, unstable changes in a development
+branch will never affect a stable branch unless someone explicitly
+merges those changes in.
+
+Here's an example of how this can work in practice.  Let's say you
+have one ``main branch'' on a central server.
+\interaction{branching.init}
+People clone it, make changes locally, test them, and push them back.
+
+Once the main branch reaches a release milestone, you can use the
+\hgcmd{tag} command to give a permanent name to the milestone
+revision.
+\interaction{branching.tag}
+Let's say some ongoing development occurs on the main branch.
+\interaction{branching.main}
+Using the tag that was recorded at the milestone, people who clone
+that repository at any time in the future can use \hgcmd{update} to
+get a copy of the working directory exactly as it was when that tagged
+revision was committed.  
+\interaction{branching.update}
+
+In addition, immediately after the main branch is tagged, someone can
+then clone the main branch on the server to a new ``stable'' branch,
+also on the server.
+\interaction{branching.clone}
+
+Someone who needs to make a change to the stable branch can then clone
+\emph{that} repository, make their changes, commit, and push their
+changes back there.
+\interaction{branching.stable}
+Because Mercurial repositories are independent, and Mercurial doesn't
+move changes around automatically, the stable and main branches are
+\emph{isolated} from each other.  The changes that you made on the
+main branch don't ``leak'' to the stable branch, and vice versa.
+
+You'll often want all of your bugfixes on the stable branch to show up
+on the main branch, too.  Rather than rewrite a bugfix on the main
+branch, you can simply pull and merge changes from the stable to the
+main branch, and Mercurial will bring those bugfixes in for you.
+\interaction{branching.merge}
+The main branch will still contain changes that are not on the stable
+branch, but it will also contain all of the bugfixes from the stable
+branch.  The stable branch remains unaffected by these changes.
+
+\subsection{Feature branches}
+
+For larger projects, an effective way to manage change is to break up
+a team into smaller groups.  Each group has a shared branch of its
+own, cloned from a single ``master'' branch used by the entire
+project.  People working on an individual branch are typically quite
+isolated from developments on other branches.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{feature-branches}
+  \caption{Feature branches}
+  \label{fig:collab:feature-branches}
+\end{figure}
+
+When a particular feature is deemed to be in suitable shape, someone
+on that feature team pulls and merges from the master branch into the
+feature branch, then pushes back up to the master branch.
+
+\subsection{The release train}
+
+Some projects are organised on a ``train'' basis: a release is
+scheduled to happen every few months, and whatever features are ready
+when the ``train'' is ready to leave are allowed in.
+
+This model resembles working with feature branches.  The difference is
+that when a feature branch misses a train, someone on the feature team
+pulls and merges the changes that went out on that train release, and
+the team continues its work on top of that release so that their
+feature can make the next release.
 
 \subsection{The Linux kernel model}
 
