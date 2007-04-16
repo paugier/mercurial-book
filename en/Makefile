@@ -95,7 +95,7 @@ latex-options = \
 
 hg = $(shell which hg)
 
-hg-id = $(shell hg parents --template '{node|short}\n')
+hg-id = $(shell hg parents --template '{node|short} \(dated {date|isodate}\)\n')
 
 hg-version = $(shell hg version -q | \
 		     sed 's,.*(version \(unknown\|[a-f0-9]*\)),\1,')
