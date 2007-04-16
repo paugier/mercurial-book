@@ -5,6 +5,7 @@ sources := \
 	99book.bib \
 	99defs.tex \
 	build_id.tex \
+	branch.tex \
 	cmdref.tex \
 	collab.tex \
 	concepts.tex \
