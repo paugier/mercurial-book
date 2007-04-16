@@ -152,15 +152,6 @@ only match within one directory.  Instead, use the ``\texttt{**}''
 token.  This small example illustrates the difference between the two.
 \interaction{filenames.glob.star-starstar}
 
-When you're writing a glob pattern, bear in mind that Mercurial will
-treat a pattern that matches a directory name as ``match every file
-under that directory''.  For example, a glob pattern of
-``\texttt{**c}'' means \emph{both} ``match files ending in
-`\texttt{c}''' ``any file under all directories that end in
-`\texttt{c}'''.  I personally find this behaviour counterintuitive.
-If you need to write a pattern that means ``match \emph{only} files'',
-you'll need to express it as a regular expression instead; see below.
-
 \subsection{Regular expression matching with \texttt{re} patterns}
 
 Mercurial accepts the same regular expression syntax as the Python
