@@ -1,6 +1,6 @@
 $ \textbf{cat .hg/hgrc}
 [hooks]
-pretxncommit.whitespace = hg export tip | (! grep -qP '^\textbackslash{}+.*[ \textbackslash{}t]$')
+pretxncommit.whitespace = hg export tip | (! egrep -q '^\textbackslash{}+.*[ \textbackslash{}t]$')
 $ \textbf{echo 'a ' > a}
 $ \textbf{hg commit -A -m 'test with trailing whitespace'}
 adding a

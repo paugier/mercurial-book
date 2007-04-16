@@ -41,7 +41,7 @@ it added, whereas it didn't do so when we added the file named
 
 What's going on is that in the former case, we explicitly named the
 file to add on the command line, so the assumption that Mercurial
-makes in such cases is that we know what you were doing, and it
+makes in such cases is that you know what you were doing, and it
 doesn't print any output.
 
 However, when we \emph{imply} the names of files by giving the name of
@@ -247,9 +247,11 @@ this behaviour is not appropriate to your specific case.
 
 When you use the \hgcmd{copy} command, Mercurial makes a copy of each
 source file as it currently stands in the working directory.  This
-means that if you make some modifications to a file, then copy it
-without first having committed those changes, the new copy will
-contain your modifications.
+means that if you make some modifications to a file, then \hgcmd{copy}
+it without first having committed those changes, the new copy will
+also contain the modifications you have made up until that point.  (I
+find this behaviour a little counterintuitive, which is why I mention
+it here.)
 
 The \hgcmd{copy} command acts similarly to the Unix \command{cp}
 command (you can use the \hgcmd{cp} alias if you prefer).  The last
@@ -365,6 +367,27 @@ Mercurial has a longstanding bug in which it fails to handle a merge
 where one side has a file with a given name, while another has a
 directory with the same name.  This is documented as~\bug{29}.
 \interaction{issue29.go}
+
+\section{Recovering from mistakes}
+
+Mercurial has some useful commands that will help you to recover from
+some common mistakes.
+
+The \hgcmd{revert} command lets you undo changes that you have made to
+your working directory.  For example, if you \hgcmd{add} a file by
+accident, just run \hgcmd{revert} with the name of the file you added,
+and while the file won't be touched in any way, it won't be tracked
+for adding by Mercurial any longer, either.  You can also use
+\hgcmd{revert} to get rid of erroneous changes to a file.
+
+It's useful to remember that the \hgcmd{revert} command is useful for
+changes that you have not yet committed.  Once you've committed a
+change, if you decide it was a mistake, you can still do something
+about it, though your options may be more limited.
+
+For more information about the \hgcmd{revert} command, and details
+about how to deal with changes you have already committed, see
+chapter~\ref{chap:undo}.
 
 %%% Local Variables: 
 %%% mode: latex

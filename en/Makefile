@@ -1,17 +1,17 @@
 # This makefile requires GNU make.
 
-hg_id := $(shell hg parents --template '{node|short}\n')
-
 sources := \
 	00book.tex \
 	99book.bib \
 	99defs.tex \
 	build_id.tex \
+	branch.tex \
 	cmdref.tex \
 	collab.tex \
 	concepts.tex \
 	daily.tex \
 	filenames.tex \
+	hg_id.tex \
 	hook.tex \
 	intro.tex \
 	mq.tex \
@@ -25,6 +25,7 @@ sources := \
 	undo.tex
 
 image-sources := \
+	feature-branches.dot \
 	filelog.svg \
 	kdiff3.png \
 	metadata.svg \
@@ -54,6 +55,7 @@ image-png := $(filter %.png,$(image-sources))
 example-sources := \
 	backout \
 	bisect \
+	branching \
 	cmdref \
 	daily.copy \
 	daily.files \
@@ -78,6 +80,9 @@ example-sources := \
 	tour \
 	tour-merge-conflict
 
+example-prereqs := \
+	/usr/bin/merge
+
 dist-sources := \
 	../html/hgicon.png \
 	../html/index.html.var \
@@ -87,6 +92,13 @@ latex-options = \
 	-interaction batchmode \
 	-output-directory $(dir $(1)) \
 	-jobname $(basename $(notdir $(1)))
+
+hg = $(shell which hg)
+
+hg-id = $(shell hg parents --template '{node|short}\n')
+
+hg-version = $(shell hg version -q | \
+		     sed 's,.*(version \(unknown\|[a-f0-9]*\)),\1,')
 
 all: pdf html
 
@@ -110,25 +122,21 @@ pdf/hgbook.pdf: $(sources) $(image-pdf) examples
 
 html: onepage split
 
-onepage: html/onepage/hgbook.html
+htlatex := /usr/bin/htlatex
 
-split: html/split/hgbook.html
+onepage: $(htlatex) html/onepage/hgbook.html
+
+split: $(htlatex) html/split/hgbook.html
 
 # This is a horrible hack to work around the fact that the htlatex
 # command in tex4ht is itself a horrible hack.  I really don't want to
 # include verbatim the big wad of TeX that is repeated in that script,
-# so instead I mangle the script itself.
+# but I've given up and run a hacked copy as htlatex.book here.
 
 define htlatex
 	mkdir -p $(dir $(1))
-	head -2 $(shell which htlatex) > $(dir $(1))/htlatex.book
-	cp 99book.bib $(dir $@)
-	echo '(cd $(dir $@) && bibtex $(basename $(notdir $@)))' >> $(dir $(1))/htlatex.book
-	echo '(cd $(dir $@) && makeindex $(basename $(notdir $@)))' >> $(dir $(1))/htlatex.book
-	head -3 $(shell which htlatex) >> $(dir $(1))/htlatex.book
-	echo 'echo status $$$$' >>  $(dir $(1))/htlatex.book
-	chmod 755 $(dir $(1))/htlatex.book
-	TEXINPUTS=$(dir $(2)): $(dir $(1))/htlatex.book $(2) "bookhtml,html4-uni,$(3)" " -cunihtf -utf8" "" "$(call latex-options,$(1))" || (rm -f $(1); exit 1)
+	cp 99book.bib $(dir $(1))
+	TEXINPUTS=$(dir $(2)): ./htlatex.book $(2) "bookhtml,html4-uni,$(3)" " -cunihtf -utf8" "$(dir $(1))" "$(call latex-options,$(1))" || (rm -f $(1); exit 1)
 	cd $(dir $(1)) && tex4ht -f/$(basename $(notdir $(1))) -cvalidate -cunihtf
 	cd $(dir $(1)) && t4ht -f/$(basename $(notdir $(1)))
 	./fixhtml.py $(dir $(1))/*.html
@@ -165,7 +173,7 @@ html/split/hgbook.html: $(sources) $(image-html) examples hgbook.css bookhtml.cf
 %.eps: %.dot
 	dot -Tps -o $@ $<
 
-examples: examples/.run
+examples: $(example-prereqs) examples/.run
 
 examples/.run: $(example-sources:%=examples/%.run)
 	touch examples/.run
@@ -174,7 +182,10 @@ examples/%.run: examples/% examples/run-example
 	cd examples && ./run-example $(notdir $<)
 
 build_id.tex: $(wildcard ../.hg/00changelog.[id])
-	echo -n $(hg_id) > build_id.tex
+	echo -n $(hg-id) > build_id.tex
+
+hg_id.tex: $(hg)
+	echo -n $(hg-version) > hg_id.tex
 
 clean:
 	rm -rf dist html pdf \
@@ -182,7 +193,7 @@ clean:
 		$(image-dot:%.dot=%.png) \
 		$(image-svg:%.svg=%.pdf) \
 		$(image-svg:%.svg=%.png) \
-		examples/*.{lxo,run} examples/.run build_id.tex
+		examples/*.{lxo,run} examples/.run build_id.tex hg_id.tex
 
 install: pdf split $(dist-sources)
 	rm -rf dist

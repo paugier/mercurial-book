@@ -14,6 +14,7 @@ hg clone http://hg.serpentine.com/tutorial/hello
 
 #$ name: ls
 #$ ignore: ^drwx.*
+#$ ignore: ^total \d+
 
 ls -l
 ls hello
@@ -67,16 +68,6 @@ hg diff
 #$ name:
 
 export HGEDITOR='echo Added an extra line of output >'
-HGRCPATH_ORIG=$HGRCPATH
-export HGRCPATH=
-
-#$ name: commit-no-user
-
-hg commit
-
-#$ name:
-
-export HGRCPATH=$HGRCPATH_ORIG
 
 #$ name: commit
 

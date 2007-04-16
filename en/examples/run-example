@@ -46,6 +46,13 @@ def maybe_unlink(name):
             raise
     return False
 
+def find_path_to(program):
+    for p in os.environ.get('PATH', os.defpath).split(os.pathsep):
+        name = os.path.join(p, program)
+        if os.access(name, os.X_OK):
+            return p
+    return None
+        
 class example:
     shell = '/usr/bin/env bash'
     ps1 = '__run_example_ps1__ '
@@ -92,21 +99,22 @@ class example:
             
     timeout = 5
 
-    def read(self):
+    def read(self, hint):
         events = self.poll.poll(self.timeout * 1000)
         if not events:
-            print >> sys.stderr, '[timed out after %d seconds]' % self.timeout
+            print >> sys.stderr, ('[%stimed out after %d seconds]' %
+                                  (hint, self.timeout))
             os.kill(self.pid, signal.SIGHUP)
             return ''
         return os.read(self.cfd, 1024)
         
-    def receive(self):
+    def receive(self, hint):
         out = cStringIO.StringIO()
         while True:
             try:
                 if self.verbose:
                     sys.stderr.write('< ')
-                s = self.read()
+                s = self.read(hint)
             except OSError, err:
                 if err.errno == errno.EIO:
                     return '', ''
@@ -120,9 +128,9 @@ class example:
             if s.endswith(self.ps2):
                 return self.ps2, s.replace('\r\n', '\n')[:-len(self.ps2)]
         
-    def sendreceive(self, s):
+    def sendreceive(self, s, hint):
         self.send(s)
-        ps, r = self.receive()
+        ps, r = self.receive(hint)
         if r.startswith(s):
             r = r[len(s):]
         return ps, r
@@ -147,6 +155,16 @@ class example:
         print >> rcfp, 'PS1="%s"' % self.ps1
         print >> rcfp, 'PS2="%s"' % self.ps2
         print >> rcfp, 'unset HISTFILE'
+        path = ['/usr/bin', '/bin']
+        hg = find_path_to('hg')
+        if hg and hg not in path:
+            path.append(hg)
+        def re_export(envar):
+            v = os.getenv(envar)
+            if v is not None:
+                print >> rcfp, 'export ' + envar + '=' + v
+        print >> rcfp, 'export PATH=' + ':'.join(path)
+        re_export('PYTHONPATH')
         print >> rcfp, 'export EXAMPLE_DIR="%s"' % os.getcwd()
         print >> rcfp, 'export HGMERGE=merge'
         print >> rcfp, 'export LANG=C'
@@ -160,8 +178,8 @@ class example:
         sys.stderr.flush()
         self.pid, self.cfd = pty.fork()
         if self.pid == 0:
-            cmdline = ['/usr/bin/env', 'bash', '--noediting', '--noprofile',
-                       '--norc']
+            cmdline = ['/usr/bin/env', '-i', 'bash', '--noediting',
+                       '--noprofile', '--norc']
             try:
                 os.execv(cmdline[0], cmdline)
             except OSError, err:
@@ -188,13 +206,15 @@ class example:
             ]
 
         err = False
+        read_hint = ''
 
         try:
             try:
                 # eat first prompt string from shell
-                self.read()
+                self.read(read_hint)
                 # setup env and prompt
-                ps, output = self.sendreceive('source %s\n' % rcfile)
+                ps, output = self.sendreceive('source %s\n' % rcfile,
+                                              read_hint)
                 for hunk in self.parse():
                     # is this line a processing instruction?
                     m = self.pi_re.match(hunk)
@@ -214,6 +234,7 @@ class example:
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
+                                read_hint = ofp_basename + ' '
                                 ofp = open(ofp_basename + '.tmp', 'w')
                             else:
                                 ofp = None
@@ -221,7 +242,7 @@ class example:
                             ignore.append(rest)
                     elif hunk.strip():
                         # it's something we should execute
-                        newps, output = self.sendreceive(hunk)
+                        newps, output = self.sendreceive(hunk, read_hint)
                         if not ofp:
                             continue
                         # first, print the command we ran
@@ -243,7 +264,7 @@ class example:
                 raise
             else:
                 try:
-                    ps, output = self.sendreceive('exit\n')
+                    ps, output = self.sendreceive('exit\n', read_hint)
                     if ofp is not None:
                         ofp.write(output)
                         ofp.close()
@@ -324,7 +345,9 @@ def main(path='.'):
                 print >> sys.stderr, '%s: not a file, or not executable' % a
                 errs += 1
         return errs
-    for name in os.listdir(path):
+    names = os.listdir(path)
+    names.sort()
+    for name in names:
         if name == 'run-example' or name.startswith('.'): continue
         if name.endswith('.out') or name.endswith('~'): continue
         if name.endswith('.run'): continue
