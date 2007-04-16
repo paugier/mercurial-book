@@ -75,6 +75,7 @@ example-sources := \
 	mq.tutorial \
 	rename.divergent \
 	rollback \
+	tag \
 	template.simple \
 	template.svnstyle \
 	tour \

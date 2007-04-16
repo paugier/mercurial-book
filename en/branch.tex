@@ -1,7 +1,122 @@
-\chapter{Managing branchy development}
+\chapter{Managing releases and branchy development}
 \label{chap:branch}
 
+Mercurial provides two ways for you to manage a project that is making
+progress on multiple fronts at once.  To understand these mechanisms,
+let's first take a look at a fairly normal software project structure.
 
+Many software projects issue periodic ``major'' releases that contain
+substantial new features.  In parallel, they may issue ``minor''
+releases.  These are usually identical to the major releases off which
+they're based, but with a few bugs fixed.
+
+\section{Giving a persistent name to a revision}
+
+Once you decide that you'd like to call a particular revision a
+``release'', it's a good idea to record the identity of that revision.
+This will let you reproduce that release at a later date, for whatever
+purpose you might need at the time (reproducing a bug, porting to a
+new platform, etc).
+\interaction{tag.init}
+
+Mercurial lets you give a permanent name to any revision using the
+\hgcmd{tag} command.  Not surprisingly, these names are called
+``tags''.
+\interaction{tag.tag}
+
+A tag is nothing more than a ``symbolic name'' for a revision.  Tags
+exist purely for your convenience, so that you have a handy permanent
+way to refer to a revision; Mercurial doesn't interpret the tag names
+you use in any way.  Neither does Mercurial place any restrictions on
+the name of a tag, beyond a few that are necessary to ensure that a
+tag can be parsed unambiguously.  A tag name cannot contain any of the
+following characters:
+\begin{itemize}
+\item Colon (ASCII 58, ``\texttt{:}'')
+\item Carriage return (ASCII 13, ``\texttt{$\backslash$r}'')
+\item Newline (ASCII 10, ``\texttt{$\backslash$n}'')
+\end{itemize}
+
+You can use the \hgcmd{tags} command to display the tags present in
+your repository.  In the output, each tagged revision is identified
+first by its name, then by revision number, and finally by the unique
+hash of the revision.  
+\interaction{tag.tags}
+Notice that \texttt{tip} is listed in the output of \hgcmd{tags}.  The
+\texttt{tip} tag is a special ``floating'' tag, which always
+identifies the newest revision in the repository.
+
+In the output of the \hgcmd{tags} command, tags are listed in reverse
+order, by revision number.  This usually means that recent tags are
+listed before older tags.  It also means that \texttt{tip} is always
+going to be the first tag listed in the output of \hgcmd{tags}.
+
+When you run \hgcmd{log}, if it displays a revision that has tags
+associated with it, it will print those tags.
+\interaction{tag.log}
+
+Any time you need to provide a revision~ID to a Mercurial command, the
+command will accept a tag name in its place.  Internally, Mercurial
+will translate your tag name into the corresponding revision~ID, then
+use that.
+\interaction{tag.log.v1.0}
+
+There's no limit on the number of tags you can have in a repository,
+or on the number of tags that a single revision can have.  As a
+practical matter, it's not a great idea to have ``too many'' (a number
+which will vary from project to project), simply because tags are
+supposed to help you to find revisions.  If you have lots of tags, the
+ease of using them to identify revisions diminishes rapidly.
+
+For example, if your project has milestones as frequent as every few
+days, it's perfectly reasonable to tag each one of those.  But if you
+have a continuous build system that makes sure every revision can be
+built cleanly, you'd be introducing a lot of noise if you were to tag
+every clean build.  Instead, you could tag failed builds (on the
+assumption that they're rare!), or simply not use tags to track
+buildability.
+
+If you want to remove a tag that you no longer want, use
+\hgcmdargs{tag}{--remove}.  
+\interaction{tag.remove}
+You can also modify a tag at any time, so that it identifies a
+different revision, by simply issuing a new \hgcmd{tag} command.
+You'll have to use the \hgopt{tag}{-f} option to tell Mercurial that
+you \emph{really} want to update the tag.
+\interaction{tag.replace}
+There will still be a permanent record of the previous identity of the
+tag, but Mercurial will no longer use it.
+
+Mercurial stores tags in a normal revision-controlled file in your
+repository.  If you've created any tags, you'll find them in a file
+named \sfilename{.hgtags}.  When you run the \hgcmd{tag} command,
+Mercurial modifies this file, then automatically commits the change to
+it.  This means that every time you run \hgcmd{tag}, you'll see a
+corresponding changeset in the output of \hgcmd{log}.
+\interaction{tag.tip}
+
+\subsection{Handling tag conflicts during a merge}
+
+You won't often need to care about the \sfilename{.hgtags} file, but
+it sometimes makes its presence known during a merge.  The format of
+the file is simple: it consists of a series of lines.  Each line
+starts with a changeset hash, followed by a space, followed by the
+name of a tag.
+
+If you're resolving a conflict in the \sfilename{.hgtags} file during
+a merge, there's one twist to modifying the \sfilename{.hgtags} file:
+when Mercurial is parsing the tags in a repository, it \emph{never}
+reads the working copy of the \sfilename{.hgtags} file.  Instead, it
+reads the \emph{most recently committed} revision of the file.
+
+An unfortunate consequence of this design is that you can't actually
+verify that your merged \sfilename{.hgtags} file is correct until
+\emph{after} you've committed a change.  So if you find yourself
+resolving a conflict on \sfilename{.hgtags} during a merge, be sure to
+run \hgcmd{tags} after you commit.  If it finds an error in the
+\sfilename{.hgtags} file, it will report the location of the error,
+which you can then fix and commit.  You should then run \hgcmd{tags}
+again, just to be sure that your fix is correct.
 
 %%% Local Variables: 
 %%% mode: latex
