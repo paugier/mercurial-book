@@ -126,6 +126,24 @@ run \hgcmd{tags} after you commit.  If it finds an error in the
 which you can then fix and commit.  You should then run \hgcmd{tags}
 again, just to be sure that your fix is correct.
 
+\subsection{Tags and cloning}
+
+You may have noticed that the \hgcmd{clone} command has a
+\hgopt{clone}{-r} option that lets you clone an exact copy of
+repository as of a particular changeset.  The new clone will not
+contain any project history that comes after the revision you
+specified.  This has an interaction with tags that can surprise the
+unwary.
+
+Recall that a tag is stored as a revision to the \sfilename{.hgtags}
+file, so that when you create a tag, the changeset in which it's
+recorded necessarily refers to an older changeset.  When you run
+\hgcmdargs{clone}{-r foo} to clone a repository as of tag
+\texttt{foo}, the new clone \emph{will not contain the history that
+  created the tag} that you used to clone the repository.  The result
+is that you'll get exactly the right subset of the project's history
+in the new repository, but \emph{not} the tag you might have expected.
+
 \subsection{When permanent tags are too much}
 
 Since Mercurial's tags are revision controlled and carried around with
@@ -143,6 +161,53 @@ You can create a local tag with the \hgopt{tag}{-l} option to the
 \sfilename{.hg/localtags} is not revision controlled.  Any tags you
 create using \hgopt{tag}{-l} remain strictly local to the repository
 you're currently working in.
+
+\section{The flow of changes---big picture vs. little}
+
+To return to the outline I sketched at the beginning of a chapter,
+let's think about a project that has multiple concurrent pieces of
+work under development at once.
+
+There might be a push for a new ``main'' release; a new minor bugfix
+release to the last main release; and an unexpected ``hot fix'' to an
+old release that is now in maintenance mode.
+
+The usual way people refer to these different concurrent directions of
+development is as ``branches''.  However, we've already seen numerous
+times that Mercurial treats \emph{all of history} as a series of
+branches and merges.  Really, what we have here is two ideas that are
+peripherally related, but which happen to share a name.
+\begin{itemize}
+\item ``Big picture'' branches represent the sweep of a project's
+  evolution; people give them names, and talk about them in
+  conversation.
+\item ``Little picture'' branches are artefacts of the day-to-day
+  activity of developing and merging changes.  They expose the
+  narrative of how the code was developed.
+\end{itemize}
+
+\section{Managing big-picture branches in repositories}
+
+The easiest way to isolate a ``big picture'' branch in Mercurial is in
+a dedicated repository.  If you have an existing shared
+repository---let's call it \texttt{myproject}---that reaches a ``1.0''
+milestone, you can start to prepare for future maintenance releases on
+top of version~1.0 by tagging the revision from which you prepared
+the~1.0 release.
+\interaction{branch-repo.tag}
+You can then clone a new shared \texttt{myproject-1.0.1} repository as
+of that tag.
+\interaction{branch-repo.clone}
+
+Afterwards, if someone needs to work on a bug fix that ought to go
+into an upcoming~1.0.1 minor release, they clone the
+\texttt{myproject-1.0.1} repository, make their changes, and push them
+back.
+\interaction{branch-repo.bugfix}
+Meanwhile, development for the next major release can continue,
+isolated and unabated, in the \texttt{myproject} repository.
+\interaction{branch-repo.new}
+
 
 
 %%% Local Variables: 

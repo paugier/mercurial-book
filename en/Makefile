@@ -56,6 +56,7 @@ example-sources := \
 	backout \
 	bisect \
 	branching \
+	branch-repo \
 	cmdref \
 	daily.copy \
 	daily.files \
