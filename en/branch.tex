@@ -208,7 +208,21 @@ Meanwhile, development for the next major release can continue,
 isolated and unabated, in the \texttt{myproject} repository.
 \interaction{branch-repo.new}
 
+\section{Don't repeat yourself: merging across branches}
 
+In many cases, if you have a bug to fix on a maintenance branch, the
+chances are good that the bug exists on your project's main branch
+(and possibly other maintenance branches, too).  It's a rare developer
+who wants to fix the same bug multiple times, so let's look at a few
+ways that Mercurial can help you to manage these bugfixes without
+duplicating your work.
+
+In the simplest instance, all you need to do is pull changes from your
+maintenance branch into your local clone of the target branch.
+\interaction{branch-repo.pull}
+You'll then need to merge the heads of the two branches, and push back
+to the main branch.
+\interaction{branch-repo.merge}
 
 %%% Local Variables: 
 %%% mode: latex

@@ -30,6 +30,19 @@ hg push
 cd ..
 hg clone myproject my-feature
 cd my-feature
-echo "I'm adding a new feature with my mind!" > mynewfile
+echo 'This sure is an exciting new feature!' > mynewfile
 hg commit -A -m 'New feature'
+hg push
 
+#$ name: pull
+
+cd ..
+hg clone myproject myproject-merge
+cd myproject-merge
+hg pull ../myproject-1.0.1
+
+#$ name: merge
+
+hg merge
+hg commit -m 'Merge bugfix from 1.0.1 branch'
+hg push
