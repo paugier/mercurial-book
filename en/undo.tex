@@ -26,7 +26,9 @@ In section~\ref{sec:concepts:txn}, I mentioned that Mercurial treats
 each modification of a repository as a \emph{transaction}.  Every time
 you commit a changeset or pull changes from another repository,
 Mercurial remembers what you did.  You can undo, or \emph{roll back},
-exactly one of these actions using the \hgcmd{rollback} command.
+exactly one of these actions using the \hgcmd{rollback} command.  (See
+section~\ref{sec:undo:rollback-after-push} for an important caveat
+about the use of this command.)
 
 Here's a mistake that I often find myself making: committing a change
 in which I've created a new file, but forgotten to \hgcmd{add} it.
@@ -77,6 +79,7 @@ one \hgcmd{pull} into a single transaction, so one \hgcmd{rollback} is
 all you need to undo this mistake.
 
 \subsection{Rolling back is useless once you've pushed}
+\label{sec:undo:rollback-after-push}
 
 The value of the \hgcmd{rollback} command drops to zero once you've
 pushed your changes to another repository.  Rolling back a change
@@ -455,6 +458,7 @@ XXX This needs filling out.  The \texttt{hg-replay} script in the
 changesets.  Kind of an important omission.
 
 \section{Finding the source of a bug}
+\label{sec:undo:bisect}
 
 While it's all very well to be able to back out a changeset that
 introduced a bug, this requires that you know which changeset to back
