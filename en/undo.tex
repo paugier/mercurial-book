@@ -457,6 +457,26 @@ XXX This needs filling out.  The \texttt{hg-replay} script in the
 \texttt{examples} directory works, but doesn't handle merge
 changesets.  Kind of an important omission.
 
+\subsection{Protect yourself from ``escaped'' changes}
+
+If you've committed some changes to your local repository and they've
+been pushed or pulled somewhere else, this isn't necessarily a
+disaster.  You can protect yourself ahead of time against some classes
+of bad changeset.  This is particularly easy if your team usually
+pulls changes from a central repository.
+
+By configuring some hooks on that repository to validate incoming
+changesets (see chapter~\ref{chap:hook}), you can automatically
+prevent some kinds of bad changeset from being pushed to the central
+repository at all.  With such a configuration in place, some kinds of
+bad changeset will naturally tend to ``die out'' because they can't
+propagate into the central repository.  Better yet, this happens
+without any need for explicit intervention.
+
+For instance, an incoming change hook that verifies that a changeset
+will actually compile can prevent people from inadvertantly ``breaking
+the build''.
+
 \section{Finding the source of a bug}
 \label{sec:undo:bisect}
 
