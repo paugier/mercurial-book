@@ -224,6 +224,41 @@ You'll then need to merge the heads of the two branches, and push back
 to the main branch.
 \interaction{branch-repo.merge}
 
+\section{Naming branches within one repository}
+
+In most instances, isolating branches in repositories is the right
+approach.  Its simplicity makes it easy to understand; and so it's
+hard to make mistakes.  There's a one-to-one relationship between
+branches you're working in and directories on your system.  This lets
+you use normal (non-Mercurial-aware) tools to work on files within a
+branch/repository.
+
+If you're more in the ``power user'' category (\emph{and} your
+collaborators are too), there is an alternative way of handling
+branches that you can consider.  I've already mentioned the
+human-level distinction between ``small picture'' and ``big picture''
+branches.  While Mercurial works with multiple ``small picture''
+branches in a repository all the time (for example after you pull
+changes in, but before you merge them), it can \emph{also} work with
+multiple ``big picture'' branches.
+
+The key to working this way is that Mercurial lets you assign a
+persistent \emph{name} to a branch.  There always exists a branch
+named \texttt{default}.  Even before you start naming branches
+yourself, you can find traces of the \texttt{default} branch if you
+look for them.
+
+As an example, when you run the \hgcmd{commit} command, and it pops up
+your editor so that you can enter a commit message, look for a line
+that contains the text ``\texttt{HG: branch default}'' at the bottom.
+This is telling you that your commit will occur on the branch named
+\texttt{default}.
+
+To start working with named branches, use the \hgcmd{branches}
+command.  This command lists the named branches already present in
+your repository.
+\interaction{branch-named.branches}
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "00book"
