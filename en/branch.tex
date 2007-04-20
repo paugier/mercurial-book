@@ -256,8 +256,38 @@ This is telling you that your commit will occur on the branch named
 
 To start working with named branches, use the \hgcmd{branches}
 command.  This command lists the named branches already present in
-your repository.
+your repository, telling you which changeset is the tip of each.
 \interaction{branch-named.branches}
+Since you haven't created any named branches yet, the only one that
+exists is \texttt{default}.
+
+To find out what the ``current'' branch is, run the \hgcmd{branch}
+command, giving it no arguments.  This tells you what branch the
+parent of the current changeset is on.
+\interaction{branch-named.branch}
+
+To create a new branch, run the \hgcmd{branch} command again.  This
+time, give it one argument: the name of the branch you want to create.
+\interaction{branch-named.create}
+
+After you've created a branch, you might wonder what effect the
+\hgcmd{branch} command has had.  What do the \hgcmd{status} and
+\hgcmd{tip} commands report?
+\interaction{branch-named.status}
+Nothing has changed in the working directory, and there's been no new
+history created.  As this suggests, running the \hgcmd{branch} command
+has no permanent effect; it only tells Mercurial what branch name to
+use the \emph{next} time you commit a changeset.
+
+When you commit a change, Mercurial records the name of the branch on
+which you committed.  Once you've switched from the \texttt{default}
+branch to another and committed, you'll see the name of the new branch
+show up in the output of \hgcmd{log}, \hgcmd{tip}, and other commands
+that display the same kind of output.
+\interaction{branch-named.commit}
+The \hgcmd{log}-like commands will print the branch name of every
+changeset that's not on the \texttt{default} branch, so if you never
+use named branches, you'll never see this information.
 
 %%% Local Variables: 
 %%% mode: latex
