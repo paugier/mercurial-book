@@ -286,8 +286,26 @@ show up in the output of \hgcmd{log}, \hgcmd{tip}, and other commands
 that display the same kind of output.
 \interaction{branch-named.commit}
 The \hgcmd{log}-like commands will print the branch name of every
-changeset that's not on the \texttt{default} branch, so if you never
-use named branches, you'll never see this information.
+changeset that's not on the \texttt{default} branch.  As a result, if
+you never use named branches, you'll never see this information.
+
+Once you've named a branch and committed a change with that name,
+every subsequent commit that descends from that change will inherit
+the same branch name.
+
+\section{Branch names and merging}
+
+As you've probably noticed, merges in Mercurial are not symmetrical.
+Let's say our repository has two heads, 17 and 23.  If I
+\hgcmd{update} to 17 and then \hgcmd{merge} with 23, Mercurial records
+17 as the first parent of the merge, and 23 as the second.  Whereas if
+I \hgcmd{update} to 23 and then \hgcmd{merge} with 17, it records 23
+as the first parent, and 17 as the second.
+
+This behaviour affects Mercurial's choice of branch name when you
+merge.  During a merge, Mercurial will by default use the name of the
+first parent.
+
 
 %%% Local Variables: 
 %%% mode: latex
