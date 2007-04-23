@@ -291,7 +291,48 @@ you never use named branches, you'll never see this information.
 
 Once you've named a branch and committed a change with that name,
 every subsequent commit that descends from that change will inherit
-the same branch name.
+the same branch name.  You can change the name of a branch at any
+time, using the \hgcmd{branch} command.  
+\interaction{branch-named.rebranch}
+In practice, this is something you won't do very often, as branch
+names tend to have fairly long lifetimes.  (This isn't a rule, just an
+observation.)
+
+\section{Dealing with multiple named branches in a repository}
+
+If you have more than one named branch in a repository, Mercurial will
+remember the branch that your working directory on when you start a
+command like \hgcmd{update} or \hgcmdargs{pull}{-u}.  It will update
+the working directory to the tip of this branch, no matter what the
+``repo-wide'' tip is.  To update to a revision that's on a different
+named branch, you may need to use the \hgopt{update}{-C} option to
+\hgcmd{update}.
+
+This behaviour is a little subtle, so let's see it in action.  First,
+let's remind ourselves what branch we're currently on, and what
+branches are in our repository.
+\interaction{branch-named.parents}
+We're on the \texttt{bar} branch, but there also exists an older
+\hgcmd{foo} branch.
+
+We can \hgcmd{update} back and forth between the tips of the
+\texttt{foo} and \texttt{bar} branches without needing to use the
+\hgopt{update}{-C} option, because this only involves going backwards
+and forwards linearly through our change history.
+\interaction{branch-named.update-switchy}
+
+If we go back to the \texttt{foo} branch and then run \hgcmd{update},
+it will keep us on \texttt{foo}, not move us to the tip of
+\texttt{bar}.
+\interaction{branch-named.update-nothing}
+
+Committing a new change on the \texttt{foo} branch introduces a new
+head.
+\interaction{branch-named.foo-commit}
+We can no longer update from \texttt{foo} to \texttt{bar} without
+going ``sideways'' in history, so Mercurial forces us to provide the
+\hgopt{update}{-C} option to \hgcmd{update}.
+\interaction{branch-named.update-bar}
 
 \section{Branch names and merging}
 
@@ -302,10 +343,47 @@ Let's say our repository has two heads, 17 and 23.  If I
 I \hgcmd{update} to 23 and then \hgcmd{merge} with 17, it records 23
 as the first parent, and 17 as the second.
 
-This behaviour affects Mercurial's choice of branch name when you
-merge.  During a merge, Mercurial will by default use the name of the
-first parent.
+This affects Mercurial's choice of branch name when you merge.  After
+a merge, Mercurial will retain the branch name of the first parent
+when you commit the result of the merge.  If your first parent's
+branch name is \texttt{foo}, and you merge with \texttt{bar}, the
+branch name will still be \texttt{foo} after you merge.
 
+It's not unusual for a repository to contain multiple heads, each with
+the same branch name.  Let's say I'm working on the \texttt{foo}
+branch, and so are you.  We commit different changes; I pull your
+changes; I now have two heads, each claiming to be on the \texttt{foo}
+branch.  The result of a merge will be a single head on the
+\texttt{foo} branch, as you might hope.
+
+But if I'm working on the \texttt{bar} branch, and I merge work from
+the \texttt{foo} branch, the result will remain on the \texttt{bar}
+branch.
+\interaction{branch-named.merge}
+
+To give a more concrete example, if I'm working on the
+\texttt{bleeding-edge} branch, and I want to bring in the latest fixes
+from the \texttt{stable} branch, Mercurial will choose the ``right''
+(\texttt{bleeding-edge}) branch name when I pull and merge from
+\texttt{stable}.
+
+\section{Branch naming is generally useful}
+
+You shouldn't think of named branches as applicable only to situations
+where you have multiple long-lived branches cohabiting in a single
+repository.  They're very useful even in the one-branch-per-repository
+case.  
+
+In the simplest case, giving a name to each branch gives you a
+permanent record of which branch a changeset originated on.  This
+gives you a more context when you're trying to follow the history of a
+long-lived branchy project.
+
+If you're working with multiple shared repositories, you can set up a
+hook on each that will block incoming changes that have the ``wrong''
+branch name.  This provides a simple, but effective, defence against
+people accidentally pushing changes from a ``bleeding edge'' branch to
+a ``stable'' branch.
 
 %%% Local Variables: 
 %%% mode: latex
