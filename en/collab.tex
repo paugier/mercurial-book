@@ -7,6 +7,46 @@ you're new to distributed revision control, it helps to have some
 tools and examples in mind when you're thinking about possible
 workflow models.
 
+\section{Mercurial's web interface}
+
+Mercurial has a powerful web interface that provides several 
+useful capabilities.
+
+For interactive use, the web interface lets you browse a single
+repository or a collection of repositories.  You can view the history
+of a repository, examine each change (comments and diffs), and view
+the contents of each directory and file.
+
+Also for human consumption, the web interface provides an RSS feed of
+the changes in a repository.  This lets you ``subscribe'' to a
+repository using your favourite feed reader, and be automatically
+notified of activity in that repository as soon as it happens.  I find
+this capability much more convenient than the model of subscribing to
+a mailing list to which notifications are sent, as it requires no
+additional configuration on the part of whoever is serving the
+repository.
+
+The web interface also lets remote users clone a repository, pull
+changes from it, and (when the server is configured to permit it) push
+changes back to it.  Mercurial's HTTP tunneling protocol aggressively
+compresses data, so that it works efficiently even over low-bandwidth
+network connections.
+
+The easiest way to get started with the web interface is to use your
+web browser to visit an existing repository, such as the master
+Mercurial repository at
+\url{http://www.selenic.com/repo/hg?style=gitweb}.
+
+If you're interested in providing a web interface to your own
+repositories, Mercurial provides two ways to do this.  The first is
+using the \hgcmd{serve} command, which is best suited to short-term
+``lightweight'' serving.  See section~\ref{sec:collab:serve} below for
+details of how to use this command.  If you have a long-lived
+repository that you'd like to make permanently available, Mercurial
+has built-in support for the CGI (Common Gateway Interface) standard,
+which all common web servers support.  See
+section~\ref{sec:collab:cgi} for details of CGI configuration.
+
 \section{Collaboration models}
 
 With a suitably flexible tool, making decisions about workflow is much
@@ -563,14 +603,17 @@ current date and time.
   ssh myserver date
 \end{codesample2}
 
-If on your server you have login scripts that print banners or other
+If, on your server, you have login scripts that print banners or other
 junk even when running non-interactive commands like this, you should
 fix them before you continue, so that they only print output if
 they're run interactively.  Otherwise these banners will at least
 clutter up Mercurial's output.  Worse, they could potentially cause
-problems with running Mercurial commands remotely.  (The usual way to
-see if a login script is running in an interactive shell is to check
-the return code from the command \Verb|tty -s|.)
+problems with running Mercurial commands remotely.  Mercurial makes
+tries to detect and ignore banners in non-interactive \command{ssh}
+sessions, but it is not foolproof.  (If you're editing your login
+scripts on your server, the usual way to see if a login script is
+running in an interactive shell is to check the return code from the
+command \Verb|tty -s|.)
 
 Once you've verified that plain old ssh is working with your server,
 the next step is to ensure that Mercurial runs on the server.  The
@@ -625,6 +668,20 @@ enable compression for all of Mercurial's uses of the ssh protocol.
   [ui]
   ssh = ssh -C
 \end{codesample2}
+
+If you use \command{ssh}, you can configure it to always use
+compression when talking to your server.  To do this, edit your
+\sfilename{.ssh/config} file (which may not yet exist), as follows.
+\begin{codesample2}
+  Host hg
+    Compression yes
+    HostName hg.example.com
+\end{codesample2}
+This defines an alias, \texttt{hg}.  When you use it on the
+\command{ssh} command line or in a Mercurial \texttt{ssh}-protocol
+URL, it will cause \command{ssh} to connect to \texttt{hg.example.com}
+and use compression.  This gives you both a shorter name to type and
+compression, each of which is a good thing in its own right.
 
 \subsection{Serving over HTTP with a CGI script}
 \label{sec:collab:cgi}
