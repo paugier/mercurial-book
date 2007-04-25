@@ -328,7 +328,10 @@ chapter~\ref{chap:branch}.
 
 \section{The technical side of sharing}
 
-\subsection{Informal sharing with \hgcmd{serve}}
+The remainder of this chapter is devoted to the question of serving
+data to your collaborators.
+
+\section{Informal sharing with \hgcmd{serve}}
 \label{sec:collab:serve}
 
 Mercurial's \hgcmd{serve} command is wonderfully suited to small,
@@ -362,7 +365,7 @@ so on to talk to that server as if the repository was hosted remotely.
 This can help you to quickly get acquainted with using commands on
 network-hosted repositories.
 
-\subsubsection{A few things to keep in mind}
+\subsection{A few things to keep in mind}
 
 Because it provides unauthenticated read access to all clients, you
 should only use \hgcmd{serve} in an environment where you either don't
@@ -386,7 +389,7 @@ a bit unnerving.  If you'd like to confirm that it is indeed running
 correctly, and find out what URL you should send to your
 collaborators, start it with the \hggopt{-v} option.
 
-\subsection{Using the Secure Shell (ssh) protocol}
+\section{Using the Secure Shell (ssh) protocol}
 \label{sec:collab:ssh}
 
 You can pull and push changes securely over a network connection using
@@ -402,7 +405,7 @@ remote users can log in and execute commands.
 (If you \emph{are} familiar with ssh, you'll probably find some of the
 material that follows to be elementary in nature.)
 
-\subsubsection{How to read and write ssh URLs}
+\subsection{How to read and write ssh URLs}
 
 An ssh URL tends to look like this:
 \begin{codesample2}
@@ -449,7 +452,7 @@ server, begin the path component with two slashes, as in this example.
   ssh://server//absolute/path
 \end{codesample2}
 
-\subsubsection{Finding an ssh client for your system}
+\subsection{Finding an ssh client for your system}
 
 Almost every Unix-like system comes with OpenSSH preinstalled.  If
 you're using such a system, run \Verb|which ssh| to find out if
@@ -482,7 +485,7 @@ a command-line ssh client.
   idea).
 \end{note}
 
-\subsubsection{Generating a key pair}
+\subsection{Generating a key pair}
 
 To avoid the need to repetitively type a password every time you need
 to use your ssh client, I recommend generating a key pair.  On a
@@ -508,7 +511,7 @@ save the public key to a file of your choosing, or paste it from the
 window it's displayed in straight into the
 \sfilename{authorized\_keys} file.
 
-\subsubsection{Using an authentication agent}
+\subsection{Using an authentication agent}
 
 An authentication agent is a daemon that stores passphrases in memory
 (so it will forget passphrases if you log out and log back in again).
@@ -531,7 +534,7 @@ store.  On Windows, if you're using PuTTY, the \command{pageant}
 command acts as the agent.  It adds an icon to your system tray that
 will let you manage stored passphrases.
 
-\subsubsection{Configuring the server side properly}
+\subsection{Configuring the server side properly}
 
 Because ssh can be fiddly to set up if you're new to it, there's a
 variety of things that can go wrong.  Add Mercurial on top, and
@@ -648,7 +651,7 @@ that server.  If you run into problems with Mercurial and ssh at this
 point, try using the \hggopt{--debug} option to get a clearer picture
 of what's going on.
 
-\subsubsection{Using compression with ssh}
+\subsection{Using compression with ssh}
 
 Mercurial does not compress data when it uses the ssh protocol,
 because the ssh protocol can transparently compress data.  However,
@@ -683,9 +686,185 @@ URL, it will cause \command{ssh} to connect to \texttt{hg.example.com}
 and use compression.  This gives you both a shorter name to type and
 compression, each of which is a good thing in its own right.
 
-\subsection{Serving over HTTP with a CGI script}
+\section{Serving over HTTP using CGI}
 \label{sec:collab:cgi}
 
+Depending on how ambitious you are, configuring Mercurial's CGI
+interface can take anything from a few moments to several hours.
+
+We'll begin with the simplest of examples, and work our way towards a
+more complex configuration.  Even for the most basic case, you're
+almost certainly going to need to read and modify your web server's
+configuration.
+
+\begin{note}
+  Configuring a web server is a complex, fiddly, and highly
+  system-dependent activity.  I can't possibly give you instructions
+  that will cover anything like all of the cases you will encounter.
+  Please use your discretion and judgment in following the sections
+  below.  Be prepared to make plenty of mistakes, and to spend a lot
+  of time reading your server's error logs.
+\end{note}
+
+\subsection{Web server configuration checklist}
+
+Before you continue, do take a few moments to check a few aspects of
+your system's setup.
+
+\begin{enumerate}
+\item Do you have a web server installed at all?  Mac OS X ships with
+  Apache, but many other systems may not have a web server installed.
+\item If you have a web server installed, is it actually running?  On
+  most systems, even if one is present, it will be disabled by
+  default.
+\item Is your server configured to allow you to run CGI programs in
+  the directory where you plan to do so?  Most servers default to
+  explicitly disabling the ability to run CGI programs.
+\end{enumerate}
+
+If you don't have a web server installed, and don't have substantial
+experience configuring Apache, you should consider using the
+\texttt{lighttpd} web server instead of Apache.  Apache has a
+well-deserved reputation for baroque and confusing configuration.
+While \texttt{lighttpd} is less capable in some ways than Apache, most
+of these capabilities are not relevant to serving Mercurial
+repositories.  And \texttt{lighttpd} is undeniably \emph{much} easier
+to get started with than Apache.
+
+\subsection{Basic CGI configuration}
+
+On Unix-like systems, it's common for users to have a subdirectory
+named something like \dirname{public\_html} in their home directory,
+from which they can serve up web pages.  A file named \filename{foo}
+in this directory will be accessible at a URL of the form
+\texttt{http://www.example.com/\~username/foo}.
+
+To get started, find the \sfilename{hgweb.cgi} script that should be
+present in your Mercurial installation.  If you can't quickly find a
+local copy on your system, simply download one from the master
+Mercurial repository at
+\url{http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi}.
+
+You'll need to copy this script into your \dirname{public\_html}
+directory, and ensure that it's executable.
+\begin{codesample2}
+  cp .../hgweb.cgi ~/public_html
+  chmod +x ~/public_html/hgweb.cgi
+\end{codesample2}
+
+\subsubsection{What could \emph{possibly} go wrong?}
+
+Once you've copied the CGI script into place, go into a web browser,
+and try to open the URL \url{http://myhostname/~myuser/hgweb.cgi},
+\emph{but} brace yourself for instant failure.  There's a high
+probability that trying to visit this URL will fail, and there are
+many possible reasons for this.  In fact, you're likely to stumble
+over almost every one of the possible errors below, so please read
+carefully.  The following are all of the problems I ran into on a
+system running Fedora~7, with a fresh installation of Apache, and a
+user account that I created specially.
+
+Your web server may have per-user directories disabled.  If you're
+using Apache, search your config file for a \texttt{UserDir}
+directive.  If there's none present, per-user directories will be
+disabled.  If one exists, but its value is \texttt{disabled}, then
+per-user directories will be disabled.  Otherwise, the string after
+\texttt{UserDir} gives the name of the subdirectory that Apache will
+look in under your home directory, for example \dirname{public\_html}.
+
+Your file access permissions may be too restrictive.  The web server
+must be able to traverse your home directory and directories under
+your \dirname{public\_html} directory, and read files under the latter
+too.  Here's a quick recipe to help you to make your permissions more
+appropriate.
+\begin{codesample2}
+  chmod 755 ~
+  find ~/public_html -type d -print0 | xargs -0r chmod 755
+  find ~/public_html -type f -print0 | xargs -0r chmod 644
+\end{codesample2}
+
+The other possibility with permissions is that you might get a
+completely empty window when you try to load the script.  In this
+case, it's likely that your access permissions are \emph{too
+  permissive}.  Apache's \texttt{suexec} subsystem won't execute a
+script that's group-~or world-writable, for example.
+
+Your web server may be configured to disallow execution of CGI
+programs in your per-user web directory.  Here's Apache's
+default per-user configuration from my Fedora system.
+\begin{codesample2}
+  <Directory /home/*/public_html>
+      AllowOverride FileInfo AuthConfig Limit
+      Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+      <Limit GET POST OPTIONS>
+          Order allow,deny
+          Allow from all
+      </Limit>
+      <LimitExcept GET POST OPTIONS>
+          Order deny,allow
+          Deny from all
+      </LimitExcept>
+  </Directory>
+\end{codesample2}
+If you find a similar-looking \texttt{Directory} group in your Apache
+configuration, the directive to look at inside it is \texttt{Options}.
+Add \texttt{ExecCGI} to the end of this list if it's missing, and
+restart the web server.
+
+If you find that Apache serves you the text of the CGI script instead
+of executing it, you may need to either uncomment (if already present)
+or add a directive like this.
+\begin{codesample2}
+  AddHandler cgi-script .cgi
+\end{codesample2}
+
+The next possibility is that you might be served with a colourful
+Python backtrace claiming that it can't import a
+\texttt{mercurial}-related module.  This is actually progress!  The
+server is now capable of executing your CGI script.  This error is
+only likely to occur if you're running a private installation of
+Mercurial, instead of a system-wide version.  Remember that the web
+server runs the CGI program without any of the environment variables
+that you take for granted in an interactive session.  If this error
+happens to you, edit your copy of \sfilename{hgweb.cgi} and follow the
+directions inside it to correctly set your \envar{PYTHONPATH}
+environment variable.
+
+Finally, you are \emph{certain} to by served with another colourful
+Python backtrace: this one will complain that it can't find
+\dirname{/path/to/repository}.  Edit your \sfilename{hgweb.cgi} script
+and replace the \dirname{/path/to/repository} string with the complete
+path to the repository you want to serve up.
+
+At this point, when you try to reload the page, you should be
+presented with a nice HTML view of your repository's history.  Whew!
+
+\subsubsection{Configuring lighttpd}
+
+To be exhaustive in my experiments, I tried configuring the
+increasingly popular \texttt{lighttpd} web server to serve the same
+repository as I described with Apache above.  I had already overcome
+all of the problems I outlined with Apache, many of which are not
+server-specific.  As a result, I was fairly sure that my file and
+directory permissions were good, and that my \sfilename{hgweb.cgi}
+script was properly edited.
+
+Once I had Apache running, getting \texttt{lighttpd} to serve the
+repository was a snap.  I first had to edit the \texttt{mod\_access}
+section of the config file to enable \texttt{mod\_cgi} and
+\texttt{mod\_userdir}, both of which were disabled by default on my
+system.  I then added a few lines to the end of the config file, to
+configure these modules.
+\begin{codesample2}
+  userdir.path = "public_html"
+  cgi.assign = ( ".cgi" => "" )
+\end{codesample2}
+With this done, \texttt{lighttpd} ran immediately for me.  If I had
+configured \texttt{lighttpd} before Apache, I'd almost certainly have
+run into many of the same system-level configuration problems as I did
+with Apache.  However, I found \texttt{lighttpd} to be noticeably
+easier to configure than Apache, even though I've used Apache for over
+a decade, and this was my first exposure to \texttt{lighttpd}.
 
 
 %%% Local Variables: 
