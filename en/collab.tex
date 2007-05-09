@@ -749,10 +749,22 @@ You'll need to copy this script into your \dirname{public\_html}
 directory, and ensure that it's executable.
 \begin{codesample2}
   cp .../hgweb.cgi ~/public_html
-  chmod +x ~/public_html/hgweb.cgi
+  chmod 755 ~/public_html/hgweb.cgi
+\end{codesample2}
+The \texttt{755} argument to \command{chmod} is a little more general
+than just making the script executable: it ensures that the script is
+executable by anyone, and that ``group'' and ``other'' write
+permissions are \emph{not} set.  If you were to leave those write
+permissions enabled, Apache's \texttt{suexec} subsystem would likely
+refuse to execute the script.  In fact, \texttt{suexec} also insists
+that the \emph{directory} in which the script resides must not be
+writable by others.
+\begin{codesample2}
+  chmod 755 ~/public_html
 \end{codesample2}
 
 \subsubsection{What could \emph{possibly} go wrong?}
+\label{sec:collab:wtf}
 
 Once you've copied the CGI script into place, go into a web browser,
 and try to open the URL \url{http://myhostname/~myuser/hgweb.cgi},
@@ -762,7 +774,7 @@ many possible reasons for this.  In fact, you're likely to stumble
 over almost every one of the possible errors below, so please read
 carefully.  The following are all of the problems I ran into on a
 system running Fedora~7, with a fresh installation of Apache, and a
-user account that I created specially.
+user account that I created specially to perform this exercise.
 
 Your web server may have per-user directories disabled.  If you're
 using Apache, search your config file for a \texttt{UserDir}
@@ -850,11 +862,12 @@ directory permissions were good, and that my \sfilename{hgweb.cgi}
 script was properly edited.
 
 Once I had Apache running, getting \texttt{lighttpd} to serve the
-repository was a snap.  I first had to edit the \texttt{mod\_access}
-section of the config file to enable \texttt{mod\_cgi} and
-\texttt{mod\_userdir}, both of which were disabled by default on my
-system.  I then added a few lines to the end of the config file, to
-configure these modules.
+repository was a snap (in other words, even if you're trying to use
+\texttt{lighttpd}, you should read the Apache section).  I first had
+to edit the \texttt{mod\_access} section of its config file to enable
+\texttt{mod\_cgi} and \texttt{mod\_userdir}, both of which were
+disabled by default on my system.  I then added a few lines to the end
+of the config file, to configure these modules.
 \begin{codesample2}
   userdir.path = "public_html"
   cgi.assign = ( ".cgi" => "" )
@@ -866,6 +879,77 @@ with Apache.  However, I found \texttt{lighttpd} to be noticeably
 easier to configure than Apache, even though I've used Apache for over
 a decade, and this was my first exposure to \texttt{lighttpd}.
 
+\subsection{Sharing multiple repositories with one CGI script}
+
+The \sfilename{hgweb.cgi} script only lets you publish a single
+repository, which is an annoying restriction.  If you want to publish
+more than one without wracking yourself with multiple copies of the
+same script, each with different names, a better choice is to use the
+\sfilename{hgwebdir.cgi} script.
+
+The procedure to configure \sfilename{hgwebdir.cgi} is only a little
+more involved than for \sfilename{hgweb.cgi}.  First, you must obtain
+a copy of the script.  If you don't have one handy, you can download a
+copy from the master Mercurial repository at
+\url{http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi}.
+
+You'll need to copy this script into your \dirname{public\_html}
+directory, and ensure that it's executable.
+\begin{codesample2}
+  cp .../hgwebdir.cgi ~/public_html
+  chmod 755 ~/public_html ~/public_html/hgwebdir.cgi
+\end{codesample2}
+With basic configuration out of the way, try to visit
+\url{http://myhostname/~myuser/hgwebdir.cgi} in your browser.  It
+should display an empty list of repositories.  If you get a blank
+window or error message, try walking through the list of potential
+problems in section~\ref{sec:collab:wtf}.
+
+The \sfilename{hgwebdir.cgi} script relies on an external
+configuration file.  By default, it searches for a file named
+\sfilename{hgweb.config} in the same directory as itself.  You'll need
+to create this file, and make it world-readable.  The format of the
+file is similar to a Windows ``ini'' file, as understood by Python's
+\texttt{ConfigParser}~\cite{web:configparser} module.
+
+The easiest way to configure \sfilename{hgwebdir.cgi} is with a
+section named \texttt{collections}.  This will automatically publish
+\emph{every} repository under the directories you name.  The section
+should look like this:
+\begin{codesample2}
+  [collections]
+  /my/root = /my/root
+\end{codesample2}
+Mercurial interprets this by looking at the directory name on the
+\emph{right} hand side of the ``\texttt{=}'' sign; finding
+repositories in that directory hierarchy; and using the text on the
+\emph{left} to strip off matching text from the names it will actually
+list in the web interface.
+
+Given the example above, if we have a repository whose local path is
+\dirname{/my/root/this/repo}, the CGI script will strip the leading
+\dirname{/my/root} from the name, and publish the repository as
+\dirname{this/repo}.  If the base URL for our CGI script is
+\url{http://myhostname/~myuser/hgwebdir.cgi}, the URL for the
+repository will be
+\url{http://myhostname/~myuser/hgwebdir.cgi/this/repo}.
+
+If we replace \dirname{/my/root} on the left hand side of this example
+with \dirname{/my}, then \sfilename{hgwebdir.cgi} will only strip off
+\dirname{/my} from the repository name, and will publish it as
+\dirname{root/this/repo} instead of \dirname{this/repo}.
+
+The \sfilename{hgwebdir.cgi} script will recursively search each
+directory listed in the \texttt{collections} section of its
+configuration file, but it will \texttt{not} recurse into the
+repositories it finds.
+
+The \texttt{collections} mechanism makes it easy to publish many
+repositories in a ``fire and forget'' manner.  You only need to set up
+the CGI script and configuration file one time.  Afterwards, you can
+publish or unpublish a repository at any time by simply moving it
+into, or out of, the directory hierarchy in which you've configured
+\sfilename{hgwebdir.cgi} to look.
 
 %%% Local Variables: 
 %%% mode: latex
