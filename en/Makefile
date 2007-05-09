@@ -52,6 +52,9 @@ image-dot := $(filter %.dot,$(image-sources))
 image-svg := $(filter %.svg,$(image-sources))
 image-png := $(filter %.png,$(image-sources))
 
+image-pdf := $(image-dot:%.dot=%.pdf) $(image-svg:%.svg=%.pdf) $(image-png)
+image-html := $(image-dot:%.dot=%.png) $(image-svg:%.svg=%.png) $(image-png)
+
 example-sources := \
 	backout \
 	bisect \
@@ -118,8 +121,6 @@ define pdf
 	if grep 'Reference.*undefined' $(@:.pdf=.log); then exit 1; fi
 endef
 
-image-pdf := $(image-dot:%.dot=%.pdf) $(image-svg:%.svg=%.pdf) $(image-png)
-
 pdf/hgbook.pdf: $(sources) $(image-pdf) examples
 	$(call pdf)
 
@@ -127,9 +128,15 @@ html: onepage split
 
 htlatex := /usr/bin/htlatex
 
-onepage: $(htlatex) html/onepage/hgbook.html
+onepage: $(htlatex) html/onepage/hgbook.html html/onepage/hgbook.css $(image-html:%=html/onepage/%)
 
-split: $(htlatex) html/split/hgbook.html
+html/onepage/%: %
+	cp $< $@
+
+split: $(htlatex) html/split/hgbook.html html/split/hgbook.css $(image-html:%=html/split/%)
+
+html/split/%: %
+	cp $< $@
 
 # This is a horrible hack to work around the fact that the htlatex
 # command in tex4ht is itself a horrible hack.  I really don't want to
@@ -145,17 +152,11 @@ define htlatex
 	./fixhtml.py $(dir $(1))/*.html
 endef
 
-image-html := $(image-dot:%.dot=%.png) $(image-svg:%.svg=%.png) $(image-png)
-
-html/onepage/hgbook.html: $(sources) $(image-html) examples hgbook.css bookhtml.cfg
+html/onepage/hgbook.html: $(sources) $(image-html) examples bookhtml.cfg
 	$(call htlatex,$@,$<)
-	cp $(image-sources:%.svg=%.png) $(dir $@)
-	cp hgbook.css $(dir $@)
 
-html/split/hgbook.html: $(sources) $(image-html) examples hgbook.css bookhtml.cfg
+html/split/hgbook.html: $(sources) examples bookhtml.cfg
 	$(call htlatex,$@,$<,2)
-	cp $(image-sources:%.svg=%.png) $(dir $@)
-	cp hgbook.css $(dir $@)
 
 # Produce 90dpi PNGs for the web.
 
