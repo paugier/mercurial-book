@@ -924,20 +924,21 @@ Mercurial interprets this by looking at the directory name on the
 \emph{right} hand side of the ``\texttt{=}'' sign; finding
 repositories in that directory hierarchy; and using the text on the
 \emph{left} to strip off matching text from the names it will actually
-list in the web interface.
+list in the web interface.  The remaining component of a path after
+this stripping has occurred is called a ``virtual path''.
 
 Given the example above, if we have a repository whose local path is
 \dirname{/my/root/this/repo}, the CGI script will strip the leading
-\dirname{/my/root} from the name, and publish the repository as
-\dirname{this/repo}.  If the base URL for our CGI script is
-\url{http://myhostname/~myuser/hgwebdir.cgi}, the URL for the
-repository will be
+\dirname{/my/root} from the name, and publish the repository with a
+virtual path of \dirname{this/repo}.  If the base URL for our CGI
+script is \url{http://myhostname/~myuser/hgwebdir.cgi}, the complete
+URL for that repository will be
 \url{http://myhostname/~myuser/hgwebdir.cgi/this/repo}.
 
 If we replace \dirname{/my/root} on the left hand side of this example
 with \dirname{/my}, then \sfilename{hgwebdir.cgi} will only strip off
-\dirname{/my} from the repository name, and will publish it as
-\dirname{root/this/repo} instead of \dirname{this/repo}.
+\dirname{/my} from the repository name, and will give us a virtual
+path of \dirname{root/this/repo} instead of \dirname{this/repo}.
 
 The \sfilename{hgwebdir.cgi} script will recursively search each
 directory listed in the \texttt{collections} section of its
@@ -950,6 +951,33 @@ the CGI script and configuration file one time.  Afterwards, you can
 publish or unpublish a repository at any time by simply moving it
 into, or out of, the directory hierarchy in which you've configured
 \sfilename{hgwebdir.cgi} to look.
+
+\subsubsection{Explicitly specifying the repositories to publish}
+
+In addition to the \texttt{collections} mechanism, the
+\sfilename{hgwebdir.cgi} script allows you to publish a specific list
+of repositories.  To do so, create a \texttt{paths} section, with
+contents of the following form.
+\begin{codesample2}
+  [paths]
+  repo1 = /my/path/to/some/repo
+  repo2 = /some/path/to/another
+\end{codesample2}
+In this case, the virtual path (the component that will appear in a
+URL) is on the left hand side of each definition, while the path to
+the repository is on the right.  Notice that there does not need to be
+any relationship between the virtual path you choose and the location
+of a repository in your filesystem.
+
+If you wish, you can use both the \texttt{collections} and
+\texttt{paths} mechanisms simultaneously in a single configuration
+file.
+
+\begin{note}
+  If multiple repositories have the same virtual path,
+  \sfilename{hgwebdir.cgi} will not report an error.  Instead, it will
+  behave unpredictably.
+\end{note}
 
 %%% Local Variables: 
 %%% mode: latex
