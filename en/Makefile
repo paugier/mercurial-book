@@ -150,6 +150,7 @@ define htlatex
 	cd $(dir $(1)) && tex4ht -f/$(basename $(notdir $(1))) -cvalidate -cunihtf
 	cd $(dir $(1)) && t4ht -f/$(basename $(notdir $(1)))
 	./fixhtml.py $(dir $(1))/*.html
+	rm $(dir $(1))/hgbook.css
 endef
 
 html/onepage/hgbook.html: $(sources) $(image-html) examples bookhtml.cfg
