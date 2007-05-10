@@ -1028,10 +1028,10 @@ section named \rcsection{web}.
 \item[\rcitem{web}{contact}] String.  A free-form (but preferably
   brief) string identifying the person or group in charge of the
   repository.  This often contains the name and email address of a
-  person.
-\item[\rcitem{web}{description}] String.  A free-form (but preferably
-  brief) string that describes the contents or purpose of the
-  repository.
+  person or mailing list.  It often makes sense to place this entry in
+  a repository's own \sfilename{.hg/hgrc} file, but it can make sense
+  to use in a global \hgrc\ if every repository has a single
+  maintainer.
 \item[\rcitem{web}{maxchanges}] Integer.  The default maximum number
   of changesets to display in a single page of output.
 \item[\rcitem{web}{maxfiles}] Integer.  The default maximum number
@@ -1060,6 +1060,20 @@ configuration items in a \rcsection{web} section of the
 convenience.  These items are \rcitem{web}{motd} and
 \rcitem{web}{style}.
 
+\subsubsection{Options specific to an individual repository}
+
+A few \rcsection{web} configuration items ought to be placed in a
+repository's local \sfilename{.hg/hgrc}, rather than a user's or
+global \hgrc.
+\begin{itemize}
+\item[\rcitem{web}{description}] String.  A free-form (but preferably
+  brief) string that describes the contents or purpose of the
+  repository.
+\item[\rcitem{web}{name}] String.  The name to use for the repository
+  in the web interface.  This overrides the default name, which is the
+  last component of the repository's path.
+\end{itemize}
+
 \subsubsection{Options specific to the \hgcmd{serve} command}
 
 Some of the items in the \rcsection{web} section of a \hgrc\ file are
@@ -1081,6 +1095,22 @@ only for use with the \hgcmd{serve} command.
 \item[\rcitem{web}{port}] Integer.  The TCP~port number on which the
   server should listen.  The default port number used is~8000.
 \end{itemize}
+
+\subsubsection{Choosing the right \hgrc\ file to add \rcsection{web}
+  items to}
+
+It is important to remember that a web server like Apache or
+\texttt{lighttpd} will run under a user~ID that is different to yours.
+CGI scripts run by your server, such as \sfilename{hgweb.cgi}, will
+usually also run under that user~ID.
+
+If you add \rcsection{web} items to your own personal \hgrc\ file, CGI
+scripts won't read that \hgrc\ file.  Those settings will thus only
+affect the behaviour of the \hgcmd{serve} command when you run it.  To
+cause CGI scripts to see your settings, either create a \hgrc\ file in
+the home directory of the user ID that runs your web server, or add
+those settings to a system-wide \hgrc\ file.
+
 
 %%% Local Variables: 
 %%% mode: latex
