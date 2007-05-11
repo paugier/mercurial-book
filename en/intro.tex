@@ -26,11 +26,11 @@ There are a number of reasons why you or your team might want to use
 an automated revision control tool for a project.
 \begin{itemize}
 \item The software gives you a unified way of working with your
-  project's files, and a single place to look in.
-\item When you're working with other people, it will make it easier
-  for you to collaborate.  When people more or less simultaneously
-  make potentially incompatible changes, the software will help you to
-  identify and resolve those conflicts.
+  project's files.
+\item When you're working with other people, it makes it easier for
+  you to collaborate.  For example, when people more or less
+  simultaneously make potentially incompatible changes, the software
+  will help you to identify and resolve those conflicts.
 \item It will track the history of your project.  For every change,
   you'll have a log of \emph{who} made it; \emph{why} they made it;
   \emph{when} they made it; and \emph{what} the change was.
@@ -40,9 +40,36 @@ an automated revision control tool for a project.
   revision control tool will even help you to efficiently figure out
   exactly when a problem was introduced (see
   section~\ref{sec:undo:bisect} for details).
-\item It will help you to work simultaneously on multiple versions of
-  your project.
+\item It will help you to work simultaneously on, and manage the drift
+  between, multiple versions of your project.
 \end{itemize}
+Most of these reasons are equally valid---at least in theory---whether
+you're working on a project by yourself, or with a hundred other
+people.
+
+A key question about the practicality of revision control at these two
+different scales (``lone hacker'' and ``huge team'') is how its
+\emph{benefits} compare to its \emph{costs}.  A revision control tool
+that's difficult to understand or use is going to impose a high cost.
+
+For example, a five-hundred-person project is likely to collapse under
+its own weight almost immediately without a revision control tool and
+process.  In this case, the cost of using revision control might
+hardly seem worth considering, since \emph{without} it, failure is
+almost guaranteed.
+
+On the other hand, a one-person ``quick hack'' might seem like a poor
+place to use a revision control tool, because surely the cost of using
+one must be close to the overall cost of the project.  Right?
+
+Mercurial uniquely supports \emph{both} of these scales of
+development.  You can learn the basics in just a few minutes, and due
+to its low overhead, you can apply revision control to the smallest of
+projects with ease.  Its simplicity means you won't have a lot of
+abstruse concepts or command sequences competing for mental space with
+whatever you're \emph{really} trying to do.  At the same time,
+Mercurial's high performance and peer-to-peer nature let you scale
+painlessly to handle large projects.
 
 \subsection{The many names of revision control}
 
@@ -53,14 +80,84 @@ common names and acronyms you'll encounter:
 \item Configuration management (CM)
 \item Revision control (RCS)
 \item Software configuration management (SCM)
+\item Source code management
+\item Source control
 \item Version control (VCS)
 \end{itemize}
 Some people claim that these terms actually have different meanings,
 but in practice they overlap so much that there's no agreed or even
 useful way to tease them apart.
 
-\section{The hierarchy of revision control}
+\section{A short history and hierarchy of revision control}
 
+The best known of the old-time revision control tools is SCCS (Source
+Code Control System), which Marc Rochkind wrote at Bell Labs, in the
+early 1970s.  SCCS operated on individual files, and required every
+person working on a project to have access to a shared workspace on a
+single system.  Only one person could modify a file at any time;
+arbitration for access to files was via locks.  It was common for
+people to lock files, and later forget to unlock them, preventing
+anyone else from modifying those files without the help of an
+administrator.  
+
+Walter Tichy developed a free alternative to SCCS in the early 1980s;
+he called his program RCS (Revison Control System).  Like SCCS, RCS
+required developers to work in a single shared workspace, and to lock
+files to prevent multiple people from modifying them simultaneously.
+
+Later in the 1980s, Dick Grune used RCS as a building block for a set
+of shell scripts he initially called cmt, but then renamed to CVS
+(Concurrent Versions System).  The big innovation of CVS was that it
+let developers work simultaneously and somewhat independently in their
+own personal workspaces.  The personal workspaces prevented developers
+from stepping on each other's toes all the time, as was common with
+SCCS and RCS.  Each developer had a copy of every project file, and
+could modify their copies independently.  They had to merge their
+edits prior to committing changes to the central repository.
+
+Brian Berliner took Grune's original scripts and rewrote them in~C,
+releasing in 1989 the code that has since developed into the modern
+version of CVS.  CVS subsequently acquired the ability to operate over
+a network connection, giving it a client/server architecture.  CVS's
+architecture is centralised; only the server has a copy of the history
+of the project.  Client workspaces just contain copies of recent
+versions of the project's files, and a little metadata to tell them
+where the server is.  CVS has been enormously successful; it is
+probably the world's most widely used revision control system.
+
+In the early 1990s, Sun Microsystems developed an early distributed
+revision control system, called TeamWare.  A TeamWare workspace
+contains a complete copy of the project's history.  TeamWare has no
+notion of a central repository.  (CVS relied upon RCS for its history
+storage; TeamWare used SCCS.)
+
+As the 1990s progressed, awareness grew of a number of problems with
+CVS.  It records simultaneous changes to multiple files individually,
+instead of grouping them together as a single logically atomic
+operation.  It does not manage its file hierarchy well; it is easy to
+make a mess of a repository by renaming files and directories.  Worse,
+its source code is difficult to read and maintain, which made the
+``pain level'' of fixing these architectural problems prohibitive.
+
+In 2001, Jim Blandy and Karl Fogel, two developers who had worked on
+CVS, started a project to replace it with a tool that would have a
+better architecture and cleaner code.  The result, Subversion, does
+not stray from CVS's centralised client/server model, but it adds
+multi-file atomic commits, better namespace management, and a number
+of other features that make it a generally better tool than CVS.
+Since its initial release, it has rapidly grown in popularity.
+
+More or less simultaneously, Graydon Hoare began working on an
+ambitious distributed revision control system that he named Monotone.
+While Monotone addresses many of CVS's design flaws and has a
+peer-to-peer architecture, it goes beyond earlier (and subsequent)
+revision control tools in a number of innovative ways.  It uses
+cryptographic hashes as identifiers, and has an integral notion of
+``trust'' for code from different sources.
+
+Mercurial began life in 2005.  While a few aspects of its design are
+influenced by Monotone, Mercurial focuses on ease of use, high
+performance, and scalability to very large projects.
 
 \subsection{On a single system}
 
