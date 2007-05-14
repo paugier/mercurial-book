@@ -226,6 +226,8 @@ you won't be able to do is talk to repositories on other computers,
 something that is relatively rare compared with local operations.  If
 you have a far-flung team of collaborators, this may be significant.
 
+\subsection{Advantages for open source projects}
+
 If you take a shine to an open source project and decide that you
 would like to start hacking on it, and that project uses a distributed
 revision control tool, you are at once a peer with the people who
@@ -239,13 +241,82 @@ you won't be able to record changes, and your local modifications will
 be at risk of corruption any time you try to update your client's view
 of the repository.
 
-\subsection{For open source projects}
+\subsubsection{The forking non-problem}
 
-\subsection{For commercial projects}
+It has been suggested that distributed revision control tools pose
+some sort of risk to open source projects because they make it easy to
+``fork'' the development of a project.  A fork happens when there are
+differences in opinion or attitude between groups of developers that
+cause them to decide that they can't work together any longer.  Each
+side takes a more or less complete copy of the project's source code,
+and goes off in its own direction.
 
-\subsection{Myths about distributed revision control}
+Sometimes the camps in a fork decide to reconcile their differences.
+With a centralised revision control system, the \emph{technical}
+process of reconciliation is painful, and has to be performed largely
+by hand.  You have to decide whose revision history is going to
+``win'', and graft the other team's changes into the tree somehow.
+This usually loses some or all of one side's revision history.
 
-\subsubsection{Distributed tools encourage projects to fork}
+What distributed tools do with respect to forking is they make forking
+the \emph{only} way to develop a project.  Every single change that
+you make is potentially a fork point.  The great strength of this
+approach is that a distributed revision control tool has to be really
+good at \emph{merging} forks, because forks are absolutely
+fundamental: they happen all the time.  
+
+If every piece of work that everybody does, all the time, is framed in
+terms of forking and merging, then what the open source world refers
+to as a ``fork'' becomes \emph{purely} a social issue.  If anything,
+distributed tools \emph{lower} the likelihood of a fork:
+\begin{itemize}
+\item They eliminate the social distinction that centralised tools
+  impose: that between insiders (people with commit access) and
+  outsiders (people without).
+\item They make it easier to reconcile after a social fork, because
+  all that's involved from the perspective of the revision control
+  software is just another merge.
+\end{itemize}
+
+Some people resist distributed tools because they want to retain tight
+control over their projects, and they believe that centralised tools
+give them this control.  However, if you're of this belief, and you
+publish your CVS or Subversion repositories publically, there are
+plenty of tools available that can pull out your entire project's
+history (albeit slowly) and recreate it somewhere that you don't
+control.  So while your control in this case is illusory, you are
+foregoing the ability to fluidly collaborate with whatever people feel
+compelled to mirror and fork your history.
+
+\subsection{Advantages for commercial projects}
+
+Many commercial projects are undertaken by teams that are scattered
+across the globe.  Contributors who are far from a central server will
+see slower command execution and perhaps less reliability.  Commercial
+revision control systems attempt to ameliorate these problems with
+remote-site replication add-ons that are typically expensive to buy
+and cantankerous to administer.  A distributed system doesn't suffer
+from these problems in the first place.  Better yet, you can easily
+set up multiple authoritative servers, say one per site, so that
+there's no redundant communication between repositories over expensive
+long-haul network links.
+
+Centralised revision control systems tend to have relatively low
+scalability.  It's not unusual for an expensive centralised system to
+fall over under the combined load of just a few dozen concurrent
+users.  Once again, the typical response tends to be an expensive and
+clunky replication facility.  Since the load on a central server---if
+you have one at all---is orders of magnitude lower with a distributed
+tool (because all of the data is replicated everywhere), a single
+cheap server can handle the needs of a much larger team, and
+replication to balance load becomes a simple matter of scripting.
+
+If you have an employee in the field, troubleshooting a problem at a
+customer's site, they'll benefit from distributed revision control.
+The tool will let them generate custom builds, try different fixes in
+isolation from each other, and search efficiently through history for
+the sources of bugs and regressions in the customer's environment, all
+without needing to connect to your company's network.
 
 \section{Why choose Mercurial?}
 
