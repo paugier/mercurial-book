@@ -3,37 +3,35 @@
 
 \section{About revision control}
 
-Revision control is the management of multiple versions of a piece of
-information.  In its simplest form, it's a process that many people
-perform by hand: every time you modify a file, save it under a new
-name that contains a number, each one higher than the number of the
-preceding version.
+Revision control is the process of managing multiple versions of a
+piece of information.  In its simplest form, this is something that
+many people do by hand: every time you modify a file, save it under a
+new name that contains a number, each one higher than the number of
+the preceding version.
 
 Manually managing multiple versions of even a single file is an
 error-prone task, though, so software tools to help automate this
 process have long been available.  The earliest automated revision
 control tools were intended to help a single user to manage revisions
-to a single file.  Over the past several decades, the scope of
-revision control tools has expanded greatly; they now manage multiple
-files, and help multiple people to work together.  The best modern
-revision control tools will have no problem coping with thousands of
-people working together on a single project, which might consist of
-hundreds of thousands of files.
+of a single file.  Over the past few decades, the scope of revision
+control tools has expanded greatly; they now manage multiple files,
+and help multiple people to work together.  The best modern revision
+control tools have no problem coping with thousands of people working
+together on projects that consist of hundreds of thousands of files.
 
 \subsection{Why use revision control?}
 
 There are a number of reasons why you or your team might want to use
 an automated revision control tool for a project.
 \begin{itemize}
-\item The software gives you a unified way of working with your
-  project's files.
-\item When you're working with other people, it makes it easier for
-  you to collaborate.  For example, when people more or less
-  simultaneously make potentially incompatible changes, the software
-  will help you to identify and resolve those conflicts.
-\item It will track the history of your project.  For every change,
-  you'll have a log of \emph{who} made it; \emph{why} they made it;
-  \emph{when} they made it; and \emph{what} the change was.
+\item It will track the history and evolution of your project, so you
+  don't have to.  For every change, you'll have a log of \emph{who}
+  made it; \emph{why} they made it; \emph{when} they made it; and
+  \emph{what} the change was.
+\item When you're working with other people, revision control software
+  makes it easier for you to collaborate.  For example, when people
+  more or less simultaneously make potentially incompatible changes,
+  the software will help you to identify and resolve those conflicts.
 \item It can help you to recover from mistakes.  If you make a change
   that later turns out to be in error, you can revert to an earlier
   version of one or more files.  In fact, a \emph{really} good
@@ -52,11 +50,11 @@ different scales (``lone hacker'' and ``huge team'') is how its
 \emph{benefits} compare to its \emph{costs}.  A revision control tool
 that's difficult to understand or use is going to impose a high cost.
 
-For example, a five-hundred-person project is likely to collapse under
-its own weight almost immediately without a revision control tool and
-process.  In this case, the cost of using revision control might
-hardly seem worth considering, since \emph{without} it, failure is
-almost guaranteed.
+A five-hundred-person project is likely to collapse under its own
+weight almost immediately without a revision control tool and process.
+In this case, the cost of using revision control might hardly seem
+worth considering, since \emph{without} it, failure is almost
+guaranteed.
 
 On the other hand, a one-person ``quick hack'' might seem like a poor
 place to use a revision control tool, because surely the cost of using
@@ -71,24 +69,27 @@ whatever you're \emph{really} trying to do.  At the same time,
 Mercurial's high performance and peer-to-peer nature let you scale
 painlessly to handle large projects.
 
+No revision control tool can rescue a poorly run project, but a good
+choice of tools can make a huge difference to the fluidity with which
+you can work on a project.
+
 \subsection{The many names of revision control}
 
 Revision control is a diverse field, so much so that it doesn't
 actually have a single name or acronym.  Here are a few of the more
 common names and acronyms you'll encounter:
 \begin{itemize}
-\item Configuration management (CM)
 \item Revision control (RCS)
-\item Software configuration management (SCM)
+\item Software configuration management (SCM), or configuration management
 \item Source code management
-\item Source control
+\item Source code control, or source control
 \item Version control (VCS)
 \end{itemize}
 Some people claim that these terms actually have different meanings,
 but in practice they overlap so much that there's no agreed or even
 useful way to tease them apart.
 
-\section{A short history and hierarchy of revision control}
+\section{A short history of revision control}
 
 The best known of the old-time revision control tools is SCCS (Source
 Code Control System), which Marc Rochkind wrote at Bell Labs, in the
@@ -159,20 +160,92 @@ Mercurial began life in 2005.  While a few aspects of its design are
 influenced by Monotone, Mercurial focuses on ease of use, high
 performance, and scalability to very large projects.
 
-\subsection{On a single system}
+\section{Trends in revision control}
 
-\subsection{Network-based, but centralised}
+There has been an unmistakable trend in the development and use of
+revision control tools over the past four decades, as people have
+become familiar with the capabilities of their tools and constrained
+by their limitations.
 
-\subsection{Fully distributed}
+The first generation began by managing single files on individual
+computers.  Although these tools represented a huge advance over
+ad-hoc manual revision control, their locking model and reliance on a
+single computer limited them to small, tightly-knit teams.
 
+The second generation loosened these constraints by moving to
+network-centered architectures, and managing entire projects at a
+time.  As projects grew larger, they ran into new problems.  With
+clients needing to talk to servers very frequently, server scaling
+became an issue for large projects.  An unreliable network connection
+could prevent remote users from being able to talk to the server at
+all.  As open source projects started making read-only access
+available anonymously to anyone, people without commit privileges
+found that they could not use the tools to interact with a project in
+a natural way, as they could not record their changes.
 
-\section{Advantages of distributed revision control}
+The current generation of revision control tools is peer-to-peer in
+nature.  All of these systems have dropped the dependency on a single
+central server, and allow people to distribute their revision control
+data to where it's actually needed.  Collaboration over the Internet
+has moved from constrained by technology to a matter of choice and
+consensus.  Modern tools can operate offline indefinitely and
+autonomously, with a network connection only needed when syncing
+changes with another repository.
+
+\section{A few of the advantages of distributed revision control}
+
+Even though distributed revision control tools have for several years
+been as robust and usable as their previous-generation counterparts,
+people using older tools have not yet necessarily woken up to their
+advantages.  There are a number of ways in which distributed tools
+shine relative to centralised ones.
+
+For an individual developer, distributed tools are almost always much
+faster than centralised tools.  This is for a simple reason: a
+centralised tool needs to talk over the network for many common
+operations, because most metadata is stored in a single copy on the
+central server.  A distributed tool stores all of its metadata
+locally.  All else being equal, talking over the network adds overhead
+to a centralised tool.  Don't underestimate the value of a snappy,
+responsive tool: you're going to spend a lot of time interacting with
+your revision control software.
+
+Distributed tools are indifferent to the vagaries of your server
+infrastructure, again because they replicate metadata to so many
+locations.  If you use a centralised system and your server catches
+fire, you'd better hope that your backup media are reliable, and that
+your last backup was recent and actually worked.  With a distributed
+tool, you have many backups available on every contributor's computer.
+
+The reliability of your network will affect distributed tools far less
+than it will centralised tools.  You can't even use a centralised tool
+without a network connection, except for a few highly constrained
+commands.  With a distributed tool, if your network connection goes
+down while you're working, you may not even notice.  The only thing
+you won't be able to do is talk to repositories on other computers,
+something that is relatively rare compared with local operations.  If
+you have a far-flung team of collaborators, this may be significant.
+
+If you take a shine to an open source project and decide that you
+would like to start hacking on it, and that project uses a distributed
+revision control tool, you are at once a peer with the people who
+consider themselves the ``core'' of that project.  If they publish
+their repositories, you can immediately copy their project history,
+start making changes, and record your work, using the same tools in
+the same ways as insiders.  By contrast, with a centralised tool, you
+must use the software in a ``read only'' mode unless someone grants
+you permission to commit changes to their central server.  Until then,
+you won't be able to record changes, and your local modifications will
+be at risk of corruption any time you try to update your client's view
+of the repository.
 
 \subsection{For open source projects}
 
 \subsection{For commercial projects}
 
 \subsection{Myths about distributed revision control}
+
+\subsubsection{Distributed tools encourage projects to fork}
 
 \section{Why choose Mercurial?}
 
