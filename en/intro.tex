@@ -320,6 +320,157 @@ without needing to connect to your company's network.
 
 \section{Why choose Mercurial?}
 
+Mercurial has a unique set of properties that make it a particularly
+good choice as a revision control system.
+\begin{itemize}
+\item It is easy to learn and use.
+\item It is lightweight.
+\item It scales excellently.
+\item It is easy to customise.
+\end{itemize}
+
+If you are at all familiar with revision control systems, you should
+be able to get up and running with Mercurial in less than five
+minutes.  Even if not, it will take no more than a few minutes
+longer.  Mercurial's command and feature sets are generally uniform
+and consistent, so you can keep track of a few general rules instead
+of a host of exceptions.
+
+On a small project, you can start working with Mercurial in moments.
+Creating new changes and branches; transferring changes around
+(whether locally or over a network); and history and status operations
+are all fast.  Mercurial attempts to stay nimble and largely out of
+your way by combining low cognitive overhead with blazingly fast
+operations.
+
+The usefulness of Mercurial is not limited to small projects: it is
+used by projects with hundreds to thousands of contributors, each
+containing tens of thousands of files and hundreds of megabytes of
+source code.
+
+If the core functionality of Mercurial is not enough for you, it's
+easy to build on.  Mercurial is well suited to scripting tasks, and
+its clean internals and implementation in Python make it easy to add
+features in the form of extensions.  There are a number of popular and
+useful extensions already available, ranging from helping to identify
+bugs to improving performance.
+
+\section{Mercurial compared with other tools}
+
+Before you read on, please understand that this section necessarily
+reflects my own experiences, interests, and (dare I say it) biases.  I
+have used every one of the revision control tools listed below, in
+most cases for several years at a time.
+
+\subsection{Subversion}
+
+Subversion is a popular revision control tool, developed to replace
+CVS.  It has a centralised client/server architecture.
+
+Subversion and Mercurial have similarly named commands for performing
+the same operations, so it is easy for a person who is familiar with
+one to learn to use the other.  Both tools are portable to all popular
+operating systems.
+
+Mercurial has a substantial performance advantage over Subversion on
+every revision control operation I have benchmarked.  I have measured
+its advantage as ranging from a factor of two to a factor of six when
+compared with Subversion~1.4.3's \emph{ra\_local} file store, which is
+the fastest access method available).  In more realistic deployments
+involving a network-based store, Subversion will be at a substantially
+larger disadvantage.
+
+Additionally, Subversion incurs a substantial storage overhead to
+avoid network transactions for a few common operations, such as
+finding modified files (\texttt{status}) and displaying modifications
+against the current revision (\texttt{diff}).  A Subversion working
+copy is, as a result, often approximately the same size as, or larger
+than, a Mercurial repository and working directory, even though the
+Mercurial repository contains a complete history of the project.
+
+Subversion does not have a history-aware merge capability, forcing its
+users to know exactly which revisions to merge between branches.  This
+shortcoming is scheduled to be addressed in version 1.5.
+
+Subversion is currently more widely supported by
+revision-control-aware third party tools than is Mercurial, although
+this gap is closing.  Like Mercurial, Subversion has an excellent user
+manual.
+
+Several tools exist to accurately and completely import revision
+history from a Subversion repository into a Mercurial repository,
+making the transition from the older tool relatively painless.
+
+\subsection{Git}
+
+Git is a distributed revision control tool that was developed for
+managing the Linux kernel source tree.  Like Mercurial, its early
+design was somewhat influenced by Monotone.
+
+Git has an overwhelming command set, with version~1.5.0 providing~139
+individual commands.  It has a reputation for being difficult to
+learn.  It does not have a user manual, only documentation for
+individual commands.
+
+In terms of performance, git is extremely fast.  There are several
+common cases in which it is faster than Mercurial, at least on Linux.
+However, its performance on (and general support for) Windows is, at
+the time of writing, far behind that of Mercurial.
+
+While a Mercurial repository needs no maintenance, a Git repository
+requires frequent manual ``repacks'' of its metadata.  Without these,
+performance degrades, while space usage grows rapidly.  A server that
+contains many Git repositories that are not rigorously and frequently
+repacked will become heavily disk-bound during backups, and there have
+been instances of daily backups taking far longer than~24 hours as a
+result.  A freshly packed Git repository is slightly smaller than a
+Mercurial repository, but an unpacked repository is several orders of
+magnitude larger.
+
+The core of Git is written in C.  Many Git commands are implemented as
+shell or Perl scripts, and the quality of these scripts varies widely.
+I have encountered a number of instances where scripts charged along
+blindly in the presence of errors that should have been fatal.
+
+\subsection{CVS}
+
+CVS is probably the most widely used revision control tool in the
+world.  Due to its age and internal untidiness, it has been
+essentially unmaintained for many years.
+
+It has a centralised client/server architecture.  It does not group
+related file changes into atomic commits, making it easy for people to
+``break the build''.  It has a muddled and incoherent notion of tags
+and branches that I will not attempt to even describe.  It does not
+support renaming of files or directories well, making it easy to
+corrupt a repository.  It has almost no internal consistency checking
+capabilities, so it is usually not even possible to tell whether or
+how a repository is corrupt.  I would not recommend CVS for any
+project, existing or new.
+
+Mercurial can import CVS revision history.  However, there are a few
+caveats that apply; these are true of every other revision control
+tool's CVS importer, too.  Due to CVS's lack of atomic changes and
+unversioned filesystem hierarchy, it is not possible to reconstruct
+CVS history completely accurately; some guesswork is involved, and
+renames will usually not show up.  Because a lot of advanced CVS
+administration has to be done by hand and is hence error-prone, it's
+common for CVS importers to run into multiple problems with corrupted
+repositories (completely bogus revision timestamps and files that have
+remained locked for over a decade are just two of the less interesting
+problems I can recall from personal experience).
+
+\subsection{Commercial tools}
+
+Perforce has a centralised client/server architecture, with no
+client-side caching of any data.  Unlike modern revision control
+tools, Perforce requires that a user run a command to inform the
+server about every file they intend to edit.
+
+The performance of Perforce is quite good for small teams, but it
+falls off rapidly as the number of users grows beyond a few dozen.
+Modestly large Perforce installations require the deployment of
+proxies to cope with the load their users generate.
 
 %%% Local Variables: 
 %%% mode: latex
