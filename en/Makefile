@@ -12,6 +12,7 @@ sources := \
 	daily.tex \
 	filenames.tex \
 	hg_id.tex \
+	hgext.tex \
 	hook.tex \
 	intro.tex \
 	mq.tex \
