@@ -1,6 +1,208 @@
 \chapter{Adding functionality with extensions}
 \label{chap:hgext}
 
+While the core of Mercurial is quite complete from a functionality
+standpoint, it's deliberately shorn of fancy features.  This approach
+of preserving simplicity keeps the software easy to deal with for both
+maintainers and users.
+
+However, Mercurial doesn't box you in with an inflexible command set:
+you can add features to it as \emph{extensions} (sometimes known as
+\emph{plugins}).  We've already discussed a few of these extensions in
+earlier chapters.
+\begin{itemize}
+\item Section~\ref{sec:tour-merge:fetch} covers the \hgext{fetch}
+  extension; this combines pulling new changes and merging them with
+  local changes into a single command, \hgcmd{fetch}.
+\item The \hgext{bisect} extension adds an efficient pruning search
+  for changes that introduced bugs, and we documented it in
+  chapter~\ref{sec:undo:bisect}.
+\item In chapter~\ref{chap:hook}, we covered several extensions that
+  are useful for hook-related functionality: \hgext{acl} adds access
+  control lists; \hgext{bugzilla} adds integration with the Bugzilla
+  bug tracking system; and \hgext{notify} sends notification emails on
+  new changes.
+\item The Mercurial Queues patch management extension is so invaluable
+  that it merits two chapters and an appendix all to itself.
+  Chapter~\ref{chap:mq} covers the basics;
+  chapter~\ref{chap:mq-collab} discusses advanced topics; and
+  appendix~\ref{chap:mqref} goes into detail on each command.
+\end{itemize}
+
+In this chapter, we'll cover some of the other extensions that are
+available for Mercurial, and briefly touch on some of the machinery
+you'll need to know about if you want to write an extension of your
+own.
+\begin{itemize}
+\item In section~\ref{sec:hgext:inotify}, we'll discuss the
+  possibility of \emph{huge} performance improvements using the
+  \hgext{inotify} extension.
+\end{itemize}
+
+\section{Improve performance with the \hgext{inotify} extension}
+\label{sec:hgext:inotify}
+
+Are you interested in having some of the most common Mercurial
+operations run as much as a hundred times faster?  Read on!
+
+Mercurial has great performance under normal circumstances.  For
+example, when you run the \hgcmd{status} command, Mercurial has to
+scan almost every directory and file in your repository so that it can
+display file status.  Many other Mercurial commands need to do the
+same work behind the scenes; for example, the \hgcmd{diff} command
+uses the status machinery to avoid doing an expensive comparison
+operation on files that obviously haven't changed.
+
+Because obtaining file status is crucial to good performance, the
+authors of Mercurial have optimised this code to within an inch of its
+life.  However, there's no avoiding the fact that when you run
+\hgcmd{status}, Mercurial is going to have to perform at least one
+expensive system call for each managed file to determine whether it's
+changed since the last time Mercurial checked.  For a sufficiently
+large repository, this can take a long time.
+
+To put a number on the magnitude of this effect, I created a
+repository containing 150,000 managed files.  I timed \hgcmd{status}
+as taking ten seconds to run, even when \emph{none} of those files had
+been modified.
+
+Many modern operating systems contain a file notification facility.
+If a program signs up to an appropriate service, the operating system
+will notify it every time a file of interest is created, modified, or
+deleted.  On Linux systems, the kernel component that does this is
+called \texttt{inotify}.
+
+Mercurial's \hgext{inotify} extension talks to the kernel's
+\texttt{inotify} component to optimise \hgcmd{status} commands.  The
+extension has two components.  A daemon sits in the background and
+receives notifications from the \texttt{inotify} subsystem.  It also
+listens for connections from a regular Mercurial command.  The
+extension modifies Mercurial's behaviour so that instead of scanning
+the filesystem, it queries the daemon.  Since the daemon has perfect
+information about the state of the repository, it can respond with a
+result instantaneously, avoiding the need to scan every directory and
+file in the repository.
+
+Recall the ten seconds that I measured plain Mercurial as taking to
+run \hgcmd{status} on a 150,000 file repository.  With the
+\hgext{inotify} extension enabled, the time dropped to 0.1~seconds, a
+factor of \emph{one hundred} faster.
+
+Before we continue, please pay attention to some caveats.
+\begin{itemize}
+\item The \hgext{inotify} extension is Linux-specific.  Because it
+  interfaces directly to the Linux kernel's \texttt{inotify}
+  subsystem, it does not work on other operating systems.
+\item It should work on any Linux distribution that was released after
+  early~2005.  Older distributions are likely to have a kernel that
+  lacks \texttt{inotify}, or a version of \texttt{glibc} that does not
+  have the necessary interfacing support.
+\item Not all filesystems are suitable for use with the
+  \hgext{inotify} extension.  Network filesystems such as NFS are a
+  non-starter, for example, particularly if you're running Mercurial
+  on several systems, all mounting the same network filesystem.  The
+  kernel's \texttt{inotify} system has no way of knowing about changes
+  made on another system.  Most local filesystems (e.g.~ext3, XFS,
+  ReiserFS) should work fine.
+\end{itemize}
+
+The \hgext{inotify} extension is not yet shipped with Mercurial as of
+May~2007, so it's a little more involved to set up than other
+extensions.  But the performance improvement is worth it!
+
+The extension currently comes in two parts: a set of patches to the
+Mercurial source code, and a library of Python bindings to the
+\texttt{inotify} subsystem.
+\begin{note}
+  There are \emph{two} Python \texttt{inotify} binding libraries.  One
+  of them is called \texttt{pyinotify}, and is packaged by some Linux
+  distributions as \texttt{python-inotify}.  This is \emph{not} the
+  one you'll need, as it is too buggy and inefficient to be practical.
+\end{note}
+To get going, it's best to already have a functioning copy of
+Mercurial installed.
+\begin{note}
+  If you follow the instructions below, you'll be \emph{replacing} and
+  overwriting any existing installation of Mercurial that you might
+  already have, using the latest ``bleeding edge'' Mercurial code.
+  Don't say you weren't warned!
+\end{note}
+\begin{enumerate}
+\item Clone the Python \texttt{inotify} binding repository.  Build and
+  install it.
+  \begin{codesample4}
+    hg clone http://hg.kublai.com/python/inotify
+    cd inotify
+    python setup.py build --force
+    sudo python setup.py install --skip-build
+  \end{codesample4}
+\item Clone the \dirname{crew} Mercurial repository.  Clone the
+  \hgext{inotify} patch repository so that Mercurial Queues will be
+  able to apply patches to your cope of the \dirname{crew} repository.
+  \begin{codesample4}
+    hg clone http://hg.intevation.org/mercurial/crew
+    hg clone crew inotify
+    hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches
+  \end{codesample4}
+\item Make sure that you have the Mercurial Queues extension,
+  \hgext{mq}, enabled.  If you've never used MQ, read
+  section~\ref{sec:mq:start} to get started quickly.
+\item Go into the \dirname{inotify} repo, and apply all of the
+  \hgext{inotify} patches using the \hgopt{qpush}{-a} option to the
+  \hgcmd{qpush} command.
+  \begin{codesample4}
+    cd inotify
+    hg qpush -a
+  \end{codesample4}
+  If you get an error message from \hgcmd{qpush}, you should not
+  continue.  Instead, ask for help.
+\item Build and install the patched version of Mercurial.
+  \begin{codesample4}
+    python setup.py build --force
+    sudo python setup.py install --skip-build
+  \end{codesample4}
+\end{enumerate}
+Once you've build a suitably patched version of Mercurial, all you
+need to do to enable the \hgext{inotify} extension is add an entry to
+your \hgrc.
+\begin{codesample2}
+  [extensions]
+  inotify =
+\end{codesample2}
+When the \hgext{inotify} extension is enabled, Mercurial will
+automatically and transparently start the status daemon the first time
+you run a command that needs status in a repository.  It runs one
+status daemon per repository.
+
+The status daemon is started silently, and runs in the background.  If
+you look at a list of running processes after you've enabled the
+\hgext{inotify} extension and run a few commands in different
+repositories, you'll thus see a few \texttt{hg} processes sitting
+around, waiting for updates from the kernel and queries from
+Mercurial.
+
+The first time you run a Mercurial command in a repository when you
+have the \hgext{inotify} extension enabled, it will run with about the
+same performance as a normal Mercurial command.  This is because the
+status daemon needs to perform a normal status scan so that it has a
+baseline against which to apply later updates from the kernel.
+However, \emph{every} subsequent command that does any kind of status
+check should be noticeably faster on repositories of even fairly
+modest size.  Better yet, the bigger your repository is, the greater a
+performance advantage you'll see.  The \hgext{inotify} daemon makes
+status operations almost instantaneous on repositories of all sizes!
+
+If you like, you can manually start a status daemon using the
+\hgcmd{inserve} command.  This gives you slightly finer control over
+how the daemon ought to run.  This command will of course only be
+available when the \hgext{inotify} extension is enabled.
+
+When you're using the \hgext{inotify} extension, you should notice
+\emph{no difference at all} in Mercurial's behaviour, with the sole
+exception of status-related commands running a whole lot faster than
+they used to.  You should specifically expect that commands will not
+print different output; neither should they give different results.
+If either of these situations occurs, please report a bug.
 
 %%% Local Variables: 
 %%% mode: latex
