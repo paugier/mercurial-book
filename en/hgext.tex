@@ -204,6 +204,118 @@ they used to.  You should specifically expect that commands will not
 print different output; neither should they give different results.
 If either of these situations occurs, please report a bug.
 
+\section{Flexible diff support with the \hgext{extdiff} extension}
+\label{sec:hgext:extdiff}
+
+Mercurial's built-in \hgcmd{diff} command outputs plaintext unified
+diffs.
+\interaction{extdiff.diff}
+If you would like to use an external tool to display modifications,
+you'll want to use the \hgext{extdiff} extension.  This will let you
+use, for example, a graphical diff tool.
+
+The \hgext{extdiff} extension is bundled with Mercurial, so it's easy
+to set up.  In the \rcsection{extensions} section of your \hgrc,
+simply add a one-line entry to enable the extension.
+\begin{codesample2}
+  [extensions]
+  extdiff =
+\end{codesample2}
+This introduces a command named \hgcmd{extdiff}, which by default uses
+your system's \command{diff} command to generate a unified diff in the
+same form as the built-in \hgcmd{diff} command.  
+\interaction{extdiff.extdiff}
+The result won't be exactly the same as with the built-in \hgcmd{diff}
+variations, because the output of \command{diff} varies from one
+system to another, even when passed the same options.
+
+As the ``\texttt{making snapshot}'' lines of output above imply, the
+\hgcmd{extdiff} command works by creating two snapshots of your source
+tree.  The first snapshot is of the source revision; the second, of
+the target revision or working directory.  The \hgcmd{extdiff} command
+generates these snapshots in a temporary directory, passes the name of
+each directory to an external diff viewer, then deletes the temporary
+directory.  For efficiency, it only snapshots the directories and
+files that have changed between the two revisions.  
+
+Snapshot directory names have the same base name as your repository.
+If your repository path is \dirname{/quux/bar/foo}, then \dirname{foo}
+will be the name of each snapshot directory.  Each snapshot directory
+name has its changeset ID appended, if appropriate.  If a snapshot is
+of revision \texttt{a631aca1083f}, the directory will be named
+\dirname{foo.a631aca1083f}.  A snapshot of the working directory won't
+have a changeset ID appended, so it would just be \dirname{foo} in
+this example.  To see what this looks like in practice, look again at
+the \hgcmd{extdiff} example above.  Notice that the diff has the
+snapshot directory names embedded in its header.
+
+The \hgcmd{extdiff} command accepts two important options.  The
+\hgopt{extdiff}{-p} option lets you choose a program to view
+differences with, instead of \command{diff}.  With the
+\hgopt{extdiff}{-o} option, you can change the options that
+\hgcmd{extdiff} passes to the program (by default, these options are
+``\texttt{-Npru}'', which only make sense if you're running
+\command{diff}).  In other respects, the \hgcmd{extdiff} acts
+similarly to the built-in \hgcmd{diff} command: you use the same
+option names, syntax, and arguments to specify the revisions you want,
+the files you want, and so on.
+
+As an example, here's how to run the normal system \command{diff}
+command, getting it to generate context diffs (using the
+\cmdopt{diff}{-c} option) instead of unified diffs, and five lines of
+context instead of the default three (passing \texttt{5} as the
+argument to the \cmdopt{diff}{-C} option).
+\interaction{extdiff.extdiff-ctx}
+
+Launching a visual diff tool is just as easy.  Here's how to launch
+the \command{kdiff3} viewer.
+\begin{codesample2}
+  hg extdiff -p kdiff3 -o ''
+\end{codesample2}
+
+If your diff viewing command can't deal with directories, you can
+easily work around this with a little scripting.  For an example of
+such scripting in action with the \hgext{mq} extension and the
+\command{interdiff} command, see
+section~\ref{mq-collab:tips:interdiff}.
+
+\subsection{Defining command aliases}
+
+It can be cumbersome to remember the options to both the
+\hgcmd{extdiff} command and the diff viewer you want to use, so the
+\hgext{extdiff} extension lets you define \emph{new} commands that
+will invoke your diff viewer with exactly the right options.
+
+All you need to do is edit your \hgrc, and add a section named
+\rcsection{extdiff}.  Inside this section, you can define multiple
+commands.  Here's how to add a \texttt{kdiff3} command.  Once you've
+defined this, you can type ``\texttt{hg kdiff3}'' and the
+\hgext{extdiff} extension will run \command{kdiff3} for you.
+\begin{codesample2}
+  [extdiff]
+  cmd.kdiff3 =
+\end{codesample2}
+If you leave the right hand side of the definition empty, as above,
+the \hgext{extdiff} extension uses the name of the command you defined
+as the name of the external program to run.  But these names don't
+have to be the same.  Here, we define a command named ``\texttt{hg
+  wibble}'', which runs \command{kdiff3}.
+\begin{codesample2}
+  [extdiff]
+  cmd.wibble = kdiff3
+\end{codesample2}
+
+You can also specify the default options that you want to invoke your
+diff viewing program with.  The prefix to use is ``\texttt{opts.}'',
+followed by the name of the command to which the options apply.  This
+example defines a ``\texttt{hg vimdiff}'' command that runs the
+\command{vim} editor's \texttt{DirDiff} extension.
+\begin{codesample2}
+  [extdiff]  
+  cmd.vimdiff = vim
+  opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
+\end{codesample2}
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "00book"

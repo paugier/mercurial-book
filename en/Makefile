@@ -67,6 +67,7 @@ example-sources := \
 	daily.files \
 	daily.rename \
 	daily.revert \
+	extdiff \
 	filenames \
 	hook.msglen \
 	hook.simple \

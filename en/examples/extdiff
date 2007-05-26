@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo '[extensions]' >> $HGRC
+echo 'extdiff =' >> $HGRC
+
+hg init a
+cd a
+echo 'The first line.' > myfile
+hg ci -Ama
+echo 'The second line.' >> myfile
+
+#$ name: diff
+
+hg diff
+
+#$ name: extdiff
+
+hg extdiff
+
+#$ name: extdiff-ctx
+
+hg extdiff -o -NprcC5
+
+#$ name:
+
+exit 0
