@@ -349,6 +349,82 @@ takes just one or two lines in your \hgrc.
 Once you've enabled the extension, you will have a new command
 available, named \hgxcmd{patchbomb}{email}.
 
+The safest and best way to invoke the \hgxcmd{patchbomb}{email}
+command is to \emph{always} run it first with the
+\hgxopt{patchbomb}{email}{-n} option.  This will show you what the
+command \emph{would} send, without actually sending anything.  Once
+you've had a quick glance over the changes and verified that you are
+sending the right ones, you can rerun the same command, with the
+\hgxopt{patchbomb}{email}{-n} option removed.
+
+The \hgxcmd{patchbomb}{email} command accepts the same kind of
+revision syntax as every other Mercurial command.  For example, this
+command will send every revision between 7 and \texttt{tip},
+inclusive.
+\begin{codesample2}
+  hg email -n 7:tip
+\end{codesample2}
+You can also specify a \emph{repository} to compare with.  If you
+provide a repository but no revisions, the \hgxcmd{patchbomb}{email}
+command will send all revisions in the local repository that are not
+present in the remote repository.  If you additionally specify
+revisions or a branch name (the latter using the
+\hgxopt{patchbomb}{email}{-b} option), this will constrain the
+revisions sent.
+
+It's perfectly safe to run the \hgxcmd{patchbomb}{email} command
+without the names of the people you want to send to: if you do this,
+it will just prompt you for those values interactively.  (If you're
+using a Linux or Unix-like system, you should have enhanced
+\texttt{readline}-style editing capabilities when entering those
+headers, too, which is useful.)
+
+When you are sending just one revision, the \hgxcmd{patchbomb}{email}
+command will by default use the first line of the changeset
+description as the subject of the single email message it sends.
+
+If you send multiple revisions, the \hgxcmd{patchbomb}{email} command
+will usually send one message per changeset.  It will preface the
+series with an introductory message, in which you should describe the
+purpose of the series of changes you're sending.
+
+\subsection{Changing the behaviour of patchbombs}
+
+Not every project has exactly the same conventions for sending changes
+in email; the \hgext{patchbomb} extension tries to accommodate a
+number of variations through command line options.
+\begin{itemize}
+\item You can write a subject for the introductory message on the
+  command line using the \hgxopt{patchbomb}{email}{-s} option.  This
+  takes one argument, the text of the subject to use.
+\item To change the email address from which the messages originate,
+  use the \hgxopt{patchbomb}{email}{-f} option.  This takes one
+  argument, the email address to use.
+\item The default behaviour is to send unified diffs (see
+  section~\ref{sec:mq:patch} for a description of the format), one per
+  message.  You can send a binary bundle instead with the
+  \hgxopt{patchbomb}{email}{-b} option.  
+\item Unified diffs are normally prefaced with a metadata header.  You
+  can omit this, and send unadorned diffs, with the
+  \hgxopt{patchbomb}{email}{--plain} option.
+\item Diffs are normally sent ``inline'', in the same body part as the
+  description of a patch.  This makes it easiest for the largest
+  number of readers to quote and respond to parts of a diff, as some
+  mail clients will only quote the first MIME body part in a message.
+  If you'd prefer to send the description and the diff in separate
+  body parts, use the \hgxopt{patchbomb}{email}{-a} option.
+\item Instead of sending mail messages, you can write them to an
+  \texttt{mbox}-format mail folder using the
+  \hgxopt{patchbomb}{email}{-m} option.  That option takes one
+  argument, the name of the file to write to.
+\item If you would like to add a \command{diffstat}-format summary to
+  each patch, and one to the introductory message, use the
+  \hgxopt{patchbomb}{email}{-d} option.  The \command{diffstat}
+  command displays a table containing the name of each file patched,
+  the number of lines affected, and a histogram showing how much each
+  file is modified.  This gives readers a qualitative glance at how
+  complex a patch is.
+\end{itemize}
 
 %%% Local Variables: 
 %%% mode: latex
