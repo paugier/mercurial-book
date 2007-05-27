@@ -227,7 +227,7 @@ with the standard Mercurial distribution.)  To enable MQ, edit your
 
 Once the extension is enabled, it will make a number of new commands
 available.  To verify that the extension is working, you can use
-\hgcmd{help} to see if the \hgcmd{qinit} command is now available; see
+\hgcmd{help} to see if the \hgxcmd{mq}{qinit} command is now available; see
 the example in figure~\ref{ex:mq:enabled}.
 
 \begin{figure}[ht]
@@ -238,10 +238,10 @@ the example in figure~\ref{ex:mq:enabled}.
 
 You can use MQ with \emph{any} Mercurial repository, and its commands
 only operate within that repository.  To get started, simply prepare
-the repository using the \hgcmd{qinit} command (see
+the repository using the \hgxcmd{mq}{qinit} command (see
 figure~\ref{ex:mq:qinit}).  This command creates an empty directory
 called \sdirname{.hg/patches}, where MQ will keep its metadata.  As
-with many Mercurial commands, the \hgcmd{qinit} command prints nothing
+with many Mercurial commands, the \hgxcmd{mq}{qinit} command prints nothing
 if it succeeds.
 
 \begin{figure}[ht]
@@ -258,7 +258,7 @@ if it succeeds.
 
 \subsection{Creating a new patch}
 
-To begin work on a new patch, use the \hgcmd{qnew} command.  This
+To begin work on a new patch, use the \hgxcmd{mq}{qnew} command.  This
 command takes one argument, the name of the patch to create.  MQ will
 use this as the name of an actual file in the \sdirname{.hg/patches}
 directory, as you can see in figure~\ref{ex:mq:qnew}.
@@ -286,7 +286,7 @@ they did before.
 \subsection{Refreshing a patch}
 
 When you reach a point where you want to save your work, use the
-\hgcmd{qrefresh} command (figure~\ref{ex:mq:qnew}) to update the patch
+\hgxcmd{mq}{qrefresh} command (figure~\ref{ex:mq:qnew}) to update the patch
 you are working on.  This command folds the changes you have made in
 the working directory into your patch, and updates its corresponding
 changeset to contain those changes.
@@ -297,7 +297,7 @@ changeset to contain those changes.
   \label{ex:mq:qrefresh}
 \end{figure}
 
-You can run \hgcmd{qrefresh} as often as you like, so it's a good way
+You can run \hgxcmd{mq}{qrefresh} as often as you like, so it's a good way
 to ``checkpoint'' your work.  Refresh your patch at an opportune
 time; try an experiment; and if the experiment doesn't work out,
 \hgcmd{revert} your modifications back to the last time you refreshed.
@@ -311,7 +311,7 @@ time; try an experiment; and if the experiment doesn't work out,
 \subsection{Stacking and tracking patches}
 
 Once you have finished working on a patch, or need to work on another,
-you can use the \hgcmd{qnew} command again to create a new patch.
+you can use the \hgxcmd{mq}{qnew} command again to create a new patch.
 Mercurial will apply this patch on top of your existing patch.  See
 figure~\ref{ex:mq:qnew2} for an example.  Notice that the patch
 contains the changes in our prior patch as part of its context (you
@@ -323,24 +323,24 @@ can see this more clearly in the output of \hgcmd{annotate}).
   \label{ex:mq:qnew2}
 \end{figure}
 
-So far, with the exception of \hgcmd{qnew} and \hgcmd{qrefresh}, we've
+So far, with the exception of \hgxcmd{mq}{qnew} and \hgxcmd{mq}{qrefresh}, we've
 been careful to only use regular Mercurial commands.  However, MQ
 provides many commands that are easier to use when you are thinking
 about patches, as illustrated in figure~\ref{ex:mq:qseries}:
 
 \begin{itemize}
-\item The \hgcmd{qseries} command lists every patch that MQ knows
+\item The \hgxcmd{mq}{qseries} command lists every patch that MQ knows
   about in this repository, from oldest to newest (most recently
   \emph{created}).
-\item The \hgcmd{qapplied} command lists every patch that MQ has
+\item The \hgxcmd{mq}{qapplied} command lists every patch that MQ has
   \emph{applied} in this repository, again from oldest to newest (most
   recently applied).
 \end{itemize}
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qseries}
-  \caption{Understanding the patch stack with \hgcmd{qseries} and
-    \hgcmd{qapplied}}
+  \caption{Understanding the patch stack with \hgxcmd{mq}{qseries} and
+    \hgxcmd{mq}{qapplied}}
   \label{ex:mq:qseries}
 \end{figure}
 
@@ -353,7 +353,7 @@ manage a patch without it being applied in the repository.
 An \emph{applied} patch has a corresponding changeset in the
 repository, and the effects of the patch and changeset are visible in
 the working directory.  You can undo the application of a patch using
-the \hgcmd{qpop} command.  MQ still \emph{knows about}, or manages, a
+the \hgxcmd{mq}{qpop} command.  MQ still \emph{knows about}, or manages, a
 popped patch, but the patch no longer has a corresponding changeset in
 the repository, and the working directory does not contain the changes
 made by the patch.  Figure~\ref{fig:mq:stack} illustrates the
@@ -366,13 +366,13 @@ difference between applied and tracked patches.
   \label{fig:mq:stack}
 \end{figure}
 
-You can reapply an unapplied, or popped, patch using the \hgcmd{qpush}
+You can reapply an unapplied, or popped, patch using the \hgxcmd{mq}{qpush}
 command.  This creates a new changeset to correspond to the patch, and
 the patch's changes once again become present in the working
-directory.  See figure~\ref{ex:mq:qpop} for examples of \hgcmd{qpop}
-and \hgcmd{qpush} in action.  Notice that once we have popped a patch
-or two patches, the output of \hgcmd{qseries} remains the same, while
-that of \hgcmd{qapplied} has changed.
+directory.  See figure~\ref{ex:mq:qpop} for examples of \hgxcmd{mq}{qpop}
+and \hgxcmd{mq}{qpush} in action.  Notice that once we have popped a patch
+or two patches, the output of \hgxcmd{mq}{qseries} remains the same, while
+that of \hgxcmd{mq}{qapplied} has changed.
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qpop}
@@ -382,10 +382,10 @@ that of \hgcmd{qapplied} has changed.
 
 \subsection{Pushing and popping many patches}
 
-While \hgcmd{qpush} and \hgcmd{qpop} each operate on a single patch at
+While \hgxcmd{mq}{qpush} and \hgxcmd{mq}{qpop} each operate on a single patch at
 a time by default, you can push and pop many patches in one go.  The
-\hgopt{qpush}{-a} option to \hgcmd{qpush} causes it to push all
-unapplied patches, while the \hgopt{qpop}{-a} option to \hgcmd{qpop}
+\hgopt{qpush}{-a} option to \hgxcmd{mq}{qpush} causes it to push all
+unapplied patches, while the \hgopt{qpop}{-a} option to \hgxcmd{mq}{qpop}
 causes it to pop all applied patches.  (For some more ways to push and
 pop many patches, see section~\ref{sec:mq:perf} below.)
 
@@ -401,7 +401,7 @@ Several MQ commands check the working directory before they do
 anything, and fail if they find any modifications.  They do this to
 ensure that you won't lose any changes that you have made, but not yet
 incorporated into a patch.  Figure~\ref{ex:mq:add} illustrates this;
-the \hgcmd{qnew} command will not create a new patch if there are
+the \hgxcmd{mq}{qnew} command will not create a new patch if there are
 outstanding changes, caused in this case by the \hgcmd{add} of
 \filename{file3}.
 
@@ -422,7 +422,7 @@ documentation for a command's \option{-f} option before you use it!
 
 \subsection{Working on several patches at once}
 
-The \hgcmd{qrefresh} command always refreshes the \emph{topmost}
+The \hgxcmd{mq}{qrefresh} command always refreshes the \emph{topmost}
 applied patch.  This means that you can suspend work on one patch (by
 refreshing it), pop or push to make a different patch the top, and
 work on \emph{that} patch for a while.
@@ -433,9 +433,9 @@ is a change to the core of your software, and the second---layered on
 top of the first---changes the user interface to use the code you just
 added to the core.  If you notice a bug in the core while you're
 working on the UI patch, it's easy to fix the core.  Simply
-\hgcmd{qrefresh} the UI patch to save your in-progress changes, and
-\hgcmd{qpop} down to the core patch.  Fix the core bug,
-\hgcmd{qrefresh} the core patch, and \hgcmd{qpush} back to the UI
+\hgxcmd{mq}{qrefresh} the UI patch to save your in-progress changes, and
+\hgxcmd{mq}{qpop} down to the core patch.  Fix the core bug,
+\hgxcmd{mq}{qrefresh} the core patch, and \hgxcmd{mq}{qpush} back to the UI
 patch to continue where you left off.
 
 \section{More about patches}
@@ -487,11 +487,11 @@ count of one.
 
 If you receive a patch from someone that you want to add to your patch
 queue, and the patch needs a strip count other than one, you cannot
-just \hgcmd{qimport} the patch, because \hgcmd{qimport} does not yet
+just \hgxcmd{mq}{qimport} the patch, because \hgxcmd{mq}{qimport} does not yet
 have a \texttt{-p} option (see~\bug{311}).  Your best bet is to
-\hgcmd{qnew} a patch of your own, then use \cmdargs{patch}{-p\emph{N}}
+\hgxcmd{mq}{qnew} a patch of your own, then use \cmdargs{patch}{-p\emph{N}}
 to apply their patch, followed by \hgcmd{addremove} to pick up any
-files added or removed by the patch, followed by \hgcmd{qrefresh}.
+files added or removed by the patch, followed by \hgxcmd{mq}{qrefresh}.
 This complexity may become unnecessary; see~\bug{311} for details.
 \subsection{Strategies for applying a patch}
 
@@ -557,7 +557,7 @@ While applying a hunk at an offset, or with a fuzz factor, will often
 be completely successful, these inexact techniques naturally leave
 open the possibility of corrupting the patched file.  The most common
 cases typically involve applying a patch twice, or at an incorrect
-location in the file.  If \command{patch} or \hgcmd{qpush} ever
+location in the file.  If \command{patch} or \hgxcmd{mq}{qpush} ever
 mentions an offset or fuzz factor, you should make sure that the
 modified files are correct afterwards.  
 
@@ -573,7 +573,7 @@ patching process in such cases.
 
 \subsection{Handling rejection}
 
-If \hgcmd{qpush} fails to apply a patch, it will print an error
+If \hgxcmd{mq}{qpush} fails to apply a patch, it will print an error
 message and exit.  If it has left \sfilename{.rej} files behind, it is
 usually best to fix up the rejected hunks before you push more patches
 or do any further work.
@@ -627,24 +627,24 @@ On my old, slow laptop, I was able to
 \hgcmdargs{qpush}{\hgopt{qpush}{-a}} all 1,738 patches in 3.5 minutes,
 and \hgcmdargs{qpop}{\hgopt{qpop}{-a}} them all in 30 seconds.  (On a
 newer laptop, the time to push all patches dropped to two minutes.)  I
-could \hgcmd{qrefresh} one of the biggest patches (which made 22,779
+could \hgxcmd{mq}{qrefresh} one of the biggest patches (which made 22,779
 lines of changes to 287 files) in 6.6 seconds.
 
 Clearly, MQ is well suited to working in large trees, but there are a
 few tricks you can use to get the best performance of it.
 
 First of all, try to ``batch'' operations together.  Every time you
-run \hgcmd{qpush} or \hgcmd{qpop}, these commands scan the working
+run \hgxcmd{mq}{qpush} or \hgxcmd{mq}{qpop}, these commands scan the working
 directory once to make sure you haven't made some changes and then
-forgotten to run \hgcmd{qrefresh}.  On a small tree, the time that
+forgotten to run \hgxcmd{mq}{qrefresh}.  On a small tree, the time that
 this scan takes is unnoticeable.  However, on a medium-sized tree
 (containing tens of thousands of files), it can take a second or more.
 
-The \hgcmd{qpush} and \hgcmd{qpop} commands allow you to push and pop
+The \hgxcmd{mq}{qpush} and \hgxcmd{mq}{qpop} commands allow you to push and pop
 multiple patches at a time.  You can identify the ``destination
-patch'' that you want to end up at.  When you \hgcmd{qpush} with a
+patch'' that you want to end up at.  When you \hgxcmd{mq}{qpush} with a
 destination specified, it will push patches until that patch is at the
-top of the applied stack.  When you \hgcmd{qpop} to a destination, MQ
+top of the applied stack.  When you \hgxcmd{mq}{qpop} to a destination, MQ
 will pop patches until the destination patch is at the top.
 
 You can identify a destination patch using either the name of the
@@ -668,7 +668,7 @@ your patches, then \hgcmd{pull} changes into the underlying
 repository, and finally \hgcmdargs{qpush}{\hgopt{qpop}{-a}} your
 patches again.  MQ will stop pushing any time it runs across a patch
 that fails to apply during conflicts, allowing you to fix your
-conflicts, \hgcmd{qrefresh} the affected patch, and continue pushing
+conflicts, \hgxcmd{mq}{qrefresh} the affected patch, and continue pushing
 until you have fixed your entire stack.
 
 This approach is easy to use and works well if you don't expect
@@ -700,13 +700,13 @@ The process is a little involved.
   \hgcmdargs{update}{\hgopt{update}{-C}} to override the patches you
   have pushed.
 \item Merge all patches using \hgcmdargs{qpush}{\hgopt{qpush}{-m}
-    \hgopt{qpush}{-a}}.  The \hgopt{qpush}{-m} option to \hgcmd{qpush}
+    \hgopt{qpush}{-a}}.  The \hgopt{qpush}{-m} option to \hgxcmd{mq}{qpush}
   tells MQ to perform a three-way merge if the patch fails to apply.
 \end{enumerate}
 
 During the \hgcmdargs{qpush}{\hgopt{qpush}{-m}}, each patch in the
 \sfilename{series} file is applied normally.  If a patch applies with
-fuzz or rejects, MQ looks at the queue you \hgcmd{qsave}d, and
+fuzz or rejects, MQ looks at the queue you \hgxcmd{mq}{qsave}d, and
 performs a three-way merge with the corresponding changeset.  This
 merge uses Mercurial's normal merge machinery, so it may pop up a GUI
 merge tool to help you to resolve problems.
@@ -725,7 +725,7 @@ you are sure that you no longer need it as a backup.
 
 MQ commands that work with patches let you refer to a patch either by
 using its name or by a number.  By name is obvious enough; pass the
-name \filename{foo.patch} to \hgcmd{qpush}, for example, and it will
+name \filename{foo.patch} to \hgxcmd{mq}{qpush}, for example, and it will
 push patches until \filename{foo.patch} is applied.  
 
 As a shortcut, you can refer to a patch using both a name and a
@@ -734,7 +734,7 @@ numeric offset; \texttt{foo.patch-2} means ``two patches before
 after \texttt{bar.patch}''.
 
 Referring to a patch by index isn't much different.  The first patch
-printed in the output of \hgcmd{qseries} is patch zero (yes, it's one
+printed in the output of \hgxcmd{mq}{qseries} is patch zero (yes, it's one
 of those start-at-zero counting systems); the second is patch one; and
 so on
 
@@ -789,7 +789,7 @@ sections of their own, but that are good to know.  Here they are, in
 one place.
 
 \begin{itemize}
-\item Normally, when you \hgcmd{qpop} a patch and \hgcmd{qpush} it
+\item Normally, when you \hgxcmd{mq}{qpop} a patch and \hgxcmd{mq}{qpush} it
   again, the changeset that represents the patch after the pop/push
   will have a \emph{different identity} than the changeset that
   represented the hash beforehand.  See
@@ -811,7 +811,7 @@ repository knows nothing about the management or presence of patches.
 This presents the interesting possibility of managing the contents of
 the patch directory as a Mercurial repository in its own right.  This
 can be a useful way to work.  For example, you can work on a patch for
-a while, \hgcmd{qrefresh} it, then \hgcmd{commit} the current state of
+a while, \hgxcmd{mq}{qrefresh} it, then \hgcmd{commit} the current state of
 the patch.  This lets you ``roll back'' to that version of the patch
 later on.
 
@@ -833,7 +833,7 @@ may not control.
 
 MQ helps you to work with the \sdirname{.hg/patches} directory as a
 repository; when you prepare a repository for working with patches
-using \hgcmd{qinit}, you can pass the \hgopt{qinit}{-c} option to
+using \hgxcmd{mq}{qinit}, you can pass the \hgopt{qinit}{-c} option to
 create the \sdirname{.hg/patches} directory as a Mercurial repository.
 
 \begin{note}
@@ -851,7 +851,7 @@ As a convenience, if MQ notices that the \dirname{.hg/patches}
 directory is a repository, it will automatically \hgcmd{add} every
 patch that you create and import.
 
-Finally, MQ provides a shortcut command, \hgcmd{qcommit}, that runs
+Finally, MQ provides a shortcut command, \hgxcmd{mq}{qcommit}, that runs
 \hgcmd{commit} in the \sdirname{.hg/patches} directory.  This saves
 some cumbersome typing.
 
@@ -911,15 +911,15 @@ Give your patches descriptive names.  A good name for a patch might be
 \filename{rework-device-alloc.patch}, because it will immediately give
 you a hint what the purpose of the patch is.  Long names shouldn't be
 a problem; you won't be typing the names often, but you \emph{will} be
-running commands like \hgcmd{qapplied} and \hgcmd{qtop} over and over.
+running commands like \hgxcmd{mq}{qapplied} and \hgxcmd{mq}{qtop} over and over.
 Good naming becomes especially important when you have a number of
 patches to work with, or if you are juggling a number of different
 tasks and your patches only get a fraction of your attention.
 
-Be aware of what patch you're working on.  Use the \hgcmd{qtop}
+Be aware of what patch you're working on.  Use the \hgxcmd{mq}{qtop}
 command and skim over the text of your patches frequently---for
 example, using \hgcmdargs{tip}{\hgopt{tip}{-p}})---to be sure of where
-you stand.  I have several times worked on and \hgcmd{qrefresh}ed a
+you stand.  I have several times worked on and \hgxcmd{mq}{qrefresh}ed a
 patch other than the one I intended, and it's often tricky to migrate
 changes into the right patch after making them in the wrong one.
 
@@ -960,14 +960,14 @@ Finally, you can apply your patches on top of the new tree.
 \subsection{Combining entire patches}
 \label{sec:mq:combine}
 
-MQ provides a command, \hgcmd{qfold} that lets you combine entire
+MQ provides a command, \hgxcmd{mq}{qfold} that lets you combine entire
 patches.  This ``folds'' the patches you name, in the order you name
 them, into the topmost applied patch, and concatenates their
 descriptions onto the end of its description.  The patches that you
 fold must be unapplied before you fold them.
 
 The order in which you fold patches matters.  If your topmost applied
-patch is \texttt{foo}, and you \hgcmd{qfold} \texttt{bar} and
+patch is \texttt{foo}, and you \hgxcmd{mq}{qfold} \texttt{bar} and
 \texttt{quux} into it, you will end up with a patch that has the same
 effect as if you applied first \texttt{foo}, then \texttt{bar},
 followed by \texttt{quux}.
@@ -983,8 +983,8 @@ If you want to move changes to entire files, you can use
 out of one patch, concatenating its output onto the end of the patch
 you want to merge into.  You usually won't need to modify the patch
 you've merged the changes from.  Instead, MQ will report some rejected
-hunks when you \hgcmd{qpush} it (from the hunks you moved into the
-other patch), and you can simply \hgcmd{qrefresh} the patch to drop
+hunks when you \hgxcmd{mq}{qpush} it (from the hunks you moved into the
+other patch), and you can simply \hgxcmd{mq}{qrefresh} the patch to drop
 the duplicate hunks.
 
 If you have a patch that has multiple hunks modifying a file, and you

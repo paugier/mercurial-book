@@ -108,7 +108,7 @@ selected'').  A patch with no guards is always applied.
 
 \section{Controlling the guards on a patch}
 
-The \hgcmd{qguard} command lets you determine which guards should
+The \hgxcmd{mq}{qguard} command lets you determine which guards should
 apply to a patch, or display the guards that are already in effect.
 Without any arguments, it displays the guards on the current topmost
 patch.
@@ -121,7 +121,7 @@ a ``\texttt{-}''.
 \interaction{mq.guards.qguard.neg}
 
 \begin{note}
-  The \hgcmd{qguard} command \emph{sets} the guards on a patch; it
+  The \hgxcmd{mq}{qguard} command \emph{sets} the guards on a patch; it
   doesn't \emph{modify} them.  What this means is that if you run
   \hgcmdargs{qguard}{+a +b} on a patch, then \hgcmdargs{qguard}{+c} on
   the same patch, the \emph{only} guard that will be set on it
@@ -130,20 +130,20 @@ a ``\texttt{-}''.
 
 Mercurial stores guards in the \sfilename{series} file; the form in
 which they are stored is easy both to understand and to edit by hand.
-(In other words, you don't have to use the \hgcmd{qguard} command if
+(In other words, you don't have to use the \hgxcmd{mq}{qguard} command if
 you don't want to; it's okay to simply edit the \sfilename{series}
 file.)
 \interaction{mq.guards.series}
 
 \section{Selecting the guards to use}
 
-The \hgcmd{qselect} command determines which guards are active at a
+The \hgxcmd{mq}{qselect} command determines which guards are active at a
 given time.  The effect of this is to determine which patches MQ will
-apply the next time you run \hgcmd{qpush}.  It has no other effect; in
+apply the next time you run \hgxcmd{mq}{qpush}.  It has no other effect; in
 particular, it doesn't do anything to patches that are already
 applied.
 
-With no arguments, the \hgcmd{qselect} command lists the guards
+With no arguments, the \hgxcmd{mq}{qselect} command lists the guards
 currently in effect, one per line of output.  Each argument is treated
 as the name of a guard to apply.
 \interaction{mq.guards.qselect.foo}
@@ -151,7 +151,7 @@ In case you're interested, the currently selected guards are stored in
 the \sfilename{guards} file.
 \interaction{mq.guards.qselect.cat}
 We can see the effect the selected guards have when we run
-\hgcmd{qpush}.
+\hgxcmd{mq}{qpush}.
 \interaction{mq.guards.qselect.qpush}
 
 A guard cannot start with a ``\texttt{+}'' or ``\texttt{-}''
