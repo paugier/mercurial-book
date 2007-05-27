@@ -13,7 +13,7 @@ earlier chapters.
 \begin{itemize}
 \item Section~\ref{sec:tour-merge:fetch} covers the \hgext{fetch}
   extension; this combines pulling new changes and merging them with
-  local changes into a single command, \hgcmd{fetch}.
+  local changes into a single command, \hgxcmd{fetch}{fetch}.
 \item The \hgext{bisect} extension adds an efficient pruning search
   for changes that introduced bugs, and we documented it in
   chapter~\ref{sec:undo:bisect}.
@@ -148,13 +148,13 @@ Mercurial installed.
   \hgext{mq}, enabled.  If you've never used MQ, read
   section~\ref{sec:mq:start} to get started quickly.
 \item Go into the \dirname{inotify} repo, and apply all of the
-  \hgext{inotify} patches using the \hgopt{qpush}{-a} option to the
-  \hgcmd{qpush} command.
+  \hgext{inotify} patches using the \hgxopt{mq}{qpush}{-a} option to
+  the \hgxcmd{mq}{qpush} command.
   \begin{codesample4}
     cd inotify
     hg qpush -a
   \end{codesample4}
-  If you get an error message from \hgcmd{qpush}, you should not
+  If you get an error message from \hgxcmd{mq}{qpush}, you should not
   continue.  Instead, ask for help.
 \item Build and install the patched version of Mercurial.
   \begin{codesample4}
@@ -193,9 +193,9 @@ performance advantage you'll see.  The \hgext{inotify} daemon makes
 status operations almost instantaneous on repositories of all sizes!
 
 If you like, you can manually start a status daemon using the
-\hgcmd{inserve} command.  This gives you slightly finer control over
-how the daemon ought to run.  This command will of course only be
-available when the \hgext{inotify} extension is enabled.
+\hgxcmd{inotify}{inserve} command.  This gives you slightly finer
+control over how the daemon ought to run.  This command will of course
+only be available when the \hgext{inotify} extension is enabled.
 
 When you're using the \hgext{inotify} extension, you should notice
 \emph{no difference at all} in Mercurial's behaviour, with the sole
@@ -221,22 +221,23 @@ simply add a one-line entry to enable the extension.
   [extensions]
   extdiff =
 \end{codesample2}
-This introduces a command named \hgcmd{extdiff}, which by default uses
-your system's \command{diff} command to generate a unified diff in the
-same form as the built-in \hgcmd{diff} command.  
+This introduces a command named \hgxcmd{extdiff}{extdiff}, which by
+default uses your system's \command{diff} command to generate a
+unified diff in the same form as the built-in \hgcmd{diff} command.
 \interaction{extdiff.extdiff}
 The result won't be exactly the same as with the built-in \hgcmd{diff}
 variations, because the output of \command{diff} varies from one
 system to another, even when passed the same options.
 
 As the ``\texttt{making snapshot}'' lines of output above imply, the
-\hgcmd{extdiff} command works by creating two snapshots of your source
-tree.  The first snapshot is of the source revision; the second, of
-the target revision or working directory.  The \hgcmd{extdiff} command
-generates these snapshots in a temporary directory, passes the name of
-each directory to an external diff viewer, then deletes the temporary
-directory.  For efficiency, it only snapshots the directories and
-files that have changed between the two revisions.  
+\hgxcmd{extdiff}{extdiff} command works by creating two snapshots of
+your source tree.  The first snapshot is of the source revision; the
+second, of the target revision or working directory.  The
+\hgxcmd{extdiff}{extdiff} command generates these snapshots in a
+temporary directory, passes the name of each directory to an external
+diff viewer, then deletes the temporary directory.  For efficiency, it
+only snapshots the directories and files that have changed between the
+two revisions.
 
 Snapshot directory names have the same base name as your repository.
 If your repository path is \dirname{/quux/bar/foo}, then \dirname{foo}
@@ -246,19 +247,20 @@ of revision \texttt{a631aca1083f}, the directory will be named
 \dirname{foo.a631aca1083f}.  A snapshot of the working directory won't
 have a changeset ID appended, so it would just be \dirname{foo} in
 this example.  To see what this looks like in practice, look again at
-the \hgcmd{extdiff} example above.  Notice that the diff has the
-snapshot directory names embedded in its header.
+the \hgxcmd{extdiff}{extdiff} example above.  Notice that the diff has
+the snapshot directory names embedded in its header.
 
-The \hgcmd{extdiff} command accepts two important options.  The
-\hgopt{extdiff}{-p} option lets you choose a program to view
-differences with, instead of \command{diff}.  With the
-\hgopt{extdiff}{-o} option, you can change the options that
-\hgcmd{extdiff} passes to the program (by default, these options are
-``\texttt{-Npru}'', which only make sense if you're running
-\command{diff}).  In other respects, the \hgcmd{extdiff} acts
-similarly to the built-in \hgcmd{diff} command: you use the same
-option names, syntax, and arguments to specify the revisions you want,
-the files you want, and so on.
+The \hgxcmd{extdiff}{extdiff} command accepts two important options.
+The \hgxopt{extdiff}{extdiff}{-p} option lets you choose a program to
+view differences with, instead of \command{diff}.  With the
+\hgxopt{extdiff}{extdiff}{-o} option, you can change the options that
+\hgxcmd{extdiff}{extdiff} passes to the program (by default, these
+options are ``\texttt{-Npru}'', which only make sense if you're
+running \command{diff}).  In other respects, the
+\hgxcmd{extdiff}{extdiff} command acts similarly to the built-in
+\hgcmd{diff} command: you use the same option names, syntax, and
+arguments to specify the revisions you want, the files you want, and
+so on.
 
 As an example, here's how to run the normal system \command{diff}
 command, getting it to generate context diffs (using the
@@ -282,9 +284,9 @@ section~\ref{mq-collab:tips:interdiff}.
 \subsection{Defining command aliases}
 
 It can be cumbersome to remember the options to both the
-\hgcmd{extdiff} command and the diff viewer you want to use, so the
-\hgext{extdiff} extension lets you define \emph{new} commands that
-will invoke your diff viewer with exactly the right options.
+\hgxcmd{extdiff}{extdiff} command and the diff viewer you want to use,
+so the \hgext{extdiff} extension lets you define \emph{new} commands
+that will invoke your diff viewer with exactly the right options.
 
 All you need to do is edit your \hgrc, and add a section named
 \rcsection{extdiff}.  Inside this section, you can define multiple
@@ -315,6 +317,7 @@ example defines a ``\texttt{hg vimdiff}'' command that runs the
   cmd.vimdiff = vim
   opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
 \end{codesample2}
+
 
 %%% Local Variables: 
 %%% mode: latex
