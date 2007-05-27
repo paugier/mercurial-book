@@ -318,6 +318,37 @@ example defines a ``\texttt{hg vimdiff}'' command that runs the
   opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
 \end{codesample2}
 
+\section{Cherrypicking changes with the \hgext{transplant} extension}
+\label{sec:hgext:transplant}
+
+Need to have a long chat with Brendan about this.
+
+\section{Send changes via email with the \hgext{patchbomb} extension}
+\label{sec:hgext:patchbomb}
+
+Many projects have a culture of ``change review'', in which people
+send their modifications to a mailing list for others to read and
+comment on before they commit the final version to a shared
+repository.  Some projects have people who act as gatekeepers; they
+apply changes from other people to a repository to which those others
+don't have access.
+
+Mercurial makes it easy to send changes over email for review or
+application, via its \hgext{patchbomb} extension.  The extension is so
+namd because changes are formatted as patches, and it's usual to send
+one changeset per email message.  Sending a long series of changes by
+email is thus much like ``bombing'' the recipient's inbox, hence
+``patchbomb''.
+
+As usual, the basic configuration of the \hgext{patchbomb} extension
+takes just one or two lines in your \hgrc.
+\begin{codesample2}
+  [extensions]
+  patchbomb =
+\end{codesample2}
+Once you've enabled the extension, you will have a new command
+available, named \hgxcmd{email}.
+
 
 %%% Local Variables: 
 %%% mode: latex
