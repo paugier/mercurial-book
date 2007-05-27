@@ -18,7 +18,7 @@ patch in the list is the ``top'' patch.
 The \hgxcmd{mq}{qcommit} command commits any outstanding changes in the
 \sdirname{.hg/patches} repository.  This command only works if the
 \sdirname{.hg/patches} directory is a repository, i.e.~you created the
-directory using \hgcmdargs{qinit}{\hgopt{qinit}{-c}} or ran
+directory using \hgcmdargs{qinit}{\hgxopt{mq}{qinit}{-c}} or ran
 \hgcmd{init} in the directory after running \hgxcmd{mq}{qinit}.
 
 This command is shorthand for \hgcmdargs{commit}{--cwd .hg/patches}.
@@ -29,12 +29,12 @@ This command is shorthand for \hgcmdargs{commit}{--cwd .hg/patches}.
 The \hgxcmd{mq}{qdelete} command removes the entry for a patch from the
 \sfilename{series} file in the \sdirname{.hg/patches} directory.  It
 does not pop the patch if the patch is already applied.  By default,
-it does not delete the patch file; use the \hgopt{qdel}{-f} option to
+it does not delete the patch file; use the \hgxopt{mq}{qdel}{-f} option to
 do that.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qdel}{-f}] Delete the patch file.
+\item[\hgxopt{mq}{qdel}{-f}] Delete the patch file.
 \end{itemize}
 
 \subsection{\hgxcmd{mq}{qdiff}---print a diff of the topmost applied patch}
@@ -55,17 +55,17 @@ patch, followed by \texttt{a}, followed by \texttt{b}''.
 
 The comments from the folded patches are appended to the comments of
 the destination patch, with each block of comments separated by three
-asterisk (``\texttt{*}'') characters.  Use the \hgopt{qfold}{-e}
+asterisk (``\texttt{*}'') characters.  Use the \hgxopt{mq}{qfold}{-e}
 option to edit the commit message for the combined patch/changeset
 after the folding has completed.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qfold}{-e}] Edit the commit message and patch description
+\item[\hgxopt{mq}{qfold}{-e}] Edit the commit message and patch description
   for the newly folded patch.
-\item[\hgopt{qfold}{-l}] Use the contents of the given file as the new
+\item[\hgxopt{mq}{qfold}{-l}] Use the contents of the given file as the new
   commit message and patch description for the folded patch.
-\item[\hgopt{qfold}{-m}] Use the given text as the new commit message
+\item[\hgxopt{mq}{qfold}{-m}] Use the given text as the new commit message
   and patch description for the folded patch.
 \end{itemize}
 
@@ -93,7 +93,7 @@ creates a directory called \sdirname{.hg/patches}.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qinit}{-c}] Create \sdirname{.hg/patches} as a repository
+\item[\hgxopt{mq}{qinit}{-c}] Create \sdirname{.hg/patches} as a repository
   in its own right.  Also creates a \sfilename{.hgignore} file that
   will ignore the \sfilename{status} file.
 \end{itemize}
@@ -111,17 +111,17 @@ file after the current topmost applied patch, and is immediately
 pushed on top of that patch.
 
 If \hgxcmd{mq}{qnew} finds modified files in the working directory, it will
-refuse to create a new patch unless the \hgopt{qnew}{-f} option is
+refuse to create a new patch unless the \hgxopt{mq}{qnew}{-f} option is
 used (see below).  This behaviour allows you to \hgxcmd{mq}{qrefresh} your
 topmost applied patch before you apply a new patch on top of it.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qnew}{-f}] Create a new patch if the contents of the
+\item[\hgxopt{mq}{qnew}{-f}] Create a new patch if the contents of the
   working directory are modified.  Any outstanding modifications are
   added to the newly created patch, so after this command completes,
   the working directory will no longer be modified.
-\item[\hgopt{qnew}{-m}] Use the given text as the commit message.
+\item[\hgxopt{mq}{qnew}{-m}] Use the given text as the commit message.
   This text will be stored at the beginning of the patch file, before
   the patch data.
 \end{itemize}
@@ -157,16 +157,16 @@ name of the patch as it was when you applied it.
 
 By default, the \hgxcmd{mq}{qpop} command will not pop any patches if the
 working directory has been modified.  You can override this behaviour
-using the \hgopt{qpop}{-f} option, which reverts all modifications in
+using the \hgxopt{mq}{qpop}{-f} option, which reverts all modifications in
 the working directory.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qpop}{-a}] Pop all applied patches.  This returns the
+\item[\hgxopt{mq}{qpop}{-a}] Pop all applied patches.  This returns the
   repository to its state before you applied any patches.
-\item[\hgopt{qpop}{-f}] Forcibly revert any modifications to the
+\item[\hgxopt{mq}{qpop}{-f}] Forcibly revert any modifications to the
   working directory when popping.
-\item[\hgopt{qpop}{-n}] Pop a patch from the named queue.
+\item[\hgxopt{mq}{qpop}{-n}] Pop a patch from the named queue.
 \end{itemize}
 
 The \hgxcmd{mq}{qpop} command removes one line from the end of the
@@ -205,16 +205,16 @@ information in the patch header overrides these defaults.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qpush}{-a}] Push all unapplied patches from the
+\item[\hgxopt{mq}{qpush}{-a}] Push all unapplied patches from the
   \sfilename{series} file until there are none left to push.
-\item[\hgopt{qpush}{-l}] Add the name of the patch to the end
+\item[\hgxopt{mq}{qpush}{-l}] Add the name of the patch to the end
   of the commit message.
-\item[\hgopt{qpush}{-m}] If a patch fails to apply cleanly, use the
+\item[\hgxopt{mq}{qpush}{-m}] If a patch fails to apply cleanly, use the
   entry for the patch in another saved queue to compute the parameters
   for a three-way merge, and perform a three-way merge using the
   normal Mercurial merge machinery.  Use the resolution of the merge
   as the new patch content.
-\item[\hgopt{qpush}{-n}] Use the named queue if merging while pushing.
+\item[\hgxopt{mq}{qpush}{-n}] Use the named queue if merging while pushing.
 \end{itemize}
 
 The \hgxcmd{mq}{qpush} command reads, but does not modify, the
@@ -247,11 +247,11 @@ patch.
 
 Options:
 \begin{itemize}
-\item[\hgopt{qrefresh}{-e}] Modify the commit and patch description,
+\item[\hgxopt{mq}{qrefresh}{-e}] Modify the commit and patch description,
   using the preferred text editor.
-\item[\hgopt{qrefresh}{-m}] Modify the commit message and patch
+\item[\hgxopt{mq}{qrefresh}{-m}] Modify the commit message and patch
   description, using the given text.
-\item[\hgopt{qrefresh}{-l}] Modify the commit message and patch
+\item[\hgxopt{mq}{qrefresh}{-l}] Modify the commit message and patch
   description, using text from the given file.
 \end{itemize}
 
@@ -336,7 +336,7 @@ in which patches are applied by reordering their entries in the
 Placing the \sfilename{series} file under revision control is also
 supported; it is a good idea to place all of the patches that it
 refers to under revision control, as well.  If you create a patch
-directory using the \hgopt{qinit}{-c} option to \hgxcmd{mq}{qinit}, this
+directory using the \hgxopt{mq}{qinit}{-c} option to \hgxcmd{mq}{qinit}, this
 will be done for you automatically.
 
 \subsection{The \sfilename{status} file}

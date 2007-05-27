@@ -384,8 +384,8 @@ that of \hgxcmd{mq}{qapplied} has changed.
 
 While \hgxcmd{mq}{qpush} and \hgxcmd{mq}{qpop} each operate on a single patch at
 a time by default, you can push and pop many patches in one go.  The
-\hgopt{qpush}{-a} option to \hgxcmd{mq}{qpush} causes it to push all
-unapplied patches, while the \hgopt{qpop}{-a} option to \hgxcmd{mq}{qpop}
+\hgxopt{mq}{qpush}{-a} option to \hgxcmd{mq}{qpush} causes it to push all
+unapplied patches, while the \hgxopt{mq}{qpop}{-a} option to \hgxcmd{mq}{qpop}
 causes it to pop all applied patches.  (For some more ways to push and
 pop many patches, see section~\ref{sec:mq:perf} below.)
 
@@ -414,9 +414,9 @@ outstanding changes, caused in this case by the \hgcmd{add} of
 Commands that check the working directory all take an ``I know what
 I'm doing'' option, which is always named \option{-f}.  The exact
 meaning of \option{-f} depends on the command.  For example,
-\hgcmdargs{qnew}{\hgopt{qnew}{-f}} will incorporate any outstanding
+\hgcmdargs{qnew}{\hgxopt{mq}{qnew}{-f}} will incorporate any outstanding
 changes into the new patch it creates, but
-\hgcmdargs{qpop}{\hgopt{qpop}{-f}} will revert modifications to any
+\hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-f}} will revert modifications to any
 files affected by the patch that it is popping.  Be sure to read the
 documentation for a command's \option{-f} option before you use it!
 
@@ -624,8 +624,8 @@ containing all 27,472 revisions between Linux 2.6.12-rc2 and Linux
 2.6.17.
 
 On my old, slow laptop, I was able to
-\hgcmdargs{qpush}{\hgopt{qpush}{-a}} all 1,738 patches in 3.5 minutes,
-and \hgcmdargs{qpop}{\hgopt{qpop}{-a}} them all in 30 seconds.  (On a
+\hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-a}} all 1,738 patches in 3.5 minutes,
+and \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}} them all in 30 seconds.  (On a
 newer laptop, the time to push all patches dropped to two minutes.)  I
 could \hgxcmd{mq}{qrefresh} one of the biggest patches (which made 22,779
 lines of changes to 287 files) in 6.6 seconds.
@@ -663,9 +663,9 @@ need to sync up with the underlying code, and fix up any hunks in your
 patches that no longer apply.  This is called \emph{rebasing} your
 patch series.
 
-The simplest way to do this is to \hgcmdargs{qpop}{\hgopt{qpop}{-a}}
+The simplest way to do this is to \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}}
 your patches, then \hgcmd{pull} changes into the underlying
-repository, and finally \hgcmdargs{qpush}{\hgopt{qpop}{-a}} your
+repository, and finally \hgcmdargs{qpush}{\hgxopt{mq}{qpop}{-a}} your
 patches again.  MQ will stop pushing any time it runs across a patch
 that fails to apply during conflicts, allowing you to fix your
 conflicts, \hgxcmd{mq}{qrefresh} the affected patch, and continue pushing
@@ -687,7 +687,7 @@ The process is a little involved.
 \item To begin, \hgcmdargs{qpush}{-a} all of your patches on top of
   the revision where you know that they apply cleanly.
 \item Save a backup copy of your patch directory using
-  \hgcmdargs{qsave}{\hgopt{qsave}{-e} \hgopt{qsave}{-c}}.  This prints
+  \hgcmdargs{qsave}{\hgxopt{mq}{qsave}{-e} \hgxopt{mq}{qsave}{-c}}.  This prints
   the name of the directory that it has saved the patches in.  It will
   save the patches to a directory called
   \sdirname{.hg/patches.\emph{N}}, where \texttt{\emph{N}} is a small
@@ -699,12 +699,12 @@ The process is a little involved.
 \item Update to the new tip revision, using
   \hgcmdargs{update}{\hgopt{update}{-C}} to override the patches you
   have pushed.
-\item Merge all patches using \hgcmdargs{qpush}{\hgopt{qpush}{-m}
-    \hgopt{qpush}{-a}}.  The \hgopt{qpush}{-m} option to \hgxcmd{mq}{qpush}
+\item Merge all patches using \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-m}
+    \hgxopt{mq}{qpush}{-a}}.  The \hgxopt{mq}{qpush}{-m} option to \hgxcmd{mq}{qpush}
   tells MQ to perform a three-way merge if the patch fails to apply.
 \end{enumerate}
 
-During the \hgcmdargs{qpush}{\hgopt{qpush}{-m}}, each patch in the
+During the \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-m}}, each patch in the
 \sfilename{series} file is applied normally.  If a patch applies with
 fuzz or rejects, MQ looks at the queue you \hgxcmd{mq}{qsave}d, and
 performs a three-way merge with the corresponding changeset.  This
@@ -717,7 +717,7 @@ patch based on the result of the merge.
 At the end of this process, your repository will have one extra head
 from the old patch queue, and a copy of the old patch queue will be in
 \sdirname{.hg/patches.\emph{N}}. You can remove the extra head using
-\hgcmdargs{qpop}{\hgopt{qpop}{-a} \hgopt{qpop}{-n} patches.\emph{N}}
+\hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a} \hgxopt{mq}{qpop}{-n} patches.\emph{N}}
 or \hgcmd{strip}.  You can delete \sdirname{.hg/patches.\emph{N}} once
 you are sure that you no longer need it as a backup.
 
@@ -833,16 +833,16 @@ may not control.
 
 MQ helps you to work with the \sdirname{.hg/patches} directory as a
 repository; when you prepare a repository for working with patches
-using \hgxcmd{mq}{qinit}, you can pass the \hgopt{qinit}{-c} option to
+using \hgxcmd{mq}{qinit}, you can pass the \hgxopt{mq}{qinit}{-c} option to
 create the \sdirname{.hg/patches} directory as a Mercurial repository.
 
 \begin{note}
-  If you forget to use the \hgopt{qinit}{-c} option, you can simply go
+  If you forget to use the \hgxopt{mq}{qinit}{-c} option, you can simply go
   into the \sdirname{.hg/patches} directory at any time and run
   \hgcmd{init}.  Don't forget to add an entry for the
   \sfilename{status} file to the \sfilename{.hgignore} file, though
 
-  (\hgcmdargs{qinit}{\hgopt{qinit}{-c}} does this for you
+  (\hgcmdargs{qinit}{\hgxopt{mq}{qinit}{-c}} does this for you
   automatically); you \emph{really} don't want to manage the
   \sfilename{status} file.
 \end{note}
@@ -863,8 +863,8 @@ in a few small respects.
 MQ cannot automatically detect changes that you make to the patch
 directory.  If you \hgcmd{pull}, manually edit, or \hgcmd{update}
 changes to patches or the \sfilename{series} file, you will have to
-\hgcmdargs{qpop}{\hgopt{qpop}{-a}} and then
-\hgcmdargs{qpush}{\hgopt{qpush}{-a}} in the underlying repository to
+\hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}} and then
+\hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-a}} in the underlying repository to
 see those changes show up there.  If you forget to do this, you can
 confuse MQ's idea of which patches are applied.
 
