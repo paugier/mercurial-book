@@ -591,10 +591,11 @@ wrote a tool called \command{wiggle}~\cite{web:wiggle}, which is more
 vigorous than \command{patch} in its attempts to make a patch apply.
 
 Another Linux kernel hacker, Chris Mason (the author of Mercurial
-Queues), wrote a similar tool called \command{rej}~\cite{web:rej},
-which takes a simple approach to automating the application of hunks
-rejected by \command{patch}.  \command{rej} can help with four common
-reasons that a hunk may be rejected:
+Queues), wrote a similar tool called
+\command{mpatch}~\cite{web:mpatch}, which takes a simple approach to
+automating the application of hunks rejected by \command{patch}.  The
+\command{mpatch} command can help with four common reasons that a hunk
+may be rejected:
 
 \begin{itemize}
 \item The context in the middle of a hunk has changed.
@@ -605,9 +606,9 @@ reasons that a hunk may be rejected:
   currently present in the file.
 \end{itemize}
 
-If you use \command{wiggle} or \command{rej}, you should be doubly
+If you use \command{wiggle} or \command{mpatch}, you should be doubly
 careful to check your results when you're done.  In fact,
-\command{rej} enforces this method of double-checking the tool's
+\command{mpatch} enforces this method of double-checking the tool's
 output, by automatically dropping you into a merge program when it has
 done its job, so that you can verify its work and finish off any
 remaining merges.
