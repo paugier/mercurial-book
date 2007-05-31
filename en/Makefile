@@ -188,7 +188,12 @@ examples/.run: $(example-sources:%=examples/%.run)
 examples/%.run: examples/% examples/run-example
 	cd examples && ./run-example $(notdir $<)
 
-build_id.tex: $(wildcard ../.hg/00changelog.[id])
+changelog := $(wildcard ../.hg/store/00changelog.[id])
+ifeq ($(changelog),)
+changelog := $(wildcard ../.hg/00changelog.[id])
+endif
+
+build_id.tex: $(changelog)
 	echo -n '$(hg-id)' > build_id.tex
 
 hg_id.tex: $(hg)
