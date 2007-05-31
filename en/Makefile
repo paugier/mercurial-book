@@ -189,10 +189,10 @@ examples/%.run: examples/% examples/run-example
 	cd examples && ./run-example $(notdir $<)
 
 build_id.tex: $(wildcard ../.hg/00changelog.[id])
-	echo -n $(hg-id) > build_id.tex
+	echo -n '$(hg-id)' > build_id.tex
 
 hg_id.tex: $(hg)
-	echo -n $(hg-version) > hg_id.tex
+	echo -n '$(hg-version)' > hg_id.tex
 
 clean:
 	rm -rf dist html pdf \
