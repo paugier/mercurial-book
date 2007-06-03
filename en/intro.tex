@@ -372,13 +372,20 @@ the same operations, so it is easy for a person who is familiar with
 one to learn to use the other.  Both tools are portable to all popular
 operating systems.
 
+Subversion lacks a history-aware merge capability, forcing its users
+to manually track exactly which revisions have been merged between
+branches.  If users fail to do this, or make mistakes, they face the
+prospect of manually resolving merges with unnecessary conflicts.
+
 Mercurial has a substantial performance advantage over Subversion on
 every revision control operation I have benchmarked.  I have measured
 its advantage as ranging from a factor of two to a factor of six when
 compared with Subversion~1.4.3's \emph{ra\_local} file store, which is
 the fastest access method available).  In more realistic deployments
 involving a network-based store, Subversion will be at a substantially
-larger disadvantage.
+larger disadvantage.  Because many Subversion commands must talk to
+the server and Subversion does not have useful replication facilities,
+server capacity becomes a bottleneck for modestly large projects.
 
 Additionally, Subversion incurs a substantial storage overhead to
 avoid network transactions for a few common operations, such as
@@ -387,10 +394,6 @@ against the current revision (\texttt{diff}).  A Subversion working
 copy is, as a result, often approximately the same size as, or larger
 than, a Mercurial repository and working directory, even though the
 Mercurial repository contains a complete history of the project.
-
-Subversion does not have a history-aware merge capability, forcing its
-users to know exactly which revisions to merge between branches.  This
-shortcoming is scheduled to be addressed in version 1.5.
 
 Subversion is currently more widely supported by
 revision-control-aware third party tools than is Mercurial, although
@@ -440,13 +443,20 @@ essentially unmaintained for many years.
 
 It has a centralised client/server architecture.  It does not group
 related file changes into atomic commits, making it easy for people to
-``break the build''.  It has a muddled and incoherent notion of tags
-and branches that I will not attempt to even describe.  It does not
-support renaming of files or directories well, making it easy to
-corrupt a repository.  It has almost no internal consistency checking
-capabilities, so it is usually not even possible to tell whether or
-how a repository is corrupt.  I would not recommend CVS for any
-project, existing or new.
+``break the build'': one person can successfully commit part of a
+change and then be blocked by the need for a merge, causing other
+people to see only a portion of the work they intended to do.  This
+also affects how you work with project history.  If you want to see
+all of the modifications someone made as part of a task, you will need
+to manually inspect the descriptions and timestamps of the changes
+made to each file involved (if you even know what those files were).
+
+CVS has a muddled notion of tags and branches that I will not attempt
+to even describe.  It does not support renaming of files or
+directories well, making it easy to corrupt a repository.  It has
+almost no internal consistency checking capabilities, so it is usually
+not even possible to tell whether or how a repository is corrupt.  I
+would not recommend CVS for any project, existing or new.
 
 Mercurial can import CVS revision history.  However, there are a few
 caveats that apply; these are true of every other revision control
