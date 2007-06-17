@@ -22,6 +22,7 @@ import re
 angle_re = re.compile(r'(&#x003[CE];)')
 unicode_re = re.compile(r'&#x00([0-7][0-9A-F]);')
 fancyvrb_re = re.compile(r'id="fancyvrb\d+"', re.I)
+ligature_re = re.compile(r'&#xFB0([0-4]);')
 
 tmpsuffix = '.tmp.' + str(os.getpid())
 
@@ -31,12 +32,18 @@ def hide_angle(m):
 def fix_ascii(m):
     return chr(int(m.group(1), 16))
 
+ligatures = ['ff', 'fi', 'fl', 'ffi', 'ffl']
+
+def expand_ligature(m):
+    return ligatures[int(m.group(1))]
+
 for name in sys.argv[1:]:
     tmpname = name + tmpsuffix
     ofp = file(tmpname, 'w')
     for line in file(name):
         line = angle_re.sub(hide_angle, line)
         line = unicode_re.sub(fix_ascii, line)
+        line = ligature_re.sub(expand_ligature, line)
         line = fancyvrb_re.sub('id="fancyvrb"', line)
         ofp.write(line)
     ofp.close()
