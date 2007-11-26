@@ -337,22 +337,8 @@ Mercurial's actual behaviour is that it always preserves \emph{both}
 names when it merges changesets that contain divergent renames.
 \interaction{rename.divergent.merge}
 
-I personally find this behaviour quite surprising, which is why I
-wanted to explicitly mention it here.  I would have expected Mercurial
-to prompt me with a three-way choice instead: do I want to keep only
-\filename{bar}, only \filename{quux}, or both?
-
-In practice, when you rename a source file, it is likely that you will
-also modify another file (such as a makefile) that knows how to build
-the source file.  So what will happen if Anne renames a file and edits
-\filename{Makefile} to build it under its new name, while Bob does the
-same, but chooses a different name for the file, is that after the
-merge, there will be two copies of the source file in the working
-directory under different names, \emph{and} a conflict in the section
-of the \filename{Makefile} that both Bob and Anne edited.
-
-This behaviour is considered surprising by other people, too:
-see~\bug{455} for details.
+Notice that Mercurial does warn about the divergent renames, but it
+leaves it up to you to do something about the divergence after the merge.
 
 \subsection{Convergent renames and merging}
 
