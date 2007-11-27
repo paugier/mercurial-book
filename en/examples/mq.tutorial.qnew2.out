@@ -1,16 +1,16 @@
 $ \textbf{hg qnew second.patch}
 $ \textbf{hg log --style=compact --limit=2}
 2[qtip,second.patch,tip]   
-  New patch: second.patch
+  [mq]: second.patch
 
 1[first.patch,qbase]   
-  patch queue: first.patch
+  [mq]: first.patch
 
 $ \textbf{echo 'line 4' >> file1}
 $ \textbf{hg qrefresh}
 $ \textbf{hg tip --style=compact --patch}
 2[qtip,second.patch,tip]   
-  patch queue: second.patch
+  [mq]: second.patch
 
 diff -r  -r  file1
 
