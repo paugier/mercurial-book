@@ -128,8 +128,6 @@ pdf/hgbook.pdf: $(sources) $(image-pdf) examples
 
 html: onepage split
 
-htlatex := /usr/bin/htlatex
-
 onepage: $(htlatex) html/onepage/hgbook.html html/onepage/hgbook.css $(image-html:%=html/onepage/%)
 
 html/onepage/%: %
