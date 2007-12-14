@@ -306,7 +306,7 @@ scalability.  It's not unusual for an expensive centralised system to
 fall over under the combined load of just a few dozen concurrent
 users.  Once again, the typical response tends to be an expensive and
 clunky replication facility.  Since the load on a central server---if
-you have one at all---is orders of magnitude lower with a distributed
+you have one at all---is many times lower with a distributed
 tool (because all of the data is replicated everywhere), a single
 cheap server can handle the needs of a much larger team, and
 replication to balance load becomes a simple matter of scripting.
@@ -362,20 +362,24 @@ reflects my own experiences, interests, and (dare I say it) biases.  I
 have used every one of the revision control tools listed below, in
 most cases for several years at a time.
 
+
 \subsection{Subversion}
 
 Subversion is a popular revision control tool, developed to replace
 CVS.  It has a centralised client/server architecture.
 
 Subversion and Mercurial have similarly named commands for performing
-the same operations, so it is easy for a person who is familiar with
-one to learn to use the other.  Both tools are portable to all popular
+the same operations, so if you're familiar with one, it is easy to
+learn to use the other.  Both tools are portable to all popular
 operating systems.
 
 Subversion lacks a history-aware merge capability, forcing its users
 to manually track exactly which revisions have been merged between
 branches.  If users fail to do this, or make mistakes, they face the
 prospect of manually resolving merges with unnecessary conflicts.
+Subversion also fails to merge changes when files or directories are
+renamed.  Subversion's poor merge support is its single biggest
+weakness.
 
 Mercurial has a substantial performance advantage over Subversion on
 every revision control operation I have benchmarked.  I have measured
@@ -385,24 +389,44 @@ the fastest access method available).  In more realistic deployments
 involving a network-based store, Subversion will be at a substantially
 larger disadvantage.  Because many Subversion commands must talk to
 the server and Subversion does not have useful replication facilities,
-server capacity becomes a bottleneck for modestly large projects.
+server capacity and network bandwidth become bottlenecks for modestly
+large projects.
 
-Additionally, Subversion incurs a substantial storage overhead to
-avoid network transactions for a few common operations, such as
-finding modified files (\texttt{status}) and displaying modifications
-against the current revision (\texttt{diff}).  A Subversion working
-copy is, as a result, often approximately the same size as, or larger
-than, a Mercurial repository and working directory, even though the
-Mercurial repository contains a complete history of the project.
+Additionally, Subversion incurs substantial storage overhead to avoid
+network transactions for a few common operations, such as finding
+modified files (\texttt{status}) and displaying modifications against
+the current revision (\texttt{diff}).  As a result, a Subversion
+working copy is often the same size as, or larger than, a Mercurial
+repository and working directory, even though the Mercurial repository
+contains a complete history of the project.
 
-Subversion is currently more widely supported by
-revision-control-aware third party tools than is Mercurial, although
-this gap is closing.  Like Mercurial, Subversion has an excellent user
-manual.
+Subversion is widely supported by third party tools.  Mercurial
+currently lags considerably in this area.  This gap is closing,
+however, and indeed some of Mercurial's GUI tools now outshine their
+Subversion equivalents.  Like Mercurial, Subversion has an excellent
+user manual.
 
-Several tools exist to accurately and completely import revision
-history from a Subversion repository into a Mercurial repository,
-making the transition from the older tool relatively painless.
+Because Subversion doesn't store revision history on the client, it is
+well suited to managing projects that deal with lots of large, opaque
+binary files.  If you check in fifty revisions to an incompressible
+10MB file, Subversion's client-side space usage stays constant The
+space used by any distributed SCM will grow rapidly in proportion to
+the number of revisions, because the differences between each revision
+are large.
+
+In addition, it's often difficult or, more usually, impossible to
+merge different versions of a binary file.  Subversion's ability to
+let a user lock a file, so that they temporarily have the exclusive
+right to commit changes to it, can be a significant advantage to a
+project where binary files are widely used.
+
+Mercurial can import revision history from a Subversion repository.
+It can also export revision history to a Subversion repository.  This
+makes it easy to ``test the waters'' and use Mercurial and Subversion
+in parallel before deciding to switch.  History conversion is
+incremental, so you can perform an initial conversion, then small
+additional conversions afterwards to bring in new changes.
+
 
 \subsection{Git}
 
@@ -410,15 +434,16 @@ Git is a distributed revision control tool that was developed for
 managing the Linux kernel source tree.  Like Mercurial, its early
 design was somewhat influenced by Monotone.
 
-Git has an overwhelming command set, with version~1.5.0 providing~139
-individual commands.  It has a reputation for being difficult to
-learn.  It does not have a user manual, only documentation for
-individual commands.
+Git has a very large command set, with version~1.5.0 providing~139
+individual commands.  It has something of a reputation for being
+difficult to learn.  Compared to Git, Mercurial has a strong focus on
+simplicity.
 
-In terms of performance, git is extremely fast.  There are several
-common cases in which it is faster than Mercurial, at least on Linux.
-However, its performance on (and general support for) Windows is, at
-the time of writing, far behind that of Mercurial.
+In terms of performance, Git is extremely fast.  In several cases, it
+is faster than Mercurial, at least on Linux, while Mercurial performs
+better on other operations.  However, on Windows, the performance and
+general level of support that Git provides is, at the time of writing,
+far behind that of Mercurial.
 
 While a Mercurial repository needs no maintenance, a Git repository
 requires frequent manual ``repacks'' of its metadata.  Without these,
@@ -432,14 +457,17 @@ magnitude larger.
 
 The core of Git is written in C.  Many Git commands are implemented as
 shell or Perl scripts, and the quality of these scripts varies widely.
-I have encountered a number of instances where scripts charged along
+I have encountered several instances where scripts charged along
 blindly in the presence of errors that should have been fatal.
+
+Mercurial can import revision history from a Git repository.
+
 
 \subsection{CVS}
 
 CVS is probably the most widely used revision control tool in the
-world.  Due to its age and internal untidiness, it has been
-essentially unmaintained for many years.
+world.  Due to its age and internal untidiness, it has been only
+lightly maintained for many years.
 
 It has a centralised client/server architecture.  It does not group
 related file changes into atomic commits, making it easy for people to
@@ -470,6 +498,9 @@ repositories (completely bogus revision timestamps and files that have
 remained locked for over a decade are just two of the less interesting
 problems I can recall from personal experience).
 
+Mercurial can import revision history from a CVS repository.
+
+
 \subsection{Commercial tools}
 
 Perforce has a centralised client/server architecture, with no
@@ -481,6 +512,54 @@ The performance of Perforce is quite good for small teams, but it
 falls off rapidly as the number of users grows beyond a few dozen.
 Modestly large Perforce installations require the deployment of
 proxies to cope with the load their users generate.
+
+
+\subsection{Choosing a revision control tool}
+
+With the exception of CVS, all of the tools listed above have unique
+strengths that suit them to particular styles of work.  There is no
+single revision control tool that is best in all situations.
+
+As an example, Subversion is a good choice for working with frequently
+edited binary files, due to its centralised nature and support for
+file locking.  If you're averse to the command line, it currently has
+better GUI support than other free revision control tools.  However,
+its poor merging is a substantial liability for busy projects with
+overlapping development.
+
+I personally find Mercurial's properties of simplicity, performance,
+and good merge support to be a compelling combination that has served
+me well for several years.
+
+
+\section{Switching from another tool to Mercurial}
+
+Mercurial is bundled with an extension named \hgext{convert}, which
+can incrementally import revision history from several other revision
+control tools.  By ``incremental'', I mean that you can convert all of
+a project's history to date in one go, then rerun the conversion later
+to obtain new changes that happened after the initial conversion.
+
+The revision control tools supported by \hgext{convert} are as
+follows:
+\begin{itemize}
+\item Subversion
+\item CVS
+\item Git
+\item Darcs
+\end{itemize}
+
+In addition, \hgext{convert} can export changes from Mercurial to
+Subversion.  This makes it possible to try Subversion and Mercurial in
+parallel before committing to a switchover, without risking the loss
+of any work.
+
+The \hgxcmd{conver}{convert} command is easy to use.  Simply point it
+at the path or URL of the source repository, optionally give it the
+name of the destination repository, and it will start working.  After
+the initial conversion, just run the same command again to import new
+changes.
+
 
 %%% Local Variables: 
 %%% mode: latex
