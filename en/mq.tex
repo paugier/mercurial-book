@@ -852,9 +852,21 @@ As a convenience, if MQ notices that the \dirname{.hg/patches}
 directory is a repository, it will automatically \hgcmd{add} every
 patch that you create and import.
 
-Finally, MQ provides a shortcut command, \hgxcmd{mq}{qcommit}, that runs
+MQ provides a shortcut command, \hgxcmd{mq}{qcommit}, that runs
 \hgcmd{commit} in the \sdirname{.hg/patches} directory.  This saves
-some cumbersome typing.
+some bothersome typing.
+
+Finally, as a convenience to manage the patch directory, you can
+define the alias \command{mq} on Unix systems. For example, on Linux
+systems using the \command{bash} shell, you can include the following
+snippet in your \tildefile{.bashrc}.
+
+\begin{codesample2}
+  alias mq=`hg -R \$(hg root)/.hg/patches'
+\end{codesample2}
+
+You can then issue commands of the form \cmdargs{mq}{pull} from
+the main repository.
 
 \subsection{A few things to watch out for}
 
