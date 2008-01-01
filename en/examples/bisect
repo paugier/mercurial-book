@@ -30,19 +30,18 @@ done
 #$ name: help
 
 hg help bisect
-hg bisect help
 
 #$ name: search.init
 
-hg bisect init
+hg bisect --init
 
 #$ name: search.bad-init
 
-hg bisect bad
+hg bisect --bad
 
 #$ name: search.good-init
 
-hg bisect good 10
+hg bisect --good 10
 
 #$ name: search.step1
 
@@ -54,7 +53,7 @@ else
 fi
 
 echo this revision is $result
-hg bisect $result
+hg bisect --$result
 
 #$ name: search.mytest
 
@@ -67,7 +66,7 @@ mytest() {
   fi
 
   echo this revision is $result
-  hg bisect $result
+  hg bisect --$result
 }
   
 #$ name: search.step2
@@ -82,7 +81,7 @@ mytest
 
 #$ name: search.reset
 
-hg bisect reset
+hg bisect --reset
 
 #$ name:
 
