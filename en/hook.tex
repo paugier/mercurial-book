@@ -916,14 +916,14 @@ Here is an example set of \hgext{notify} configuration information.
   config = /home/hg/repos/notify/notify.conf
   # repos live in /home/hg/repos on server, so strip 4 "/" chars
   strip = 4
-  template = X-Hg-Repo: \{webroot\}\\n\\\\
-    Subject: \{webroot\}: \{desc|firstline|strip\}\\n\\\\
-    From: \{author\}\\n\\\\
-    \\n\\\\
-    changeset \{node|short\} in \{root\}\\n\\\\
-    details: \{baseurl\}\{webroot\}?cmd=changeset;node=\{node|short\}\\n\\\\
-    description:\\n\\\\
-    \\t\{desc|tabindent|strip\}
+  template = X-Hg-Repo: \{webroot\}
+    Subject: \{webroot\}: \{desc|firstline|strip\}
+    From: \{author\}
+
+    changeset \{node|short\} in \{root\}
+    details: \{baseurl\}\{webroot\}?cmd=changeset;node=\{node|short\}
+    description:
+      \{desc|tabindent|strip\}
 
   [web]
   baseurl = http://hg.example.com/
