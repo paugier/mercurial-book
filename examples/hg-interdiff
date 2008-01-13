@@ -15,6 +15,9 @@ def walk(base):
         for f in files:
             path = os.path.join(root, f)
             yield path[len(base)+1:], path
+    else:
+        if os.path.isfile(base):
+            yield '', base
 
 # create list of unique file names under both directories.
 files = dict(walk(sys.argv[1]))
@@ -23,8 +26,11 @@ files = files.keys()
 files.sort()
 
 def name(base, f):
+    if f:
+        path = os.path.join(base, f)
+    else:
+        path = base
     # interdiff requires two files; use /dev/null if one is missing.
-    path = os.path.join(base, f)
     if os.path.exists(path):
         return path
     return '/dev/null'
