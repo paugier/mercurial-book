@@ -123,7 +123,7 @@ define pdf
 	if grep 'Reference.*undefined' $(@:.pdf=.log); then exit 1; fi
 endef
 
-pdf/hgbook.pdf: $(sources) $(image-pdf) examples
+pdf/hgbook.pdf: $(sources) examples $(image-pdf)
 	$(call pdf)
 
 html: onepage split
@@ -153,7 +153,7 @@ define htlatex
 	rm $(dir $(1))/hgbook.css
 endef
 
-html/onepage/hgbook.html: $(sources) $(image-html) examples bookhtml.cfg
+html/onepage/hgbook.html: $(sources) examples $(image-html) bookhtml.cfg
 	$(call htlatex,$@,$<)
 
 html/split/hgbook.html: $(sources) examples bookhtml.cfg
@@ -162,7 +162,9 @@ html/split/hgbook.html: $(sources) examples bookhtml.cfg
 # Produce 90dpi PNGs for the web.
 
 %.png: %.svg
-	inkscape -D -e $@ $<
+	./fixsvg $<
+	mv $<.tmp foobar.svg
+	inkscape -D -e $@ foobar.svg
 
 %.svg: %.dot
 	dot -Tsvg -o $@ $<
@@ -173,7 +175,9 @@ html/split/hgbook.html: $(sources) examples bookhtml.cfg
 	epstopdf $<
 
 %.eps: %.svg
-	inkscape -E $@ $<
+	./fixsvg $<
+	mv $<.tmp foobar.svg
+	inkscape -E $@ foobar.svg
 
 %.eps: %.dot
 	dot -Tps -o $@ $<
