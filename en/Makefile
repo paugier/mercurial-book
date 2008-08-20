@@ -161,10 +161,10 @@ html/split/hgbook.html: $(sources) examples bookhtml.cfg
 
 # Produce 90dpi PNGs for the web.
 
-%.png: %.svg
+%.png: %.svg fixsvg
 	./fixsvg $<
-	mv $<.tmp foobar.svg
-	inkscape -D -e $@ foobar.svg
+	inkscape -D -e $@ $<-tmp.svg
+	rm $<-tmp.svg
 
 %.svg: %.dot
 	dot -Tsvg -o $@ $<
