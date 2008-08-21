@@ -176,8 +176,8 @@ html/split/hgbook.html: $(sources) examples bookhtml.cfg
 
 %.eps: %.svg
 	./fixsvg $<
-	mv $<.tmp foobar.svg
-	inkscape -E $@ foobar.svg
+	inkscape -E $@ $<-tmp.svg
+	rm $<-tmp.svg
 
 %.eps: %.dot
 	dot -Tps -o $@ $<
