@@ -194,6 +194,8 @@ least it's easy to deal with.
 So remember, to revert a \hgcmd{rename}, you must provide \emph{both}
 the source and destination names.  
 
+% TODO: the output doesn't look like it will be removed!
+
 (By the way, if you rename a file, then modify the renamed-to file,
 then revert both components of the rename, when Mercurial restores the
 file that was removed as part of the rename, it will be unmodified.
@@ -281,6 +283,8 @@ it first remembers what the current parent of the working directory
 is.  It then backs out the target changeset, and commits that as a
 changeset.  Finally, it merges back to the previous parent of the
 working directory, and commits the result of the merge.
+
+% TODO: to me it looks like mercurial doesn't commit the second merge automatically!
 
 \begin{figure}[htb]
   \centering
@@ -644,7 +648,7 @@ done.
 Even though we had~40 changesets to search through, the \hgcmd{bisect}
 command let us find the changeset that introduced our ``bug'' with
 only five tests.  Because the number of tests that the \hgcmd{bisect}
-command grows logarithmically with the number of changesets to
+command performs grows logarithmically with the number of changesets to
 search, the advantage that it has over the ``brute force'' search
 approach increases with every changeset you add.
 
