@@ -1,0 +1,78 @@
+% The use of oneside here is a temporary hack; \marginpar entries
+% don't show up on odd pages of PDF output without it.  Sigh.
+\documentclass[oneside]{book}
+\usepackage{enumerate}
+\usepackage{fullpage}
+\usepackage{makeidx}
+\usepackage{ifpdf}
+\usepackage{graphicx}
+\usepackage{pslatex}
+\usepackage{fancyvrb}
+\usepackage[utf8]{inputenc} %accents in spanish
+% leave hyperref until last
+\usepackage[colorlinks=true,bookmarks=true,pdftitle={Distributed
+  revision control with Mercurial},pdfsubject={Revision
+  control},pdfkeywords={Mercurial, Revision control, Distributed
+  revision control},pdfauthor={Bryan O'Sullivan}]{hyperref}
+
+\include{99defs}
+
+\title{Control de Revisiones Distribuido con Mercurial} \author{Bryan
+  O'Sullivan}
+\date{Copyright \copyright\ 2006, 2007 Bryan O'Sullivan.\\
+  Este material puede distribuirse únicamente bajo los términos y
+  condiciones establecidos en la versión 1.0 de la Licencia de Publicación
+  Abierta(OPL) Refiérase por favor al apéndice~\ref{cha:opl} en busca del
+  texto de la licencia.\\
+  Este libro fue preparado desde
+  \href{http://hg.serpentine.com/mercurial/book/}{rev~\input{build_id}}
+  haciendo uso de Mercurial \href{http://www.selenic.com/hg/}{rev~\input{hg_id}}.}
+
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\addcontentsline{toc}{chapter}{Contents}
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+%\listoftables
+
+\pagenumbering{arabic}
+
+\include{preface}
+\include{intro}
+\include{tour-basic}
+\include{tour-merge}
+\include{concepts}
+\include{daily}
+\include{collab}
+\include{filenames}
+\include{branch}
+\include{undo}
+\include{hook}
+\include{template}
+\include{mq}
+\include{mq-collab}
+\include{hgext}
+
+\appendix
+\include{cmdref}
+\include{mq-ref}
+\include{srcinstall}
+\include{license}
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{alpha}
+\bibliography{99book}
+
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
