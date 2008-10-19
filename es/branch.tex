@@ -198,26 +198,26 @@ un nombre.
   narrativa de cómo se desarrolló el código.
 \end{itemize}
 
-\section{Administrar ramas en el gran cuadro en los repositorios}
+\section{Administrar ramas en repositorios estilo gran cuadro}
 
-The easiest way to isolate a ``big picture'' branch in Mercurial is in
-a dedicated repositorio.  If you have an existing shared
-repositorio---let's call it \texttt{myproject}---that reaches a ``1.0''
-milestone, you can start to prepare for future maintenance releases on
-top of version~1.0 by tagging the revision from which you prepared
-the~1.0 release.
+En Mercurial la forma más sencilla de aislar una rama del ``gran
+cuadro'' es a través de un repositorio dedicado.  Si cuenta con un
+repositorio compartido existente ---llamémoslo
+\texttt{myproject}---que alcanzó la etapa ``1.0'', puede comenzar a
+prepararse para versiones de mantenimiento futuras a partir de la
+versión~1.0 marcando con un tag en la revisión con la cual preparó la versión~1.0.
 \interaction{branch-repo.tag}
-You can then clone a new shared \texttt{myproject-1.0.1} repositorio as
-of that tag.
+Ahora puede clonar un repositorio compartido nuevo
+\texttt{myproject-1.0.1} con tal tag.
 \interaction{branch-repo.clone}
 
-Afterwards, if someone needs to work on a bug fix that ought to go
-into an upcoming~1.0.1 minor release, they clone the
-\texttt{myproject-1.0.1} repositorio, make their changes, and push them
-back.
+Posteriormente, si alguien necesita trabajar en la reparación de un
+fallo debería dirigirse a la liberación de versión~1.0.1 que viene en
+camino, ellos clonarían el repositorio \texttt{myproject-1.0.1},
+harían sus cambios y los publicarían(con push).
 \interaction{branch-repo.bugfix}
-Meanwhile, development for the next major release can continue,
-isolated and unabated, in the \texttt{myproject} repositorio.
+Mientras tanto, el desarrollo para la siguiente versión mayor puede
+continuar asilada e incólume, en el repositorio \texttt{myproject}.
 \interaction{branch-repo.new}
 
 \section{Don't repeat yourself: merging across branches}
