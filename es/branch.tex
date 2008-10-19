@@ -220,179 +220,183 @@ Mientras tanto, el desarrollo para la siguiente versión mayor puede
 continuar asilada e incólume, en el repositorio \texttt{myproject}.
 \interaction{branch-repo.new}
 
-\section{Don't repeat yourself: merging across branches}
+\section{No repita trabajo: fusión entre ramas}
 
-In many cases, if you have a bug to fix on a maintenance branch, the
-chances are good that the bug exists on your project's main branch
-(and possibly other maintenance branches, too).  It's a rare developer
-who wants to fix the same bug multiple times, so let's look at a few
-ways that Mercurial can help you to manage these bugfixes without
-duplicating your work.
+En muchos casos, cuando tiene un fallo para arreglar en una rama de
+mantenimiento, es muy probable que el fallo esté también en la rama
+principal( y posiblemente en otras ramas de mantenimiento
+también). Solamente un desarrollador extraño desearía corregir el
+mismo fallo muchas veces, por tanto, veremos varias alternativas con
+las que Mercurial puede ayudarle a administrar tales arreglos de fallo
+sin duplicar su trabajo.
 
-In the simplest instance, all you need to do is pull changes from your
-maintenance branch into your local clone of the target branch.
+En el caso más sencillo, basta con jalar los cambios de la rama de
+mantenimiento a la rama obetivo en su clon local.
 \interaction{branch-repo.pull}
-You'll then need to merge the heads of the two branches, and push back
-to the main branch.
+A continuación deberá mezclar las cabezas de las dos ramas, y publicar
+de nuevo a la rama principal.
 \interaction{branch-repo.merge}
 
-\section{Naming branches within one repositorio}
+\section{Nombrar ramas dentro de un repositorio}
 
-In most instances, isolating branches in repositorios is the right
-approach.  Its simplicity makes it easy to understand; and so it's
-hard to make mistakes.  There's a one-to-one relationship between
-branches you're working in and directories on your system.  This lets
-you use normal (non-Mercurial-aware) tools to work on files within a
-branch/repositorio.
+La aproximación correcta en casi todas las oportunidades es aislar las
+ramas en los repositorios.  Es fácil de entender gracias a su
+facilidad; y es difícil cometer errores. Hay una relación uno a uno
+entre las ramas y los directorios con los que está trabajando en su
+sistema. Esto le permite usar emplear herramientas usuales(para los
+nuevos a Mercurial) para trabajar con los archivos dentro de su
+rama/repositorio.
 
-If you're more in the ``power user'' category (\emph{and} your
-collaborators are too), there is an alternative way of handling
-branches that you can consider.  I've already mentioned the
-human-level distinction between ``small picture'' and ``big picture''
-branches.  While Mercurial works with multiple ``small picture''
-branches in a repositorio all the time (for example after you pull
-changes in, but before you merge them), it can \emph{also} work with
-multiple ``big picture'' branches.
+Si se encuentra más en la categoría ``usuario diestro'' (\emph{y} sus
+colaboradores también), puede considerar otra alternativa para
+administrar las ramas. He mencionador con anterioridad la distinción a
+nivel humano entre las ramas estilo ``cuadro pequeño'' y ``gran
+cuadro''.  Mientras que Mercurial trabaja con muchas ramas del estilo
+``cuadro pequeño'' en el repositorio todo el tiempo(por ejemplo cuando
+usted jala cambios, pero antes de fusionarlos), \emph{también} puede
+trabajar con varias ramas del ``cuadro grande''.
 
-The key to working this way is that Mercurial lets you assign a
-persistent \emph{name} to a branch.  There always exists a branch
-named \texttt{default}.  Even before you start naming branches
-yourself, you can find traces of the \texttt{default} branch if you
-look for them.
+El truco para trabajar de esta forma en Mercurial se logra gracias a
+que puede asignar un \emph{nombre} persistente a una rama.  Siempre
+existe una rama llamada \texttt{default}.  Incluso antes de que
+empiece a nombrar ramas por su cuenta, puede encontrar indicios de la
+rama \texttt{default} si los busca.
 
-As an example, when you run the \hgcmd{commit} command, and it pops up
-your editor so that you can enter a commit message, look for a line
-that contains the text ``\texttt{HG: branch default}'' at the bottom.
-This is telling you that your commit will occur on the branch named
+Por ejemplo, cuando invoca la orden \hgcmd{commit}, y se lanza su
+editor para introducir el mensaje de la consignación, busque la línea
+que contiene el texto ``\texttt{HG: branch default}'' al final. Le
+está indicando que su consignación ocurrirá en la rama llamada 
 \texttt{default}.
 
-To start working with named branches, use the \hgcmd{branches}
-command.  This command lists the named branches already present in
-your repositorio, telling you which changeset is the tip of each.
+Use la orden \hgcmd{branches} para comenzar a trabajar con ramas
+nombradas. Esta orden mostrará las ramas presentes en su repositorio,
+indicándole en qué conjunto de cambios está cada una.
 \interaction{branch-named.branches}
-Since you haven't created any named branches yet, the only one that
-exists is \texttt{default}.
+Dado que todavía no ha creado ramas nombradas, la única que verá sería
+\texttt{default}.
 
-To find out what the ``current'' branch is, run the \hgcmd{branch}
-command, giving it no arguments.  This tells you what branch the
-parent of the current changeset is on.
+Para hallar cuál es la rama ``actual'', invoque la orden
+\hgcmd{branch}, sin argumento alguno. Le informará en qué rama se
+encuentra el padre del conjunto actual de cambios.
 \interaction{branch-named.branch}
 
-To create a new branch, run the \hgcmd{branch} command again.  This
-time, give it one argument: the name of the branch you want to create.
+Para crear una nueva rama, invoque la orden \hgcmd{branch} de
+nuevo. En esta oportunidad, ofrezca un argumento: el nombre de la rama
+que desea crear.
 \interaction{branch-named.create}
 
-After you've created a branch, you might wonder what effect the
-\hgcmd{branch} command has had.  What do the \hgcmd{status} and
+Después de crear la rama, usted podría desear ver el efecto que tuvo
+la orden \hgcmd{branch}.  ¿Qué reportan las ordenes \hgcmd{status} y
 \hgcmd{tip} commands report?
 \interaction{branch-named.status}
-Nothing has changed in the working directory, and there's been no new
-history created.  As this suggests, running the \hgcmd{branch} command
-has no permanent effect; it only tells Mercurial what branch name to
-use the \emph{next} time you commit a changeset.
+Nada cambia en el directorio actual, y no se ha añadido nada a la
+historia. Esto sugiere que al ejecutar la orden \hgcmd{branch} no hay
+un efecto permanente; solamente le indica a que nombre de rama usará
+la \emph{próxima} vez que consigne un conjunto de cambios.
 
-When you commit a change, Mercurial records the name of the branch on
-which you committed.  Once you've switched from the \texttt{default}
-branch to another and committed, you'll see the name of the new branch
-show up in the output of \hgcmd{log}, \hgcmd{tip}, and other commands
-that display the same kind of output.
+Cuando consigna un cambio, Mercurial alamacena el nombre de la rama en
+la cual consignó.  Una vez que haya cambiado de la rama \texttt{default}
+y haya consignado, verá que el nombre de la nueva rama se mostrará
+cuando use la orden \hgcmd{log}, \hgcmd{tip}, y otras órdenes que
+desplieguen la misma clase de información.
 \interaction{branch-named.commit}
-The \hgcmd{log}-like commands will print the branch name of every
-changeset that's not on the \texttt{default} branch.  As a result, if
-you never use named branches, you'll never see this information.
+Las órdenes del tipo \hgcmd{log} imprimirán el nombre de la rama de
+cualquier conjunto de cambios que no estén en la rama
+\texttt{default}. Como resultado, si nunca usa ramas nombradas, nunca
+verá esta información.
 
-Once you've named a branch and committed a change with that name,
-every subsequent commit that descends from that change will inherit
-the same branch name.  You can change the name of a branch at any
-time, using the \hgcmd{branch} command.  
+Una vez que haya nombrado una rama y consignado un cambio con ese
+nombre, todas las consignaciones subsecuentes que desciendan de ese
+cambio heredarán el mismo nombre de rama. Puede cambiar el nombre de
+una rama en cualquier momento con la orden \hgcmd{branch}.  
 \interaction{branch-named.rebranch}
-In practice, this is something you won't do very often, as branch
-names tend to have fairly long lifetimes.  (This isn't a rule, just an
-observation.)
+Esto es algo que no hará muy seguido en la práctica, debido que los
+nombres de las ramas tienden a tener vidas largas.  (Esto no es una
+regla, solamente una observación.)
 
-\section{Dealing with multiple named branches in a repositorio}
+\section{Tratamiento de varias ramas nombradas en un repositorio}
 
-If you have more than one named branch in a repositorio, Mercurial will
-remember the branch that your working directory on when you start a
-command like \hgcmd{update} or \hgcmdargs{pull}{-u}.  It will update
-the working directory to the tip of this branch, no matter what the
-``repo-wide'' tip is.  To update to a revision that's on a different
-named branch, you may need to use the \hgopt{update}{-C} option to
-\hgcmd{update}.
+Si tiene más de una rama nombrada en un repositorio, Mercurial
+recordará la rama en la cual está su directorio de trabajo cuando
+invoque una orden como \hgcmd{update} o \hgcmdargs{pull}{-u}.  Se
+actualizará su directorio de trabajo actual al tip de esta rama, sin
+importar cuál sea el tip ``a lo largo del repositorio'' .  Para
+actualiar a una revisión que está en una rama con distinto nombre,
+puede necesitar la opción \hgopt{update}{-C} de \hgcmd{update}.
 
-This behaviour is a little subtle, so let's see it in action.  First,
-let's remind ourselves what branch we're currently on, and what
-branches are in our repositorio.
+Este comportamiento puede ser sutil, veámoslo en acción.  Primero,
+recordemos en qué rama estamos trabajando, y qué ramas están en
+nuestro repositorio.
 \interaction{branch-named.parents}
-We're on the \texttt{bar} branch, but there also exists an older
-\hgcmd{foo} branch.
+Estamos en la rama \texttt{bar}, pero existe otra rama más antigua
+llamada \hgcmd{foo}.
 
-We can \hgcmd{update} back and forth between the tips of the
-\texttt{foo} and \texttt{bar} branches without needing to use the
-\hgopt{update}{-C} option, because this only involves going backwards
-and forwards linearly through our change history.
+Podemos hacer \hgcmd{update} entre los tipos de las ramas \texttt{foo}
+y \texttt{bar} sin necesidad de usar la opción \hgopt{update}{-C},
+puesto que esto solamente implica ir linealmente hacia adelante y
+atrás en nuestra historia de cambios.
 \interaction{branch-named.update-switchy}
 
-If we go back to the \texttt{foo} branch and then run \hgcmd{update},
-it will keep us on \texttt{foo}, not move us to the tip of
-\texttt{bar}.
+Si volvemos a la rama \texttt{foo} e invocamos la orden \hgcmd{update},
+nos mantendrá en \texttt{foo}, sin movernos al tipo de \texttt{bar}.
 \interaction{branch-named.update-nothing}
 
-Committing a new change on the \texttt{foo} branch introduces a new
-head.
+Al consignar un cambio a la rama \texttt{foo} se introducirá una nueva
+cabeza.
 \interaction{branch-named.foo-commit}
 
-\section{Branch names and merging}
+\section{Nombres de ramas y fusiones}
 
-As you've probably noticed, merges in Mercurial are not symmetrical.
-Let's say our repositorio has two heads, 17 and 23.  If I
-\hgcmd{update} to 17 and then \hgcmd{merge} with 23, Mercurial records
-17 as the first parent of the merge, and 23 as the second.  Whereas if
-I \hgcmd{update} to 23 and then \hgcmd{merge} with 17, it records 23
-as the first parent, and 17 as the second.
+Posiblemente ha notado que las fusiones en Mercurial no son simétricas.
+Supongamos que su repositorio tiene dos cabezas, 17 and 23.  Si yo invoco
+\hgcmd{update} a 17 y aplico \hgcmd{merge} a 23, Mercurial almacena 17
+como el primer padre de la fusión, y 23 como el segundo. Mientras que
+si hago \hgcmd{update} a 23 y después aplico \hgcmd{merge} con 17,
+grabará a 23 como el primer padre, y 17 como el segundo.
 
-This affects Mercurial's choice of branch name when you merge.  After
-a merge, Mercurial will retain the branch name of the first parent
-when you commit the result of the merge.  If your first parent's
-branch name is \texttt{foo}, and you merge with \texttt{bar}, the
-branch name will still be \texttt{foo} after you merge.
+Esto afecta com elige Mercurial el nombre de la rama cuando hace
+fusión.  Después de una fusión Mercurial mantendrá el nombre de la
+rama del primer padre cuando consigne el resultado de una fusión.  Si
+el primer nombre de su padre es \texttt{foo}, y fusiona con
+\texttt{bar}, el nombre de la rama continuará siendo \texttt{foo}
+después de fusionar.
 
-It's not unusual for a repositorio to contain multiple heads, each with
-the same branch name.  Let's say I'm working on the \texttt{foo}
-branch, and so are you.  We commit different changes; I pull your
-changes; I now have two heads, each claiming to be on the \texttt{foo}
-branch.  The result of a merge will be a single head on the
-\texttt{foo} branch, as you might hope.
+No es inusual que un repositorio contenga varias cabezas, cada una con
+el mismo nombre de rama.  Digamos que estoy trabajando en la rama
+\texttt{foo}, y usted también.  Consignamos cambios distintos; Yo jalo
+sus cambios; Ahora tengo dos cabezas, cada una afirmando estar en la
+rama \texttt{foo}.  El resultado de una fusión será una única cabeza
+en la rama \texttt{foo} como usted esperaría.
 
-But if I'm working on the \texttt{bar} branch, and I merge work from
-the \texttt{foo} branch, the result will remain on the \texttt{bar}
-branch.
+Pero si estoy trabajando en la rama \texttt{bar}, y fusiono el trabajo
+desde la rama \texttt{foo}, el resultado permanecerá en la rama
+\texttt{bar}.
 \interaction{branch-named.merge}
 
-To give a more concrete example, if I'm working on the
-\texttt{bleeding-edge} branch, and I want to bring in the latest fixes
-from the \texttt{stable} branch, Mercurial will choose the ``right''
-(\texttt{bleeding-edge}) branch name when I pull and merge from
-\texttt{stable}.
+En un ejemplo más concreo, si yo estoy trabajando en la rama
+\texttt{bleeding-edge}, y deseo traer los arreglos más recientes de la
+rama \texttt{estable}, Mercurial elegirá el nombre de rama ``correcto''
+(\texttt{bleeding-edge}) cuando yo jale una fusión desde \texttt{estable}.
 
-\section{Branch naming is generally useful}
+\section{Normalmente es útil nombrar ramas}
 
-You shouldn't think of named branches as applicable only to situations
-where you have multiple long-lived branches cohabiting in a single
-repositorio.  They're very useful even in the one-branch-per-repositorio
-case.  
+No debería considerar que las ramas nombradas son aplicables
+únicamente en situaciones con muchas ramas de larga-vida cohabitando
+en un mismo repositorio.  Son muy útiles incluso en los casos de
+una-rama-por-repositorio.
 
-In the simplest case, giving a name to each branch gives you a
-permanent record of which branch a changeset originated on.  This
-gives you more context when you're trying to follow the history of a
-long-lived branchy project.
+En el caso más sencillo, dar un nombre a cada rama ofrece un registro
+permanente acerca de en qué conjunto de cambios se generó la rama.
+Esto le ofrece más contexto cuando esté tratando de seguir la
+historia de un proyecto ramificado de larga vida.
 
-If you're working with shared repositorios, you can set up a
-\hook{pretxnchangegroup} hook on each that will block incoming changes
-that have the ``wrong'' branch name.  This provides a simple, but
-effective, defence against people accidentally pushing changes from a
-``bleeding edge'' branch to a ``stable'' branch.  Such a hook might
-look like this inside the shared repo's \hgrc.
+Si está trabajando con repositorios compartidos, puede configurar el gancho
+\hook{pretxnchangegroup} para que cada uno bloquee los cambios con
+nombres de rama ``incorrectos'' que están por adicionarse.  Este
+provee una defensa sencilla pero efectiva para evitar que la gente
+accidentalmente publique cambios de una rama ``super nueva'' a la rama
+``estable''.  Tal gancho podría verse de la siguiente forma dentro de
+un repositorio compartido de \hgrc.
 \begin{codesample2}
   [hooks]
   pretxnchangegroup.branch = hg heads --template '{branches} ' | grep mybranch
