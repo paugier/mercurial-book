@@ -17,47 +17,43 @@ distribuido porque creo que es un tema importante que merece una guía
 de campo. Escogí escribir acerca de Mercurial porque es la herramienta
 %TODO puse explorar en vez de aprender, you be the judge dear reviewer ;)
 más fácil para explorar el terreno, y sin embargo escala a las
-demandas de ambientes reales
+demandas de retadores ambientes reales donde muchas otras herramientas
+de control de revisiones fallan.
 
-I am writing a book about distributed revision control because I
-believe that it is an important subject that deserves a field guide.
-I chose to write about Mercurial because it is the easiest tool to
-learn the terrain with, and yet it scales to the demands of real,
-challenging environments where many other revision control tools fail.
+\section{Este libro es un trabajo en progreso}
+Estoy liberando este libro mientras lo sigo escribiendo, con la
+esperanza de que pueda ser útil a otros. También espero que los
+lectores contribuirán como consideren adecuado.
 
-\section{This book is a work in progress}
+\section{Acerca de los ejemplos en este libro}
+Este libro toma un enfoque inusual hacia las muestras de código. Cada
+ejemplo está ``en directo''---cada uno es realmente el resultado de un
+% TODO shell script
+script de shell que ejecuta los comandos de Mercurial que usted ve.
+Cada vez que una copia del libro es construida desde su código fuente,
+% TODO scripts
+todos los scripts de ejemplo son ejecutados automáticamente, y sus
+resultados actuales son comparados contra los resultados esperados.
 
-I am releasing this book while I am still writing it, in the hope that
-it will prove useful to others.  I also hope that readers will
-contribute as they see fit.
+La ventaja de este enfoque es que los ejemplos siempre son precisos;
+ellos describen \emph{exactamente} el comportamiento de la versión de
+Mercurial que es mencionada en la portada del libro. Si yo actualizo
+la versión de Mercurial que estoy documentando, y la salida de algún
+comando cambia, la construcción falla.
 
-\section{About the examples in this book}
+Hay una pequeña desventaja de este enfoque, que las fechas y horas que
+usted verá en los ejemplos tienden a estar ``aplastadas'' juntas de una
+forma que no sería posible si los mismos comandos fueran escritos por
+un humano. Donde un humano puede emitir no más de un comando cada
+pocos segundos, con cualquier marca de tiempo resultante
+correspondientemente separada, mis scripts automatizados de ejemplos
+ejecutan muchos comandos en un segundo.
 
-This book takes an unusual approach to code samples.  Every example is
-``live''---each one is actually the result of a shell script that
-executes the Mercurial commands you see.  Every time an image of the
-book is built from its sources, all the example scripts are
-automatically run, and their current results compared against their
-expected results.
-
-The advantage of this approach is that the examples are always
-accurate; they describe \emph{exactly} the behaviour of the version of
-Mercurial that's mentioned at the front of the book.  If I update the
-version of Mercurial that I'm documenting, and the output of some
-command changes, the build fails.
-
-There is a small disadvantage to this approach, which is that the
-dates and times you'll see in examples tend to be ``squashed''
-together in a way that they wouldn't be if the same commands were
-being typed by a human.  Where a human can issue no more than one
-command every few seconds, with any resulting timestamps
-correspondingly spread out, my automated example scripts run many
-commands in one second.
-
-As an instance of this, several consecutive commits in an example can
-show up as having occurred during the same second.  You can see this
-occur in the \hgext{bisect} example in section~\ref{sec:undo:bisect},
-for instance.
+% TODO commit
+Como un ejemplo de esto, varios commits consecutivos en un ejemplo
+pueden aparecer como habiendo ocurrido durante el mismo segundo. Usted
+puede ver esto en el ejemplo \hgext{bisect} en la
+sección~\ref{sec:undo:bisect}, por ejemplo.
 
 So when you're reading examples, don't place too much weight on the
 dates or times you see in the output of commands.  But \emph{do} be
