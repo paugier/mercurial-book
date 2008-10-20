@@ -8,13 +8,78 @@
  * Encoding UTF-8 para las tildes, eñes y demás
  * Ancho de línea de 70 caracteres
 
+= ¿Cómo contribuir? =
+Obtenga la copia :
+hg clone http://mercurial.intuxication.org/hg/mercurial_book_es/
+
+Esto le ofrecerá un clon del repositorio en el directorio recién 
+creado '''mercurial_book_es''':
+
+mercurial_book_es
+|
+|-- en
+|-- es
+|-- examples
+|-- html
+`-- sillybench
+
+El directorio de trabajo es '''es'''.
+
+
+Una vez que haya traducido o aplicado correcciones a los archivos de
+su copia local, haga un commit
+
+ hg commit -m "comentario descriptivo de lo que hizo"
+
+Siempre mantenga actualizado su repositorio local
+ hg pull
+ hg update
+
+Hay dos formas de hacer la contribución, primero envíe un correo a
+igor@tamarapatino.org indicando lo que desea hacer, se le puede
+otorgar permiso de escritura en el repositorio, o si lo prefiere,
+puede enviar un parche(patch).  Describimos a continuación los dos
+procedimientos : Repositorio Público y Parches.   Es preferible el
+repositorio público frente a los parches, puesto que estos segundos
+pueden tardar en propagarse más.
+
+== Repositorio Público ==
+Este sería el método preferido para que los cambios que usted haga
+automáticamente queden en el repositorio y todos los traductores
+podamos contar con la información rápidamente.
+
+Una vez que usted haya recibido la información necesaria, habiendo
+elegido su usuario y su clave podrá "publicar"(push).
+
+Como este es un sistema distribuido, después de hacer la
+consignación(commit), deberá publicarlo.
+
+ hg push
+
+Se le solicitará su usuario y clave.
+
+== Parches ==
+Este método exige que alguien reciba el parche y haga manualmente la
+aplicación del mismo, ese alguien es igor@tamarapatino.org por ahora,
+después de haber hecho commit en su repositorio local, revise su log.
+
+ hg log | head
+
+Esta última orden le permitirá establecer la última revisión que se
+consignó en su repositorio local, su identificador de revisión tendrá
+el formato número:hash .   Generaría el archivo 
+/tmp/patchparahgbook.patch con la orden
+
+ hg -o /tmp/patchparahgbook.patch REV
+
+donde REV es el identificador de revisión que debió haber encontrado.
+
 = Traducción/Revisión =
 
 En esta sección indicamos quienes están traduciendo
 y quienes revisando lo traducido. Coloque su nombre 
 para que los demás colaboradores sepan en dónde 
-enfocar sus esfuerzos.  En este momento estamos dejando 
-que *make* nos guíe.
+enfocar sus esfuerzos.
 
 Indique qué archivos está traduciendo y/o revisando en 
 la lista siguiente. Cada archivo debe ser traducido y
@@ -33,13 +98,13 @@ de ortografía son siempre bienvenidos.
 || branch.tex      || Igor Támara   ||    100%    || 16/10/2008 ||  19/10/2008 ||
 || preface.tex     || Javier Rojas  ||    100%    || 18/10/2008 ||  19/10/2008 ||
 || tour-basic.tex  || Javier Rojas  ||    34%     || 19/10/2008 ||             ||
+||      daily.tex  || Igor Támara   ||    19%     || 19/10/2008 ||             ||
 
 == Archivos en proceso de revisión ==
 ||'''archivo''' || '''revisor''' ||'''Estado'''||'''Inicio'''||  '''Fin'''  ||
 || 00book.tex   ||               ||            ||            ||             ||
 || branch.tex   ||               ||            ||            ||             ||
 || preface.tex  ||               ||            ||            ||             ||
-
 
 == Archivos terminados ==
 
@@ -62,17 +127,20 @@ versión traducida, y una pequeña explicación como justificación.
 
  Branch: Rama
  Bug: Fallo
+ Build Script: Guión de construcción
  Builtin: integrada/o
  Changelog: Bitácora de Cambios
  Changeset: Conjunto de Cambios
  Command: Orden
  Commit: Consignar
+ Directory: Directorio
  File: Archivo
  Head: Principal
  Hook: Gancho
  Merge: Fusión
  Milestone: Etapa
  Patch: Parche
+ Path: Ruta de archivo
  Pull: Jalar
  Push: Publicar
  Release: Versión o liberación de versión
