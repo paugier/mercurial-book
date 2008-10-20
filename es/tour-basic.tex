@@ -115,36 +115,43 @@ necesitar usualmente) ejecute \hgcmdargs{help}{\hggopt{-v}}. La opción
 \hggopt{-v} es la abreviación para \hggopt{--verbose}, y le indica a
 Mercurial que imprima más información de lo que haría usualmente.
 
-\section{Working with a repository}
+\section{Trabajar con un repositorio}
 
-In Mercurial, everything happens inside a \emph{repository}.  The
-repository for a project contains all of the files that ``belong to''
-that project, along with a historical record of the project's files.
+En Mercurial, todo sucede dentro de un \emph{repositorio}. El
+repositorio para un proyecto contiene todos los archivos que
+``pertenecen a'' ése proyecto, junto con un registro histórico de los
+archivos de ese proyecto.
 
-There's nothing particularly magical about a repository; it is simply
-a directory tree in your filesystem that Mercurial treats as special.
-You can rename or delete a repository any time you like, using either the
-command line or your file browser.
+No hay nada particularmente mágico acerca de un repositorio; es
+simplemente un árbol de directorios en su sistema de archivos que
+Mercurial trata como especial. Usted puede renombrar o borrar un
+repositorio en el momento que lo desee, usando bien sea la línea de
+comandos o su explorador de ficheros.
 
-\subsection{Making a local copy of a repository}
+\subsection{Hacer una copia local de un repositorio}
 
-\emph{Copying} a repository is just a little bit special.  While you
-could use a normal file copying command to make a copy of a
-repository, it's best to use a built-in command that Mercurial
-provides.  This command is called \hgcmd{clone}, because it creates an
-identical copy of an existing repository.
+\emph{Copiar} un repositorio es sólo ligeramente especial. Aunque
+usted podría usar un programa normal de copia de archivos para hacer
+una copia del repositorio, es mejor usar el comando integrado que
+Mercurial ofrece. Este comando se llama \hgcmd{clone}\ndt{Del término
+``clonar'' en inglés.}, porque crea una copia idéntica de un
+repositorio existente.
 \interaction{tour.clone}
-If our clone succeeded, we should now have a local directory called
-\dirname{hello}.  This directory will contain some files.
+Si nuestro clonado tiene éxito, deberíamos tener un directorio local
+llamado \dirname{hello}. Este directorio contendrá algunos archivos.
 \interaction{tour.ls}
-These files have the same contents and history in our repository as
-they do in the repository we cloned.
+Estos archivos tienen el mismo contenido e historial en nuestro
+repositorio y en el repositorio que clonamos.
 
-Every Mercurial repository is complete, self-contained, and
-independent.  It contains its own private copy of a project's files
-and history.  A cloned repository remembers the location of the
-repository it was cloned from, but it does not communicate with that
-repository, or any other, unless you tell it to.
+Cada repositorio Mercurial está completo, es autocontenido e
+independiente. Contiene su propia copia de los archivos y la historia
+de un proyecto. Un repositorio clonado recuerda la ubicación de la que
+fue clonado, pero no se comunica con ese repositorio, ni con ningún
+otro, a menos que usted le indique que lo haga.
+
+Lo que esto significa por ahora es que somos libres de experimentar
+con nuestro repositorio, con la tranquilidad de saber que es 
+% TODO finish paragraph, figure out what to say instead of sandbox
 
 What this means for now is that we're free to experiment with our
 repository, safe in the knowledge that it's a private ``sandbox'' that
