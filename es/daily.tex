@@ -86,79 +86,83 @@ herramientas GUI. Esta aproximación se ilustra en la figura~\ref{ex:daily:hidde
 Otra forma de abordar la necesidad de un archivo vacío es crear
 simplemente uno en sus guiones de construcción antes de ser necesarios.
 
-\section{How to stop tracking a file}
+\section{Cómo dejar de hacer seguimiento a un archivo}
 
-Once you decide that a file no longer belongs in your repository, use
-the \hgcmd{remove} command; this deletes the file, and tells Mercurial
-to stop tracking it.  A removed file is represented in the output of
-\hgcmd{status} with a ``\texttt{R}''.
+Si decide que un archivo no pertenece a su repositorio, use la orden
+\hgcmd{remove}; se borrará el archivo y le indicará a Mercurial que
+deje de hacerle seguimiento.  Los archivos eliminados se representan
+con ``\texttt{R}'' al usar \hgcmd{status}.
 \interaction{daily.files.remove}
 
-After you \hgcmd{remove} a file, Mercurial will no longer track
-changes to that file, even if you recreate a file with the same name
-in your working directory.  If you do recreate a file with the same
-name and want Mercurial to track the new file, simply \hgcmd{add} it.
-Mercurial will know that the newly added file is not related to the
-old file of the same name.
+Después de hacer \hgcmd{remove} a un archivo, Mercurial dejará de
+hacer seguimiento al mismo, incluso si recrea el archivo con el mismo
+nombre en su directorio de trabajo. Si decide recrear un archivo con
+el mismo nombre y desea que Mercurial le haga seguimiento, basta con
+hacerle \hgcmd{add}. Mercurial sabrá que el archivo recientemente
+adicionado no está relacionado con el archivo anterior que tenía el
+mismo nombre.
 
-\subsection{Removing a file does not affect its history}
+\subsection{Al eliminar un archivo no se afecta su historia}
 
-It is important to understand that removing a file has only two
-effects.
+Es preciso tener en cuenta que al eliminar un archivo se tiene
+dos efectos solamente.
 \begin{itemize}
-\item It removes the current version of the file from the working
-  directory.
-\item It stops Mercurial from tracking changes to the file, from the
-  time of the next commit.
+\item Se elimina la versión actual del fichero del directorio de 
+trabajo.
+\item Mercurial deja de hacer seguimiento a los cambios del fichero
+  desde la próxima consignación.
 \end{itemize}
-Removing a file \emph{does not} in any way alter the \emph{history} of
-the file.
+Al eliminar un fichero \emph{no} se altera de ninguna manera la
+\emph{historia} del mismo.
 
-If you update the working directory to a changeset in which a file
-that you have removed was still tracked, it will reappear in the
-working directory, with the contents it had when you committed that
-changeset.  If you then update the working directory to a later
-changeset, in which the file had been removed, Mercurial will once
-again remove the file from the working directory.
+Si actualiza su directorio de trabajo a un conjunto de cambios en el
+cual esl archivo que eliminó aún era tenido en cuenta, reaparecerá en
+el directorio de trabajo, con los contenidos que este tenía cuando se
+consignó tal conjunto de cambios.  Si usted actualiza el directorio de
+trabajo a un conjunto de cambios posterior en el cual el archivo había
+sido eliminado, Mercurial lo eliminará de nuevo del directorio de
+trabajo.
 
 \subsection{Missing files}
 
-Mercurial considers a file that you have deleted, but not used
-\hgcmd{remove} to delete, to be \emph{missing}.  A missing file is
-represented with ``\texttt{!}'' in the output of \hgcmd{status}.
-Mercurial commands will not generally do anything with missing files.
+Mercurial considera como \emph{perdido} un archivo que usted borró,
+pero para el que no se usó \hgcmd{remove}.  Los archivos perdidos se
+representan con ``\texttt{!}'' al visualizar \hgcmd{status}.
+Las órdenes de Mercurial generalmente no harán nada con los archivos
+perdidos.
 \interaction{daily.files.missing}
 
-If your repository contains a file that \hgcmd{status} reports as
-missing, and you want the file to stay gone, you can run
-\hgcmdargs{remove}{\hgopt{remove}{--after}} at any time later on, to
-tell Mercurial that you really did mean to remove the file.
+Si su repositorio contiene un archivo que \hgcmd{status} reporta como
+perdido, y desea que el mismo se vaya, se puede usar 
+\hgcmdargs{remove}{\hgopt{remove}{--after}} posteriormente para
+indicarle a Mercurial que usted deseaba borrar tal archivo.
 \interaction{daily.files.remove-after}
 
-On the other hand, if you deleted the missing file by accident, use
-\hgcmdargs{revert}{\emph{filename}} to recover the file.  It will
-reappear, in unmodified form.
+Por otro lado, si borró un fichero perdido por accidente, puede usar
+\hgcmdargs{revert}{\emph{nombre de fichero}} para recuperar el
+fichero. Reaparecerá sin modificaciones.
 \interaction{daily.files.recover-missing}
 
-\subsection{Aside: why tell Mercurial explicitly to 
-  remove a file?}
+\subsection{Nota al margen: ¿Por qué decirle explícitamente a Mercurial
+  que elimine un archivo?}
 
-You might wonder why Mercurial requires you to explicitly tell it that
-you are deleting a file.  Early during the development of Mercurial,
-it let you delete a file however you pleased; Mercurial would notice
-the absence of the file automatically when you next ran a
-\hgcmd{commit}, and stop tracking the file.  In practice, this made it
-too easy to accidentally remove a file without noticing.
+Es posible que se haya preguntado por qué Mercurial exige que usted le
+indique explícitamente que está borrando un archivo. Al principio del
+desarrollo de Mercurial, este permitía que usted borrara el archivo
+sin más; Mercurial se daría cuanta de la ausencia del archivo
+automáticamente después de la ejecución de \hgcmd{commit}, y dejaba de
+hacer seguimiento al archivo.  En la práctica, resultaba muy sencillo
+borrar un archivo accidentalmente sin darse cuenta.
 
-\subsection{Useful shorthand---adding and removing files
-  in one step}
+\subsection{Atajo útil---agregar y eliminar archivos en un solo paso}
 
-Mercurial offers a combination command, \hgcmd{addremove}, that adds
-untracked files and marks missing files as removed.  
+Mercurial ofrece una orden combinada, \hgcmd{addremove}, que agrega
+los archivos que no tienen seguimiento y marca los archivos faltantes
+como eliminados.
 \interaction{daily.files.addremove}
-The \hgcmd{commit} command also provides a \hgopt{commit}{-A} option
-that performs this same add-and-remove, immediately followed by a
-commit.
+La orden \hgcmd{commit} su puede usar con la opción \hgopt{commit}{-A} 
+que aplica el agregar-eliminar, seguido inmediatamente de una
+consignación.
 \interaction{daily.files.commit-addremove}
 
 \section{Copying files}
