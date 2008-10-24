@@ -180,21 +180,29 @@ Una de las primeras cosas que se desea hacer con un repositorio nuevo,
 poco conocido, es conocer su historial. el comando \hgcmd{log} nos
 permite ver el mismo.
 \interaction{tour.log}
-By default, this command prints a brief paragraph of output for each
-change to the project that was recorded.  In Mercurial terminology, we
-call each of these recorded events a \emph{changeset}, because it can
-contain a record of changes to several files.
+Por defecto este programa imprime un párrafo breve por cada cambio al
+proyecto que haya sido grabado. Dentro de la terminología de
+Mercurial, cada uno de estos eventos es llamado \emph{conjuntos de
+cambios}, porque pueden contener un registro de cambios a varios
+archivos.
 
-The fields in a record of output from \hgcmd{log} are as follows.
+Los campos de la salida de \hgcmd{log} son los siguientes.
 \begin{itemize}
-\item[\texttt{changeset}] This field has the format of a number,
-  followed by a colon, followed by a hexadecimal string.  These are
-  \emph{identifiers} for the changeset.  There are two identifiers
-  because the number is shorter and easier to type than the hex
-  string.
-\item[\texttt{user}] The identity of the person who created the
-  changeset.  This is a free-form field, but it most often contains a
-  person's name and email address.
+    \item[\texttt{changeset}]\hspace{-0.5em}\ndt{Conjunto de cambios.} Este campo
+        tiene un número, seguido por un
+        % TODO digo mejor seguido por un dos puntos ? string =>
+        % cadena?
+        \texttt{:}, seguido por una cadena hexadecimal. Ambos son
+        \emph{identificadores} para el conjunto de cambios. Hay dos
+        identificadores porque el número es más corto y más fácil de
+        recordar que la cadena hexadecimal.
+        
+\item[\texttt{user}]\hspace{-0.5em}\ndt{Usuario.} La identidad de la
+    persona que creó el conjunto de cambios. Este es un campo en el
+    que se puede almacenar cualquier valor, pero en la mayoría de los
+    casos contiene el nombre de una persona y su dirección de correo
+    electrónico.
+    
 \item[\texttt{date}] The date and time on which the changeset was
   created, and the timezone in which it was created.  (The date and
   time are local to that timezone; they display what time and date it
