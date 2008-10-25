@@ -276,36 +276,40 @@ conjunto de cambios, o llevar el registro de un conjunto de cambios
 por alguna otra razón (por ejemplo, en un reporte de fallo), use el
 identificador hexadecimal.
 
-\subsection{Viewing specific revisions}
+\subsection{Ver revisiones específicas}
 
-To narrow the output of \hgcmd{log} down to a single revision, use the
-\hgopt{log}{-r} (or \hgopt{log}{--rev}) option.  You can use either a
-revision number or a long-form changeset identifier, and you can
-provide as many revisions as you want.  \interaction{tour.log-r}
+Para reducir la salida de \hgcmd{log} a una sola revisión, use la  
+opción \hgopt{log}{-r} (o \hgopt{log}{--rev}).  Puede usar un número
+de revisión o un identificador hexadecimal de conjunto de cambios, y
+puede pasar tantas revisiones como desee.
 
-If you want to see the history of several revisions without having to
-list each one, you can use \emph{range notation}; this lets you
-express the idea ``I want all revisions between $a$ and $b$,
-inclusive''.
+\interaction{tour.log-r}
+
+Si desea ver el historial de varias revisiones sin tener que mencionar
+cada una de ellas, puede usar la \emph{notación de rango}; esto le
+permite expresar el concepto ``quiero ver todas las revisiones entre
+$a$ y $b$, inclusive''.
 \interaction{tour.log.range}
-Mercurial also honours the order in which you specify revisions, so
-\hgcmdargs{log}{-r 2:4} prints $2,3,4$ while \hgcmdargs{log}{-r 4:2}
-prints $4,3,2$.
+Mercurial también respeta el orden en que usted especifica las
+revisiones, así que \hgcmdargs{log}{-r 2:4} muestra $2,3,4$ mientras
+que \hgcmdargs{log}{-r 4:2} muestra $4,3,2$.
 
-\subsection{More detailed information}
-
-While the summary information printed by \hgcmd{log} is useful if you
-already know what you're looking for, you may need to see a complete
-description of the change, or a list of the files changed, if you're
-trying to decide whether a changeset is the one you're looking for.
-The \hgcmd{log} command's \hggopt{-v} (or \hggopt{--verbose})
-option gives you this extra detail.
+\subsection{Información más detallada}
+Aunque la información presentada por \hgcmd{log} es útil si usted sabe
+de antemano qué está buscando, puede que necesite ver una descripción
+completa de el cambio, o una lista de los ficheros que cambiaron, si
+está tratando de averiguar si un conjunto de cambios dado es el que
+usted está buscando. La opción \hggopt{-v} (or \hggopt{--verbose}) del
+comando \hgcmd{log} le da este nivel extra de detalle.
 \interaction{tour.log-v}
 
-If you want to see both the description and content of a change, add
-the \hgopt{log}{-p} (or \hgopt{log}{--patch}) option.  This displays
-the content of a change as a \emph{unified diff} (if you've never seen
-a unified diff before, see section~\ref{sec:mq:patch} for an overview).
+Si desea ver tanto la descripción como el contenido de un cambio,
+añada la opción \hgopt{log}{-p} (o \hgopt{log}{--patch}). Esto muestra
+% TODO qué hacemos con diff unificado? convervarlo, por ser la
+% acepción usual?
+el contenido de un cambio como un \emph{diff unificado} (si usted
+nunca ha visto un diff unificado antes, vea la
+sección~\ref{sec:mq:patch} para un vistazo global).
 \interaction{tour.log-vp}
 
 \section{All about command options}
