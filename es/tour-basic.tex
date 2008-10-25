@@ -150,53 +150,59 @@ fue clonado, pero no se comunica con ese repositorio, ni con ningún
 otro, a menos que usted le indique que lo haga.
 
 Lo que esto significa por ahora es que somos libres de experimentar
-con nuestro repositorio, con la tranquilidad de saber que es 
-% TODO finish paragraph, figure out what to say instead of sandbox
+con nuestro repositorio, con la tranquilidad de saber que es una
+% TODO figure out what to say instead of sandbox
+``caja de arena'' privada que no afectará a nadie más.
 
-What this means for now is that we're free to experiment with our
-repository, safe in the knowledge that it's a private ``sandbox'' that
-won't affect anyone else.
+\subsection{Qué hay en un repositorio?}
 
-\subsection{What's in a repository?}
-
-When we take a more detailed look inside a repository, we can see that
-it contains a directory named \dirname{.hg}.  This is where Mercurial
-keeps all of its metadata for the repository.
+Cuando miramos en detalle dentro de un repositorio, podemos ver que
+contiene un directorio llamado \dirname{.hg}. Aquí es donde Mercurial
+mantiene todos los metadatos del repositorio.
 \interaction{tour.ls-a}
 
-The contents of the \dirname{.hg} directory and its subdirectories are
-private to Mercurial.  Every other file and directory in the
-repository is yours to do with as you please.
+Los contenidos del directorio \dirname{.hg} y sus subdirectorios son
+exclusivos de Mercurial. Usted es libre de hacer lo que desee con
+cualquier otro archivo o directorio en el repositorio.
 
-To introduce a little terminology, the \dirname{.hg} directory is the
-``real'' repository, and all of the files and directories that coexist
-with it are said to live in the \emph{working directory}.  An easy way
-to remember the distinction is that the \emph{repository} contains the
-\emph{history} of your project, while the \emph{working directory}
-contains a \emph{snapshot} of your project at a particular point in
-history.
+Para introducir algo de terminología, el directorio \dirname{.hg} es
+el repositorio ``real'', y todos los archivos y directorios que
+coexisten con él están en el \emph{directorio de trabajo}. Una forma
+sencilla de recordar esta distinción es que el \emph{repositorio}
+% TODO unificar con Igor, si historia o historial
+contiene el \emph{historial} de su proyecto, mientras que el
+\emph{directorio de trabajo} contiene una \emph{instantánea} de su
+proyecto en un punto particular del historial.
 
-\section{A tour through history}
+\section{Vistazo rápido al historial}
 
-One of the first things we might want to do with a new, unfamiliar
-repository is understand its history.  The \hgcmd{log} command gives
-us a view of history.
+Una de las primeras cosas que se desea hacer con un repositorio nuevo,
+poco conocido, es conocer su historial. el comando \hgcmd{log} nos
+permite ver el mismo.
 \interaction{tour.log}
-By default, this command prints a brief paragraph of output for each
-change to the project that was recorded.  In Mercurial terminology, we
-call each of these recorded events a \emph{changeset}, because it can
-contain a record of changes to several files.
+Por defecto este programa imprime un párrafo breve por cada cambio al
+proyecto que haya sido grabado. Dentro de la terminología de
+Mercurial, cada uno de estos eventos es llamado \emph{conjuntos de
+cambios}, porque pueden contener un registro de cambios a varios
+archivos.
 
-The fields in a record of output from \hgcmd{log} are as follows.
+Los campos de la salida de \hgcmd{log} son los siguientes.
 \begin{itemize}
-\item[\texttt{changeset}] This field has the format of a number,
-  followed by a colon, followed by a hexadecimal string.  These are
-  \emph{identifiers} for the changeset.  There are two identifiers
-  because the number is shorter and easier to type than the hex
-  string.
-\item[\texttt{user}] The identity of the person who created the
-  changeset.  This is a free-form field, but it most often contains a
-  person's name and email address.
+    \item[\texttt{changeset}]\hspace{-0.5em}\ndt{Conjunto de cambios.} Este campo
+        tiene un número, seguido por un
+        % TODO digo mejor seguido por un dos puntos ? string =>
+        % cadena?
+        \texttt{:}, seguido por una cadena hexadecimal. Ambos son
+        \emph{identificadores} para el conjunto de cambios. Hay dos
+        identificadores porque el número es más corto y más fácil de
+        recordar que la cadena hexadecimal.
+        
+\item[\texttt{user}]\hspace{-0.5em}\ndt{Usuario.} La identidad de la
+    persona que creó el conjunto de cambios. Este es un campo en el
+    que se puede almacenar cualquier valor, pero en la mayoría de los
+    casos contiene el nombre de una persona y su dirección de correo
+    electrónico.
+    
 \item[\texttt{date}] The date and time on which the changeset was
   created, and the timezone in which it was created.  (The date and
   time are local to that timezone; they display what time and date it
