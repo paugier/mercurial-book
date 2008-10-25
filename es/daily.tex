@@ -1,66 +1,66 @@
 \chapter{Mercurial día a día}
 \label{chap:daily}
 
-\section{Cómo indicarle a Mercurial qué archivos seguir}
+\section{Cómo indicarle a Mercurial qué ficheros seguir}
 
-Mercurial no trabaja con archivos en su repositorio a menos que usted
+Mercurial no trabaja con ficheros en su repositorio a menos que usted
 explícitamente se lo indique.  La orden \hgcmd{status} le mostrará
-cuáles archivos son desconocidos para Mercurial; emplea un
-``\texttt{?}'' para mostrar tales archivos.
+cuáles ficheros son desconocidos para Mercurial; emplea un
+``\texttt{?}'' para mostrar tales ficheros.
 
-Para indicarle a Mercurial que tenga en cuenta un archivo, emplee la
-orden \hgcmd{add}. Una vez que haya adicionado el archivo, la línea
-referente al archivo al aplicar la orden \hgcmd{status} para tal
-archivo cambia de ``\texttt{?}'' a ``\texttt{A}''.
+Para indicarle a Mercurial que tenga en cuenta un fichero, emplee la
+orden \hgcmd{add}. Una vez que haya adicionado el fichero, la línea
+referente al fichero al aplicar la orden \hgcmd{status} para tal
+fichero cambia de ``\texttt{?}'' a ``\texttt{A}''.
 \interaction{daily.files.add}
 
-Después de invocar \hgcmd{commit}, los archivos que haya adicionado
+Después de invocar \hgcmd{commit}, los ficheros que haya adicionado
 antes de consignar no se listarán en la salida de \hgcmd{status}.  La
 razón para esto es que \hgcmd{status} solamente le muestra aquellos
-archivos ``interesantes''---los que usted haya modificado o a aquellos
+ficheros ``interesantes''---los que usted haya modificado o a aquellos
 sobre los que usted haya indicado a Mercurial hacerles algo---de forma
 predeterminada. Si tiene un repositorio que contiene miles de
-archivos, inusualmente deseará saber cuáles de ellos están siendo
+ficheros, inusualmente deseará saber cuáles de ellos están siendo
 seguidos por Mercurial, pero que no han cambiado.  (De todas maneras,
 puede obtener tal información; más adelante hablaremos de ello.)
 
 
-Cuando usted añade un archivo, Mercurial no hace nada con el inmediatamente.
-A cambio, tomará una instantánea del estado del archivo la próxima vez
+Cuando usted añade un fichero, Mercurial no hace nada con el inmediatamente.
+A cambio, tomará una instantánea del estado del fichero la próxima vez
 que usted consigne. Continuará haciendo seguimiento a los cambios que
-haga sobre el archivo cada vez que consigne, hasta que usted lo elimine.
+haga sobre el fichero cada vez que consigne, hasta que usted lo elimine.
 
-\subsection{Nombramiento explicíto e implícito de archivos}
+\subsection{Nombramiento explicíto e implícito de ficheros}
 
 Mercurial tiene un comportamiento útil en el cual si a una orden,
 le pasa el nombre de un directorio, todas las órdenes lo tratarán como
-``Deseo operar en cada archivo de este directorio y sus 
+``Deseo operar en cada fichero de este directorio y sus 
 subdirectorios''.
 \interaction{daily.files.add-dir}
 Tenga en cuenta que en este ejemplo Mercurial imprimió los nombres de
-los archivos que se adicionaron, mientras que no lo hizo en el ejemplo
-anterior cuando adicionamos el archivo con nombre \filename{a}.
+los ficheros que se adicionaron, mientras que no lo hizo en el ejemplo
+anterior cuando adicionamos el fichero con nombre \filename{a}.
 
-En el último caso hicimos explícito el nombre del archivo que
+En el último caso hicimos explícito el nombre del fichero que
 deseábamos adicionar en la línea de órdenes, y Mercurial asume en
 tales casos que usted sabe lo que está haciendo y no imprime
 información alguna.
 
-Cuando hacemos \emph{implícitos} los nombres de los archivos dando el
+Cuando hacemos \emph{implícitos} los nombres de los ficheros dando el
 nombre de un directorio, Mercurial efectua un paso extra al imprimir
-el nombre de cada archivo con el que va a hacer algo.  Esto para
+el nombre de cada fichero con el que va a hacer algo.  Esto para
 aclarar lo que está sucediendo, y reducir en lo posible una sorpresa
 silenciosa pero fatal.  Este comportamiento es común a la mayoría de
 órdenes en Mercurial.
 
-\subsection{Nota al margen:Mercurial trata archivos, no directorios}
+\subsection{Nota al margen:Mercurial trata ficheros, no directorios}
 
 Mercurial no da seguimiento a la información de los directorios.  En
-lugar de eso tiene en cuenta las rutas de los archivos.  Antes  de
-crear un archivo, primero crea todos los directorios que hagan falta
-para completar la ruta del archivo. Después de borrar un archivo,
+lugar de eso tiene en cuenta las rutas de los ficheros.  Antes  de
+crear un fichero, primero crea todos los directorios que hagan falta
+para completar la ruta del fichero. Después de borrar un fichero,
 borra todos los directorios vacíos que estuvieran en la ruta del
-archivo borrado. Suena como una diferencia trivial, pero tiene una
+fichero borrado. Suena como una diferencia trivial, pero tiene una
 consecuencia práctica menor: no es posible representar un directorio
 completamente vacío en Mercurial.
 
@@ -72,39 +72,39 @@ pena frente al beneficio limitado que esta característica podría traer.
 
 Si necesita un directorio vacío en su repositorio, hay algunas formas
 de lograrlo. Una es crear un directorio, después hacer \hgcmd{add} a
-un archivo ``escondido'' dentro de ese directorio. En sistemas tipo
-Unix, cualquier archivo cuyo nombre comience con un punto
+un fichero ``escondido'' dentro de ese directorio. En sistemas tipo
+Unix, cualquier fichero cuyo nombre comience con un punto
 (``\texttt{.}'') se trata como escondido por la mayoría de
 herramientas GUI. Esta aproximación se ilustra en la figura~\ref{ex:daily:hidden}.
 
 \begin{figure}[ht]
   \interaction{daily.files.hidden}
-  \caption{Simular un directorio vacío con un archivo escondido}
+  \caption{Simular un directorio vacío con un fichero escondido}
   \label{ex:daily:hidden}
 \end{figure}
 
-Otra forma de abordar la necesidad de un archivo vacío es crear
+Otra forma de abordar la necesidad de un fichero vacío es crear
 simplemente uno en sus guiones de construcción antes de ser necesarios.
 
-\section{Cómo dejar de hacer seguimiento a un archivo}
+\section{Cómo dejar de hacer seguimiento a un fichero}
 
-Si decide que un archivo no pertenece a su repositorio, use la orden
-\hgcmd{remove}; se borrará el archivo y le indicará a Mercurial que
-deje de hacerle seguimiento.  Los archivos eliminados se representan
+Si decide que un fichero no pertenece a su repositorio, use la orden
+\hgcmd{remove}; se borrará el fichero y le indicará a Mercurial que
+deje de hacerle seguimiento.  Los ficheros eliminados se representan
 con ``\texttt{R}'' al usar \hgcmd{status}.
 \interaction{daily.files.remove}
 
-Después de hacer \hgcmd{remove} a un archivo, Mercurial dejará de
-hacer seguimiento al mismo, incluso si recrea el archivo con el mismo
-nombre en su directorio de trabajo. Si decide recrear un archivo con
+Después de hacer \hgcmd{remove} a un fichero, Mercurial dejará de
+hacer seguimiento al mismo, incluso si recrea el fichero con el mismo
+nombre en su directorio de trabajo. Si decide recrear un fichero con
 el mismo nombre y desea que Mercurial le haga seguimiento, basta con
-hacerle \hgcmd{add}. Mercurial sabrá que el archivo recientemente
-adicionado no está relacionado con el archivo anterior que tenía el
+hacerle \hgcmd{add}. Mercurial sabrá que el fichero recientemente
+adicionado no está relacionado con el fichero anterior que tenía el
 mismo nombre.
 
-\subsection{Al eliminar un archivo no se afecta su historia}
+\subsection{Al eliminar un fichero no se afecta su historia}
 
-Es preciso tener en cuenta que al eliminar un archivo se tiene
+Es preciso tener en cuenta que al eliminar un fichero se tiene
 dos efectos solamente.
 \begin{itemize}
 \item Se elimina la versión actual del fichero del directorio de 
@@ -116,26 +116,26 @@ Al eliminar un fichero \emph{no} se altera de ninguna manera la
 \emph{historia} del mismo.
 
 Si actualiza su directorio de trabajo a un conjunto de cambios en el
-cual esl archivo que eliminó aún era tenido en cuenta, reaparecerá en
+cual esl fichero que eliminó aún era tenido en cuenta, reaparecerá en
 el directorio de trabajo, con los contenidos que este tenía cuando se
 consignó tal conjunto de cambios.  Si usted actualiza el directorio de
-trabajo a un conjunto de cambios posterior en el cual el archivo había
+trabajo a un conjunto de cambios posterior en el cual el fichero había
 sido eliminado, Mercurial lo eliminará de nuevo del directorio de
 trabajo.
 
-\subsection{Archivos perdidos}
+\subsection{Ficheros perdidos}
 
-Mercurial considera como \emph{perdido} un archivo que usted borró,
-pero para el que no se usó \hgcmd{remove}.  Los archivos perdidos se
+Mercurial considera como \emph{perdido} un fichero que usted borró,
+pero para el que no se usó \hgcmd{remove}.  Los ficheros perdidos se
 representan con ``\texttt{!}'' al visualizar \hgcmd{status}.
-Las órdenes de Mercurial generalmente no harán nada con los archivos
+Las órdenes de Mercurial generalmente no harán nada con los ficheros
 perdidos.
 \interaction{daily.files.missing}
 
-Si su repositorio contiene un archivo que \hgcmd{status} reporta como
+Si su repositorio contiene un fichero que \hgcmd{status} reporta como
 perdido, y desea que el mismo se vaya, se puede usar 
 \hgcmdargs{remove}{\hgopt{remove}{--after}} posteriormente para
-indicarle a Mercurial que usted deseaba borrar tal archivo.
+indicarle a Mercurial que usted deseaba borrar tal fichero.
 \interaction{daily.files.remove-after}
 
 Por otro lado, si borró un fichero perdido por accidente, puede usar
@@ -144,20 +144,20 @@ fichero. Reaparecerá sin modificaciones.
 \interaction{daily.files.recover-missing}
 
 \subsection{Nota al margen: ¿Por qué decirle explícitamente a Mercurial
-  que elimine un archivo?}
+  que elimine un fichero?}
 
 Es posible que se haya preguntado por qué Mercurial exige que usted le
-indique explícitamente que está borrando un archivo. Al principio del
-desarrollo de Mercurial, este permitía que usted borrara el archivo
-sin más; Mercurial se daría cuanta de la ausencia del archivo
+indique explícitamente que está borrando un fichero. Al principio del
+desarrollo de Mercurial, este permitía que usted borrara el fichero
+sin más; Mercurial se daría cuanta de la ausencia del fichero
 automáticamente después de la ejecución de \hgcmd{commit}, y dejaba de
-hacer seguimiento al archivo.  En la práctica, resultaba muy sencillo
-borrar un archivo accidentalmente sin darse cuenta.
+hacer seguimiento al fichero.  En la práctica, resultaba muy sencillo
+borrar un fichero accidentalmente sin darse cuenta.
 
-\subsection{Atajo útil---agregar y eliminar archivos en un solo paso}
+\subsection{Atajo útil---agregar y eliminar ficheros en un solo paso}
 
 Mercurial ofrece una orden combinada, \hgcmd{addremove}, que agrega
-los archivos que no tienen seguimiento y marca los archivos faltantes
+los ficheros que no tienen seguimiento y marca los ficheros faltantes
 como eliminados.
 \interaction{daily.files.addremove}
 La orden \hgcmd{commit} su puede usar con la opción \hgopt{commit}{-A} 
@@ -165,121 +165,123 @@ que aplica el agregar-eliminar, seguido inmediatamente de una
 consignación.
 \interaction{daily.files.commit-addremove}
 
-\section{Copying files}
+\section{Copiar ficheros}
 
-Mercurial provides a \hgcmd{copy} command that lets you make a new
-copy of a file.  When you copy a file using this command, Mercurial
-makes a record of the fact that the new file is a copy of the original
-file.  It treats these copied files specially when you merge your work
-with someone else's.
+Mercurial ofrece la orden \hgcmd{copy} para hacer una nueva copia de
+un archivo.  Cuando se copia un archivo con esta orden, Mercurial
+lleva un registro indicando que el nuevo archivo es una copia del
+fichero original. Trata de forma especial los archivos copiados cuando
+usted hace una fusión con el trabajo de alguien más.
 
-\subsection{The results of copying during a merge}
+\subsection{Resultados de copiar un archivo durante una fusión}
 
-What happens during a merge is that changes ``follow'' a copy.  To
-best illustrate what this means, let's create an example.  We'll start
-with the usual tiny repository that contains a single file.
+Durante una fusión lols cambios ``siguen'' una copia.  Para ilustrar
+lo que esto significa, haremos un ejemplo.  Comenzaremos con el mini
+repositorio usual que contiene un solo archivo
 \interaction{daily.copy.init}
-We need to do some work in parallel, so that we'll have something to
-merge.  So let's clone our repository.
+Debemos trabajar algo en paralelo, de forma que tengamos algo para
+fusionar. Aquí clonamos el repositorio.
 \interaction{daily.copy.clone}
-Back in our initial repository, let's use the \hgcmd{copy} command to
-make a copy of the first file we created.
+De vuelta en el repositorio, usemos la orden \hgcmd{copy} para hacer
+una copia del primer archivo que creamos.
 \interaction{daily.copy.copy}
 
-If we look at the output of the \hgcmd{status} command afterwards, the
-copied file looks just like a normal added file.
+Si vemos la salida de la orden \hgcmd{status}, el archivo copiado luce
+como un archivo que se ha añadido normalmente.
 \interaction{daily.copy.status}
-But if we pass the \hgopt{status}{-C} option to \hgcmd{status}, it
-prints another line of output: this is the file that our newly-added
+Si usamos la opción \hgopt{status}{-C} de la orden \hgcmd{status},
+imprimirá otra línea: Ela archivo of output: this is the file that our newly-added
 file was copied \emph{from}.
 \interaction{daily.copy.status-copy}
 
-Now, back in the repository we cloned, let's make a change in
-parallel.  We'll add a line of content to the original file that we
-created.
+Ahora, en el repositorio que clonamos, hagamos un cambio en
+paralelo. Adicionaremos una línea de contenido al archivo original que
+creamos.
 \interaction{daily.copy.other}
-Now we have a modified \filename{file} in this repository.  When we
-pull the changes from the first repository, and merge the two heads,
-Mercurial will propagate the changes that we made locally to
-\filename{file} into its copy, \filename{new-file}.
+Hemos modificado el fichero \filename{file} en este
+repositorio. Cuando jalemos los cambios del primer repositorio y
+fusionemos las dos cabezas, Mercurial propagará los cambios que hemos
+hecho localmente en \filename{file} a su copia, \filename{new-file}.
 \interaction{daily.copy.merge}
 
-\subsection{Why should changes follow copies?}
+\subsection{¿Por qué los cambios se reflejan en las copias?}
 \label{sec:daily:why-copy}
 
-This behaviour, of changes to a file propagating out to copies of the
-file, might seem esoteric, but in most cases it's highly desirable.
+Este comportamiento de cambios en ficheros que se propagan a las
+copias de los ficheros parecería esotérico, pero en la mayoría de
+casos es absolutamente deseable.
 
-First of all, remember that this propagation \emph{only} happens when
-you merge.  So if you \hgcmd{copy} a file, and subsequently modify the
-original file during the normal course of your work, nothing will
-happen.
+Es indispensable recordar que esta propagación \emph{solamente} sucede
+cuando fusionamos.  Por lo tanto si sobre un archivo se usa
+\hgcmd{copy}, y se modifica el fichero original durante el curso
+normal de su trabajo, nada pasará.
 
-The second thing to know is that modifications will only propagate
-across a copy as long as the repository that you're pulling changes
-from \emph{doesn't know} about the copy.
+Lo segundo a tener en cuenta es que las modificaciones solamente se
+propagarán en las copias únicamente si los repositorios de los cuales
+está jalando los cambios \emph{no saben} de la copia.
 
-The reason that Mercurial does this is as follows.  Let's say I make
-an important bug fix in a source file, and commit my changes.
-Meanwhile, you've decided to \hgcmd{copy} the file in your repository,
-without knowing about the bug or having seen the fix, and you have
-started hacking on your copy of the file.
+Explicaremos a continuación la razón de este comportamiento de
+Mercurial. Digamos que yo he aplicado un arreglo de un fallo importante a un
+archivo fuente y consigné los cambios.  Por otro lado, usted decidió hacer
+\hgcmd{copy} sobre el fichero en su repositorio, sin saber acerca del
+fallo o sin ver el arreglo, y ha comenzado a trabajar sobre su copia
+del archivo.
 
-If you pulled and merged my changes, and Mercurial \emph{didn't}
-propagate changes across copies, your source file would now contain
-the bug, and unless you remembered to propagate the bug fix by hand,
-the bug would \emph{remain} in your copy of the file.
+Si jala y fusiona mis cambios y Mercurial \emph{no hubiera} propagado
+los cambios en las copias, su fichero fuente tendría el fallo, a menos
+que usted haya recordado propagar el arreglo del fallo a mano, el
+mismo \emph{permanecería} en su copia del archivo.
 
-By automatically propagating the change that fixed the bug from the
-original file to the copy, Mercurial prevents this class of problem.
-To my knowledge, Mercurial is the \emph{only} revision control system
-that propagates changes across copies like this.
+Mercurial previene esta clase de problemas, gracias a la propagación
+automática del cambio que arregló el fallo del fichero original. Hasta
+donde sé, Mercurial es el \emph{único} sistema de control de
+revisiones que propaga los cambios en las copias de esta forma.
 
-Once your change history has a record that the copy and subsequent
-merge occurred, there's usually no further need to propagate changes
-from the original file to the copied file, and that's why Mercurial
-only propagates changes across copies until this point, and no
-further.
+Cuando su historial de cambios tiene un registro de la copia y la
+subsecuente fusión, usualmente no es necesario propagar los cambios el
+fichero oficinal a las copias del mismo, y por esta razón Mercurial
+propaga únicamente los cambios en las copias hasta este punto y no más
+allá.
 
-\subsection{How to make changes \emph{not} follow a copy}
 
-If, for some reason, you decide that this business of automatically
-propagating changes across copies is not for you, simply use your
-system's normal file copy command (on Unix-like systems, that's
-\command{cp}) to make a copy of a file, then \hgcmd{add} the new copy
-by hand.  Before you do so, though, please do reread
-section~\ref{sec:daily:why-copy}, and make an informed decision that
-this behaviour is not appropriate to your specific case.
+\subsection{Cómo hacer que los cambios \emph{no} sigan a la copia?}
 
-\subsection{Behaviour of the \hgcmd{copy} command}
+Si por algún motivo usted decide que esta característica de
+propagación automática de cambios en las copias no es para usted, use
+la orden usual de sus sistema para copiar ficheros (En sistemas tipo
+Unix, es \command{cp}), posteriormente use \hgcmd{add} sobre la nueva
+copia hecha a mano.  Antes de hacerlo, de todas maneras, relea la
+sección~\ref{sec:daily:why-copy}, y tome una decisión asegurándose que
+este comportamiento no es el apropiado para su caso específico.
 
-When you use the \hgcmd{copy} command, Mercurial makes a copy of each
-source file as it currently stands in the working directory.  This
-means that if you make some modifications to a file, then \hgcmd{copy}
-it without first having committed those changes, the new copy will
-also contain the modifications you have made up until that point.  (I
-find this behaviour a little counterintuitive, which is why I mention
-it here.)
+\subsection{Comportamiento de la orden \hgcmd{copy}}
 
-The \hgcmd{copy} command acts similarly to the Unix \command{cp}
-command (you can use the \hgcmd{cp} alias if you prefer).  The last
-argument is the \emph{destination}, and all prior arguments are
-\emph{sources}.  If you pass it a single file as the source, and the
-destination does not exist, it creates a new file with that name.
+Cuando usa la orden \hgcmd{copy}, Mercurial hace una copia de cada
+archivo fuente del directorio actual. Esto significa que si usted hace
+modificaciones a un fichero, y le aplica \hgcmd{copy} sin haber
+consignado primero los cambios, la nueva copia contendrá también las
+modificaciones que haya hecho hasta ese punto. (Este comportamiento me
+parece poco intuitivo, y por tal motivo lo menciono.)
+
+La orden \hgcmd{copy} actua de forma parecida a la orden \command{cp}
+de Unix(puede usar el alias \hgcmd{cp} si le es más cómodo).  El
+último argumento es el \emph{destino}, y todos los argumentos previos
+son las \emph{fuentes}.  Si solamente indica un fichero como la
+fuente, y el destino no existe, se crea un fichero nuevo con ese nombre.
 \interaction{daily.copy.simple}
-If the destination is a directory, Mercurial copies its sources into
-that directory.
+Si el destino es un directorio, Mercurial copia las fuentes en este.
 \interaction{daily.copy.dir-dest}
-Copying a directory is recursive, and preserves the directory
-structure of the source.
+La copia de un directorio es recursiva, y preserva la estructura del
+directorio fuente.
 \interaction{daily.copy.dir-src}
-If the source and destination are both directories, the source tree is
-recreated in the destination directory.
+Si tanto la fuente como el destino son directorios, la estructura de
+la fuente se recrea en el directorio destino.
 \interaction{daily.copy.dir-src-dest}
 
-As with the \hgcmd{rename} command, if you copy a file manually and
-then want Mercurial to know that you've copied the file, simply use
-the \hgopt{copy}{--after} option to \hgcmd{copy}.
+De la misma forma como la orden \hgcmd{rename}, si copia un fichero
+manualmente y desea que Mercurial sepa que ha copiado un fichero,
+basta con aplicar la opción \hgopt{copy}{--after} a la orden 
+\hgcmd{copy}.
 \interaction{daily.copy.after}
 
 \section{Renaming files}
