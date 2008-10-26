@@ -359,42 +359,44 @@ una copia local del mismo, podemos clonar esa. Esto es mucho más
 rápido que clonar a través de la red, y en la mayoría de los casos
 clonar un repositorio local usa menos espacio en disco también.
 \interaction{tour.reclone}
-As an aside, it's often good practice to keep a ``pristine'' copy of a
-remote repository around, which you can then make temporary clones of
-to create sandboxes for each task you want to work on.  This lets you
-work on multiple tasks in parallel, each isolated from the others
-until it's complete and you're ready to integrate it back.  Because
-local clones are so cheap, there's almost no overhead to cloning and
-destroying repositories whenever you want.
+A manera de recomendación, es considerado buena práctica mantener una
+copia ``prístina'' de un repositorio remoto a mano, del cual usted
+puede hacer clones temporales para crear cajas de arena para cada
+tarea en la que desee trabajar. Esto le permite trabajar en múltiples
+tareas en paralelo, teniendo cada una de ellas aislada de las otras
+hasta que estén completas y usted esté listo para integrar los cambios
+de vuelta. Como los clones locales son tan baratos, clonar y destruir
+repositorios no consume demasiados recursos, lo que facilita hacerlo
+en cualquier momento.
 
-In our \dirname{my-hello} repository, we have a file
-\filename{hello.c} that contains the classic ``hello, world'' program.
-Let's use the ancient and venerable \command{sed} command to edit this
-file so that it prints a second line of output.  (I'm only using
-\command{sed} to do this because it's easy to write a scripted example
-this way.  Since you're not under the same constraint, you probably
-won't want to use \command{sed}; simply use your preferred text editor to
-do the same thing.)
+En nuestro repositorio \dirname{my-hello}, hay un archivo
+\filename{hello.c} que contiene el clásico programa ``hello,
+world''\ndt{Hola, mundo.}. Usaremos el clásico y venerado comando
+\command{sed} para editar este archivo y hacer que imprima una segunda
+línea de salida. (Estoy usando el comando \command{sed} para hacer
+esto sólo porque es fácil escribir un ejemplo automatizado con él.
+Dado que usted no tiene esta restricción, probablemente no querrá usar
+\command{sed}; use su editor de texto preferido para hacer lo mismo).
 \interaction{tour.sed}
 
-Mercurial's \hgcmd{status} command will tell us what Mercurial knows
-about the files in the repository.
+El comando \hgcmd{status} de Mercurial nos dice lo que Mercurial sabe
+acerca de los archivos en el repositorio.
 \interaction{tour.status}
-The \hgcmd{status} command prints no output for some files, but a line
-starting with ``\texttt{M}'' for \filename{hello.c}.  Unless you tell
-it to, \hgcmd{status} will not print any output for files that have
-not been modified.  
+El comando \hgcmd{status} no imprime nada para algunos archivos, sólo
+una línea empezando con ``\texttt{M}'' para el fichero
+\filename{hello.c}. A menos que usted lo indique explícitamente,
+\hgcmd{status} no imprimirá nada respecto a los archivos que no han
+sido modificados.
 
-The ``\texttt{M}'' indicates that Mercurial has noticed that we
-modified \filename{hello.c}.  We didn't need to \emph{inform}
-Mercurial that we were going to modify the file before we started, or
-that we had modified the file after we were done; it was able to
-figure this out itself.
+La ``\texttt{M}'' indica que Mercurial se dio cuenta de que nosotros
+modificamos \filename{hello.c}.  No tuvimos que \emph{decirle} a
+Mercurial que íbamos a modificar ese archivo antes de hacerlo, o que
+lo modificamos una vez terminamos de hacerlo; él fue capaz de darse
+cuenta de esto por sí mismo.
 
-It's a little bit helpful to know that we've modified
-\filename{hello.c}, but we might prefer to know exactly \emph{what}
-changes we've made to it.  To do this, we use the \hgcmd{diff}
-command.
+Es algo útil saber que hemos modificado el archivo \filename{hello.c},
+pero preferiríamos saber exactamente \emph{qué} cambios hicimos.
+Para averiguar esto, usamos el comando \hgcmd{diff}.
 \interaction{tour.diff}
 
 \section{Recording changes in a new changeset}
