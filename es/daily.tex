@@ -284,106 +284,112 @@ basta con aplicar la opción \hgopt{copy}{--after} a la orden
 \hgcmd{copy}.
 \interaction{daily.copy.after}
 
-\section{Renaming files}
+\section{Renombrar ficheros}
 
-It's rather more common to need to rename a file than to make a copy
-of it.  The reason I discussed the \hgcmd{copy} command before talking
-about renaming files is that Mercurial treats a rename in essentially
-the same way as a copy.  Therefore, knowing what Mercurial does when
-you copy a file tells you what to expect when you rename a file.
+La necesidad de renombrar un fichero es más común que hacer una copia
+del fichero.  La razón por la cual discutí la orden \hgcmd{copy} antes
+de hablar acerca de cambiar el nombre de los ficheros, es que
+Mercurial trata el renombrar un archivo de la misma forma que una
+copia.  Por lo tanto, saber lo que hace Mercurial cuando usted copia
+un archivo, le indica qué esperar cuando renombra un archivo.
 
-When you use the \hgcmd{rename} command, Mercurial makes a copy of
-each source file, then deletes it and marks the file as removed.
+Cuando usa la orden \hgcmd{rename}, Mercurial hace una copia de cada
+archivo fuente, lo borra y lo marca como fichero eliminado.
 \interaction{daily.rename.rename}
-The \hgcmd{status} command shows the newly copied file as added, and
-the copied-from file as removed.
+La orden \hgcmd{status} muestra la nueva copia del fichero como
+añadido y el fichero inicial de la copia, como eliminado.
 \interaction{daily.rename.status}
-As with the results of a \hgcmd{copy}, we must use the
-\hgopt{status}{-C} option to \hgcmd{status} to see that the added file
-is really being tracked by Mercurial as a copy of the original, now
-removed, file.
+De la misma forma como se usa la orden \hgcmd{copy}, debemos usar la
+opción \hgopt{status}{-C} de la orden \hgcmd{status} para verificar
+que el archivo añadido realmente comienza a  ser seguido por Mercurial
+como una copia del fichero original, ahora eliminado.
 \interaction{daily.rename.status-copy}
 
-As with \hgcmd{remove} and \hgcmd{copy}, you can tell Mercurial about
-a rename after the fact using the \hgopt{rename}{--after} option.  In
-most other respects, the behaviour of the \hgcmd{rename} command, and
-the options it accepts, are similar to the \hgcmd{copy} command.
+Igual que con \hgcmd{remove} y \hgcmd{copy}, puede indicársele a
+Mercurial acerca de un renombramiento inmediato con la opción
+\hgopt{rename}{--after}.   El comportamiento de la orden
+\hgcmd{rename} y las opciones que acepta, son similares a la orden
+\hgcmd{copy} en casi todo.
 
-\subsection{Renaming files and merging changes}
+\subsection{Renombrar ficheros y fusionar cambios}
 
-Since Mercurial's rename is implemented as copy-and-remove, the same
-propagation of changes happens when you merge after a rename as after
-a copy.
+Dado que el renombrar de Mercurial se implementa como un
+copiar-y-eliminar, la misma propagación de cambios ocurre cuando usted
+fusiona después de renombrar como después de hacer una copia.
 
-If I modify a file, and you rename it to a new name, and then we merge
-our respective changes, my modifications to the file under its
-original name will be propagated into the file under its new name.
-(This is something you might expect to ``simply work,'' but not all
-revision control systems actually do this.)
+Si Yo modifico un fichero y usted lo renombra a un nuevo archivo, y
+posteriormente fusionamos nuestros cambios respectivos, mi
+modificación al fichero bajo su nombre original se propagará en el
+fichero con el nuevo nombre. (Es lo que se esperaría como ``lo hace,''
+pero, no todos los sistemas de control de revisiones lo logran.)
 
-Whereas having changes follow a copy is a feature where you can
-perhaps nod and say ``yes, that might be useful,'' it should be clear
-that having them follow a rename is definitely important.  Without
-this facility, it would simply be too easy for changes to become
-orphaned when files are renamed.
+El hecho de que los cambios sigan la copia es una característica que
+puede subestimar diciendo ``si, puede ser útil,'' debería ser claro
+que el seguimiento de cambios de un renombramiento es importante
+definitivamente.  Sin esto, sería muy sencillo que los cambios se
+volvieran huérfanos cuando los archivos se renombran.
 
-\subsection{Divergent renames and merging}
+\subsection{Cambios de nombre divergentes y fusión}
 
-The case of diverging names occurs when two developers start with a
-file---let's call it \filename{foo}---in their respective
-repositories.
+El caso de renombramiento con nombres divergentes ocurre cuando dos
+desarrolladores comienzan  con un fichero---llamémoslo
+\filename{foo}---en sus repositorios respectivos.
 
 \interaction{rename.divergent.clone}
-Anne renames the file to \filename{bar}.
+Ana renombra el fichero a \filename{bar}.
 \interaction{rename.divergent.rename.anne}
-Meanwhile, Bob renames it to \filename{quux}.
+Mientras que Roberto lo renombra como \filename{quux}.
 \interaction{rename.divergent.rename.bob}
 
-I like to think of this as a conflict because each developer has
-expressed different intentions about what the file ought to be named.
+Veo esto como un conflicto porque cada desarrollador ha expresado
+intenciones diferentes acerca de cómo considera debería haberse
+renombrado el fichero.
 
-What do you think should happen when they merge their work?
-Mercurial's actual behaviour is that it always preserves \emph{both}
-names when it merges changesets that contain divergent renames.
+¿ué cree que debería pasar cuando fusionen su trabajo?
+El comportamiento de Mercurial es que siempre preserva \emph{ambos}
+nombres cuando fusiona  los conjuntos de cambios que contienen nombres
+divergentes.
 \interaction{rename.divergent.merge}
 
-Notice that Mercurial does warn about the divergent renames, but it
-leaves it up to you to do something about the divergence after the merge.
+Tenga en cuenta que Mercurial le advierte acerca de nombres
+divergentes, pero deja que usted decida qué hacer con la divergencia
+después de la fusión.
 
-\subsection{Convergent renames and merging}
+\subsection{Cambios de nombre convergentes y fusión}
 
-Another kind of rename conflict occurs when two people choose to
-rename different \emph{source} files to the same \emph{destination}.
-In this case, Mercurial runs its normal merge machinery, and lets you
-guide it to a suitable resolution.
+Otra clase de conflicto al cambiar el nombre ocurre cuando dos
+personas eligen renombrar diferentes ficheros \emph{fuente} al mismo
+\emph{destino}. En este caso Mercurial aplica su maquinaria de fusión
+usual, y le permite a usted guiarlo a una solución adecuada.
 
-\subsection{Other name-related corner cases}
+\subsection{Otros casos límites relacionados con renombramientos}
 
-Mercurial has a longstanding bug in which it fails to handle a merge
-where one side has a file with a given name, while another has a
-directory with the same name.  This is documented as~\bug{29}.
+Mercurial tiene un fallo de mucho tiempo en el cual no es capaz de
+fusionar cuando por un lado hay un archivo con un nombre dado,
+mientras que en otro hay un directorio con el mismo nombre. Esto está
+documentado como~\bug{29}.
 \interaction{issue29.go}
 
-\section{Recovering from mistakes}
+\section{Recuperarse de equivocaciones}
 
-Mercurial has some useful commands that will help you to recover from
-some common mistakes.
+Mercurial tiene unas órdenes poderosas que le ayudarán a recuperarse
+de equivocaciones comunes.
 
-The \hgcmd{revert} command lets you undo changes that you have made to
-your working directory.  For example, if you \hgcmd{add} a file by
-accident, just run \hgcmd{revert} with the name of the file you added,
-and while the file won't be touched in any way, it won't be tracked
-for adding by Mercurial any longer, either.  You can also use
-\hgcmd{revert} to get rid of erroneous changes to a file.
+La orden \hgcmd{revert} le permite deshacer cambios que haya hecho a
+su directorio de trabajo. Por ejemplo, Si aplicó \hgcmd{add} a un
+fichero por accidente, ejecute \hgcmd{revert} con el nombre del
+fichero que añadió, y en tando que el archivo no haya sido tocado de
+forma alguna, no será adicionado, ni seguido por Mercurial.  También
+puede usar \hgcmd{revert} para deshacerse de cambios erróneos a un
+fichero.
 
-It's useful to remember that the \hgcmd{revert} command is useful for
-changes that you have not yet committed.  Once you've committed a
-change, if you decide it was a mistake, you can still do something
-about it, though your options may be more limited.
+Tenga en cuenta que la orden \hgcmd{revert} se usa para cambios que no
+han sido consignados. Cuando haya consignado un cambio, si decide que
+era un error, puede hacer algo todavía, pero sus opciones pueden ser
+más limitadas.
 
-For more information about the \hgcmd{revert} command, and details
-about how to deal with changes you have already committed, see
-chapter~\ref{chap:undo}.
+Para obtener información acerca de la orden \hgcmd{revert} y detalles
+de cómo tratar con cambios consignados, vea el capítulo~\ref{chap:undo}.
 
 %%% Local Variables: 
 %%% mode: latex
