@@ -118,12 +118,12 @@ Mercurial que imprima más información de lo que haría usualmente.
 \section{Trabajar con un repositorio}
 
 En Mercurial, todo sucede dentro de un \emph{repositorio}. El
-repositorio para un proyecto contiene todos los archivos que
+repositorio para un proyecto contiene todos los ficheros que
 ``pertenecen a'' ése proyecto, junto con un registro histórico de los
-archivos de ese proyecto.
+ficheros de ese proyecto.
 
 No hay nada particularmente mágico acerca de un repositorio; es
-simplemente un árbol de directorios en su sistema de archivos que
+simplemente un árbol de directorios en su sistema de ficheros que
 Mercurial trata como especial. Usted puede renombrar o borrar un
 repositorio en el momento que lo desee, usando bien sea la línea de
 comandos o su explorador de ficheros.
@@ -131,20 +131,20 @@ comandos o su explorador de ficheros.
 \subsection{Hacer una copia local de un repositorio}
 
 \emph{Copiar} un repositorio es sólo ligeramente especial. Aunque
-usted podría usar un programa normal de copia de archivos para hacer
+usted podría usar un programa normal de copia de ficheros para hacer
 una copia del repositorio, es mejor usar el comando integrado que
 Mercurial ofrece. Este comando se llama \hgcmd{clone}\ndt{Del término
 ``clonar'' en inglés.}, porque crea una copia idéntica de un
 repositorio existente.
 \interaction{tour.clone}
 Si nuestro clonado tiene éxito, deberíamos tener un directorio local
-llamado \dirname{hello}. Este directorio contendrá algunos archivos.
+llamado \dirname{hello}. Este directorio contendrá algunos ficheros.
 \interaction{tour.ls}
-Estos archivos tienen el mismo contenido e historial en nuestro
+Estos ficheros tienen el mismo contenido e historial en nuestro
 repositorio y en el repositorio que clonamos.
 
 Cada repositorio Mercurial está completo, es autocontenido e
-independiente. Contiene su propia copia de los archivos y la historia
+independiente. Contiene su propia copia de los ficheros y la historia
 de un proyecto. Un repositorio clonado recuerda la ubicación de la que
 fue clonado, pero no se comunica con ese repositorio, ni con ningún
 otro, a menos que usted le indique que lo haga.
@@ -163,10 +163,10 @@ mantiene todos los metadatos del repositorio.
 
 Los contenidos del directorio \dirname{.hg} y sus subdirectorios son
 exclusivos de Mercurial. Usted es libre de hacer lo que desee con
-cualquier otro archivo o directorio en el repositorio.
+cualquier otro fichero o directorio en el repositorio.
 
 Para introducir algo de terminología, el directorio \dirname{.hg} es
-el repositorio ``real'', y todos los archivos y directorios que
+el repositorio ``real'', y todos los ficheros y directorios que
 coexisten con él están en el \emph{directorio de trabajo}. Una forma
 sencilla de recordar esta distinción es que el \emph{repositorio}
 % TODO unificar con Igor, si historia o historial
@@ -184,7 +184,7 @@ Por defecto este programa imprime un párrafo breve por cada cambio al
 proyecto que haya sido grabado. Dentro de la terminología de
 Mercurial, cada uno de estos eventos es llamado \emph{conjuntos de
 cambios}, porque pueden contener un registro de cambios a varios
-archivos.
+ficheros.
 
 Los campos de la salida de \hgcmd{log} son los siguientes.
 \begin{itemize}
@@ -203,322 +203,359 @@ Los campos de la salida de \hgcmd{log} son los siguientes.
     casos contiene el nombre de una persona y su dirección de correo
     electrónico.
     
-\item[\texttt{date}] The date and time on which the changeset was
-  created, and the timezone in which it was created.  (The date and
-  time are local to that timezone; they display what time and date it
-  was for the person who created the changeset.)
-\item[\texttt{summary}] The first line of the text message that the
-  creator of the changeset entered to describe the changeset.
+\item[\texttt{date}]\hspace{-0.5em}\ndt{Fecha.} La fecha y hora en la
+    que el conjunto de cambios fue creado, y la zona horaria en la que
+    fue creado. (La fecha y hora son locales a dicha zona horaria;
+    ambos muestran la fecha y hora para la persona que creó el
+    changeset).
+    
+\item[\texttt{summary}]\hspace{-0.5em}\ndt{Sumario.} 
+    La primera línea del texto que usó la persona que creó el conjunto
+    de cambios para describir el mismo.
 \end{itemize}
-The default output printed by \hgcmd{log} is purely a summary; it is
-missing a lot of detail.
+El texto impreso por \hgcmd{log} es sólo un sumario; omite una gran
+cantidad de detalles.
 
-Figure~\ref{fig:tour-basic:history} provides a graphical representation of
-the history of the \dirname{hello} repository, to make it a little
-easier to see which direction history is ``flowing'' in.  We'll be
-returning to this figure several times in this chapter and the chapter
-that follows.
+La figura~\ref{fig:tour-basic:history} es una representación
+gráfica del historial del repositorio \dirname{hello}, para hacer más
+fácil ver en qué dirección está ``fluyendo'' el historial. Volveremos
+a esto varias veces en este capítulo y en los siguientes.
 
 \begin{figure}[ht]
   \centering
   \grafix{tour-history}
-  \caption{Graphical history of the \dirname{hello} repository}
+  \caption{Historial gráfico de el repositorio \dirname{hello}}
   \label{fig:tour-basic:history}
 \end{figure}
 
-\subsection{Changesets, revisions, and talking to other 
-  people}
+\subsection{Conjuntos de cambios, revisiones, y comunicándose con
+otras personas}
 
-As English is a notoriously sloppy language, and computer science has
-a hallowed history of terminological confusion (why use one term when
-four will do?), revision control has a variety of words and phrases
-that mean the same thing.  If you are talking about Mercurial history
-with other people, you will find that the word ``changeset'' is often
-compressed to ``change'' or (when written) ``cset'', and sometimes a
-changeset is referred to as a ``revision'' or a ``rev''.
+%TODO sloppy => desordenado ?  TODO hablar del inglés? o de español?
+Ya que el inglés es un lenguaje notablemente desordenado, y el área de
+ciencias de la computación tiene una notable historia de confusión de
+% TODO insertar ? al revés. no sé cómo en un teclado de estos.
+términos (porqué usar sólo un término cuando cuatro pueden servir?),
+el control de revisiones tiene una variedad de frases y palabras que
+tienen el mismo significado. Si usted habla acerca del historial de
+Mercurial con alguien, encontrará que la expresión ``conjunto de
+cambios'' es abreviada a menudo como ``cambio'' o (por escrito)
+``cset''\ndt{Abreviatura para la expresión ``changeset'' en inglés.},
+y algunas veces un se hace referencia a un conjunto de cambios como
+una ``revisión'' o ``rev''\ndt{De nuevo, como abreviación para el
+término en inglés para ``revisión'' (``revision'').}.
 
-While it doesn't matter what \emph{word} you use to refer to the
-concept of ``a~changeset'', the \emph{identifier} that you use to
-refer to ``a~\emph{specific} changeset'' is of great importance.
-Recall that the \texttt{changeset} field in the output from
-\hgcmd{log} identifies a changeset using both a number and a
-hexadecimal string.
+Si bien no es relevante qué \emph{palabra} use usted para referirse al
+concepto ``conjunto de cambios'', el \emph{identificador} que usted
+use para referise a ``un \emph{conjunto de cambios} particular'' es
+muy importante. Recuerde que el campo \texttt{changeset} en la salida
+de \hgcmd{log} identifica un conjunto de cambios usando tanto un
+número como una cadena hexadecimal.
+
 \begin{itemize}
-\item The revision number is \emph{only valid in that repository},
-\item while the hex string is the \emph{permanent, unchanging
-    identifier} that will always identify that exact changeset in
-  \emph{every} copy of the repository.
+    \item El número de revisión \emph{sólo es válido dentro del
+        repositorio}.
+    \item Por otro lado, la cadena hexadecimal es el
+        \emph{identificador permanente e inmutable} que siempre
+        identificará ése conjunto de cambios en \emph{todas} las
+        copias del repositorio.
 \end{itemize}
-This distinction is important.  If you send someone an email talking
-about ``revision~33'', there's a high likelihood that their
-revision~33 will \emph{not be the same} as yours.  The reason for this
-is that a revision number depends on the order in which changes
-arrived in a repository, and there is no guarantee that the same
-changes will happen in the same order in different repositories.
-Three changes $a,b,c$ can easily appear in one repository as $0,1,2$,
-while in another as $1,0,2$.
+La diferencia es importante. Si usted le envía a alguien un correo
+electrónico hablando acerca de la ``revisión~33'', hay una
+probabilidad alta de que la revisión~33 de esa persona \emph{no sea la
+misma suya}. Esto sucede porque el número de revisión depende de el
+orden en que llegan los cambios al repositorio, y no hay ninguna
+garantía de que los mismos cambios llegarán en el mismo orden en
+diferentes repositorios. Tres cambios dados $a,b,c$ pueden aparecer en
+un repositorio como $0,1,2$, mientras que en otro aparecen como
+$1,0,2$.
 
-Mercurial uses revision numbers purely as a convenient shorthand.  If
-you need to discuss a changeset with someone, or make a record of a
-changeset for some other reason (for example, in a bug report), use
-the hexadecimal identifier.
+Mercurial usa los números de revisión simplemente como una abreviación
+conveniente. Si usted necesita hablar con alguien acerca de un
+conjunto de cambios, o llevar el registro de un conjunto de cambios
+por alguna otra razón (por ejemplo, en un reporte de fallo), use el
+identificador hexadecimal.
 
-\subsection{Viewing specific revisions}
+\subsection{Ver revisiones específicas}
 
-To narrow the output of \hgcmd{log} down to a single revision, use the
-\hgopt{log}{-r} (or \hgopt{log}{--rev}) option.  You can use either a
-revision number or a long-form changeset identifier, and you can
-provide as many revisions as you want.  \interaction{tour.log-r}
+Para reducir la salida de \hgcmd{log} a una sola revisión, use la  
+opción \hgopt{log}{-r} (o \hgopt{log}{--rev}).  Puede usar un número
+de revisión o un identificador hexadecimal de conjunto de cambios, y
+puede pasar tantas revisiones como desee.
 
-If you want to see the history of several revisions without having to
-list each one, you can use \emph{range notation}; this lets you
-express the idea ``I want all revisions between $a$ and $b$,
-inclusive''.
+\interaction{tour.log-r}
+
+Si desea ver el historial de varias revisiones sin tener que mencionar
+cada una de ellas, puede usar la \emph{notación de rango}; esto le
+permite expresar el concepto ``quiero ver todas las revisiones entre
+$a$ y $b$, inclusive''.
 \interaction{tour.log.range}
-Mercurial also honours the order in which you specify revisions, so
-\hgcmdargs{log}{-r 2:4} prints $2,3,4$ while \hgcmdargs{log}{-r 4:2}
-prints $4,3,2$.
+Mercurial también respeta el orden en que usted especifica las
+revisiones, así que \hgcmdargs{log}{-r 2:4} muestra $2,3,4$ mientras
+que \hgcmdargs{log}{-r 4:2} muestra $4,3,2$.
 
-\subsection{More detailed information}
-
-While the summary information printed by \hgcmd{log} is useful if you
-already know what you're looking for, you may need to see a complete
-description of the change, or a list of the files changed, if you're
-trying to decide whether a changeset is the one you're looking for.
-The \hgcmd{log} command's \hggopt{-v} (or \hggopt{--verbose})
-option gives you this extra detail.
+\subsection{Información más detallada}
+Aunque la información presentada por \hgcmd{log} es útil si usted sabe
+de antemano qué está buscando, puede que necesite ver una descripción
+completa de el cambio, o una lista de los ficheros que cambiaron, si
+está tratando de averiguar si un conjunto de cambios dado es el que
+usted está buscando. La opción \hggopt{-v} (or \hggopt{--verbose}) del
+comando \hgcmd{log} le da este nivel extra de detalle.
 \interaction{tour.log-v}
 
-If you want to see both the description and content of a change, add
-the \hgopt{log}{-p} (or \hgopt{log}{--patch}) option.  This displays
-the content of a change as a \emph{unified diff} (if you've never seen
-a unified diff before, see section~\ref{sec:mq:patch} for an overview).
+Si desea ver tanto la descripción como el contenido de un cambio,
+añada la opción \hgopt{log}{-p} (o \hgopt{log}{--patch}). Esto muestra
+% TODO qué hacemos con diff unificado? convervarlo, por ser la
+% acepción usual?
+el contenido de un cambio como un \emph{diff unificado} (si usted
+nunca ha visto un diff unificado antes, vea la
+sección~\ref{sec:mq:patch} para un vistazo global).
 \interaction{tour.log-vp}
 
-\section{All about command options}
+\section{Todo acerca de las opciones para comandos}
 
-Let's take a brief break from exploring Mercurial commands to discuss
-a pattern in the way that they work; you may find this useful to keep
-in mind as we continue our tour.
+Tomemos un breve descanso de la tarea de explorar los comandos de
+Mercurial para hablar de un patrón en la manera en que trabajan; será
+útil tener esto en mente a medida que avanza nuestra gira.
 
-Mercurial has a consistent and straightforward approach to dealing
-with the options that you can pass to commands.  It follows the
-conventions for options that are common to modern Linux and Unix
-systems.
+Mercurial tiene un enfoque directo y consistente en el manejo de las
+opciones que usted le puede pasar a los comandos. Se siguen las
+convenciones para opciones que son comunes en sistemas Linux y Unix
+modernos.
 \begin{itemize}
-\item Every option has a long name.  For example, as we've already
-  seen, the \hgcmd{log} command accepts a \hgopt{log}{--rev} option.
-\item Most options have short names, too.  Instead of
-  \hgopt{log}{--rev}, we can use \hgopt{log}{-r}.  (The reason that
-  some options don't have short names is that the options in question
-  are rarely used.)
-\item Long options start with two dashes (e.g.~\hgopt{log}{--rev}),
-  while short options start with one (e.g.~\hgopt{log}{-r}).
-\item Option naming and usage is consistent across commands.  For
-  example, every command that lets you specify a changeset~ID or
-  revision number accepts both \hgopt{log}{-r} and \hgopt{log}{--rev}
-  arguments.
+\item Cada opción tiene un nombre largo. Por ejemplo, el comando
+    \hgcmd{log} acepta la opción \hgopt{log}{--rev}, como ya hemos
+    visto.
+\item Muchas opciones tienen también un nombre corto. En vez de
+    \hgopt{log}{--rev}, podemos usar \hgopt{log}{-r}.  (El motivo para
+    que algunas opciones no tengan nombres cortos es que dichas
+    opciones se usan rara vez.)
+\item Las opciones largas empiezan con dos guiones (p.ej.~\hgopt{log}{--rev}),
+    mientras que las opciones cortas empiezan con uno (e.g.~\hgopt{log}{-r}).
+\item El nombre  y uso de las opciones es consistente en todos los
+    comandos. Por ejemplo, cada comando que le permite pasar un ID de
+    conjunto de cambios o un número de revisión acepta tanto la opción
+    \hgopt{log}{-r} como la \hgopt{log}{--rev}.
 \end{itemize}
-In the examples throughout this book, I use short options instead of
-long.  This just reflects my own preference, so don't read anything
-significant into it.
+En los ejemplos en este libro, uso las opciones cortas en vez de las
+largas. Esto sólo muestra mis preferencias, así que no le dé
+significado especial a eso.
 
-Most commands that print output of some kind will print more output
-when passed a \hggopt{-v} (or \hggopt{--verbose}) option, and less
-when passed \hggopt{-q} (or \hggopt{--quiet}).
+Muchos de los comandos que generan salida de algún tipo mostrarán más
+salida cuando se les pase la opción \hggopt{-v} (o
+\hggopt{--verbose}\ndt{Prolijo.}), y menos cuando se les pase la opción \hggopt{-q}
+(o \hggopt{--quiet}\ndt{Silencioso.}).
 
-\section{Making and reviewing changes}
+\section{Hacer y repasar cambios}
 
-Now that we have a grasp of viewing history in Mercurial, let's take a
-look at making some changes and examining them.
+Ahora que tenemos una comprensión adecuada sobre cómo revisar el
+historial en Mercurial, hagamos algunos cambios y veamos cómo
+examinarlos.
 
-The first thing we'll do is isolate our experiment in a repository of
-its own.  We use the \hgcmd{clone} command, but we don't need to
-clone a copy of the remote repository.  Since we already have a copy
-of it locally, we can just clone that instead.  This is much faster
-than cloning over the network, and cloning a local repository uses
-less disk space in most cases, too.
+Lo primero que haremos será aislar nuestro experimento en un
+repositorio propio. Usaremos el comando \hgcmd{clone}, pero no hace
+falta clonar una copia de el repositorio remoto. Como ya contamos con
+una copia local del mismo, podemos clonar esa. Esto es mucho más
+rápido que clonar a través de la red, y en la mayoría de los casos
+clonar un repositorio local usa menos espacio en disco también.
 \interaction{tour.reclone}
-As an aside, it's often good practice to keep a ``pristine'' copy of a
-remote repository around, which you can then make temporary clones of
-to create sandboxes for each task you want to work on.  This lets you
-work on multiple tasks in parallel, each isolated from the others
-until it's complete and you're ready to integrate it back.  Because
-local clones are so cheap, there's almost no overhead to cloning and
-destroying repositories whenever you want.
+A manera de recomendación, es considerado buena práctica mantener una
+copia ``prístina'' de un repositorio remoto a mano, del cual usted
+puede hacer clones temporales para crear cajas de arena para cada
+tarea en la que desee trabajar. Esto le permite trabajar en múltiples
+tareas en paralelo, teniendo cada una de ellas aislada de las otras
+hasta que estén completas y usted esté listo para integrar los cambios
+de vuelta. Como los clones locales son tan baratos, clonar y destruir
+repositorios no consume demasiados recursos, lo que facilita hacerlo
+en cualquier momento.
 
-In our \dirname{my-hello} repository, we have a file
-\filename{hello.c} that contains the classic ``hello, world'' program.
-Let's use the ancient and venerable \command{sed} command to edit this
-file so that it prints a second line of output.  (I'm only using
-\command{sed} to do this because it's easy to write a scripted example
-this way.  Since you're not under the same constraint, you probably
-won't want to use \command{sed}; simply use your preferred text editor to
-do the same thing.)
+En nuestro repositorio \dirname{my-hello}, hay un fichero
+\filename{hello.c} que contiene el clásico programa ``hello,
+world''\ndt{Hola, mundo.}. Usaremos el clásico y venerado comando
+\command{sed} para editar este fichero y hacer que imprima una segunda
+línea de salida. (Estoy usando el comando \command{sed} para hacer
+esto sólo porque es fácil escribir un ejemplo automatizado con él.
+Dado que usted no tiene esta restricción, probablemente no querrá usar
+\command{sed}; use su editor de texto preferido para hacer lo mismo).
 \interaction{tour.sed}
 
-Mercurial's \hgcmd{status} command will tell us what Mercurial knows
-about the files in the repository.
+El comando \hgcmd{status} de Mercurial nos dice lo que Mercurial sabe
+acerca de los ficheros en el repositorio.
 \interaction{tour.status}
-The \hgcmd{status} command prints no output for some files, but a line
-starting with ``\texttt{M}'' for \filename{hello.c}.  Unless you tell
-it to, \hgcmd{status} will not print any output for files that have
-not been modified.  
+El comando \hgcmd{status} no imprime nada para algunos ficheros, sólo
+una línea empezando con ``\texttt{M}'' para el fichero
+\filename{hello.c}. A menos que usted lo indique explícitamente,
+\hgcmd{status} no imprimirá nada respecto a los ficheros que no han
+sido modificados.
 
-The ``\texttt{M}'' indicates that Mercurial has noticed that we
-modified \filename{hello.c}.  We didn't need to \emph{inform}
-Mercurial that we were going to modify the file before we started, or
-that we had modified the file after we were done; it was able to
-figure this out itself.
+La ``\texttt{M}'' indica que Mercurial se dio cuenta de que nosotros
+modificamos \filename{hello.c}.  No tuvimos que \emph{decirle} a
+Mercurial que íbamos a modificar ese fichero antes de hacerlo, o que
+lo modificamos una vez terminamos de hacerlo; él fue capaz de darse
+cuenta de esto por sí mismo.
 
-It's a little bit helpful to know that we've modified
-\filename{hello.c}, but we might prefer to know exactly \emph{what}
-changes we've made to it.  To do this, we use the \hgcmd{diff}
-command.
+Es algo útil saber que hemos modificado el fichero \filename{hello.c},
+pero preferiríamos saber exactamente \emph{qué} cambios hicimos.
+Para averiguar esto, usamos el comando \hgcmd{diff}.
 \interaction{tour.diff}
 
-\section{Recording changes in a new changeset}
+\section{Grabar cambios en un nuevo conjunto de cambios}
 
-We can modify files, build and test our changes, and use
-\hgcmd{status} and \hgcmd{diff} to review our changes, until we're
-satisfied with what we've done and arrive at a natural stopping point
-where we want to record our work in a new changeset.
+Podemos modificar, compilar y probar nuestros cambios, y usar
+\hgcmd{status} y \hgcmd{diff} para revisar los mismos, hasta que
+estemos satisfechos con los resultados y lleguemos a un momento en el
+que sea natural que querramos guardar nuestro trabajo en un nuevo
+conjunto de cambios.
 
-The \hgcmd{commit} command lets us create a new changeset; we'll
-usually refer to this as ``making a commit'' or ``committing''.  
+El comando \hgcmd{commit} nos permite crear un nuevo conjunto de
+cambios. Nos referiremos usualmente a esto como ``hacer una consigna''
+o consignar.
 
-\subsection{Setting up a username}
+\subsection{Definir un nombre de usuario}
 
-When you try to run \hgcmd{commit} for the first time, it is not
-guaranteed to succeed.  Mercurial records your name and address with
-each change that you commit, so that you and others will later be able
-to tell who made each change.  Mercurial tries to automatically figure
-out a sensible username to commit the change with.  It will attempt
-each of the following methods, in order:
+Cuando usted trata de ejecutar \hgcmd{commit}\ndt{Hacer una
+consignación} por primera vez, no está garantizado que lo logre.
+Mercurial registra su nombre y dirección en cada cambio que usted
+consigna, para que más adelante otros puedan saber quién es el
+responsable de cada cambio. Mercurial trata de encontrar un nombre de
+% TODO consigna o consignación?
+usuario adecuado con el cual registrar la consignación. Se intenta con
+cada uno de los siguientes métodos, en el orden presentado.
 \begin{enumerate}
-\item If you specify a \hgopt{commit}{-u} option to the \hgcmd{commit}
-  command on the command line, followed by a username, this is always
-  given the highest precedence.
-\item If you have set the \envar{HGUSER} environment variable, this is
-  checked next.
-\item If you create a file in your home directory called
-  \sfilename{.hgrc}, with a \rcitem{ui}{username} entry, that will be
-  used next.  To see what the contents of this file should look like,
-  refer to section~\ref{sec:tour-basic:username} below.
-\item If you have set the \envar{EMAIL} environment variable, this
-  will be used next.
-\item Mercurial will query your system to find out your local user
-  name and host name, and construct a username from these components.
-  Since this often results in a username that is not very useful, it
-  will print a warning if it has to do this.
+\item Si usted pasa la opción \hgopt{commit}{-u} al comando \hgcmd{commit}
+  en la línea de comandos, seguido de un nombre de usuario, se le da a
+  esto la máxima precedencia.
+\item A continuación se revisa si usted ha definido la variable de
+    entorno \envar{HGUSER}.
+\item Si usted crea un fichero en su directorio personal llamado
+  \sfilename{.hgrc}, con una entrada \rcitem{ui}{username}, se usa
+  luego. Para revisar cómo debe verse este fichero, refiérase a la
+  sección~\ref{sec:tour-basic:username} más abajo.
+\item Si usted ha definido la variable de entorno \envar{EMAIL}, será
+    usada a continuación.
+\item Mercurial le pedirá a su sistema buscar su nombre de usuario
+    % TODO host => máquina
+    local, y el nombre de máquina, y construirá un nombre de usuario a
+    partir de estos componentes. Ya que esto generalmente termina
+    generando un nombre de usuario no muy útil, se imprimirá una
+    advertencia si es necesario hacerlo.
 \end{enumerate}
-If all of these mechanisms fail, Mercurial will fail, printing an
-error message.  In this case, it will not let you commit until you set
-up a username.
+Si todos estos procedimientos fallan, Mercurial fallará, e imprimirá
+un mensaje de error. En este caso, no le permitirá hacer la
+consignación hasta que usted defina un nombre de usuario.
 
-You should think of the \envar{HGUSER} environment variable and the
-\hgopt{commit}{-u} option to the \hgcmd{commit} command as ways to
-\emph{override} Mercurial's default selection of username.  For normal
-use, the simplest and most robust way to set a username for yourself
-is by creating a \sfilename{.hgrc} file; see below for details.
+Trate de ver la variable de entorno \envar{HGUSER} y la opción
+\hgopt{commit}{-u} del comando \hgcmd{commit} como formas de
+\emph{hacer caso omiso} de la selección de nombre de usuario que
+Mercurial hace normalmente.  Para uso normal, la manera más simple y
+sencilla de definir un nombre de usuario para usted es crear un
+fichero \sfilename{.hgrc}; los detalles se encuentran más adelante.
 
-\subsubsection{Creating a Mercurial configuration file}
+\subsubsection{Crear el fichero de configuración de Mercurial}
 \label{sec:tour-basic:username}
 
-To set a user name, use your favourite editor to create a file called
-\sfilename{.hgrc} in your home directory.  Mercurial will use this
-file to look up your personalised configuration settings.  The initial
-contents of your \sfilename{.hgrc} should look like this.
+Para definir un nombre de usuario, use su editor de texto favorito
+para crear un fichero llamado \sfilename{.hgrc} en su directorio
+personal. Mercurial usará este fichero para obtener las
+configuraciones personalizadas que usted haya hecho. El contenido
+inicial de su fichero \sfilename{.hgrc} debería verse así.
 \begin{codesample2}
-  # This is a Mercurial configuration file.
+  # Este es un fichero de configuración de Mercurial.
   [ui]
-  username = Firstname Lastname <email.address@domain.net>
+  username = Primernombre Apellido <correo.electronico@dominio.net>
 \end{codesample2}
-The ``\texttt{[ui]}'' line begins a \emph{section} of the config file,
-so you can read the ``\texttt{username = ...}'' line as meaning ``set
-the value of the \texttt{username} item in the \texttt{ui} section''.
-A section continues until a new section begins, or the end of the
-file.  Mercurial ignores empty lines and treats any text from
-``\texttt{\#}'' to the end of a line as a comment.
+La línea ``\texttt{[ui]}'' define una \emph{section} del fichero de
+configuración, así que usted puede leer la línea ``\texttt{username =
+...}'' como ``defina el valor del elemento \texttt{username} en la
+sección \texttt{ui}''.
+Una sección continua hasta que empieza otra nueva, o se llega al final
+del fichero. Mercurial ignora las líneas vacías y considera cualquier
+texto desde el caracter ``\texttt{\#}'' hasta el final de la línea
+como un comentario.
 
-\subsubsection{Choosing a user name}
+\subsubsection{Escoger un nombre de usuario}
 
-You can use any text you like as the value of the \texttt{username}
-config item, since this information is for reading by other people,
-but for interpreting by Mercurial.  The convention that most people
-follow is to use their name and email address, as in the example
-above.
+Usted puede usar el texto que desee como el valor del campo de
+configuración \texttt{username}, ya que esta información será leída
+por otras personas, e interpretada por Mercurial. La convención que
+sigue la mayoría de la gente es usar su nombre y dirección de correo,
+como en el ejemplo anterior.
 
 \begin{note}
-  Mercurial's built-in web server obfuscates email addresses, to make
-  it more difficult for the email harvesting tools that spammers use.
-  This reduces the likelihood that you'll start receiving more junk
-  email if you publish a Mercurial repository on the web.
+    % TODO web
+    El servidor web integrado de Mercurial ofusca las direcciones de
+    correo, para dificultar la tarea de las herramientas de
+    recolección de direcciones de correo que usan los
+    spammers\ndt{Personas que envían correo no solicitado, también
+    conocido como correo basura}. Esto reduce la probabilidad de que
+    usted empiece a recibir más correo basura si publica un
+    repositorio en la red.
 \end{note}
 
-\subsection{Writing a commit message}
+\subsection{Escribir un mensaje de consignación}
 
-When we commit a change, Mercurial drops us into a text editor, to
-enter a message that will describe the modifications we've made in
-this changeset.  This is called the \emph{commit message}.  It will be
-a record for readers of what we did and why, and it will be printed by
-\hgcmd{log} after we've finished committing.
+Cuando consignamos un cambio, Mercurial nos ubica dentro de un editor
+de texto, para ingresar un mensaje que describa las modificaciones que
+hemos introducido en este conjunto de cambios. Esto es conocido como
+un \emph{mensaje de consignación}. Será un registro de lo que hicimos
+y porqué lo hicimos, y será impreso por \hgcmd{log} una vez hayamos
+hecho la consignación.
 \interaction{tour.commit}
 
-The editor that the \hgcmd{commit} command drops us into will contain
-an empty line, followed by a number of lines starting with
-``\texttt{HG:}''.
+El editor en que \hgcmd{commit} nos ubica contendrá una línea vacía,
+seguida de varias líneas que empiezan con la cadena ``\texttt{HG:}''.
 \begin{codesample2}
-  \emph{empty line}
+  \emph{línea vacía}
   HG: changed hello.c
 \end{codesample2}
-Mercurial ignores the lines that start with ``\texttt{HG:}''; it uses
-them only to tell us which files it's recording changes to.  Modifying
-or deleting these lines has no effect.
+Mercurial ignora las líneas que empiezan con ``\texttt{HG:}''; sólo
+las usa para indicarnos para cuáles ficheros está registrando los
+cambios. Modificar o borrar estas líneas no tiene ningún efecto.
 
-\subsection{Writing a good commit message}
+\subsection{Escribir un buen mensaje de consignación}
 
-Since \hgcmd{log} only prints the first line of a commit message by
-default, it's best to write a commit message whose first line stands
-alone.  Here's a real example of a commit message that \emph{doesn't}
-follow this guideline, and hence has a summary that is not readable.
+Ya que por defecto \hgcmd{log} sólo muestra la primera línea de un
+mensaje de consignación, lo mejor es escribir un mensaje cuya primera
+línea tenga significado por sí misma. A continuación se encuentra un
+ejemplo de un mensaje de consignación que \emph{no} sigue esta
+pauta, y debido a ello tiene un sumario que no es legible.
 \begin{codesample2}
   changeset:   73:584af0e231be
-  user:        Censored Person <censored.person@example.org>
+  user:        Persona Censurada <persona.censurada@ejemplo.org>
   date:        Tue Sep 26 21:37:07 2006 -0700
-  summary:     include buildmeister/commondefs.   Add an exports and install
+  summary:     se incluye buildmeister/commondefs.   Añade un módulo
 \end{codesample2}
 
-As far as the remainder of the contents of the commit message are
-concerned, there are no hard-and-fast rules.  Mercurial itself doesn't
-interpret or care about the contents of the commit message, though
-your project may have policies that dictate a certain kind of
-formatting.
+Con respecto al resto del contenido del mensaje de consignación, no
+hay reglas estrictas-y-rápidas. Mercurial no interpreta ni le da
+importancia a los contenidos del mensaje de consignación, aunque es
+posible que su proyecto tenga políticas que definan una manera
+particular de escribirlo.
 
-My personal preference is for short, but informative, commit messages
-that tell me something that I can't figure out with a quick glance at
-the output of \hgcmdargs{log}{--patch}.
+Mi preferencia personal es usar mensajes de consignación cortos pero
+informativos, que me digan algo que no puedo inferir con una mirada
+rápida a la salida de \hgcmdargs{log}{--patch}.
 
-\subsection{Aborting a commit}
+\subsection{Cancelar una consignación}
 
-If you decide that you don't want to commit while in the middle of
-editing a commit message, simply exit from your editor without saving
-the file that it's editing.  This will cause nothing to happen to
-either the repository or the working directory.
+Si usted decide que no desea hacer la consignación mientras está
+editando el mensaje de la misma, simplemente cierre su editor sin
+guardar los cambios al fichero que está editando. Esto hará que no
+pase nada ni en el repositorio ni en el directorio de trabajo.
 
-If we run the \hgcmd{commit} command without any arguments, it records
-all of the changes we've made, as reported by \hgcmd{status} and
-\hgcmd{diff}.
+Si ejecutamos el comando \hgcmd{commit} sin ningún argumento, se
+registran todos los cambios que hemos hecho, como lo indican
+\hgcmd{status} y \hgcmd{diff}.
 
-\subsection{Admiring our new handiwork}
+\subsection{Admirar nuestro trabajo}
 
-Once we've finished the commit, we can use the \hgcmd{tip} command to
-display the changeset we just created.  This command produces output
-that is identical to \hgcmd{log}, but it only displays the newest
-revision in the repository.
+Una vez hemos terminado la consignación, podemos usar el comando
+\hgcmd{tip}\ndt{Punta.} para mostrar el conjunto de cambios que acabamos de crear.
+La salida de este comando es idéntica a la de \hgcmd{log}, pero sólo
+muestra la revisión más reciente en el repositorio.
 \interaction{tour.tip}
-We refer to the newest revision in the repository as the tip revision,
-or simply the tip.
+Nos referimos a la revisión más reciente en el repositorio como la
+revisión de punta, o simplemente la punta.
 
 \section{Sharing changes}
 
