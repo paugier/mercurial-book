@@ -19,13 +19,16 @@ incompleto consiste en que creé un nuevo archivo fuente, pero olvidé
 hacerle \hgcmd{add}.  Un conjunto de cambios``simplemente malo'' no es
 tan común, pero sí resulta muy molesto.
 
-\subsection{Retroceder una transacción}
+\subsection{Hacer rollback\footnote{El significado igual que en los
+    ambientes de sistemas manejadores de bases de datos se refiere a
+    la atomicidad e integridad al devolver un conjunto de acciones que
+  permitan dejar el repositorio en un estado consistente previo} una transacción}
 \label{sec:undo:rollback}
 
 En la sección~\ref{sec:concepts:txn}, mencioné que Mercurial trata
 modificación a un repositorio como una \emph{transacción}.  Cada vez
 que consigna un conjunto de cambios o lo jala de otro repositorio,
-Mercurial recuerda lo que hizo.  Puede deshacer, o \emph{retroceder},
+Mercurial recuerda lo que hizo.  Puede deshacer, o hacer \emph{roll back},
 exactamente una de tales acciones usando la orden \hgcmd{rollback}.
 (Ver en la sección~\ref{sec:undo:rollback-after-push} una anotación
 importante acerca del uso de esta orden.)
@@ -50,8 +53,8 @@ hace desaparecer el último conjunto de cambios.
 \interaction{rollback.rollback}
 El conjunto de cambios ya no está en la historia del repositorio, y el
 directorio de trabajo cree que el fichero \filename{a} ha sido
-modificado.  La consignación y el retroceso dejaron el directorio de
-trabajo exactamente como estaban antes de la consignación; el conjunto
+modificado.  La consignación y el roll back dejaron el directorio de
+trabajo exactamente como estaba antes de la consignación; el conjunto
 de cambios ha sido eliminado totlamente. Ahora puedo hacer \hgcmd{add}
 al fichero \filename{b}, y hacer de nuevo la consignación.
 \interaction{rollback.add}
@@ -74,48 +77,49 @@ de cuenta inmediatamente, dado que Mercurial mostrará el URL de donde
 está jalando, o que vea jalando una sospechosa gran cantidad de
 cambios en el repositorio.
 
-La orden \hgcmd{rollback} command will work nicely to expunge all of the
-changesets that you just pulled.  Mercurial groups all changes from
-one \hgcmd{pull} into a single transaction, so one \hgcmd{rollback} is
-all you need to undo this mistake.
+La orden \hgcmd{rollback} excluirá eficientemente los conjuntos de
+cambios que haya acabado de jalar.  Mercurial agrupa todos los cambios
+de un \hgcmd{pull} a una única transacción y bastará con un
+\hgcmd{rollback} para deshacer esta equivocación.
 
-\subsection{Rolling back is useless once you've pushed}
+\subsection{Después de publicar, un roll back es futil}
 \label{sec:undo:rollback-after-push}
 
-The value of the \hgcmd{rollback} command drops to zero once you've
-pushed your changes to another repository.  Rolling back a change
-makes it disappear entirely, but \emph{only} in the repository in
-which you perform the \hgcmd{rollback}.  Because a rollback eliminates
-history, there's no way for the disappearance of a change to propagate
-between repositories.
+El valor de \hgcmd{rollback} se anula cuando ha publicado sus cambios
+a otro repositorio.  Un cambio desaparece totalmente al hacer roll back,
+pero \emph{solamente} en el repositorio en el cual aplica
+\hgcmd{rollback}.  Debido a que un roll back elimina la historia,
+no hay forma de que la desaparición de un cambio se propague entre
+repositorios.
 
-If you've pushed a change to another repository---particularly if it's
-a shared repository---it has essentially ``escaped into the wild,''
-and you'll have to recover from your mistake in a different way.  What
-will happen if you push a changeset somewhere, then roll it back, then
-pull from the repository you pushed to, is that the changeset will
-reappear in your repository.
+Si ha publicado un cambio en otro repositorio---particularmente si es
+un repositorio público---esencialmente está ``en terreno agreste,''
+y tendrá que reparar la equivocación de un modo distinto.  Lo que
+pasará si publica un conjunto de cambios en algún sitio, hacer
+rollback y después volver a jalar del repositorio del cual había
+publicado, es que el conjunto de cambios reaparecerá en su repositorio.
 
-(If you absolutely know for sure that the change you want to roll back
-is the most recent change in the repository that you pushed to,
-\emph{and} you know that nobody else could have pulled it from that
-repository, you can roll back the changeset there, too, but you really
-should really not rely on this working reliably.  If you do this,
-sooner or later a change really will make it into a repository that
-you don't directly control (or have forgotten about), and come back to
-bite you.)
+(Si está absolutamente segruro de que el conjunto de cambios al que
+desea hacer rollback es el cambio más reciente del repositorio en el
+cual publicó, \emph{y} sabe que nadie más pudo haber jalado de tal
+repositorio, puede hacer rollback del conjunto de cambios allí, pero
+es mejor no confiar en una solución de este estilo.  Si lo hace, tarde
+o temprano un conjunto de cambios logrará colarse en un repositorio
+que usted no controle directamente(o del cual se ha olvidado), y
+volverá a hostigarle.)
 
-\subsection{You can only roll back once}
+\subsection{Solamente hay un roll back}
 
-Mercurial stores exactly one transaction in its transaction log; that
-transaction is the most recent one that occurred in the repository.
-This means that you can only roll back one transaction.  If you expect
-to be able to roll back one transaction, then its predecessor, this is
-not the behaviour you will get.
+Mercurial almacena exactamente una transacción en su bitácora de
+transacciones; tal transacción es la más reciente de las que haya
+ocurrido en el repositorio. Esto significa que solamente puede hacer
+roll back a una transacción. Si espera poder hacer roll back a una
+transacción después al antecesor, observará que no es el
+comportamiento que obtendrá.
 \interaction{rollback.twice}
-Once you've rolled back one transaction in a repository, you can't
-roll back again in that repository until you perform another commit or
-pull.
+Una vez que haya aplicado un rollback en una transacción a un
+repositorio, no podrá volver a hacer rollback hasta que haga una
+consignación o haya jalado.
 
 \section{Reverting the mistaken change}
 
