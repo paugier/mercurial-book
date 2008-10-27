@@ -1,79 +1,80 @@
-\chapter{Finding and fixing your mistakes}
+\chapter{Encontrar y arreglar sus equivocaciones}
 \label{chap:undo}
 
-To err might be human, but to really handle the consequences well
-takes a top-notch revision control system.  In this chapter, we'll
-discuss some of the techniques you can use when you find that a
-problem has crept into your project.  Mercurial has some highly
-capable features that will help you to isolate the sources of
-problems, and to handle them appropriately.
+Errar es humano, pero tratar adecuadamente las consecuencias requiere
+un sistema de control de revisiones de primera categoría.  En este
+capítulo, discutiremos algunas técnicas que puede usar cuando
+encuentra que hay un problema enraizado en su proyecto.  Mercurial
+tiene unas características poderosas que le ayudarán a isolar las
+fuentes de los problemas, y a dar cuenta de ellas apropiadamente.
 
-\section{Erasing local history}
+\section{Borrar la historia local}
 
-\subsection{The accidental commit}
+\subsection{La consignación accidental}
 
-I have the occasional but persistent problem of typing rather more
-quickly than I can think, which sometimes results in me committing a
-changeset that is either incomplete or plain wrong.  In my case, the
-usual kind of incomplete changeset is one in which I've created a new
-source file, but forgotten to \hgcmd{add} it.  A ``plain wrong''
-changeset is not as common, but no less annoying.
+Tengo el problema ocasional, pero persistente de teclear más rápido de
+lo que pienso, que aveces resulta en consignar un conjunto de cambios
+incompleto o simplemente malo. En mi caso, el conjunto de cambios
+incompleto consiste en que creé un nuevo archivo fuente, pero olvidé
+hacerle \hgcmd{add}.  Un conjunto de cambios``simplemente malo'' no es
+tan común, pero sí resulta muy molesto.
 
-\subsection{Rolling back a transaction}
+\subsection{Retroceder una transacción}
 \label{sec:undo:rollback}
 
-In section~\ref{sec:concepts:txn}, I mentioned that Mercurial treats
-each modification of a repository as a \emph{transaction}.  Every time
-you commit a changeset or pull changes from another repository,
-Mercurial remembers what you did.  You can undo, or \emph{roll back},
-exactly one of these actions using the \hgcmd{rollback} command.  (See
-section~\ref{sec:undo:rollback-after-push} for an important caveat
-about the use of this command.)
+En la sección~\ref{sec:concepts:txn}, mencioné que Mercurial trata
+modificación a un repositorio como una \emph{transacción}.  Cada vez
+que consigna un conjunto de cambios o lo jala de otro repositorio,
+Mercurial recuerda lo que hizo.  Puede deshacer, o \emph{retroceder},
+exactamente una de tales acciones usando la orden \hgcmd{rollback}.
+(Ver en la sección~\ref{sec:undo:rollback-after-push} una anotación
+importante acerca del uso de esta orden.)
 
-Here's a mistake that I often find myself making: committing a change
-in which I've created a new file, but forgotten to \hgcmd{add} it.
+A continuación una equivocación que me sucede frecuentemente:
+consignar un cambio en el cual he creado un nuevo fichero, pero he
+olvidado hacerle \hgcmd{add}.
 \interaction{rollback.commit}
-Looking at the output of \hgcmd{status} after the commit immediately
-confirms the error.
+La salida de \hgcmd{status} después de la consignación confirma
+inmediatamente este error.
 \interaction{rollback.status}
-The commit captured the changes to the file \filename{a}, but not the
-new file \filename{b}.  If I were to push this changeset to a
-repository that I shared with a colleague, the chances are high that
-something in \filename{a} would refer to \filename{b}, which would not
-be present in their repository when they pulled my changes.  I would
-thus become the object of some indignation.
+La consignación capturó los cambios en el archivo \filename{a}, pero
+no el nuevo fichero \filename{b}.  Si yo publicara este conjunto de
+cambios a un repositorio compartido con un colega, es bastante
+probable que algo en \filename{a} se refiriera a \filename{b}, el cual
+podría no estar presente cuando jalen mis cambios del repositorio.  Me
+convertiría el sujeto de cierta indignación.
 
-However, luck is with me---I've caught my error before I pushed the
-changeset.  I use the \hgcmd{rollback} command, and Mercurial makes
-that last changeset vanish.
+Como sea, la suerte me acompaña---Encontré mi error antes de publicar
+el conjunto de cambios.  Uso la orden \hgcmd{rollback}, y Mercurial
+hace desaparecer el último conjunto de cambios.
 \interaction{rollback.rollback}
-Notice that the changeset is no longer present in the repository's
-history, and the working directory once again thinks that the file
-\filename{a} is modified.  The commit and rollback have left the
-working directory exactly as it was prior to the commit; the changeset
-has been completely erased.  I can now safely \hgcmd{add} the file
-\filename{b}, and rerun my commit.
+El conjunto de cambios ya no está en la historia del repositorio, y el
+directorio de trabajo cree que el fichero \filename{a} ha sido
+modificado.  La consignación y el retroceso dejaron el directorio de
+trabajo exactamente como estaban antes de la consignación; el conjunto
+de cambios ha sido eliminado totlamente. Ahora puedo hacer \hgcmd{add}
+al fichero \filename{b}, y hacer de nuevo la consignación.
 \interaction{rollback.add}
 
-\subsection{The erroneous pull}
+\subsection{Erroneamente jalado}
 
-It's common practice with Mercurial to maintain separate development
-branches of a project in different repositories.  Your development
-team might have one shared repository for your project's ``0.9''
-release, and another, containing different changes, for the ``1.0''
-release.
+Mantener ramas de desarrollo separadas de un proyecto en distintos
+repositorios es una práctica común con Mercurial.  Su equipo de
+desarrollo puede tener un repositorio compartido para la versión ``0.9''
+y otra con cambios distintos para la versión ``1.0''.
 
-Given this, you can imagine that the consequences could be messy if
-you had a local ``0.9'' repository, and accidentally pulled changes
-from the shared ``1.0'' repository into it.  At worst, you could be
-paying insufficient attention, and push those changes into the shared
-``0.9'' tree, confusing your entire team (but don't worry, we'll
-return to this horror scenario later).  However, it's more likely that
-you'll notice immediately, because Mercurial will display the URL it's
-pulling from, or you will see it pull a suspiciously large number of
-changes into the repository.
+Con este escenario, puede imaginar las consecuencias si tuviera un
+repositorio local ``0.9'', y jalara accidentalmente los cambios del
+repositorio compartido de la versión ``1.0'' en este.  En el peor de
+los casos, por falta de atención, es posible que publique tales
+cambios en el árbol compartido ``0.9'', confundiendo a todo su equipo
+de trabajo(pero no se preocupe, volveremos a este terrorífico
+escenario posteriormente).  En todo caso, es muy probable que usted se
+de cuenta inmediatamente, dado que Mercurial mostrará el URL de donde
+está jalando, o que vea jalando una sospechosa gran cantidad de
+cambios en el repositorio.
 
-The \hgcmd{rollback} command will work nicely to expunge all of the
+La orden \hgcmd{rollback} command will work nicely to expunge all of the
 changesets that you just pulled.  Mercurial groups all changes from
 one \hgcmd{pull} into a single transaction, so one \hgcmd{rollback} is
 all you need to undo this mistake.
