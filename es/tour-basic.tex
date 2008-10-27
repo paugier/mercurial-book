@@ -564,34 +564,37 @@ self-contained.  This means that the changeset we just created exists
 only in our \dirname{my-hello} repository.  Let's look at a few ways
 that we can propagate this change into other repositories.
 
-\subsection{Pulling changes from another repository}
+\subsection{Jalar cambios desde otro repositorio}
 \label{sec:tour:pull}
 
-To get started, let's clone our original \dirname{hello} repository,
-which does not contain the change we just committed.  We'll call our
-temporary repository \dirname{hello-pull}.
+Para empezar, clonemos nuestro repositorio \dirname{hello} original,
+el cual no contiene el cambio que acabamos de consignar. Llamaremos a
+este repositorio temporal \dirname{hello-pull}.
 \interaction{tour.clone-pull}
 
-We'll use the \hgcmd{pull} command to bring changes from
-\dirname{my-hello} into \dirname{hello-pull}.  However, blindly
-pulling unknown changes into a repository is a somewhat scary
-prospect.  Mercurial provides the \hgcmd{incoming} command to tell us
-what changes the \hgcmd{pull} command \emph{would} pull into the
-repository, without actually pulling the changes in.
+Usaremos el comando \hgcmd{pull} para traer los cambios de
+\dirname{my-hello} y ponerlos en \dirname{hello-pull}.  Sin embargo,
+traer cambios desconocidos y aplicarlos en un repositorio es una
+perspectiva que asusta al menos un poco.  Mercurial cuenta con el
+comando \hgcmd{incoming}\ndt{Entrante, o entrantes.} para decirnos qué
+cambios \emph{jalaría} el comando \hgcmd{pull} al repositorio, sin
+jalarlos.
 \interaction{tour.incoming}
-(Of course, someone could cause more changesets to appear in the
-repository that we ran \hgcmd{incoming} in, before we get a chance to
-\hgcmd{pull} the changes, so that we could end up pulling changes that we
-didn't expect.)
+(Por supuesto, alguien podría enviar más conjuntos de cambios al
+repositorio en el tiempo que pasa entre la ejecución de
+\hgcmd{incoming} y la ejecución de \hgcmd{pull} para jalar los
+cambios, así que es posible que terminemos jalando cambios que no
+esperábamos.)
 
-Bringing changes into a repository is a simple matter of running the
-\hgcmd{pull} command, and telling it which repository to pull from.
+Traer cambios al repositorio simplemente es cuestión de ejecutar el
+comando \hgcmd{pull}, indicándole de qué repositorio debe jalarlos.
 \interaction{tour.pull}
-As you can see from the before-and-after output of \hgcmd{tip}, we
-have successfully pulled changes into our repository.  There remains
-one step before we can see these changes in the working directory.
+Como puede verse por las salidas antes-y-después de \hgcmd{tip}, hemos
+jalado exitosamente los cambios en nuestro repositorio. Aún falta un
+paso para que podamos ver estos cambios en nuestro directorio de
+trabajo.
 
-\subsection{Updating the working directory}
+\subsection{Actualizar el directorio de trabajo}
 
 We have so far glossed over the relationship between a repository and
 its working directory.  The \hgcmd{pull} command that we ran in
