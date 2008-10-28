@@ -15,20 +15,20 @@ fuentes de los problemas, y a dar cuenta de ellas apropiadamente.
 Tengo el problema ocasional, pero persistente de teclear más rápido de
 lo que pienso, que aveces resulta en consignar un conjunto de cambios
 incompleto o simplemente malo. En mi caso, el conjunto de cambios
-incompleto consiste en que creé un nuevo archivo fuente, pero olvidé
+incompleto consiste en que creé un nuevo fichero fuente, pero olvidé
 hacerle \hgcmd{add}.  Un conjunto de cambios``simplemente malo'' no es
 tan común, pero sí resulta muy molesto.
 
-\subsection{Hacer rollback\footnote{El significado igual que en los
-    ambientes de sistemas manejadores de bases de datos se refiere a
-    la atomicidad e integridad al devolver un conjunto de acciones que
-  permitan dejar el repositorio en un estado consistente previo} una transacción}
+\subsection{Hacer rollback una transacción}
 \label{sec:undo:rollback}
 
 En la sección~\ref{sec:concepts:txn}, mencioné que Mercurial trata
 modificación a un repositorio como una \emph{transacción}.  Cada vez
 que consigna un conjunto de cambios o lo jala de otro repositorio,
-Mercurial recuerda lo que hizo.  Puede deshacer, o hacer \emph{roll back},
+Mercurial recuerda lo que hizo.  Puede deshacer, o hacer \emph{roll back}\ndt{El significado igual que en los
+    ambientes de sistemas manejadores de bases de datos se refiere a
+    la atomicidad e integridad al devolver un conjunto de acciones que
+  permitan dejar el repositorio en un estado consistente previo},
 exactamente una de tales acciones usando la orden \hgcmd{rollback}.
 (Ver en la sección~\ref{sec:undo:rollback-after-push} una anotación
 importante acerca del uso de esta orden.)
@@ -40,7 +40,7 @@ olvidado hacerle \hgcmd{add}.
 La salida de \hgcmd{status} después de la consignación confirma
 inmediatamente este error.
 \interaction{rollback.status}
-La consignación capturó los cambios en el archivo \filename{a}, pero
+La consignación capturó los cambios en el fichero \filename{a}, pero
 no el nuevo fichero \filename{b}.  Si yo publicara este conjunto de
 cambios a un repositorio compartido con un colega, es bastante
 probable que algo en \filename{a} se refiriera a \filename{b}, el cual
