@@ -557,12 +557,12 @@ muestra la revisión más reciente en el repositorio.
 Nos referimos a la revisión más reciente en el repositorio como la
 revisión de punta, o simplemente la punta.
 
-\section{Sharing changes}
+\section{Compartir cambios}
 
-We mentioned earlier that repositories in Mercurial are
-self-contained.  This means that the changeset we just created exists
-only in our \dirname{my-hello} repository.  Let's look at a few ways
-that we can propagate this change into other repositories.
+Anteriormente mencionamos que los repositorios en Mercurial están auto
+contenidos. Esto quiere decir que el conjunto de cambios que acabamos
+de crear sólo existe en nuestro repositorio \dirname{my-hello}. Veamos
+unas cuantas formas de propagar este cambio a otros repositorios.
 
 \subsection{Jalar cambios desde otro repositorio}
 \label{sec:tour:pull}
@@ -576,9 +576,9 @@ Usaremos el comando \hgcmd{pull} para traer los cambios de
 \dirname{my-hello} y ponerlos en \dirname{hello-pull}.  Sin embargo,
 traer cambios desconocidos y aplicarlos en un repositorio es una
 perspectiva que asusta al menos un poco.  Mercurial cuenta con el
-comando \hgcmd{incoming}\ndt{Entrante, o entrantes.} para decirnos qué
-cambios \emph{jalaría} el comando \hgcmd{pull} al repositorio, sin
-jalarlos.
+comando \hgcmd{incoming}\ndt{Entrante, o cambios entrantes.} para
+decirnos qué cambios \emph{jalaría} el comando \hgcmd{pull} al
+repositorio, sin jalarlos.
 \interaction{tour.incoming}
 (Por supuesto, alguien podría enviar más conjuntos de cambios al
 repositorio en el tiempo que pasa entre la ejecución de
@@ -596,86 +596,93 @@ trabajo.
 
 \subsection{Actualizar el directorio de trabajo}
 
-We have so far glossed over the relationship between a repository and
-its working directory.  The \hgcmd{pull} command that we ran in
-section~\ref{sec:tour:pull} brought changes into the repository, but
-if we check, there's no sign of those changes in the working
-directory.  This is because \hgcmd{pull} does not (by default) touch
-the working directory.  Instead, we use the \hgcmd{update} command to
-do this.
+Hasta ahora hemos pasado por alto la relación entre un repositorio y
+su directorio de trabajo. El comando \hgcmd{pull} que ejecutamos en la
+sección~\ref{sec:tour:pull} trajo los cambios al repositorio, pero si
+revisamos, no hay rastro de esos cambios en el directorio de trabajo.
+Esto pasa porque \hgcmd{pull} (por defecto) no modifica el directorio de
+trabajo. En vez de eso, usamos el comando
+\hgcmd{update}\ndt{Actualizar.} para hacerlo.
 \interaction{tour.update}
 
-It might seem a bit strange that \hgcmd{pull} doesn't update the
-working directory automatically.  There's actually a good reason for
-this: you can use \hgcmd{update} to update the working directory to
-the state it was in at \emph{any revision} in the history of the
-repository.  If you had the working directory updated to an old
-revision---to hunt down the origin of a bug, say---and ran a
-\hgcmd{pull} which automatically updated the working directory to a
-new revision, you might not be terribly happy.
+Puede parecer algo raro que \hgcmd{pull} no actualice el directorio de
+trabajo automáticamente. De hecho, hay una buena razón para esto:
+usted puede usar \hgcmd{update} para actualizar el directorio de
+trabajo al estado en que se encontraba en \emph{cualquier revisión}
+de el historial del repositorio. Si usted hubiera actualizado el
+directorio de trabajo a una revisión anterior---digamos, para buscar
+el origen de un fallo---y hubiera corrido un \hgcmd{pull} que hubiera
+actualizado el directorio de trabajo automáticamente a la nueva
+revisión, puede que no estuviera particularmente contento.
 
-However, since pull-then-update is such a common thing to do,
-Mercurial lets you combine the two by passing the \hgopt{pull}{-u}
-option to \hgcmd{pull}.
+Sin embargo, como jalar-y-actualizar es una secuencia de operaciones
+muy común, Mercurial le permite combinarlas al pasar la opción
+\hgopt{pull}{-u}
+a \hgcmd{pull}.
 \begin{codesample2}
   hg pull -u
 \end{codesample2}
-If you look back at the output of \hgcmd{pull} in
-section~\ref{sec:tour:pull} when we ran it without \hgopt{pull}{-u},
-you can see that it printed a helpful reminder that we'd have to take
-an explicit step to update the working directory:
+Si mira de vuelta la salida de \hgcmd{pull} en la
+sección~\ref{sec:tour:pull} cuando lo ejecutamos sin la opción \hgopt{pull}{-u},
+verá que el comando imprimió un amable recordatorio de que tenemos que
+encargarnos explícitamente de actualizar el directorio de trabajo:
 \begin{codesample2}
   (run 'hg update' to get a working copy)
 \end{codesample2}
 
-To find out what revision the working directory is at, use the
-\hgcmd{parents} command.
+Para averiguar en qué revisión se encuentra el directorio de trabajo,
+use el comando \hgcmd{parents}.
 \interaction{tour.parents}
-If you look back at figure~\ref{fig:tour-basic:history}, you'll see
-arrows connecting each changeset.  The node that the arrow leads
-\emph{from} in each case is a parent, and the node that the arrow
-leads \emph{to} is its child.  The working directory has a parent in
-just the same way; this is the changeset that the working directory
-currently contains.
+Si mira de nuevo la figura~\ref{fig:tour-basic:history}, verá flechas
+conectando cada conjunto de cambios. En cada caso, el nodo del que la flecha
+\emph{sale} es un padre, y el nodo al que la flecha \emph{llega} es 
+su hijo. El directorio de trabajo tiene un padre exactamente de la
+misma manera; ése es el conjunto de cambios que contiene actualmente
+el directorio de trabajo.
 
-To update the working directory to a particular revision, give a
-revision number or changeset~ID to the \hgcmd{update} command.
+Para actualizar el conjunto de trabajo a una revisión particular, pase
+un número de revisión o un ID de conjunto de cambios al comando
+\hgcmd{update}.
 \interaction{tour.older}
-If you omit an explicit revision, \hgcmd{update} will update to the
-tip revision, as shown by the second call to \hgcmd{update} in the
-example above.
+Si no indica explícitamente una revisión, \hgcmd{update} actualizará
+hasta la revisión de punta, como se vio en la segunda llamada a
+\hgcmd{update} en el ejemplo anterior.
 
-\subsection{Pushing changes to another repository}
+\subsection{Empujar cambios a otro repositorio}
 
-Mercurial lets us push changes to another repository, from the
-repository we're currently visiting.  As with the example of
-\hgcmd{pull} above, we'll create a temporary repository to push our
-changes into.
+Mercurial nos permite empujar cambios a otro repositorio, desde el
+% TODO cambié "visitando" por "usando"
+repositorio que estemos usando actualmente. De la misma forma que en
+el ejemplo de \hgcmd{pull} arriba, crearemos un repositorio temporal
+para empujar allí nuestros cambios.
 \interaction{tour.clone-push}
-The \hgcmd{outgoing} command tells us what changes would be pushed
-into another repository.
+El comando \hgcmd{outgoing}\ndt{Saliente. Cambios salientes.} nos dice
+qué cambios serían empujados en el otro repositorio.
 \interaction{tour.outgoing}
-And the \hgcmd{push} command does the actual push.
+Y el comando \hgcmd{push} se encarga de empujar dichos cambios.
 \interaction{tour.push}
-As with \hgcmd{pull}, the \hgcmd{push} command does not update the
-working directory in the repository that it's pushing changes into.
-(Unlike \hgcmd{pull}, \hgcmd{push} does not provide a \texttt{-u}
-option that updates the other repository's working directory.)
+Al igual que \hgcmd{pull}, el comando \hgcmd{push} no actualiza el
+directorio de trabajo del repositorio en el que estamos empujando los
+cambios.  (A diferencia de \hgcmd{pull}, \hgcmd{push} no ofrece la
+opción \texttt{-u} para actualizar el directorio de trabajo del otro
+repositorio.)
 
-What happens if we try to pull or push changes and the receiving
-repository already has those changes?  Nothing too exciting.
+% TODO poner interrogante de apertura
+Qué pasa si tratamos de jalar o empujar cambios y el repositorio
+receptor ya tiene esos cambios? Nada emocionante.
 \interaction{tour.push.nothing}
 
-\subsection{Sharing changes over a network}
+\subsection{Compartir cambios a través de una red}
 
-The commands we have covered in the previous few sections are not
-limited to working with local repositories.  Each works in exactly the
-same fashion over a network connection; simply pass in a URL instead
-of a local path.
+Los comandos que hemos presentando en las pocas secciones anteriores
+no están limitados a trabajar con repositorios locales. Cada uno de
+ellos funciona exactamente de la misma manera a través de una conexión
+% TODO poner ndt para URL
+de red. Simplemente pase una URL en vez de una ruta local.
 \interaction{tour.outgoing.net}
-In this example, we can see what changes we could push to the remote
-repository, but the repository is understandably not set up to let
-anonymous users push to it.
+En este ejemplo, podemos ver qué cambios empujaríamos al repositorio
+remoto, aunque, de manera entendible, el repositorio remoto está
+configurado para no permitir a usuarios anónimos empujar cambios a él.
 \interaction{tour.push.net}
 
 %%% Local Variables: 
