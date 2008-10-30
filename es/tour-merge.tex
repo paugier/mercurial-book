@@ -1,47 +1,49 @@
 \chapter{Una gira de Mercurial: fusionar trabajo}
 \label{chap:tour-merge}
 
-Hasta ahora hemos cubierto cómo clonar un repositorio
-We've now covered cloning a repository, making changes in a
-repository, and pulling or pushing changes from one repository into
-another.  Our next step is \emph{merging} changes from separate
-repositories.
+Hasta ahora hemos cubierto cómo clonar un repositorio, hacer cambios,
+y jalar o empujar dichos cambios de un repositorio a otro. Nuestro
+siguiente paso es \emph{fusionar} cambios de repositorios separados.
 
-\section{Merging streams of work}
+% TODO cambié streams por líneas. check please
+\section{Fusionar líneas de trabajo}
 
-Merging is a fundamental part of working with a distributed revision
-control tool.
+Fusionar es una parte fundamental de trabajar con una herramienta 
+de control distribuido de versiones.
 \begin{itemize}
-\item Alice and Bob each have a personal copy of a repository for a
-  project they're collaborating on.  Alice fixes a bug in her
-  repository; Bob adds a new feature in his.  They want the shared
-  repository to contain both the bug fix and the new feature.
-\item I frequently work on several different tasks for a single
-  project at once, each safely isolated in its own repository.
-  Working this way means that I often need to merge one piece of my
-  own work with another.
+\item Alicia y Roberto tienen cada uno una copia personal del
+    repositorio de un proyecto en el que están trabajando. Alicia
+    arregla un fallo en su repositorio; Roberto añade una nueva
+    característica en el suyo. Ambos desean que el repositorio
+    compartido contenga el arreglo del fallo y la nueva
+    característica.
+\item Frecuentemente trabajo en varias tareas diferentes en un mismo
+    proyecto al mismo tiempo, cada una aislada convenientemente de las
+    otras en su propio repositorio. Trabajar de esta manera significa
+    que a menudo debo fusionar una parte de mi propio trabajo con
+    otra.
 \end{itemize}
 
-Because merging is such a common thing to need to do, Mercurial makes
-it easy.  Let's walk through the process.  We'll begin by cloning yet
-another repository (see how often they spring up?) and making a change
-in it.
+Como fusionar es una operación tan necesaria y común, Mercurial la
+facilita. Revisemos el proceso. Empezaremos clonando (otro)
+% TODO poner interrogante de apertura
+repositorio (ve lo seguido que aparecen?) y haciendo un cambio en él.
 \interaction{tour.merge.clone}
-We should now have two copies of \filename{hello.c} with different
-contents.  The histories of the two repositories have also diverged,
-as illustrated in figure~\ref{fig:tour-merge:sep-repos}.
+Ahora deberíamos tener dos copias de \filename{hello.c} con contenidos
+diferentes.  El historial de los dos repositorios diverge ahora, como
+se ilustra en la figura~\ref{fig:tour-merge:sep-repos}.
 \interaction{tour.merge.cat}
 
 \begin{figure}[ht]
   \centering
   \grafix{tour-merge-sep-repos}
-  \caption{Divergent recent histories of the \dirname{my-hello} and
-    \dirname{my-new-hello} repositories}
+  \caption{Historial reciente divergente de los repositorios
+      \dirname{my-hello} y \dirname{my-new-hello}}
   \label{fig:tour-merge:sep-repos}
 \end{figure}
 
-We already know that pulling changes from our \dirname{my-hello}
-repository will have no effect on the working directory.
+Ya sabemos que jalar los cambios desde nuestro repositorio
+\dirname{my-hello} no tendrá efecto en el directorio de trabajo.
 \interaction{tour.merge.pull}
 However, the \hgcmd{pull} command says something about ``heads''.  
 
