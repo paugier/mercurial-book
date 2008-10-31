@@ -45,33 +45,36 @@ se ilustra en la figura~\ref{fig:tour-merge:sep-repos}.
 Ya sabemos que jalar los cambios desde nuestro repositorio
 \dirname{my-hello} no tendrá efecto en el directorio de trabajo.
 \interaction{tour.merge.pull}
-However, the \hgcmd{pull} command says something about ``heads''.  
+Sin embargo, el comando \hgcmd{pull} dice algo acerca de
+``frentes''\ndt{El autor se refiere a \emph{heads} aquí.}.  
 
-\subsection{Head changesets}
+\subsection{Conjuntos de cambios de frentes}
 
-A head is a change that has no descendants, or children, as they're
-also known.  The tip revision is thus a head, because the newest
-revision in a repository doesn't have any children, but a repository
-can contain more than one head.
+Un frente es un cambio que no tiene descendientes, o hijos, como
+también se les conoce. La revisión de punta es, por tanto, un frente,
+porque la revisión más reciente en un repositorio no tiene ningún
+% TODO cambio en la redacción de la frase, pero espero que conserve el
+% sentido. Querido human@, apruebe o corrija :D
+hijo. Sin embargo, un repositorio puede contener más de un frente.
 
 \begin{figure}[ht]
   \centering
   \grafix{tour-merge-pull}
-  \caption{Repository contents after pulling from \dirname{my-hello} into
-    \dirname{my-new-hello}}
+  \caption{Contenidos del repositorio después de jalar
+      \dirname{my-hello} a \dirname{my-new-hello}}
   \label{fig:tour-merge:pull}
 \end{figure}
 
-In figure~\ref{fig:tour-merge:pull}, you can see the effect of the
-pull from \dirname{my-hello} into \dirname{my-new-hello}.  The history
-that was already present in \dirname{my-new-hello} is untouched, but a
-new revision has been added.  By referring to
-figure~\ref{fig:tour-merge:sep-repos}, we can see that the
-\emph{changeset ID} remains the same in the new repository, but the
-\emph{revision number} has changed.  (This, incidentally, is a fine
-example of why it's not safe to use revision numbers when discussing
-changesets.)  We can view the heads in a repository using the
-\hgcmd{heads} command.
+En la figura~\ref{fig:tour-merge:pull} usted puede ver el efecto que
+tiene jalar los cambios de \dirname{my-hello} a \dirname{my-new-hello}.
+El historial que ya existía en \dirname{my-new-hello} se mantiene
+intacto, pero fue añadida una nueva revisión. Refiriéndonos a la
+figura~\ref{fig:tour-merge:sep-repos}, podemos ver que el \emph{ID del
+conjunto de cambios} se mantiene igual en el nuevo repositorio, pero
+el \emph{número de revisión} ha cambiado.  (Incidentalmente, éste es un
+buen ejemplo de porqué no es seguro usar números de revisión cuando se
+habla de conjuntos de cambios).  Podemos ver los frentes en un
+repositorio usando el comando \hgcmd{heads}\ndt{Frentes.}.
 \interaction{tour.merge.heads}
 
 \subsection{Performing the merge}
