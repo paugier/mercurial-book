@@ -121,94 +121,95 @@ Una vez que haya aplicado un rollback en una transacción a un
 repositorio, no podrá volver a hacer rollback hasta que haga una
 consignación o haya jalado.
 
-\section{Reverting the mistaken change}
+\section{Revertir un cambio equivocado}
 
-If you make a modification to a file, and decide that you really
-didn't want to change the file at all, and you haven't yet committed
-your changes, the \hgcmd{revert} command is the one you'll need.  It
-looks at the changeset that's the parent of the working directory, and
-restores the contents of the file to their state as of that changeset.
-(That's a long-winded way of saying that, in the normal case, it
-undoes your modifications.)
+Si modifica un fichero y se da cuenta que no quería realmente cambiar
+tal fichero, y todavía no ha consignado los cambios, la orden
+necesaria es \hgcmd{revert}. Observa el conjunto de cambios padre del
+directorio y restaura los contenidos del fichero al estado de tal
+conjunto de cambios. (Es una forma larga de decirlo, usualmente
+deshace sus modificaciones.)
 
-Let's illustrate how the \hgcmd{revert} command works with yet another
-small example.  We'll begin by modifying a file that Mercurial is
-already tracking.
+Ilustremos como actúa la orden \hgcmd{revert} con un ejemplo
+pequeño. Comenzaremos modificando un fichero al cual Mercurial ya está
+siguiendo.
 \interaction{daily.revert.modify}
-If we don't want that change, we can simply \hgcmd{revert} the file.
+Si no queremos ese cambio, podemos aplicar \hgcmd{revert} al fichero.
 \interaction{daily.revert.unmodify}
-The \hgcmd{revert} command provides us with an extra degree of safety
-by saving our modified file with a \filename{.orig} extension.
+La orden \hgcmd{revert} nos brinda un grado adicional de seguridad
+guardando nuestro fichero modificado con la extensión \filename{.orig}.
 \interaction{daily.revert.status}
 
-Here is a summary of the cases that the \hgcmd{revert} command can
-deal with.  We will describe each of these in more detail in the
-section that follows.
+Este es un resumen de casos en los cuales la orden \hgcmd{revert} es
+de utilidad. Describiremos cada uno de ellos con más detalle en la
+sección siguiente.
 \begin{itemize}
-\item If you modify a file, it will restore the file to its unmodified
-  state.
-\item If you \hgcmd{add} a file, it will undo the ``added'' state of
-  the file, but leave the file itself untouched.
-\item If you delete a file without telling Mercurial, it will restore
-  the file to its unmodified contents.
-\item If you use the \hgcmd{remove} command to remove a file, it will
-  undo the ``removed'' state of the file, and restore the file to its
-  unmodified contents.
+\item Si usted modifica un fichero, lo restaurará a su estado sin
+  modificación previo.
+\item Si usted hace \hgcmd{add} a un fichero, revertirá el estado de
+  ``adicionado'' del fichero, pero no lo tocará
+\item Si borra un fichero sin decirle a Mercurial, restaurará el
+  fichero con sus contenidos sin modificación.
+\item Si usa la orden \hgcmd{remove} para eliminar un fichero, deshará
+  el estado ``removido'' del fichero, y lo restaurará con sus
+  contenidos sin modificación.
 \end{itemize}
 
-\subsection{File management errors}
+\subsection{Errores al administrar ficheros}
 \label{sec:undo:mgmt}
 
-The \hgcmd{revert} command is useful for more than just modified
-files.  It lets you reverse the results of all of Mercurial's file
-management commands---\hgcmd{add}, \hgcmd{remove}, and so on.
+La orden \hgcmd{revert} es útil para más que ficheros modificados. Le
+permite reversar los resultados de todas las órdenes de administración
+de ficheros que provee Mercurial---\hgcmd{add}, \hgcmd{remove}, y las
+demás.
 
-If you \hgcmd{add} a file, then decide that in fact you don't want
-Mercurial to track it, use \hgcmd{revert} to undo the add.  Don't
-worry; Mercurial will not modify the file in any way.  It will just
-``unmark'' the file.
+Si usted hace \hgcmd{add} a un fichero, y no deseaba que Mercurial le
+diera seguimiento, use \hgcmd{revert} para deshacer la adición.  No se
+preocupe; Mercurial no modificará de forma alguna el fichero.
+Solamente lo ``desmarcará''.
 \interaction{daily.revert.add}
 
-Similarly, if you ask Mercurial to \hgcmd{remove} a file, you can use
-\hgcmd{revert} to restore it to the contents it had as of the parent
-of the working directory.
+De forma similar, Si le solicita a Mercurial hacer \hgcmd{remove} a un
+fichero, puede usar \hgcmd{revert} para restarurarlo a los contenidos
+que tenía la revisión padre del directorio de trabajo.
 \interaction{daily.revert.remove}
-This works just as well for a file that you deleted by hand, without
-telling Mercurial (recall that in Mercurial terminology, this kind of
-file is called ``missing'').
+Funciona de la misma manera para un fichero que usted haya eliminado
+manualmente, sin decirle a Mercurial (recuerde que en la terminología
+de Mercurial esta clase de fichero se llama ``faltante'').
 \interaction{daily.revert.missing}
 
-If you revert a \hgcmd{copy}, the copied-to file remains in your
-working directory afterwards, untracked.  Since a copy doesn't affect
-the copied-from file in any way, Mercurial doesn't do anything with
-the copied-from file.
+Si usted revierte un \hgcmd{copy}, el fichero a donde se copió
+permanece en su directorio de trabajo, pero sin seguimiento. Dado que
+una copia no afecta el fichero fuente de copiado de ninguna maner,
+Mercurial no hace nada con este.
 \interaction{daily.revert.copy}
 
-\subsubsection{A slightly special case: reverting a rename}
+\subsubsection{Un caso ligeramente especial:revertir un renombramiento}
 
-If you \hgcmd{rename} a file, there is one small detail that
-you should remember.  When you \hgcmd{revert} a rename, it's not
-enough to provide the name of the renamed-to file, as you can see
-here.
+Si hace \hgcmd{rename} a un fichero, hay un detalle que debe tener en
+cuenta. Cuando aplica \hgcmd{revert} a un cambio de nombre, no es
+suficiente proveer el nombre del fichero destino, como puede verlo en
+el siguiente ejemplo.
 \interaction{daily.revert.rename}
-As you can see from the output of \hgcmd{status}, the renamed-to file
-is no longer identified as added, but the renamed-\emph{from} file is
-still removed!  This is counter-intuitive (at least to me), but at
-least it's easy to deal with.
+Como puede ver en la salida de \hgcmd{status}, el fichero con el nuevo
+nombre no se identifica más como agregado, pero el fichero con el
+nombre-\emph{inicial} se elimna!  Esto es contra-intuitivo (por lo
+menos para mí), pero por lo menos es fácil arreglarlo.
 \interaction{daily.revert.rename-orig}
-So remember, to revert a \hgcmd{rename}, you must provide \emph{both}
-the source and destination names.  
+Por lo tanto, recuerde, para revertir un \hgcmd{rename}, debe proveer
+\emph{ambos} nombres, la fuente y el destino.
 
 % TODO: the output doesn't look like it will be removed!
 
-(By the way, if you rename a file, then modify the renamed-to file,
-then revert both components of the rename, when Mercurial restores the
-file that was removed as part of the rename, it will be unmodified.
-If you need the modifications in the renamed-to file to show up in the
-renamed-from file, don't forget to copy them over.)
+(A propósito, si elimina un fichero, y modifica el fichero con el
+nuevo nombre, al revertir ambos componentes del renombramiento, cuando
+Mercurial restaure el fichero que fue eliminado como parte del
+renombramiento, no será modificado.
+Si necesita que las modificaciones en el archivo destino del
+renombramiento se muestren, no olvide copiarlas encima.)
 
-These fiddly aspects of reverting a rename arguably constitute a small
-bug in Mercurial.
+Estos aspectos engorrosos de revertir el renombramiento se constituyen
+discutiblemente en un fallo de Mercurial.
 
 \section{Dealing with committed changes}
 
