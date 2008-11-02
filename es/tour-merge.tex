@@ -77,31 +77,33 @@ habla de conjuntos de cambios).  Podemos ver los frentes en un
 repositorio usando el comando \hgcmd{heads}\ndt{Frentes.}.
 \interaction{tour.merge.heads}
 
-\subsection{Performing the merge}
+\subsection{Hacer la fusión}
 
-What happens if we try to use the normal \hgcmd{update} command to
-update to the new tip?
+% TODO poner interrogante de apertura
+Qué pasa si tratamos de usar el comando usual, \hgcmd{update}, para
+actualizar el nuevo frente?
 \interaction{tour.merge.update}
-Mercurial is telling us that the \hgcmd{update} command won't do a
-merge; it won't update the working directory when it thinks we might
-be wanting to do a merge, unless we force it to do so.  Instead, we
-use the \hgcmd{merge} command to merge the two heads.
+Mercurial nos indica que el comando \hgcmd{update} no hará la fusión;
+no actualizará el directorio de trabajo cuando considera que lo que
+deseamos hacer es una fusión, a menos que lo obliguemos a hacerlo.
+En vez de \hgcmd{update}, usamos el comando \hgcmd{merge} para hacer
+la fusión entre los dos frentes.
 \interaction{tour.merge.merge}
 
 \begin{figure}[ht]
   \centering
   \grafix{tour-merge-merge}
-  \caption{Working directory and repository during merge, and
-    following commit}
+  \caption{Directorio de trabajo y repositorio durante la fusión, y
+  consignación consecuente}
   \label{fig:tour-merge:merge}
 \end{figure}
 
-This updates the working directory so that it contains changes from
-\emph{both} heads, which is reflected in both the output of
-\hgcmd{parents} and the contents of \filename{hello.c}.
+Esto actualiza el directorio de trabajo, de tal forma que contenga los
+cambios de \emph{ambos} frentes, lo que se ve reflejado tanto en la
+salida de \hgcmd{parents} como en los contenidos de \filename{hello.c}.
 \interaction{tour.merge.parents}
 
-\subsection{Committing the results of the merge}
+\subsection{Consignar los resultados de la fusión}
 
 Whenever we've done a merge, \hgcmd{parents} will display two parents
 until we \hgcmd{commit} the results of the merge.
