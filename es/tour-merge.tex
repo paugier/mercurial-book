@@ -105,98 +105,106 @@ salida de \hgcmd{parents} como en los contenidos de \filename{hello.c}.
 
 \subsection{Consignar los resultados de la fusión}
 
-Whenever we've done a merge, \hgcmd{parents} will display two parents
-until we \hgcmd{commit} the results of the merge.
+Siempre que hacemos una fusión, \hgcmd{parents} mostrará dos padres
+hasta que consignemos (\hgcmd{commit}) los resultados de la fusión.
 \interaction{tour.merge.commit}
-We now have a new tip revision; notice that it has \emph{both} of
-our former heads as its parents.  These are the same revisions that
-were previously displayed by \hgcmd{parents}.
+Ahora tenemos una nueva revisión de punta; note que tiene \emph{los
+dos} frentes anteriores como sus padres. Estos son las mismas
+revisiones que mostró previamente el comando \hgcmd{parents}.
 \interaction{tour.merge.tip}
-In figure~\ref{fig:tour-merge:merge}, you can see a representation of
-what happens to the working directory during the merge, and how this
-affects the repository when the commit happens.  During the merge, the
-working directory has two parent changesets, and these become the
-parents of the new changeset.
+En la figura~\ref{fig:tour-merge:merge} usted puede apreciar una
+representación de lo que pasa en el directorio de trabajo durante la
+fusión cuando se hace la consignación. Durante la fusión, el
+directorio de trabajo tiene dos conjuntos de cambios como sus padres,
+y éstos se vuelven los padres del nuevo conjunto de cambios.
 
-\section{Merging conflicting changes}
+\section{Fusionar cambios con conflictos}
 
-Most merges are simple affairs, but sometimes you'll find yourself
-merging changes where each modifies the same portions of the same
-files.  Unless both modifications are identical, this results in a
-\emph{conflict}, where you have to decide how to reconcile the
-different changes into something coherent.
+La mayoría de las fusiones son algo simple, pero a veces usted se
+encontrará fusionando cambios donde más de uno de ellos afecta las
+mismas secciones de los mismos ficheros. A menos que ambas
+modificaciones sean idénticas, el resultado es un \emph{conflicto}, en
+donde usted debe decidir cómo reconciliar ambos cambios y producir un
+resultado coherente.
 
 \begin{figure}[ht]
   \centering
   \grafix{tour-merge-conflict}
-  \caption{Conflicting changes to a document}
+  \caption{Cambios con conflictos a un documento}
   \label{fig:tour-merge:conflict}
 \end{figure}
 
-Figure~\ref{fig:tour-merge:conflict} illustrates an instance of two
-conflicting changes to a document.  We started with a single version
-of the file; then we made some changes; while someone else made
-different changes to the same text.  Our task in resolving the
-conflicting changes is to decide what the file should look like.
+La figura~\ref{fig:tour-merge:conflict} ilustra un ejemplo con dos
+cambios generando conflictos en un documento. Empezamos con una sola
+versión de el fichero; luego hicimos algunos cambios; mientras tanto,
+alguien más  hizo cambios diferentes en el mismo texto. Lo que debemos
+hacer para resolver el conflicto causado por ambos cambios es decidir
+cómo debe quedar finalmente el fichero.
 
-Mercurial doesn't have a built-in facility for handling conflicts.
-Instead, it runs an external program called \command{hgmerge}.  This
-is a shell script that is bundled with Mercurial; you can change it to
-behave however you please.  What it does by default is try to find one
-of several different merging tools that are likely to be installed on
-your system.  It first tries a few fully automatic merging tools; if
-these don't succeed (because the resolution process requires human
-guidance) or aren't present, the script tries a few different
-graphical merging tools.
+Mercurial no tiene ninguna utilidad integrada para manejar conflictos.
+En vez de eso, ejecuta un programa externo llamado \command{hgmerge}.
+Es un guión de línea de comandos que es instalado junto con Mercurial;
+usted puede modificarlo para que se comporte como usted lo desee. Por
+defecto, lo que hace es tratar de encontrar una de varias herramientas
+para fusionar que es probable que estén instaladas en su sistema.
+Primero se intenta con unas herramientas para fusionar cambios
+automáticamente; si esto no tiene éxito (porque la fusión demanda
+una guía humana) o dichas herramientas no están presentes, el guión
+intenta con herramientas gráficas para fusionar.
 
-It's also possible to get Mercurial to run another program or script
-instead of \command{hgmerge}, by setting the \envar{HGMERGE}
-environment variable to the name of your preferred program.
+También es posible hacer que Mercurial ejecute otro programa o guión
+en vez de \command{hgmerge}, definiendo la variable de entorno
+\envar{HGMERGE} con el nombre del programa de su preferencia.
 
-\subsection{Using a graphical merge tool}
+\subsection{Usar una herramienta gráfica para fusión}
 
-My preferred graphical merge tool is \command{kdiff3}, which I'll use
-to describe the features that are common to graphical file merging
-tools.  You can see a screenshot of \command{kdiff3} in action in
-figure~\ref{fig:tour-merge:kdiff3}.  The kind of merge it is
-performing is called a \emph{three-way merge}, because there are three
-different versions of the file of interest to us.  The tool thus
-splits the upper portion of the window into three panes:
+Mi herramienta favorita para hacer fusiones es \command{kdiff3}, y la
+usaré para describir las características comunes de las herramientas
+gráficas para hacer fusiones. Puede ver una captura de pantalla de
+\command{kdiff3} ejecutándose, en la
+figura~\ref{fig:tour-merge:kdiff3}.  El tipo de fusión que la
+herramienta hace se conoce como \emph{fusión de tres vías}, porque hay
+tres versiones diferentes del archivo en que estamos interesados.
+Debido a esto la herramienta divide la parte superior de la ventana en
+tres paneles.
 \begin{itemize}
-\item At the left is the \emph{base} version of the file, i.e.~the
-  most recent version from which the two versions we're trying to
-  merge are descended.
-\item In the middle is ``our'' version of the file, with the contents
-  that we modified.
-\item On the right is ``their'' version of the file, the one that
-  from the changeset that we're trying to merge with.
+\item A la izquierda está la revisión \emph{base} del fichero, p.ej.~la
+    versión más reciente de la que descienden las dos versiones que
+    estamos tratando de fusionar.
+\item En la mitad está ``nuestra'' versión del fichero, con las
+    modificaciones que hemos hecho.
+\item A la derecha está la versión del fichero de ``ellos'', la que
+    forma parte del conjunto de cambios que estamos tratando de
+    fusionar.
 \end{itemize}
-In the pane below these is the current \emph{result} of the merge.
-Our task is to replace all of the red text, which indicates unresolved
-conflicts, with some sensible merger of the ``ours'' and ``theirs''
-versions of the file.
+En el panel inferior se encuentra el \emph{resultado} actual de la
+fusión. Nuestra tarea es reemplazar todo el texto rojo, que muestra
+los conflictos sin resolver, con una fusión adecuada de ``nuestra''
+versión del fichero y la de ``ellos''.
 
-All four of these panes are \emph{locked together}; if we scroll
-vertically or horizontally in any of them, the others are updated to
-display the corresponding sections of their respective files.
+Los cuatro paneles están \emph{enlazados}; si avanzamos vertical o
+horizontalmente en cualquiera de ellos, los otros son actualizados
+para mostrar las secciones correspondientes del fichero que tengan
+asociado.
 
 \begin{figure}[ht]
   \centering
-  \grafix{kdiff3}
-  \caption{Using \command{kdiff3} to merge versions of a file}
+  \grafix[width=\textwidth]{kdiff3}
+  \caption{Usando \command{kdiff3} para fusionar versiones de un
+  fichero}
   \label{fig:tour-merge:kdiff3}
 \end{figure}
 
-For each conflicting portion of the file, we can choose to resolve
-the conflict using some combination of text from the base version,
-ours, or theirs.  We can also manually edit the merged file at any
-time, in case we need to make further modifications.
+En cada conflicto del fichero podemos escoger resolverlo usando
+cualquier combinación del texto de la revisión base, la nuestra, o la
+de ellos. También podemos editar manualmente el fichero en que queda
+la fusión, si es necesario hacer cambios adicionales.
 
-There are \emph{many} file merging tools available, too many to cover
-here.  They vary in which platforms they are available for, and in
-their particular strengths and weaknesses.  Most are tuned for merging
-files containing plain text, while a few are aimed at specialised file
-formats (generally XML).
+Hay \emph{muchas} herramientas para fusionar ficheros disponibles. Se
+diferencian en las plataformas para las que están disponibles, y en
+sus fortalezas y debilidades particulares. La mayoría están afinadas
+para fusionar texto plano, mientras que otras están pensadas para
+formatos de archivos especializados (generalmente XML).
 
 \subsection{A worked example}
 
