@@ -421,51 +421,56 @@ Adicionalmente, la maquinaria de fusión de Mercurial manejará ficheros
 y directorios renombrados, cambios de permisos, y modificaciones a
 archivos binarios, nada de lo cual la orden \command{patch} puede manejar.
 
-\section{Changes that should never have been}
+\section{Cambios que nunca debieron ocurrir}
 \label{sec:undo:aaaiiieee}
 
-Most of the time, the \hgcmd{backout} command is exactly what you need
-if you want to undo the effects of a change.  It leaves a permanent
-record of exactly what you did, both when committing the original
-changeset and when you cleaned up after it.
+En la mayoría de los casos, la orden \hgcmd{backout} es exactamente lo
+que necesita para deshacer los efectos de un cambio.  Deja un registro
+permanente y exacto de lo que usted hizo, cuando se consignó el
+conjunto de cambios original y cuando se hizo la limpieza.
 
-On rare occasions, though, you may find that you've committed a change
-that really should not be present in the repository at all.  For
-example, it would be very unusual, and usually considered a mistake,
-to commit a software project's object files as well as its source
-files.  Object files have almost no intrinsic value, and they're
-\emph{big}, so they increase the size of the repository and the amount
-of time it takes to clone or pull changes.
+En ocasiones particulares, puede haber consignado un cambio que no
+debería estar de ninguna forma en el repositorio.  Por ejemplo, sería
+muy inusual, y considerado como una equivocación, consignar los
+archivos objeto junto con el código fuente. los ficheros objeto no
+tienen valor intrínseco y son \emph{grandes}, por lo tanto aumentan el
+tamaño del repositorio y la cantidad de tiempo que se emplea al clonar
+o jalar cambios.
 
-Before I discuss the options that you have if you commit a ``brown
-paper bag'' change (the kind that's so bad that you want to pull a
-brown paper bag over your head), let me first discuss some approaches
-that probably won't work.
+Antes de discutir las opciones que tiene si consignó cambio del tipo 
+``bolsa de papel deschable'' (el tipo que es tan malo que le gustaría
+colocarse una bolsa de papel desechable en su cabeza), permítame
+discutir primero unas aproximaciones que probablemente no funcionen.
 
-Since Mercurial treats history as accumulative---every change builds
-on top of all changes that preceded it---you generally can't just make
-disastrous changes disappear.  The one exception is when you've just
-committed a change, and it hasn't been pushed or pulled into another
-repository.  That's when you can safely use the \hgcmd{rollback}
-command, as I detailed in section~\ref{sec:undo:rollback}.
+Dado que Mercurial trata de forma acumulativa la historia---cada
+cambio se coloca encima de todos los cambios que leo
+preceden---usualmente usted no puede hacer que unos cambios desastros
+desaparezcan. La única excepción es cuando usted ha acabado de
+consignar un cambio y este no ha sido publicado o jalado en otro
+repositorio. Ahí es cuando puede usar la orden \hgcmd{rollback} con
+seguridad, Como detallé en la sección~\ref{sec:undo:rollback}.
 
-After you've pushed a bad change to another repository, you
-\emph{could} still use \hgcmd{rollback} to make your local copy of the
-change disappear, but it won't have the consequences you want.  The
-change will still be present in the remote repository, so it will
-reappear in your local repository the next time you pull.
+Después de que usted haya publicado un cambio en otro repositorio, usted
+\emph{podría} usar la orden \hgcmd{rollback} para hacer que en su copia
+local desaparezca el cambio, pero no tendrá las consecuencias que
+desea. El cambio estará presente en un repositorio remoto, y
+reaparecerá en su repositorio local la próxima vez que jale
 
-If a situation like this arises, and you know which repositories your
-bad change has propagated into, you can \emph{try} to get rid of the
-changeefrom \emph{every} one of those repositories.  This is, of
-course, not a satisfactory solution: if you miss even a single
-repository while you're expunging, the change is still ``in the
-wild'', and could propagate further.
+Si una situación como esta se presenta, y usted sabe en qué
+repositorios su mal cambio se ha propagado, puede \emph{intentar}
+deshacerse del conjunto de cambios de \emph{todos} los repositorios en
+los que se pueda encontrar.  Esta por supuesto, no es una solución
+satisfactoria: si usted deja de hacerlo en un solo repositorio,
+mientras esté eliminándolo, el cambio todavía estará ``allí afuera'',
+y podría propagarse más tarde.
 
-If you've committed one or more changes \emph{after} the change that
-you'd like to see disappear, your options are further reduced.
-Mercurial doesn't provide a way to ``punch a hole'' in history,
-leaving changesets intact.
+Si ha consignado uno o más cambios \emph{después} del cambio que desea
+desaparecer, sus opciones son aún más reducidas. Mercurial no provee
+una forma de ``cabar un hueco'' en la historia, dejando los conjuntos
+de cambios intactos.
+
+%Dejamos de traducir lo que viene a continuación, porque será
+%modificado por upstream...
 
 XXX This needs filling out.  The \texttt{hg-replay} script in the
 \texttt{examples} directory works, but doesn't handle merge
