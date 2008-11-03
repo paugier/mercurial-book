@@ -206,45 +206,51 @@ sus fortalezas y debilidades particulares. La mayoría están afinadas
 para fusionar texto plano, mientras que otras están pensadas para
 formatos de archivos especializados (generalmente XML).
 
-\subsection{A worked example}
+% TODO traduje "worked" como "real"
+\subsection{Un ejemplo real}
 
-In this example, we will reproduce the file modification history of
-figure~\ref{fig:tour-merge:conflict} above.  Let's begin by creating a
-repository with a base version of our document.
+En este ejemplo, reproduciremos el historial de modificaciones al
+fichero de la figura~\ref{fig:tour-merge:conflict} mostrada
+anteriormente.  Empecemos creando un repositorio con la versión base
+de nuestro documento.
 \interaction{tour-merge-conflict.wife}
-We'll clone the repository and make a change to the file.
+Clonaremos el repositorio y haremos un cambio al fichero.
 \interaction{tour-merge-conflict.cousin}
-And another clone, to simulate someone else making a change to the
-file.  (This hints at the idea that it's not all that unusual to merge
-with yourself when you isolate tasks in separate repositories, and
-indeed to find and resolve conflicts while doing so.)
+Y haremos otro clon, para simular a alguien más haciendo un cambio al
+mismo fichero. (Esto introduce la idea de que no es tan inusual hacer
+fusiones consigo mismo, cuando usted aísla tareas en repositorios
+separados, y de hecho encuentra conflictos al hacerlo.)
 \interaction{tour-merge-conflict.son}
-Having created two different versions of the file, we'll set up an
-environment suitable for running our merge.
+Ahora que tenemos dos versiones diferentes de nuestro fichero,
+crearemos un entorno adecuado para hacer la fusión.
 \interaction{tour-merge-conflict.pull}
 
-In this example, I won't use Mercurial's normal \command{hgmerge}
-program to do the merge, because it would drop my nice automated
-example-running tool into a graphical user interface.  Instead, I'll
-set \envar{HGMERGE} to tell Mercurial to use the non-interactive
-\command{merge} command.  This is bundled with many Unix-like systems.
-If you're following this example on your computer, don't bother
-setting \envar{HGMERGE}.
+En este ejemplo, no usaré el comando normal de Mercurial para hacer la
+fusión (\command{hgmerge}), porque lanzaría mi linda herramienta
+automatizada para correr ejemplos dentro de una interfaz gráfica de
+usuario. En vez de eso, definiré la variable de entorno
+\envar{HGMERGE} para indicarle a Mercurial que use el comando
+\command{merge}. Este comando forma parte de la instalación base de
+muchos sistemas Unix y similares. Si usted está ejecutando este
+ejemplo en su computador, no se moleste en definir \envar{HGMERGE}.
 \interaction{tour-merge-conflict.merge}
-Because \command{merge} can't resolve the conflicting changes, it
-leaves \emph{merge markers} inside the file that has conflicts,
-indicating which lines have conflicts, and whether they came from our
-version of the file or theirs.
+Debido a que \command{merge} no puede resolver los conflictos que
+aparecen, él deja \emph{marcadores de fusión} en el fichero con
+conflictos, indicando si provienen de nuestra versión o de la de
+ellos.
 
-Mercurial can tell from the way \command{merge} exits that it wasn't
-able to merge successfully, so it tells us what commands we'll need to
-run if we want to redo the merging operation.  This could be useful
-if, for example, we were running a graphical merge tool and quit
-because we were confused or realised we had made a mistake.
+Mercurial puede saber ---por el código de salida del comando
+\command{merge}--- que no fue posible hacer la fusión exitosamente,
+así que nos indica qué comandos debemos ejecutar si queremos rehacer
+la fusión. Esto puede ser útil si, por ejemplo, estamos ejecutando una
+herramienta gráfica de fusión y salimos de ella porque nos confundimos
+o cometimos un error.
 
-If automatic or manual merges fail, there's nothing to prevent us from
-``fixing up'' the affected files ourselves, and committing the results
-of our merge:
+Si la fusión ---automática o manual--- falla, no hay nada que nos
+impida ``arreglar'' los ficheros afectados por nosotros mismos, y
+consignar los resultados de nuestra fusión:
+% TODO este mercurial no tiene el comando resolve. Revisar si sigue
+% siendo necesario
 \interaction{tour-merge-conflict.commit}
 
 \section{Simplifying the pull-merge-commit sequence}
