@@ -208,100 +208,101 @@ renombramiento, no será modificado.
 Si necesita que las modificaciones en el archivo destino del
 renombramiento se muestren, no olvide copiarlas encima.)
 
-Estos aspectos engorrosos de revertir el renombramiento se constituyen
+Estos aspectos engorrosos al revertir un renombramiento se constituyen
 discutiblemente en un fallo de Mercurial.
 
-\section{Dealing with committed changes}
+\section{Tratar cambios consignados}
 
-Consider a case where you have committed a change $a$, and another
-change $b$ on top of it; you then realise that change $a$ was
-incorrect.  Mercurial lets you ``back out'' an entire changeset
-automatically, and building blocks that let you reverse part of a
-changeset by hand.
+Considere un caso en el que ha consignado el cambio $a$, y otro cambio
+$b$ sobre este; se ha dado cuenta que el cambio $a$ era
+incorrecto. Mercurial le permite ``retroceder'' un conjunto de cambios
+completo automáticamente, y construir bloques que le permitan revertir
+parte de un conjunto de cambios a mano.
 
-Before you read this section, here's something to keep in mind: the
-\hgcmd{backout} command undoes changes by \emph{adding} history, not
-by modifying or erasing it.  It's the right tool to use if you're
-fixing bugs, but not if you're trying to undo some change that has
-catastrophic consequences.  To deal with those, see
-section~\ref{sec:undo:aaaiiieee}.
+Antes de leer esta sección, hay algo para tener en cuenta: la orden
+\hgcmd{backout} deshace cambios \emph{adicionando} a la historia, sin
+modificar o borrar.  Es la herramienta correcta si está arreglando
+fallos, pero no si está tratando de deshacer algún cambio que tiene
+consecuencias catastróficas.  Para tratar con esos, vea la sección~\ref{sec:undo:aaaiiieee}.
 
-\subsection{Backing out a changeset}
+\subsection{Retroceder un conjunto de cambios}
 
-The \hgcmd{backout} command lets you ``undo'' the effects of an entire
-changeset in an automated fashion.  Because Mercurial's history is
-immutable, this command \emph{does not} get rid of the changeset you
-want to undo.  Instead, it creates a new changeset that
-\emph{reverses} the effect of the to-be-undone changeset.
+La orden \hgcmd{backout} le permite ``deshacer'' los efectos de todo
+un conjunto de cambios de forma automatizada.  Dado que la historia de
+Mercurial es inmutable, esta orden \emph{no} se deshace del conjunto
+de cambios que usted desea deshacer.  En cambio, crea un nuevo
+conjunto de cambios que \emph{reversa} el conjunto de cambios que
+usted indique.
 
-The operation of the \hgcmd{backout} command is a little intricate, so
-let's illustrate it with some examples.  First, we'll create a
-repository with some simple changes.
+La operación de la orden \hgcmd{backout} es un poco intrincada, y lo
+ilustraremos con algunos ejemplos. Primero crearemos un repositorio
+con algunos cambios sencillos.
 \interaction{backout.init}
 
-The \hgcmd{backout} command takes a single changeset ID as its
-argument; this is the changeset to back out.  Normally,
-\hgcmd{backout} will drop you into a text editor to write a commit
-message, so you can record why you're backing the change out.  In this
-example, we provide a commit message on the command line using the
-\hgopt{backout}{-m} option.
+La orden \hgcmd{backout} toma un ID de conjunto de cambios como su
+argumento; el conjunto de cambios a retroceder. Normalmente
+\hgcmd{backout} le ofrecerá un editor de texto para escribir el
+mensaje de la consignación, para dejar un registro de por qué está
+retrocediendo. En este ejemplo, colocamos un mensaje en la
+consignación usando la opción \hgopt{backout}{-m} .
 
-\subsection{Backing out the tip changeset}
+\subsection{Retroceder el conjunto de cambios tip}
 
-We're going to start by backing out the last changeset we committed.
+Comenzamos retrocediendo el último conjunto de cambios que consignamos.
 \interaction{backout.simple}
-You can see that the second line from \filename{myfile} is no longer
-present.  Taking a look at the output of \hgcmd{log} gives us an idea
-of what the \hgcmd{backout} command has done.
+Puede ver que la segunda línea de \filename{myfile} ya no está
+presente.  La salida de \hgcmd{log} nos da una idea de lo que la orden
+\hgcmd{backout} ha hecho.
 \interaction{backout.simple.log}
-Notice that the new changeset that \hgcmd{backout} has created is a
-child of the changeset we backed out.  It's easier to see this in
-figure~\ref{fig:undo:backout}, which presents a graphical view of the
-change history.  As you can see, the history is nice and linear.
+Vea que el nuevo conjunto de cambios que \hgcmd{backout} ha creado es
+un hijo del conjunto de cambios que retrocedimos. Es más sencillo de
+ver en la figura~\ref{fig:undo:backout}, que presenta una vista
+gráfica de la historia de cambios.  Como puede ver, la historia es
+bonita y lineal.
 
 \begin{figure}[htb]
   \centering
   \grafix{undo-simple}
-  \caption{Backing out a change using the \hgcmd{backout} command}
+  \caption{Retroceso de un cambio con la orden \hgcmd{backout}}
   \label{fig:undo:backout}
 \end{figure}
 
-\subsection{Backing out a non-tip change}
+\subsection{Retroceso de un cambio que no es tip}
 
-If you want to back out a change other than the last one you
-committed, pass the \hgopt{backout}{--merge} option to the
-\hgcmd{backout} command.
+Si desea retrocede un cambio distinto al último que ha consignado, use
+la opción \hgopt{backout}{--merge} a la orden \hgcmd{backout}.
 \interaction{backout.non-tip.clone}
-This makes backing out any changeset a ``one-shot'' operation that's
-usually simple and fast.
+Que resulta en un retroceso de un conjunto de cambios ``en un sólo
+tiro'', una operación que resulta normalmente rápida y sencilla.
 \interaction{backout.non-tip.backout}
 
-If you take a look at the contents of \filename{myfile} after the
-backout finishes, you'll see that the first and third changes are
-present, but not the second.
+Si ve los contenidos del fichero \filename{myfile} después de
+finalizar el retroceso, verá que el primer y el tercer cambio están
+presentes, pero no el segundo.
 \interaction{backout.non-tip.cat}
 
-As the graphical history in figure~\ref{fig:undo:backout-non-tip}
-illustrates, Mercurial actually commits \emph{two} changes in this
-kind of situation (the box-shaped nodes are the ones that Mercurial
-commits automatically).  Before Mercurial begins the backout process,
-it first remembers what the current parent of the working directory
-is.  It then backs out the target changeset, and commits that as a
-changeset.  Finally, it merges back to the previous parent of the
-working directory, and commits the result of the merge.
+Como lo muestra la historia gráfica en la
+figura~\ref{fig:undo:backout-non-tip}, Mercurial realmente consigna
+\emph{dos} cambios en estas situaciones (los nodos encerrados en una
+caja son aquellos que Mercurial consigna automaticamente).  Antes de
+que Mercurial comience el proceso de retroceso, primero recuerda cuál
+es el padre del directorio de trabajo.  Posteriormente hace un
+retroceso al conjunto de cambios objetivo y lo consigna como un
+conjunto de cambios. Finalmente, fusiona con el padre anterior del
+directorio de trabajo, y consigna el resultado de la fusión.
 
 % TODO: to me it looks like mercurial doesn't commit the second merge automatically!
 
 \begin{figure}[htb]
   \centering
   \grafix{undo-non-tip}
-  \caption{Automated backout of a non-tip change using the \hgcmd{backout} command}
+  \caption{Retroceso automatizado de un cambio a algo que no es tip con la orden \hgcmd{backout}}
   \label{fig:undo:backout-non-tip}
 \end{figure}
 
-The result is that you end up ``back where you were'', only with some
-extra history that undoes the effect of the changeset you wanted to
-back out.
+El resultado es que usted termina ``donde estaba'', solamente con un
+poco de historia adicional que deshace el efecto de un conjunto de
+cambios que usted quería evitar.
 
 \subsubsection{Always use the \hgopt{backout}{--merge} option}
 
