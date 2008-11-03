@@ -253,51 +253,54 @@ consignar los resultados de nuestra fusión:
 % siendo necesario
 \interaction{tour-merge-conflict.commit}
 
-\section{Simplifying the pull-merge-commit sequence}
+\section{Simplificar el ciclo jalar-fusionar-consignar}
 \label{sec:tour-merge:fetch}
 
-The process of merging changes as outlined above is straightforward,
-but requires running three commands in sequence.
+El proceso de fusionar cambios delineado anteriomente es directo, pero
+requiere la ejecución de tres comandos en sucesión.
 \begin{codesample2}
   hg pull
   hg merge
-  hg commit -m 'Merged remote changes'
+  hg commit -m 'Fusionados cambios remotos'
 \end{codesample2}
-In the case of the final commit, you also need to enter a commit
-message, which is almost always going to be a piece of uninteresting
-``boilerplate'' text.
+En la consignación final usted debe proveer un mensaje adecuado, que
+casi siempre es un fragmento de texto ``de relleno'' carente de valor
+particular.
 
-It would be nice to reduce the number of steps needed, if this were
-possible.  Indeed, Mercurial is distributed with an extension called
-\hgext{fetch} that does just this.
+Sería agradable reducir la cantidad de pasos necesarios, si fuera
+posible. De hecho, Mercurial es distribuido junto con una extensión
+llamada \hgext{fetch}\ndt{Descargar, traer.} que hace precisamente
+esto.
 
-Mercurial provides a flexible extension mechanism that lets people
-extend its functionality, while keeping the core of Mercurial small
-and easy to deal with.  Some extensions add new commands that you can
-use from the command line, while others work ``behind the scenes,''
-for example adding capabilities to the server.
+Mercurial cuenta con un mecanismo de extensión flexible que le permite
+% TODO lets people => permite a usuarios
+a sus usuarios extender su funcionalidad, manteniendo el núcleo de
+Mercurial pequeño y fácil de manejar. Algunas extensiones añaden
+nuevos comandos que usted puede usar desde la línea de comandos,
+mientras que otros funcionan ``tras bambalinas'', por ejemplo,
+añadiendo funcionalidad al servidor.
 
-The \hgext{fetch} extension adds a new command called, not
-surprisingly, \hgcmd{fetch}.  This extension acts as a combination of
-\hgcmd{pull}, \hgcmd{update} and \hgcmd{merge}.  It begins by pulling
-changes from another repository into the current repository.  If it
-finds that the changes added a new head to the repository, it begins a
-merge, then commits the result of the merge with an
-automatically-generated commit message.  If no new heads were added,
-it updates the working directory to the new tip changeset.
+La extensión \hgext{fetch} añade un comando llamado, no
+sorpresivamente, \hgcmd{fetch}.  Esta extensión actúa como una
+combinación de \hgcmd{pull}, \hgcmd{update} y \hgcmd{merge}.  Empieza
+jalando cambios de otro repositorio al repositorio actual. Si
+encuentra que los cambios añaden un nuevo frente en el repositorio
+actual, inicia una fusión, y luego consigna el resultado de la misma
+con un mensaje generado automáticamente. Si no se añadieron nuevos
+frentes, actualiza el directorio de trabajo con el nuevo conjunto de
+cambios de punta.
 
-Enabling the \hgext{fetch} extension is easy.  Edit your
-\sfilename{.hgrc}, and either go to the \rcsection{extensions} section
-or create an \rcsection{extensions} section.  Then add a line that
-simply reads ``\Verb+fetch +''.
+Activar la extensión \hgext{fetch} es fácil. Edite su
+\sfilename{.hgrc}, y vaya a (o cree) la sección
+\rcsection{extensions}.  Luego añada una línea que diga simplemente
+``\Verb+fetch +''.
 \begin{codesample2}
   [extensions]
   fetch =
 \end{codesample2}
-(Normally, on the right-hand side of the ``\texttt{=}'' would appear
-the location of the extension, but since the \hgext{fetch} extension
-is in the standard distribution, Mercurial knows where to search for
-it.)
+(Normalmente, a la derecha del ``\texttt{=}'' debería aparecer la
+ubicación de la extensión, pero como el comando \hgext{fetch} es parte
+de la distribución estándar, Mercurial sabe dónde buscarla.)
 
 %%% Local Variables: 
 %%% mode: latex
