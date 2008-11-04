@@ -1,26 +1,29 @@
-\chapter{Behind the scenes}
+\chapter{Tras bambalinas}
 \label{chap:concepts}
 
-Unlike many revision control systems, the concepts upon which
-Mercurial is built are simple enough that it's easy to understand how
-the software really works.  Knowing this certainly isn't necessary,
-but I find it useful to have a ``mental model'' of what's going on.
+A diferencia de varios sistemas de control de revisiones, los
+conceptos en los que se fundamenta Mercurial son lo suficientemente
+simples como para entender fácilmente cómo funciona el software. 
+Saber esto no es necesario, pero considero útil tener un ``modelo
+mental'' de qué es lo que sucede.
 
-This understanding gives me confidence that Mercurial has been
-carefully designed to be both \emph{safe} and \emph{efficient}.  And
-just as importantly, if it's easy for me to retain a good idea of what
-the software is doing when I perform a revision control task, I'm less
-likely to be surprised by its behaviour.
+Comprender esto me da la confianza de que Mercurial ha sido
+cuidadosamente diseñado para ser tanto \emph{seguro} como
+\emph{eficiente}.  Y tal vez con la misma importancia, si es fácil
+para mí hacerme a una idea adecuada de qué está haciendo el software
+cuando llevo a cabo una tarea relacionada con control de revisiones,
+es menos probable que me sosprenda su comportamiento.
 
-In this chapter, we'll initially cover the core concepts behind
-Mercurial's design, then continue to discuss some of the interesting
-details of its implementation.
+En este capítulo, cubriremos inicialmente los conceptos centrales
+del diseño de Mercurial, y luego discutiremos algunos detalles
+interesantes de su implementación.
 
-\section{Mercurial's historical record}
+\section{Registro del historial de Mercurial}
 
-\subsection{Tracking the history of a single file}
+\subsection{Seguir el historial de un único fichero}
 
-When Mercurial tracks modifications to a file, it stores the history
+Cuando Mercurial sigue las modificaciones a un fichero, guarda el
+historial de dicho fichero en un objeto de metadatos llamado
 of that file in a metadata object called a \emph{filelog}.  Each entry
 in the filelog contains enough information to reconstruct one revision
 of the file that is being tracked.  Filelogs are stored as files in
