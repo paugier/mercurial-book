@@ -24,20 +24,22 @@ interesantes de su implementación.
 
 Cuando Mercurial sigue las modificaciones a un fichero, guarda el
 historial de dicho fichero en un objeto de metadatos llamado
-of that file in a metadata object called a \emph{filelog}.  Each entry
-in the filelog contains enough information to reconstruct one revision
-of the file that is being tracked.  Filelogs are stored as files in
-the \sdirname{.hg/store/data} directory.  A filelog contains two kinds
-of information: revision data, and an index to help Mercurial to find
-a revision efficiently.
+\emph{filelog}\ndt{Fichero de registro}.  Cada entrada en el fichero
+de registro contiene suficiente información para reconstruir una
+revisión del fichero que se está siguiendo. Los ficheros de registro
+son almacenados como ficheros el el directorio
+\sdirname{.hg/store/data}. Un fichero de registro contiene dos tipos
+de información: datos de revisiones, y un índice para ayudar a
+Mercurial a buscar revisiones eficientemente.
 
-A file that is large, or has a lot of history, has its filelog stored
-in separate data (``\texttt{.d}'' suffix) and index (``\texttt{.i}''
-suffix) files.  For small files without much history, the revision
-data and index are combined in a single ``\texttt{.i}'' file.  The
-correspondence between a file in the working directory and the filelog
-that tracks its history in the repository is illustrated in
-figure~\ref{fig:concepts:filelog}.
+El fichero de registro de un fichero grande, o con un historial muy
+largo, es guardado como ficheros separados para datos (sufijo
+``\texttt{.d}'') y para el índice (sufijo ``\texttt{.i}''). Para
+ficheros pequeños con un historial pequeño, los datos de revisiones y
+el índice son combinados en un único fichero ``\texttt{.i}''. La
+correspondencia entre un fichero en el directorio de trabajo y el
+fichero de registro que hace seguimiento a su historial en el
+repositorio se ilustra en la figura~\ref{fig:concepts:filelog}.
 
 \begin{figure}[ht]
   \centering
