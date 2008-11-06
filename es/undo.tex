@@ -476,101 +476,106 @@ XXX This needs filling out.  The \texttt{hg-replay} script in the
 \texttt{examples} directory works, but doesn't handle merge
 changesets.  Kind of an important omission.
 
-\subsection{Protect yourself from ``escaped'' changes}
+\subsection{Cómo protegerse de cambios que han ``escapado''}
 
-If you've committed some changes to your local repository and they've
-been pushed or pulled somewhere else, this isn't necessarily a
-disaster.  You can protect yourself ahead of time against some classes
-of bad changeset.  This is particularly easy if your team usually
-pulls changes from a central repository.
+Si ha consignado cambios a su repositorio local y estos han sido
+publicados o jalados en cualquier otro sitio, no es necesariamente un
+desastre. Puede protegerse de antemano de ciertas clases de conjuntos
+de cambios malos. Esto es particularmente sencillo si su equipo de
+trabajo jala cambios de un repositorio central.
 
-By configuring some hooks on that repository to validate incoming
-changesets (see chapter~\ref{chap:hook}), you can automatically
-prevent some kinds of bad changeset from being pushed to the central
-repository at all.  With such a configuration in place, some kinds of
-bad changeset will naturally tend to ``die out'' because they can't
-propagate into the central repository.  Better yet, this happens
-without any need for explicit intervention.
+Al configura algunos ganchos en el repositorio central para validar
+conjuntos de cambios(ver capítulo~\ref{chap:hook}), puede prevenir la
+publicación automáticamente de cierta clase de cambios malos.  Con tal
+configuración, cierta clase de conjuntos de cambios malos tenderán
+naturalmente a``morir'' debido a que no pueden propagarse al
+repositorio central.  Esto sucederá sin necesidad de intervención
+explícita.
 
-For instance, an incoming change hook that verifies that a changeset
-will actually compile can prevent people from inadvertantly ``breaking
-the build''.
+Por ejemplo, un gancho de cambios de entrada que verifique que un
+conjunto de cambios compila, puede prevenir que la gente ``rompa 
+la compilación'' inadvertidamente.
 
-\section{Finding the source of a bug}
+\section{Al encuentro de la fuente de un fallo}
 \label{sec:undo:bisect}
 
-While it's all very well to be able to back out a changeset that
-introduced a bug, this requires that you know which changeset to back
-out.  Mercurial provides an invaluable command, called
-\hgcmd{bisect}, that helps you to automate this process and accomplish
-it very efficiently.
+Aunque es muy bueno poder retroceder el conjunto de cambios que
+originó un fallo, se requiere que usted sepa cual conjunto de cambios
+retroceder.  Mercurial brinda una orden invaluable, llamada
+\hgcmd{bisect}, que ayuda a automatizar este proceso y a alcanzarlo
+muy eficientemente.
 
-The idea behind the \hgcmd{bisect} command is that a changeset has
-introduced some change of behaviour that you can identify with a
-simple binary test.  You don't know which piece of code introduced the
-change, but you know how to test for the presence of the bug.  The
-\hgcmd{bisect} command uses your test to direct its search for the
-changeset that introduced the code that caused the bug.
+La idea tras la orden \hgcmd{bisect} es que el conjunto de cambios que
+ha introducido un cambio de comportamiento pueda identificarse con una
+prueba binaria sencilla. No tiene que saber qué pieza de código
+introdujo el cambio, pero si requiere que sepa cómo probar la
+existencia de un fallo. La orden \hgcmd{bisect} usa su prueba para
+dirigir su búsqueda del conjunto de cambios que introdujo el código
+causante del fallo.
 
-Here are a few scenarios to help you understand how you might apply
-this command.
+A continuación un conjunto de escenarios que puede ayudarle a entender
+cómo puede aplicar esta orden.
 \begin{itemize}
-\item The most recent version of your software has a bug that you
-  remember wasn't present a few weeks ago, but you don't know when it
-  was introduced.  Here, your binary test checks for the presence of
-  that bug.
-\item You fixed a bug in a rush, and now it's time to close the entry
-  in your team's bug database.  The bug database requires a changeset
-  ID when you close an entry, but you don't remember which changeset
-  you fixed the bug in.  Once again, your binary test checks for the
-  presence of the bug.
-\item Your software works correctly, but runs~15\% slower than the
-  last time you measured it.  You want to know which changeset
-  introduced the performance regression.  In this case, your binary
-  test measures the performance of your software, to see whether it's
-  ``fast'' or ``slow''.
-\item The sizes of the components of your project that you ship
-  exploded recently, and you suspect that something changed in the way
-  you build your project.
+\item La versión más reciente de su programa tiene un fallo que usted
+  recuerda no estaba hace unas semanas, pero no sabe cuándo fue
+  introducido. En este caso, su prueba binaria busca la presencia de
+  tal fallo.
+\item Usted arregló un fallo en un apurto, y es hora de dar por
+  cerrado el caso en la base de datos de fallos de su equipo de
+  trabajo.   La base de datos de fallos requiere el ID del conjunto de
+  cambios que permita dar por cerrado el caso, pero usted no recuerda
+  qué conjunto de cambios arregló tal fallo.  De nuevo la prueba
+  binaria revisa la presencia del fallo.
+\item Su programa funciona correctamente, pero  core ~15\% más lento
+  que la última vez que lo midió. Usted desea saber qué conjunto de
+  cambios introdujo esta disminución de desempeño.  En este caso su
+  prueba binaria mide el desempeño de su programa, para ver dónde es
+  ``rápido'' y dónde es ``lento''.
+\item Los tamaños de los componentes del proyecto que usted lleva se
+  expandieron recientemente, y sospecha que algo cambio en la forma en
+  que se construye su proyecto.
 \end{itemize}
 
-From these examples, it should be clear that the \hgcmd{bisect}
-command is not useful only for finding the sources of bugs.  You can
-use it to find any ``emergent property'' of a repository (anything
-that you can't find from a simple text search of the files in the
-tree) for which you can write a binary test.
+Para estos ejemplos debería ser claro que la orden \hgcmd{bisect}
+es útil no solamente para encontrar la fuente de los fallos. Puede
+usarla para encontrar cualquier ``propiedad emergente'' de un
+repositorio(Cualquier cosa que usted no pueda encontrar con una
+búsqueda de texto sencilla sobre los archivos en el árbol) para la
+cual pueda escribir una prueba binaria.
 
-We'll introduce a little bit of terminology here, just to make it
-clear which parts of the search process are your responsibility, and
-which are Mercurial's.  A \emph{test} is something that \emph{you} run
-when \hgcmd{bisect} chooses a changeset.  A \emph{probe} is what
-\hgcmd{bisect} runs to tell whether a revision is good.  Finally,
-we'll use the word ``bisect'', as both a noun and a verb, to stand in
-for the phrase ``search using the \hgcmd{bisect} command.
+A continuación introduciremos algo terminología, para aclarar qué
+partes del proceso de búsqueda son su responsabilidad y cuáles de
+Mercurial.  Una \emph{prueba} es algo que \emph{usted} ejecuta cuando
+\hgcmd{bisect} elige un conjunto de cambios.  Un \emph{sondeo} es lo que
+\hgcmd{bisect} ejecuta para decidir si una revisión es buena.  Finalmente,
+usaremos la palabra ``biseccionar', en frases como ``buscar con la
+orden \hgcmd{bisect}''.
 
-One simple way to automate the searching process would be simply to
-probe every changeset.  However, this scales poorly.  If it took ten
-minutes to test a single changeset, and you had 10,000 changesets in
-your repository, the exhaustive approach would take on average~35
-\emph{days} to find the changeset that introduced a bug.  Even if you
-knew that the bug was introduced by one of the last 500 changesets,
-and limited your search to those, you'd still be looking at over 40
-hours to find the changeset that introduced your bug.
+Una forma sencilla de automatizar el proceso de búsqueda sería probar
+cada conjunto de cambios.  Lo cual escala muy poco. Si le tomó diez
+minutos hacer pruebas sobre un conjunto de cambios y tiene 10.000
+conjuntos de cambios en su repositorio, esta aproximación exhaustiva
+tomaría en promedio~35 \emph{días} para encontrar el conjunto de
+cambios que introdujo el fallo. Incluso si supiera que el fallo se
+introdujo en un de los últimos 500 conjuntos de cambios y limitara la
+búsqueda a ellos, estaría tomabdi más de 40 horas para encontrar al
+conjunto de cambios culpable.
 
-What the \hgcmd{bisect} command does is use its knowledge of the
-``shape'' of your project's revision history to perform a search in
-time proportional to the \emph{logarithm} of the number of changesets
-to check (the kind of search it performs is called a dichotomic
-search).  With this approach, searching through 10,000 changesets will
-take less than three hours, even at ten minutes per test (the search
-will require about 14 tests).  Limit your search to the last hundred
-changesets, and it will take only about an hour (roughly seven tests).
+La orden \hgcmd{bisect} usa su conocimiento de la ``forma'' de la
+historia de revisiones de su proyecto para hacer una búsqueda
+proporcional al \emph{logaritmo} del número de conjunto de cambios a
+revisar( el tipo de búsqueda que realiza se llama búsqueda
+binaria). Con esta aproximación, el buscar entre 10.000 conjuntos de
+cambios tomará menos de 3 horas, incluso a diez minutos por prueba(La
+búsqueda requerirá cerca de 14 pruebas). Al limitar la búsqueda a la
+última centena de conjuntos de cambios, tomará a lo sumo una
+hora(Apenas unas 7 pruebas).
 
-The \hgcmd{bisect} command is aware of the ``branchy'' nature of a
-Mercurial project's revision history, so it has no problems dealing
-with branches, merges, or multiple heads in a repoository.  It can
-prune entire branches of history with a single probe, which is how it
-operates so efficiently.
+La orden \hgcmd{bisect} tiene en cuenta la naturaleza ``ramificada''
+de la historia de revisiones del proyecto con Mercurial, así que no
+hay problemas al tratar con ramas, fusiones o cabezas múltiples en un
+repositorio.  Puede evitar ramas enteras de historia con un solo
+sondeo.
 
 \subsection{Using the \hgcmd{bisect} command}
 
