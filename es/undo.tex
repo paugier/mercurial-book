@@ -205,7 +205,7 @@ Por lo tanto, recuerde, para revertir un \hgcmd{rename}, debe proveer
 nuevo nombre, al revertir ambos componentes del renombramiento, cuando
 Mercurial restaure el fichero que fue eliminado como parte del
 renombramiento, no será modificado.
-Si necesita que las modificaciones en el archivo destino del
+Si necesita que las modificaciones en el fichero destino del
 renombramiento se muestren, no olvide copiarlas encima.)
 
 Estos aspectos engorrosos al revertir un renombramiento se constituyen
@@ -359,7 +359,7 @@ puesto que es el que retrocedimos.  Dado que la gráfica de la historia
 muestra que el tercer camlio es una cabeza separada, \emph{no}
 esperamos ver el tercer cambio presente en \filename{myfile}.
 \interaction{backout.manual.cat}
-Para que el tercer cambio esté en el archivo, hacemos una fusión usual
+Para que el tercer cambio esté en el fichero, hacemos una fusión usual
 de las dos cabezas.
 \interaction{backout.manual.merge}
 Después de eso, la historia gráfica de nuestro repositorio luce como
@@ -385,7 +385,7 @@ Esta es una descripción corta de cómo trabaja la orden \hgcmd{backout}.
   retroceder. Lo llamaremos \texttt{backout}
 \item Encuentra el padre del conjunto de cambios. Lo llamaremos
   \texttt{parent}.
-\item Para cada archivo del conjunto de cambios que el
+\item Para cada fichero del conjunto de cambios que el
   \texttt{retroceso} afecte, hará el equivalente a
   \hgcmdargs{revert}{-r parent} sobre ese fichero, para restaurarlo a
   los contenidos que tenía antes de que el conjunto de cambios fuera
@@ -419,7 +419,7 @@ determinar si puede aplicar un parche (si esto suena como cháchara,
 vea una discusión de la orden \command{patch} en \ref{sec:mq:patch}).
 Adicionalmente, la maquinaria de fusión de Mercurial manejará ficheros
 y directorios renombrados, cambios de permisos, y modificaciones a
-archivos binarios, nada de lo cual la orden \command{patch} puede manejar.
+ficheros binarios, nada de lo cual la orden \command{patch} puede manejar.
 
 \section{Cambios que nunca debieron ocurrir}
 \label{sec:undo:aaaiiieee}
@@ -432,7 +432,7 @@ conjunto de cambios original y cuando se hizo la limpieza.
 En ocasiones particulares, puede haber consignado un cambio que no
 debería estar de ninguna forma en el repositorio.  Por ejemplo, sería
 muy inusual, y considerado como una equivocación, consignar los
-archivos objeto junto con el código fuente. los ficheros objeto no
+ficheros objeto junto con el código fuente. los ficheros objeto no
 tienen valor intrínseco y son \emph{grandes}, por lo tanto aumentan el
 tamaño del repositorio y la cantidad de tiempo que se emplea al clonar
 o jalar cambios.
@@ -540,7 +540,7 @@ Para estos ejemplos debería ser claro que la orden \hgcmd{bisect}
 es útil no solamente para encontrar la fuente de los fallos. Puede
 usarla para encontrar cualquier ``propiedad emergente'' de un
 repositorio(Cualquier cosa que usted no pueda encontrar con una
-búsqueda de texto sencilla sobre los archivos en el árbol) para la
+búsqueda de texto sencilla sobre los ficheros en el árbol) para la
 cual pueda escribir una prueba binaria.
 
 A continuación introduciremos algo terminología, para aclarar qué
@@ -594,7 +594,7 @@ aislada
 Simularemos de forma sencilla un proyecto con un fallo: haremos
 cambios triviales en un ciclo, e indicaremos que un cambio específico
 sea el ``fallo''.  Este ciclo crea 35 conjuntos de cambios, cada uno
-añade un único archivo al repositorio. Representaremos nuestro ``fallo''
+añade un único fichero al repositorio. Representaremos nuestro ``fallo''
 con un fichero que contiene el texto ``tengo un gub''.
 \interaction{bisect.commits}
 
@@ -624,7 +624,7 @@ Para comenzar la búsqueda, es indispensable ejecutar la orden
 \interaction{bisect.search.init}
 
 En nuestro caso, la prueba binaria es sencilla: revisamos si el
-archivo en el repositorio contiene la cadena ``tengo un gub''.  Si la
+fichero en el repositorio contiene la cadena ``tengo un gub''.  Si la
 tiene, este conjunto de cambios contiene aquel que ``causó el fallo''.
 Por convención, un conjunto de cambios que tiene la propiedad que
 estamos buscando es ``malo'', mientras que el otro que no la tiene es
