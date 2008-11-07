@@ -44,45 +44,49 @@ repositorio se ilustra en la figura~\ref{fig:concepts:filelog}.
 \begin{figure}[ht]
   \centering
   \grafix{filelog}
-  \caption{Relationships between files in working directory and
-    filelogs in repository}
+  \caption{Relación entre ficheros en el directorio de trabajo y
+  ficheros de registro en el repositorio}
   \label{fig:concepts:filelog}
 \end{figure}
 
-\subsection{Managing tracked files}
+\subsection{Administración de ficheros monitoreados}
 
-Mercurial uses a structure called a \emph{manifest} to collect
-together information about the files that it tracks.  Each entry in
-the manifest contains information about the files present in a single
-changeset.  An entry records which files are present in the changeset,
-the revision of each file, and a few other pieces of file metadata.
+Mercurial usa una estructura llamada \emph{manifiesto} para
+% TODO collect together => centralizar
+centralizar la información que maneja acerca de los ficheros que
+monitorea. Cada entrada en el manifiesto contiene información acerca
+de los ficheros involucrados en un único conjunto de cambios. Una
+entrada registra qué ficheros están presentes en el conjunto de
+cambios, la revisión de cada fichero, y otros cuantos metadatos del
+mismo.
 
-\subsection{Recording changeset information}
+\subsection{Registro de información del conjunto de cambios}
 
-The \emph{changelog} contains information about each changeset.  Each
-revision records who committed a change, the changeset comment, other
-pieces of changeset-related information, and the revision of the
-manifest to use.
+La \emph{bitácora de cambios} contiene información acerca de cada
+conjunto de cambios. Cada revisión indica quién consignó un cambio, el
+comentario para el conjunto de cambios, otros datos relacionados con
+el conjunto de cambios, y la revisión del manifiesto a usar.
 
-\subsection{Relationships between revisions}
+\subsection{Relaciones entre revisiones}
 
-Within a changelog, a manifest, or a filelog, each revision stores a
-pointer to its immediate parent (or to its two parents, if it's a
-merge revision).  As I mentioned above, there are also relationships
-between revisions \emph{across} these structures, and they are
-hierarchical in nature.
+Dentro de una bitácora de cambios, un manifiesto, o un fichero de
+registro, cada revisión conserva un apuntador a su padre inmediato
+(o sus dos padres, si es la revisión de una fusión). Como menciońe
+anteriormente, también hay relaciones entre revisiones \emph{a través}
+de estas estructuras, y tienen naturaleza jerárquica.
 
-For every changeset in a repository, there is exactly one revision
-stored in the changelog.  Each revision of the changelog contains a
-pointer to a single revision of the manifest.  A revision of the
-manifest stores a pointer to a single revision of each filelog tracked
-when that changeset was created.  These relationships are illustrated
-in figure~\ref{fig:concepts:metadata}.
+Por cada conjunto de cambios en un repositorio, hay exactamente una
+revisión almacenada en la bitácora de cambios. Cada revisión de la
+bitácora de cambios contiene un apuntador a una única revisión del
+manifiesto. Una revisión del manifiesto almacena un apuntador a una
+única revisión de cada fichero de registro al que se le hacía
+seguimiento cuando fue creado el conjunto de cambios. Estas relaciones
+se ilustran en la figura~\ref{fig:concepts:metadata}.
 
 \begin{figure}[ht]
   \centering
   \grafix{metadata}
-  \caption{Metadata relationships}
+  \caption{Relaciones entre metadatos}
   \label{fig:concepts:metadata}
 \end{figure}
 
