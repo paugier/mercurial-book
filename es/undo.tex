@@ -577,109 +577,113 @@ hay problemas al tratar con ramas, fusiones o cabezas múltiples en un
 repositorio.  Puede evitar ramas enteras de historia con un solo
 sondeo.
 
-\subsection{Using the \hgcmd{bisect} command}
+\subsection{Uso de la orden \hgcmd{bisect}}
 
-Here's an example of \hgcmd{bisect} in action.
+A continuación un ejemplo de \hgcmd{bisect} en acción.
 
 \begin{note}
-  In versions 0.9.5 and earlier of Mercurial, \hgcmd{bisect} was not a
-  core command: it was distributed with Mercurial as an extension.
-  This section describes the built-in command, not the old extension.
+  En las versiones 0.9.5 y anteriores de Mercurial, \hgcmd{bisect} no
+  era una orden incluída en la distribución principal: se ofrecía como
+  una extensión de Mercurial. Esta sección describe la orden embebida
+  y no la extensión anterior.
 \end{note}
 
-Now let's create a repository, so that we can try out the
-\hgcmd{bisect} command in isolation.
+Creamos un repostorio para probar el comando \hgcmd{bisect} de forma
+aislada
 \interaction{bisect.init}
-We'll simulate a project that has a bug in it in a simple-minded way:
-create trivial changes in a loop, and nominate one specific change
-that will have the ``bug''.  This loop creates 35 changesets, each
-adding a single file to the repository.  We'll represent our ``bug''
-with a file that contains the text ``i have a gub''.
+Simularemos de forma sencilla un proyecto con un fallo: haremos
+cambios triviales en un ciclo, e indicaremos que un cambio específico
+sea el ``fallo''.  Este ciclo crea 35 conjuntos de cambios, cada uno
+añade un único archivo al repositorio. Representaremos nuestro ``fallo''
+con un fichero que contiene el texto ``tengo un gub''.
 \interaction{bisect.commits}
 
-The next thing that we'd like to do is figure out how to use the
-\hgcmd{bisect} command.  We can use Mercurial's normal built-in help
-mechanism for this.
+A continuación observaremos cómo usar la orden \hgcmd{bisect}. Podemos
+usar el mecanismo de ayuda embebida que trae Mercurial.
 \interaction{bisect.help}
 
-The \hgcmd{bisect} command works in steps.  Each step proceeds as follows.
+La orden \hgcmd{bisect} trabaja en etapas, de la siguiente forma:
 \begin{enumerate}
-\item You run your binary test.
+\item Usted ejecuta una prueba binaria.
   \begin{itemize}
-  \item If the test succeeded, you tell \hgcmd{bisect} by running the
-    \hgcmdargs{bisect}{good} command.
-  \item If it failed, run the \hgcmdargs{bisect}{--bad} command.
+  \item Si la prueba es exitosa, usted se lo indicará a \hgcmd{bisect}
+    ejecutando la orden \hgcmdargs{bisect}{good}.
+  \item Si falla, ejecutará la orden \hgcmdargs{bisect}{--bad}.
   \end{itemize}
-\item The command uses your information to decide which changeset to
-  test next.
-\item It updates the working directory to that changeset, and the
-  process begins again.
+\item La orden usa su información para decidir qué conjuntos de
+  cambios deben probarse a continuación.
+\item Actualiza el directorio de trabajo a tal conjunto de cambios y
+  el proceso se lleva a cabo de nuevo.
 \end{enumerate}
-The process ends when \hgcmd{bisect} identifies a unique changeset
-that marks the point where your test transitioned from ``succeeding''
-to ``failing''.
+El proceso termina cuando \hgcmd{bisect} identifica un único conjunto
+de cambios que marca el punto donde se encontró la transición de
+``exitoso'' a ``fallido''.
 
-To start the search, we must run the \hgcmdargs{bisect}{--reset} command.
+Para comenzar la búsqueda, es indispensable ejecutar la orden
+\hgcmdargs{bisect}{--reset}.
 \interaction{bisect.search.init}
 
-In our case, the binary test we use is simple: we check to see if any
-file in the repository contains the string ``i have a gub''.  If it
-does, this changeset contains the change that ``caused the bug''.  By
-convention, a changeset that has the property we're searching for is
-``bad'', while one that doesn't is ``good''.
+En nuestro caso, la prueba binaria es sencilla: revisamos si el
+archivo en el repositorio contiene la cadena ``tengo un gub''.  Si la
+tiene, este conjunto de cambios contiene aquel que ``causó el fallo''.
+Por convención, un conjunto de cambios que tiene la propiedad que
+estamos buscando es ``malo'', mientras que el otro que no la tiene es
+``bueno''.
 
-Most of the time, the revision to which the working directory is
-synced (usually the tip) already exhibits the problem introduced by
-the buggy change, so we'll mark it as ``bad''.
+En la mayoría de casos, la revisión del directorio actual (usualmente
+la punta) exhibe el problema introducido por el cambio con el fallo,
+por lo tanto la marcaremos como ``mala''.
 \interaction{bisect.search.bad-init}
 
-Our next task is to nominate a changeset that we know \emph{doesn't}
-have the bug; the \hgcmd{bisect} command will ``bracket'' its search
-between the first pair of good and bad changesets.  In our case, we
-know that revision~10 didn't have the bug.  (I'll have more words
-about choosing the first ``good'' changeset later.)
+Nuestra próxima tarea es nominar al conjunto de cambios que sabemos
+\emph{no} tiene el fallo; la orden \hgcmd{bisect} ``acotará'' su
+búsqueda entre el primer par de conjuntos de cambios buenos y malos.
+En nuestro caso, sabemos que la revisión~10 no tenía el fallo.  (Más
+adelante diré un poco más acerca de la elección del conjunto de
+cambios ``bueno''.)
 \interaction{bisect.search.good-init}
 
-Notice that this command printed some output.
+Note que esta orden mostró algo.
 \begin{itemize}
-\item It told us how many changesets it must consider before it can
-  identify the one that introduced the bug, and how many tests that
-  will require.
-\item It updated the working directory to the next changeset to test,
-  and told us which changeset it's testing.
+\item Nos dijo cuántos conjuntos de cambios debe considerar antes de
+  que pueda identifica aquel que introdujo el fallo, y cuántas pruebas
+  se requerirán.
+\item Actualizó el directorio de trabajo al siguiente conjunto de
+  cambios, y nos dijo qué conjunto de cambios está evaluando.
 \end{itemize}
 
-We now run our test in the working directory.  We use the
-\command{grep} command to see if our ``bad'' file is present in the
-working directory.  If it is, this revision is bad; if not, this
-revision is good.
+Ahora ejecutamos nuestra prueba en el directorio de trabajo. Usamos la
+orden \command{grep} para ver si nuestro fichero ``malo'' está
+presente en el directorio de trabajo.  Si lo está, esta revisión es
+mala; si no esta revisión es buena.
 \interaction{bisect.search.step1}
 
-This test looks like a perfect candidate for automation, so let's turn
-it into a shell function.
+Esta prueba luce como candidata perfecta para automatizarse, por lo
+tanto la convertimos en una función de interfaz de comandos.
 \interaction{bisect.search.mytest}
-We can now run an entire test step with a single command,
+Ahora podemos ejecutar un paso entero de pruebas con un solo comando,
 \texttt{mytest}.
 \interaction{bisect.search.step2}
-A few more invocations of our canned test step command, and we're
-done.
+Unas invocaciones más de nuestra prueba, y hemos terminado.
 \interaction{bisect.search.rest}
 
-Even though we had~40 changesets to search through, the \hgcmd{bisect}
-command let us find the changeset that introduced our ``bug'' with
-only five tests.  Because the number of tests that the \hgcmd{bisect}
-command performs grows logarithmically with the number of changesets to
-search, the advantage that it has over the ``brute force'' search
-approach increases with every changeset you add.
+Aunque teníamos unos~40 conjuntos de cambios en los cuales buscar, la
+orden \hgcmd{bisect} nos permitió encontrar el conjunto de cambios que
+introdujo el ``fallo'' con sólo cinco pruebas.  Porque el número de
+pruebas que la orden \hgcmd{bisect} ejecuta crece logarítmicamente con
+la cantidad de conjuntos de cambios a buscar, la ventaja que esto
+tiene frente a la  búsqueda por``fuerza bruta'' crece con cada
+conjunto de cambios que usted adicione.
 
-\subsection{Cleaning up after your search}
+\subsection{Limpieza después de la búsqueda}
 
-When you're finished using the \hgcmd{bisect} command in a
-repository, you can use the \hgcmdargs{bisect}{reset} command to drop
-the information it was using to drive your search.  The command
-doesn't use much space, so it doesn't matter if you forget to run this
-command.  However, \hgcmd{bisect} won't let you start a new search in
-that repository until you do a \hgcmdargs{bisect}{reset}.
+Cuando haya terminado de usar la orden \hgcmd{bisect} en un
+repositorio, puede usar la orden \hgcmdargs{bisect}{reset} para
+deshacerse de la información que se estaba usando para lograr la
+búsqueda. Lar orden no usa mucho espacio, así que no hay problema si
+olvida ejecutar la orden.  En todo caso, \hgcmd{bisect} no le
+permitirá comenzar una nueva búsqueda sobre el repositorio hasta que
+no aplique \hgcmdargs{bisect}{reset}.
 \interaction{bisect.search.reset}
 
 \section{Tips for finding bugs effectively}
