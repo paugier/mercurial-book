@@ -1,83 +1,92 @@
-\chapter{Behind the scenes}
+\chapter{Tras bambalinas}
 \label{chap:concepts}
 
-Unlike many revision control systems, the concepts upon which
-Mercurial is built are simple enough that it's easy to understand how
-the software really works.  Knowing this certainly isn't necessary,
-but I find it useful to have a ``mental model'' of what's going on.
+A diferencia de varios sistemas de control de revisiones, los
+conceptos en los que se fundamenta Mercurial son lo suficientemente
+simples como para entender fácilmente cómo funciona el software. 
+Saber esto no es necesario, pero considero útil tener un ``modelo
+mental'' de qué es lo que sucede.
 
-This understanding gives me confidence that Mercurial has been
-carefully designed to be both \emph{safe} and \emph{efficient}.  And
-just as importantly, if it's easy for me to retain a good idea of what
-the software is doing when I perform a revision control task, I'm less
-likely to be surprised by its behaviour.
+Comprender esto me da la confianza de que Mercurial ha sido
+cuidadosamente diseñado para ser tanto \emph{seguro} como
+\emph{eficiente}.  Y tal vez con la misma importancia, si es fácil
+para mí hacerme a una idea adecuada de qué está haciendo el software
+cuando llevo a cabo una tarea relacionada con control de revisiones,
+es menos probable que me sosprenda su comportamiento.
 
-In this chapter, we'll initially cover the core concepts behind
-Mercurial's design, then continue to discuss some of the interesting
-details of its implementation.
+En este capítulo, cubriremos inicialmente los conceptos centrales
+del diseño de Mercurial, y luego discutiremos algunos detalles
+interesantes de su implementación.
 
-\section{Mercurial's historical record}
+\section{Registro del historial de Mercurial}
 
-\subsection{Tracking the history of a single file}
+\subsection{Seguir el historial de un único fichero}
 
-When Mercurial tracks modifications to a file, it stores the history
-of that file in a metadata object called a \emph{filelog}.  Each entry
-in the filelog contains enough information to reconstruct one revision
-of the file that is being tracked.  Filelogs are stored as files in
-the \sdirname{.hg/store/data} directory.  A filelog contains two kinds
-of information: revision data, and an index to help Mercurial to find
-a revision efficiently.
+Cuando Mercurial sigue las modificaciones a un fichero, guarda el
+historial de dicho fichero en un objeto de metadatos llamado
+\emph{filelog}\ndt{Fichero de registro}.  Cada entrada en el fichero
+de registro contiene suficiente información para reconstruir una
+revisión del fichero que se está siguiendo. Los ficheros de registro
+son almacenados como ficheros el el directorio
+\sdirname{.hg/store/data}. Un fichero de registro contiene dos tipos
+de información: datos de revisiones, y un índice para ayudar a
+Mercurial a buscar revisiones eficientemente.
 
-A file that is large, or has a lot of history, has its filelog stored
-in separate data (``\texttt{.d}'' suffix) and index (``\texttt{.i}''
-suffix) files.  For small files without much history, the revision
-data and index are combined in a single ``\texttt{.i}'' file.  The
-correspondence between a file in the working directory and the filelog
-that tracks its history in the repository is illustrated in
-figure~\ref{fig:concepts:filelog}.
+El fichero de registro de un fichero grande, o con un historial muy
+largo, es guardado como ficheros separados para datos (sufijo
+``\texttt{.d}'') y para el índice (sufijo ``\texttt{.i}''). Para
+ficheros pequeños con un historial pequeño, los datos de revisiones y
+el índice son combinados en un único fichero ``\texttt{.i}''. La
+correspondencia entre un fichero en el directorio de trabajo y el
+fichero de registro que hace seguimiento a su historial en el
+repositorio se ilustra en la figura~\ref{fig:concepts:filelog}.
 
 \begin{figure}[ht]
   \centering
   \grafix{filelog}
-  \caption{Relationships between files in working directory and
-    filelogs in repository}
+  \caption{Relación entre ficheros en el directorio de trabajo y
+  ficheros de registro en el repositorio}
   \label{fig:concepts:filelog}
 \end{figure}
 
-\subsection{Managing tracked files}
+\subsection{Administración de ficheros monitoreados}
 
-Mercurial uses a structure called a \emph{manifest} to collect
-together information about the files that it tracks.  Each entry in
-the manifest contains information about the files present in a single
-changeset.  An entry records which files are present in the changeset,
-the revision of each file, and a few other pieces of file metadata.
+Mercurial usa una estructura llamada \emph{manifiesto} para
+% TODO collect together => centralizar
+centralizar la información que maneja acerca de los ficheros que
+monitorea. Cada entrada en el manifiesto contiene información acerca
+de los ficheros involucrados en un único conjunto de cambios. Una
+entrada registra qué ficheros están presentes en el conjunto de
+cambios, la revisión de cada fichero, y otros cuantos metadatos del
+mismo.
 
-\subsection{Recording changeset information}
+\subsection{Registro de información del conjunto de cambios}
 
-The \emph{changelog} contains information about each changeset.  Each
-revision records who committed a change, the changeset comment, other
-pieces of changeset-related information, and the revision of the
-manifest to use.
+La \emph{bitácora de cambios} contiene información acerca de cada
+conjunto de cambios. Cada revisión indica quién consignó un cambio, el
+comentario para el conjunto de cambios, otros datos relacionados con
+el conjunto de cambios, y la revisión del manifiesto a usar.
 
-\subsection{Relationships between revisions}
+\subsection{Relaciones entre revisiones}
 
-Within a changelog, a manifest, or a filelog, each revision stores a
-pointer to its immediate parent (or to its two parents, if it's a
-merge revision).  As I mentioned above, there are also relationships
-between revisions \emph{across} these structures, and they are
-hierarchical in nature.
+Dentro de una bitácora de cambios, un manifiesto, o un fichero de
+registro, cada revisión conserva un apuntador a su padre inmediato
+(o sus dos padres, si es la revisión de una fusión). Como menciońe
+anteriormente, también hay relaciones entre revisiones \emph{a través}
+de estas estructuras, y tienen naturaleza jerárquica.
 
-For every changeset in a repository, there is exactly one revision
-stored in the changelog.  Each revision of the changelog contains a
-pointer to a single revision of the manifest.  A revision of the
-manifest stores a pointer to a single revision of each filelog tracked
-when that changeset was created.  These relationships are illustrated
-in figure~\ref{fig:concepts:metadata}.
+Por cada conjunto de cambios en un repositorio, hay exactamente una
+revisión almacenada en la bitácora de cambios. Cada revisión de la
+bitácora de cambios contiene un apuntador a una única revisión del
+manifiesto. Una revisión del manifiesto almacena un apuntador a una
+única revisión de cada fichero de registro al que se le hacía
+seguimiento cuando fue creado el conjunto de cambios. Estas relaciones
+se ilustran en la figura~\ref{fig:concepts:metadata}.
 
 \begin{figure}[ht]
   \centering
   \grafix{metadata}
-  \caption{Metadata relationships}
+  \caption{Relaciones entre metadatos}
   \label{fig:concepts:metadata}
 \end{figure}
 
