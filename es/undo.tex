@@ -686,104 +686,112 @@ permitirá comenzar una nueva búsqueda sobre el repositorio hasta que
 no aplique \hgcmdargs{bisect}{reset}.
 \interaction{bisect.search.reset}
 
-\section{Tips for finding bugs effectively}
+\section{Consejos para encontrar fallos efectivamente}
 
-\subsection{Give consistent input}
+\subsection{Dar una entrada consistente}
 
-The \hgcmd{bisect} command requires that you correctly report the
-result of every test you perform.  If you tell it that a test failed
-when it really succeeded, it \emph{might} be able to detect the
-inconsistency.  If it can identify an inconsistency in your reports,
-it will tell you that a particular changeset is both good and bad.
-However, it can't do this perfectly; it's about as likely to report
-the wrong changeset as the source of the bug.
+La orden \hgcmd{bisect} requiere que usted ofrezca un reporte correcto
+del resultado de cada prueba que aplique.  Si usted le dice que una
+prueba falla cuando en realidad era acertada, \emph{podría} detectar
+la inconsistencia. Si puede identificar una inconsistencia en sus
+reportes, le dirá que un conjunto de cambios particular es a la vez
+bueno y malo.  Aunque puede no hacerlo; estaría tratando de reportar
+un conjunto de cambios como el responsable de un fallo aunque no lo
+sea.
 
-\subsection{Automate as much as possible}
+\subsection{Automatizar tanto como se pueda}
 
-When I started using the \hgcmd{bisect} command, I tried a few times
-to run my tests by hand, on the command line.  This is an approach
-that I, at least, am not suited to.  After a few tries, I found that I
-was making enough mistakes that I was having to restart my searches
-several times before finally getting correct results.
+Cuando comencé a usar la orden \hgcmd{bisect}, intenté ejecutar
+algunas veces las pruebas a mano desde la línea de comandos. Es una
+aproximación a la cual no esta acostumbrado. Después de algunos
+intentos, me di cuenta que estaba cometiendo tantas equivocaciones que
+tenía que comenzar de nuevo con mis búsquedas varias veces antes de
+llegar a los resultados deseados.
 
-My initial problems with driving the \hgcmd{bisect} command by hand
-occurred even with simple searches on small repositories; if the
-problem you're looking for is more subtle, or the number of tests that
-\hgcmd{bisect} must perform increases, the likelihood of operator
-error ruining the search is much higher.  Once I started automating my
-tests, I had much better results.
+Mi problema inicial al dirigir a la orden \hgcmd{bisect} manualmente
+ocurrieron incluso con búsquedas en repositorios pequeños; si el
+problema que está buscando es más sutil, o el número de pruebas que
+\hgcmd{bisect} debe aplicar, la posibilidad de errar es mucho más
+alta. Una vez que comencé a automatizar mis pruebas, obtuve mejores
+resultados.
 
-The key to automated testing is twofold:
+La clave para las pruebas automatizadas se puede resumir en:
 \begin{itemize}
-\item always test for the same symptom, and
-\item always feed consistent input to the \hgcmd{bisect} command.
+\item pruebe siempre buscando el mismo síntoma y
+\item ofrezca siempre datos consistentes a la orden \hgcmd{bisect}.
 \end{itemize}
-In my tutorial example above, the \command{grep} command tests for the
-symptom, and the \texttt{if} statement takes the result of this check
-and ensures that we always feed the same input to the \hgcmd{bisect}
-command.  The \texttt{mytest} function marries these together in a
-reproducible way, so that every test is uniform and consistent.
+En mi tutorial de ejemplo anterior, la orden \command{grep} busca el
+síntoma, y la construcción \texttt{if} toma el resultado de esta
+prueba y verifica que siempre alimentamos con los mismos datos a la
+orden \hgcmd{bisect}. La función \texttt{mytest} los une de una forma
+reproducible, logrando que cada prueba sea uniforme y consistente.
 
-\subsection{Check your results}
+\subsection{Verificar los resultados}
 
-Because the output of a \hgcmd{bisect} search is only as good as the
-input you give it, don't take the changeset it reports as the
-absolute truth.  A simple way to cross-check its report is to manually
-run your test at each of the following changesets:
+Dado que la salida de la búsqueda de \hgcmd{bisect} es tan buena como
+los datos ofrecidos por usted, no confíe en esto como si fuera la
+verdad absoluta. Una forma sencilla de asegurarse es ejecutar
+manualmente su prueba a cada uno de los siguientes conjuntos de
+cambios:
 \begin{itemize}
-\item The changeset that it reports as the first bad revision.  Your
-  test should still report this as bad.
-\item The parent of that changeset (either parent, if it's a merge).
-  Your test should report this changeset as good.
-\item A child of that changeset.  Your test should report this
-  changeset as bad.
+\item El conjunto de cambios que se reportó como la primera versión
+  erronea. Su prueba debería dar un reporte de fallo.
+\item El conjunto de cambios padre (cada padre, si es una fusión).
+  Su prueba debería reportar este(os) conjunto(s) de cambios como
+  bueno(s).
+\item Un hijo del conjunto de cambios. Su prueba debería reportar al
+  conjunto de cambios hijo como malo.
 \end{itemize}
 
-\subsection{Beware interference between bugs}
+\subsection{Tener en cuenta la interferencia entre fallos}
 
-It's possible that your search for one bug could be disrupted by the
-presence of another.  For example, let's say your software crashes at
-revision 100, and worked correctly at revision 50.  Unknown to you,
-someone else introduced a different crashing bug at revision 60, and
-fixed it at revision 80.  This could distort your results in one of
-several ways.
+Es posible que su búsqueda de un fallo pueda viciarse por la presencia
+de otro. Por ejemplo, digamos que su programa se revienta en la
+revisión 100, y que funcionó correctamente en la revisión 50.  Sin su
+conocimiento, alguien introdujo un fallo con consecuencias grandes en
+la revisión 60, y lo arregló en la revisión 80. Sus resultados
+estarían distorcionados de una o muchas formas.
 
-It is possible that this other bug completely ``masks'' yours, which
-is to say that it occurs before your bug has a chance to manifest
-itself.  If you can't avoid that other bug (for example, it prevents
-your project from building), and so can't tell whether your bug is
-present in a particular changeset, the \hgcmd{bisect} command cannot
-help you directly.  Instead, you can mark a changeset as untested by
-running \hgcmdargs{bisect}{--skip}.
+Es posible que este fallo ``enmascare'' completamente al suyo, y que
+podría haberse revelado antes de que su propio fallo haya tenido
+oportunidad de manifestarse. Si no puede saltar el otro fallo(por
+ejemplo, este evita que su proyecto se arme o compile), y de esta
+forma no se pueda revisar si su fallo esté presente en un conjunto
+particular de cambios, la orden \hgcmd{bisect} no podrá ayudarle
+directamente. En cambio, puede marcar este conjunto de cambios como
+al ejecutar \hgcmdargs{bisect}{--skip}.
 
-A different problem could arise if your test for a bug's presence is
-not specific enough.  If you check for ``my program crashes'', then
-both your crashing bug and an unrelated crashing bug that masks it
-will look like the same thing, and mislead \hgcmd{bisect}.
+Un problema distinto podría surgir si su prueba de la presencia de un
+fallo no es suficientemente específica. Si usted busca ``mi programa
+se revienta'', entonces tanto su fallo como el otro fallo sin relación
+que terminan presentando síntomas distintos, podría terminar
+confundiendo a \hgcmd{bisect}.
 
-Another useful situation in which to use \hgcmdargs{bisect}{--skip} is
-if you can't test a revision because your project was in a broken and
-hence untestable state at that revision, perhaps because someone
-checked in a change that prevented the project from building.
+Otra situación en la cual sería de mucha utilidad emplear a
+\hgcmdargs{bisect}{--skip} surge cuando usted no puede probar una
+revisión porque su proyecto estaba en una situación de rompimiento y
+por lo tanto en un estado en el cual era imposible hacer la prueba en
+esa revisión, tal vez porque alguien consignó un cambio que hacía
+imposible la construcción del proyecto.
 
-\subsection{Bracket your search lazily}
+\subsection{Acotar la búsqueda perezosamente}
 
-Choosing the first ``good'' and ``bad'' changesets that will mark the
-end points of your search is often easy, but it bears a little
-discussion nevertheless.  From the perspective of \hgcmd{bisect}, the
-``newest'' changeset is conventionally ``bad'', and the older
-changeset is ``good''.
+Elegir los primeros ``buenos'' y ``malos'' conjuntos de cambios que
+marcarán los límites de su búsqueda en general es sencillo, pero vale
+la pena discutirlo.  Desde la perspectiva de \hgcmd{bisect}, el
+conjunto de cambios ``más nuevo'' por convención es el ``malo'', y el
+otro conjunto de cambios es el ``bueno''.
 
-If you're having trouble remembering when a suitable ``good'' change
-was, so that you can tell \hgcmd{bisect}, you could do worse than
-testing changesets at random.  Just remember to eliminate contenders
-that can't possibly exhibit the bug (perhaps because the feature with
-the bug isn't present yet) and those where another problem masks the
-bug (as I discussed above).
+Si no recuerda cuál podría ser el cambio ``bueno'', para informar a
+\hgcmd{bisect}, podría hacer pruebas aleatorias en el peor de los
+casos. Pero recuerde eliminar aquellos conjuntos de cambios que
+podrían no exhibir el fallo(tal vez porque la característica donde se
+presenta el fallo todavía no está presente) y aquellos en los cuales
+otro fallo puede enmascararlo(como se discutió anteriormente).
 
-Even if you end up ``early'' by thousands of changesets or months of
-history, you will only add a handful of tests to the total number that
-\hgcmd{bisect} must perform, thanks to its logarithmic behaviour.
+Incluso si termina ``muy atrás'' por miles de conjuntos de cambios o
+meses de historia, solamente estaŕa adicionando unas pruebas contadas
+para \hgcmd{bisect}, gracias al comportamiento logarítmico.
 
 %%% Local Variables: 
 %%% mode: latex
