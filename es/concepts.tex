@@ -90,33 +90,40 @@ se ilustran en la figura~\ref{fig:concepts:metadata}.
   \label{fig:concepts:metadata}
 \end{figure}
 
-As the illustration shows, there is \emph{not} a ``one to one''
-relationship between revisions in the changelog, manifest, or filelog.
-If the manifest hasn't changed between two changesets, the changelog
-entries for those changesets will point to the same revision of the
-manifest.  If a file that Mercurial tracks hasn't changed between two
-changesets, the entry for that file in the two revisions of the
-manifest will point to the same revision of its filelog.
+Como lo muestra la figura, \emph{no} hay una relación ``uno a uno''
+entre las revisiones en el conjunto de cambios, el manifiesto, o el
+fichero de registro. Si el manifiesto no ha sido modificado de un
+conjunto de cambios a otro, las entradas en la bitácora de cambios
+para esos conjuntos de cambios apuntarán a la misma revisión del
+manifiesto. Si un fichero monitoreado por Mercurial no sufre ningún
+cambio de un conjunto de cambios a otro, la entrada para dicho fichero
+en las dos revisiones del manifiesto apuntará a la misma revisión de
+su fichero de registro.
 
-\section{Safe, efficient storage}
+\section{Almacenamiento seguro y eficiente}
 
-The underpinnings of changelogs, manifests, and filelogs are provided
-by a single structure called the \emph{revlog}.
+La base común de las bitácoras de cambios, los manifiestos, y los
+ficheros de registros es provista por una única estructura llamada el
+\emph{revlog}\ndt{Contracción de \emph{revision log}, registro de
+revisión.}.
 
-\subsection{Efficient storage}
+\subsection{Almacenamiento eficiente}
 
-The revlog provides efficient storage of revisions using a
-\emph{delta} mechanism.  Instead of storing a complete copy of a file
-for each revision, it stores the changes needed to transform an older
-revision into the new revision.  For many kinds of file data, these
-deltas are typically a fraction of a percent of the size of a full
-copy of a file.
+El revlog provee almacenamiento eficiente de revisiones por medio del
+mecanismo de \emph{deltas}\ndt{Diferencias.}.  En vez de almacenar una
+copia completa del fichero por cada revisión, almacena los cambios
+necesarios para transformar una revisión anterior en la nueva
+revisión. Para muchos tipos de fichero, estos deltas son típicamente
+de una fracción porcentual del tamaño de una copia completa del
+fichero.
 
-Some obsolete revision control systems can only work with deltas of
-text files.  They must either store binary files as complete snapshots
-or encoded into a text representation, both of which are wasteful
-approaches.  Mercurial can efficiently handle deltas of files with
-arbitrary binary contents; it doesn't need to treat text as special.
+Algunos sistemas de control de revisiones obsoletos sólo pueden
+manipular deltas de ficheros de texto plano. Ellos o bien almacenan
+los ficheros binarios como instantáneas completas, o codificados en
+alguna representación de texto plano adecuada, y ambas alternativas
+son enfoques que desperdician bastantes recursos. Mercurial puede
+manejar deltas de ficheros con contenido binario arbitrario; no
+necesita tratar el texto plano como un caso especial.
 
 \subsection{Safe operation}
 \label{sec:concepts:txn}
