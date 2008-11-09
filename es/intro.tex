@@ -141,167 +141,184 @@ ficheros, y pocos metadatos para indicar dónde está el servidor. CVS
 ha tenido un éxito enorme; Es probablemente el sistema de control de
 revisiones más extendido del planeta.
 
-In the early 1990s, Sun Microsystems developed an early distributed
-revision control system, called TeamWare.  A TeamWare workspace
-contains a complete copy of the project's history.  TeamWare has no
-notion of a central repository.  (CVS relied upon RCS for its history
-storage; TeamWare used SCCS.)
+A comienzos de los noventa(1990s), Sun MicroSystems desarrollo un
+temprano sistema distribuido de revisión de controles llamado TeamWare
+Un espacio de trabajo TeamWare contiene una copia completa de la
+historia del proyecto. TeamWare no tiene la noción de repositorio
+central. (CVS se basaba en RCS para el almacenamiento de su historia;
+TeamWare usaba SCCS.)
 
-As the 1990s progressed, awareness grew of a number of problems with
-CVS.  It records simultaneous changes to multiple files individually,
-instead of grouping them together as a single logically atomic
-operation.  It does not manage its file hierarchy well; it is easy to
-make a mess of a repository by renaming files and directories.  Worse,
-its source code is difficult to read and maintain, which made the
-``pain level'' of fixing these architectural problems prohibitive.
+A medida que avanzaba la decada de los noventa, se empezño a
+evidenciar los problemas de CVS.  Alacena cambios simultáneos a muchos
+archivos de forma individual, en lugar de agruparlos como una
+operación única y atómica lógicamente.  No maneja bien su jerarquía de
+ficheros bien; es fácil desordenar un repositorio renombrando ficheros
+y directorios. Peor aún, su código fuente es difícil de leer y
+mantener, lo que hace que su ``umbral de dolor'' para arreglar sus
+problemas arquitecturales algo prohibitivo.
 
-In 2001, Jim Blandy and Karl Fogel, two developers who had worked on
-CVS, started a project to replace it with a tool that would have a
-better architecture and cleaner code.  The result, Subversion, does
-not stray from CVS's centralised client/server model, but it adds
-multi-file atomic commits, better namespace management, and a number
-of other features that make it a generally better tool than CVS.
-Since its initial release, it has rapidly grown in popularity.
+En 2001, Jim Blandy y Karl Fogel, dos desarrolladores que habían
+trabajado en CVS, comenzaron un proyecto para reemplazarlo con una
+herramienta con mejor arquitectura y código más limpio.  El resultado,
+Subversion, no se separó del modelo centralizado cliente/servidor de
+CVS, pero añadió consignaciones atómicas de varios ficheros, mejor
+manejo de nombres de espacios, y otras características que lo hacen
+mejor que CVS. Desde su versión inicial, ha ido creciendo en
+popularidad.
 
-More or less simultaneously, Graydon Hoare began working on an
-ambitious distributed revision control system that he named Monotone.
-While Monotone addresses many of CVS's design flaws and has a
-peer-to-peer architecture, it goes beyond earlier (and subsequent)
-revision control tools in a number of innovative ways.  It uses
-cryptographic hashes as identifiers, and has an integral notion of
-``trust'' for code from different sources.
+Más o menos en forma simultánea Graydon Hoare comenzó a trabajar en un
+sistema distribuido de control de versiones ambicioso que llamó
+Monotone. Mientras que Monotone se enfocaba a evitar algunas fallas de
+diseño de CVS con una arquitectura peer-to-peer, fue mucho más
+allá(junto con otros proyectos subsecuentes) que unas herramientas de
+control de revisiones en varios aspectos innovadores. Usa hashes
+criptográficos como identificadores, y tiene una noción integral de 
+``confianza'' para código de diversas fuentes.
 
-Mercurial began life in 2005.  While a few aspects of its design are
-influenced by Monotone, Mercurial focuses on ease of use, high
-performance, and scalability to very large projects.
+Mercurial nació en el 2005.  Algunos de sus aspectos de de diseño
+fueron influenciados por Monotone, pero Mercurial se enfoca en la
+facilidad de uso, gran rendimiento y escalabilidad para proyectos muy
+grandes.
 
-\section{Trends in revision control}
+\section{Tendencias en el control de revisiones}
 
-There has been an unmistakable trend in the development and use of
-revision control tools over the past four decades, as people have
-become familiar with the capabilities of their tools and constrained
-by their limitations.
+Ha habido varias tendencias en el desarrollo y uso de las herramientas
+de control de revisiones en las pasadas cuatro décadas, mientras la
+gente se ha vuelto familiar con las capacidades de sus herramientas
+así mismo con sus limitaciones.
 
-The first generation began by managing single files on individual
-computers.  Although these tools represented a huge advance over
-ad-hoc manual revision control, their locking model and reliance on a
-single computer limited them to small, tightly-knit teams.
+La primera generación comenzó administrando archivos individuales en
+computadores por persona. A pesar de que tales herramientas
+representaron un avance importante frente al control de revisiones
+manual, su modelo de candados y la limitación a un sólo computador,
+determinó equipos de trabajo pequeños y acoplados.
 
-The second generation loosened these constraints by moving to
-network-centered architectures, and managing entire projects at a
-time.  As projects grew larger, they ran into new problems.  With
-clients needing to talk to servers very frequently, server scaling
-became an issue for large projects.  An unreliable network connection
-could prevent remote users from being able to talk to the server at
-all.  As open source projects started making read-only access
-available anonymously to anyone, people without commit privileges
-found that they could not use the tools to interact with a project in
-a natural way, as they could not record their changes.
+La segunda generación dejó atrás esas limitaciones moviéndose a
+arquitecturas centradas en  redes, y administrando proyectos completos
+uno a la vez. A medida que los proyectos crecían, nacieron nuevos
+problemas. Con la necesidad de comunicación frecuente con los
+servidores, escalar estas máquinas se convirtió en un problema en
+proyectos realmente grandes. Las redes con poca estabilidad impidieron
+que usuarios remotos se conectaran al servidor. A medida que los
+proyecos de código abierto comenzaron a ofrecer acceso de sólo lectura
+de forma anónima a cualquiera, la gente sin permiso para consignar,
+vio que no podían usar tales herramientas para interactuar en un
+proyecto de forma natural, puesto que no podían guardar sus cambios.
 
-The current generation of revision control tools is peer-to-peer in
-nature.  All of these systems have dropped the dependency on a single
-central server, and allow people to distribute their revision control
-data to where it's actually needed.  Collaboration over the Internet
-has moved from constrained by technology to a matter of choice and
-consensus.  Modern tools can operate offline indefinitely and
-autonomously, with a network connection only needed when syncing
-changes with another repository.
+La generación actual de herramientas de control de revisiones es de
+forma natural peer-to-peer.  Todos estos sistemas han eliminado la
+dependencia de un único servidor central, y han permitido que la
+gente distribuya sus datos de control de revisiones donde realmente se
+necesita. La colaboración a través de Internet ha cambiado las
+limitantes tecnológicas a la cuestión de elección y consenso. Las
+herramientas modernas pueden operar sin conexión indefinidamenta y
+autónomamente, necesitando una conexión de red solamente para
+sincronizar los cambios con otro repositorio.
 
-\section{A few of the advantages of distributed revision control}
+\section{Algunas ventajas del control distribuido de revisiones}
 
-Even though distributed revision control tools have for several years
-been as robust and usable as their previous-generation counterparts,
-people using older tools have not yet necessarily woken up to their
-advantages.  There are a number of ways in which distributed tools
-shine relative to centralised ones.
+A pesar de que las herramientas para el control distribuido de
+revisiones lleva varios años siendo tan robusto y usable como la
+generación previa de su contraparte, personas que usan herramientas
+más antiguas no se han percatado de sus ventajas.  Hay gran cantidad
+de situaciones en las cuales las herramientas distribuidas brillan
+frente a las centralizadas.
 
-For an individual developer, distributed tools are almost always much
-faster than centralised tools.  This is for a simple reason: a
-centralised tool needs to talk over the network for many common
-operations, because most metadata is stored in a single copy on the
-central server.  A distributed tool stores all of its metadata
-locally.  All else being equal, talking over the network adds overhead
-to a centralised tool.  Don't underestimate the value of a snappy,
-responsive tool: you're going to spend a lot of time interacting with
-your revision control software.
+Para un desarrollador individual, las herramientas distribuidas casi
+siempre son más rápidas que las centralizadas. Por una razón sencilla:
+Una herramienta centralizada necesita comunicarse por red para las
+operaciones más usuales, debido a que los metadatos se almacenan en
+una sola copia en el servidor central. Una herramienta distribuida
+almacena todos sus metadatos localmente.  Con todo lo demás de la
+misma forma, comunicarse por red tiene un sobrecosto en una
+herramienta centralizada. No subestime el valor de una herramienta de
+respuesta rápida: Usted empleará mucho tiempo interactuando con su
+programa de control de revisiones.
 
-Distributed tools are indifferent to the vagaries of your server
-infrastructure, again because they replicate metadata to so many
-locations.  If you use a centralised system and your server catches
-fire, you'd better hope that your backup media are reliable, and that
-your last backup was recent and actually worked.  With a distributed
-tool, you have many backups available on every contributor's computer.
+Las herramientas distribuidas son indiferentes a los caprichos de su
+infraestructura de servidores, de nuevo, debido a la replicación de
+metadatos en tantos lugares. Si usa un sistema centralizado y su
+servidor explota, ojalá los medios físicos de su copia de seguridad
+sean confiables, y que su última copia sea reciente y además
+funcione. Con una herramienta distribuida tiene tantas copias de
+seguridad disponibles como computadores de contribuidores.
 
-The reliability of your network will affect distributed tools far less
-than it will centralised tools.  You can't even use a centralised tool
-without a network connection, except for a few highly constrained
-commands.  With a distributed tool, if your network connection goes
-down while you're working, you may not even notice.  The only thing
-you won't be able to do is talk to repositories on other computers,
-something that is relatively rare compared with local operations.  If
-you have a far-flung team of collaborators, this may be significant.
+La confiabilidad de su red afectará las herramientas distribuidas de
+una forma mucho menor que las herramientas centralizadas No puede
+siquiera usar una herramienta centralizada sin conexión de red,
+excepto con algunas órdenes muy limitadas. Con herramientas
+distribuidas, si sus conexión cae mientras usted está trabajando,
+podría nisiquiera darse cuenta. Lo único que que no podrá hacer es
+comunicarse  con repositorios en otros computadores, algo que es
+relativamente raro comparado con las operaciones locales. Si tiene
+colaboradores remotos en su equipo, puede ser significante.
 
-\subsection{Advantages for open source projects}
+\subsection{Ventajas para proyectos de código abierto}
 
-If you take a shine to an open source project and decide that you
-would like to start hacking on it, and that project uses a distributed
-revision control tool, you are at once a peer with the people who
-consider themselves the ``core'' of that project.  If they publish
-their repositories, you can immediately copy their project history,
-start making changes, and record your work, using the same tools in
-the same ways as insiders.  By contrast, with a centralised tool, you
-must use the software in a ``read only'' mode unless someone grants
-you permission to commit changes to their central server.  Until then,
-you won't be able to record changes, and your local modifications will
-be at risk of corruption any time you try to update your client's view
-of the repository.
+Si descubre un proyecto de código abierto y decide que desea comenzar
+a trabajar en él, y ese proyecto usa una herramienta de control
+distribuido de revisiones, usted es un par con la gente que se
+considera el ``alma'' del proyecto.  Si ellos publican los
+repositorios, se puede copiar inmediatamente la historia del proyecto,
+hacer cambios y guardar su trabajo, usando las mismas herramientas de
+la misma forma que ellos. En contraste, con una herramienta
+centralizada, debe usar el programa en un modo ``sólo lectura'' a
+menos que alguien le otorgue permisos para consignar cambios en el
+repositorio central. Hasta entonces, no podrá almacenar sus cambios y
+sus modificaciones locales correrán el riesgo de dañarse cuando trate
+de actualizar su vista del repositorio.
 
-\subsubsection{The forking non-problem}
+\subsubsection{Las bifurcaciones(forks) no son un problema}
 
-It has been suggested that distributed revision control tools pose
-some sort of risk to open source projects because they make it easy to
-``fork'' the development of a project.  A fork happens when there are
-differences in opinion or attitude between groups of developers that
-cause them to decide that they can't work together any longer.  Each
-side takes a more or less complete copy of the project's source code,
-and goes off in its own direction.
+Se ha mencionado que las herramientas de control distribuido de
+versiones albergan un riesgo a los proyectos de código abierto, puesto
+que se vuelve muy sencillo hacer una ``bifurcanción''\NdT{fork} del
+desarrollo del proyecto.  Una bifurcación pasa cuando hay diferencias
+de opinión o actitud entre grupos de desarrolladores que desenvoca en
+la decisión de la imposibilidad de continuar trabajando juntos. Cada
+parte toma una copia más o menos completa del código fuente del
+proyecto y toma su propio rumbo.
 
-Sometimes the camps in a fork decide to reconcile their differences.
-With a centralised revision control system, the \emph{technical}
-process of reconciliation is painful, and has to be performed largely
-by hand.  You have to decide whose revision history is going to
-``win'', and graft the other team's changes into the tree somehow.
-This usually loses some or all of one side's revision history.
+En algunas ocasiones los líderes de las bifurcaciones reconcilian sus
+diferencias. Con un sistema centralizado de control de revisiones, el
+proceso \emph{técnico} de reconciliarse es doloroso, y se hace de
+forma muy manual.  Tiene que decidir qué historia de revisiones va a
+``win'', e injertar los cambios del otro equipo en el árbol de alguna
+manera. Con esto usualmente se pierde algo o todo del historial de la
+revisión de alguna de las partes.
 
-What distributed tools do with respect to forking is they make forking
-the \emph{only} way to develop a project.  Every single change that
-you make is potentially a fork point.  The great strength of this
-approach is that a distributed revision control tool has to be really
-good at \emph{merging} forks, because forks are absolutely
-fundamental: they happen all the time.  
+Lo que las herramientas distribuidas hacen con respecto a las
+bifurcaciones, es que las bifurcaciones son la \emph{única} forma de
+desarrollar un proyecto. Cada cambio que usted hace es potencialmente
+un punto de bifurcación. La gran fortaleza de esta aproximación es que
+las herramientas distribuidas de control de revisiones tiene que ser
+bueno al \emph{fusionar} las bifurcaciones, porque las bifurcaciones
+son absolutamente fundamentales: pasan todo el tiempo.
 
-If every piece of work that everybody does, all the time, is framed in
-terms of forking and merging, then what the open source world refers
-to as a ``fork'' becomes \emph{purely} a social issue.  If anything,
-distributed tools \emph{lower} the likelihood of a fork:
+Si todas las porciones de trabajo que todos hacen todo el tiempo, se
+enmarca en términos de bifurcaciones y fusiones, entonces a aquello a
+lo que se refiere en el mundo del código abierto a una ``bifurcación''
+se convierte \emph{puramente} en una cuestión social. Lo que hacen las
+herramientas distribuidas es \emph{disminuir} la posibilidad de una
+bifurcación porque:
 \begin{itemize}
-\item They eliminate the social distinction that centralised tools
-  impose: that between insiders (people with commit access) and
-  outsiders (people without).
-\item They make it easier to reconcile after a social fork, because
-  all that's involved from the perspective of the revision control
-  software is just another merge.
+\item Eliminan la distinción social que las herramientas centralizadas
+  imponen: esto entre los miembros (personas con permiso de consignar)
+  y forasteros(los que no tienen el permiso).
+\item Facilitan la reconciliación después de una bifurcación social,
+  porque todo lo que concierne al programa de control de revisiones es
+  una fusión.
 \end{itemize}
 
-Some people resist distributed tools because they want to retain tight
-control over their projects, and they believe that centralised tools
-give them this control.  However, if you're of this belief, and you
-publish your CVS or Subversion repositories publically, there are
-plenty of tools available that can pull out your entire project's
-history (albeit slowly) and recreate it somewhere that you don't
-control.  So while your control in this case is illusory, you are
-forgoing the ability to fluidly collaborate with whatever people feel
-compelled to mirror and fork your history.
+Algunas personas se resisten a las herramientas distribuidas porque
+desean mantener control completo sobre sus proyectos, y creen que las
+herramientas centralizadas les dan tal control. En todo caso, si este
+es su parecer, y publica sus repositorios de CVS o Subversion, hay
+muchas herramientas disponibles que pueden obtener la historia
+completa(A pesar de lo lento) y recrearla en otro sitio que usted no
+controla. Siendo así un control ilusorio, está impidiendo la fluidez
+de colaboración frente a quien se sienta impulsado a obtener una copia
+y hacer una bifurcación con su historia.
 
 \subsection{Advantages for commercial projects}
 
