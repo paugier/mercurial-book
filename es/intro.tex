@@ -1,130 +1,145 @@
-\chapter{Introduction}
+\chapter{Introducción}
 \label{chap:intro}
 
-\section{About revision control}
+\section{Acerca del control de revisiones}
 
-Revision control is the process of managing multiple versions of a
-piece of information.  In its simplest form, this is something that
-many people do by hand: every time you modify a file, save it under a
-new name that contains a number, each one higher than the number of
-the preceding version.
+El control de revisiones es el proceso de administrar diferentes
+versiones de una pieza de información. En su forma más simple es algo
+que la mayoría de gente hace a mano: cada vez que usted modifica un
+fichero, lo graba con un nuevo nombre que contiene un número, el
+siguiente mayor que el anterior.
 
-Manually managing multiple versions of even a single file is an
-error-prone task, though, so software tools to help automate this
-process have long been available.  The earliest automated revision
-control tools were intended to help a single user to manage revisions
-of a single file.  Over the past few decades, the scope of revision
-control tools has expanded greatly; they now manage multiple files,
-and help multiple people to work together.  The best modern revision
-control tools have no problem coping with thousands of people working
-together on projects that consist of hundreds of thousands of files.
+Administrar manualmente muchas versiones de un fichero es una tarea
+propensa a errores, a pesar de que hace bastante tiempo hay
+herramientas que ayudan en este proceso.  Las primeras herramientas
+para automatizar el control de revisiones fueron pensadas para que un
+usuario administrara un solo fichero.  En las décadas pasadas, el
+alcance de las herramientas de control de revisiones ha ido aumentando
+considerablemente; ahora manejan muchos archivos y facilitan el
+trabajo en conjunto de varias personas. Las mejores herramientas de
+control de revisiones de la actualidad no tienen problema con miles de
+personas trabajando en proyectos que consisten de decenas de miles de
+ficheros.
 
-\subsection{Why use revision control?}
+\subsection{¿Por qué usar control de revisiones?}
 
-There are a number of reasons why you or your team might want to use
-an automated revision control tool for a project.
+Hay muchas razones por las cuales usted o su equipo desearía usar una
+herramienta automática de control de revisiones para un proyecto.
 \begin{itemize}
-\item It will track the history and evolution of your project, so you
-  don't have to.  For every change, you'll have a log of \emph{who}
-  made it; \emph{why} they made it; \emph{when} they made it; and
-  \emph{what} the change was.
-\item When you're working with other people, revision control software
-  makes it easier for you to collaborate.  For example, when people
-  more or less simultaneously make potentially incompatible changes,
-  the software will help you to identify and resolve those conflicts.
-\item It can help you to recover from mistakes.  If you make a change
-  that later turns out to be in error, you can revert to an earlier
-  version of one or more files.  In fact, a \emph{really} good
-  revision control tool will even help you to efficiently figure out
-  exactly when a problem was introduced (see
-  section~\ref{sec:undo:bisect} for details).
-\item It will help you to work simultaneously on, and manage the drift
-  between, multiple versions of your project.
+\item Contar con la historia y la evolución de su proyecto, para
+  evitar hacer la tarea manualmente. Por cada cambio tendrá una
+  bitácora de \emph{quién} lo hizo; \emph{por qué} se hizo;
+  \emph{cuándo} se hizo; y de \emph{qué} se trataba el cambio.
+\item Cuando trabaja con más personas, los programas de control de
+  revisiones facilitan la colaboración.  Por ejemplo, cuando varias
+  personas de forma casi simultanea pueden hacer cambios
+  incompatibles, el programa le ayudará a identificar y resolver tales
+  conflictos.
+\item Puede ayudarle a recuperarse de equivocaciones. Si aplica un
+  cambio que posteriormente se evidencia como un error, puede
+  revertirlo a una versión previa a uno o muchos ficheros. De hecho,
+  una herramienta \emph{realmente} buena, incluso puede ayudarle
+  efectivamente a darse cuenta exactamente cuándo se introdujo el
+  error( para más detalles ver la sección~\ref{sec:undo:bisect}).
+\item Le permitirá trabajar simultáneamente, y manejar las diferencias
+  entre múltiples versiones de su proyecto.
 \end{itemize}
-Most of these reasons are equally valid---at least in theory---whether
-you're working on a project by yourself, or with a hundred other
-people.
+La mayoría de estas razones son igualmente validas ---por lo menos en
+teoría--- así esté trabajando en un proyecto solo, o con mucha gente.
 
-A key question about the practicality of revision control at these two
-different scales (``lone hacker'' and ``huge team'') is how its
-\emph{benefits} compare to its \emph{costs}.  A revision control tool
-that's difficult to understand or use is going to impose a high cost.
+Algo fundamental acerca de lo práctico de un sistema de control de
+revisiones en estas dos escalas (``un hacker solo'' y ``un equipo
+gigantesco'') es cómo se comparan los \emph{beneficios} con los
+\emph{costos}.  Una herramienta de control de revisiones que sea
+difícil de entender o usar impondrá un costo alto.
 
-A five-hundred-person project is likely to collapse under its own
-weight almost immediately without a revision control tool and process.
-In this case, the cost of using revision control might hardly seem
-worth considering, since \emph{without} it, failure is almost
-guaranteed.
+Un proyecto de quinientas personas es muy propenso a colapsar
+solamente con su peso inmediatamente sin una herramienta de control de
+versiones y un proceso. En este caso, el costo de usar control de
+revisiones ni siquiera se tiene en cueant, puesto que \emph{sin} él,
+el fracaso está casi garantizado.
 
-On the other hand, a one-person ``quick hack'' might seem like a poor
-place to use a revision control tool, because surely the cost of using
-one must be close to the overall cost of the project.  Right?
+Por otra parte, un ``arreglo rápido'' de una sola persona, excluiría
+la necesidad de usar una herramienta de control de revisiones, porque
+casi seguramente, el costo de usar una estaría cerca del costo del
+proyecto. ¿No es así?
 
-Mercurial uniquely supports \emph{both} of these scales of
-development.  You can learn the basics in just a few minutes, and due
-to its low overhead, you can apply revision control to the smallest of
-projects with ease.  Its simplicity means you won't have a lot of
-abstruse concepts or command sequences competing for mental space with
-whatever you're \emph{really} trying to do.  At the same time,
-Mercurial's high performance and peer-to-peer nature let you scale
-painlessly to handle large projects.
+Mercurial solamente soporta \emph{ambas} escalas de de
+desarrollo. Puede aprender lo básico en pocos minutos, y dado su bajo
+sobrecosto, puede aplicar el control de revisiones al proyecto más
+pequeño con facilidad. Su simplicidad significa que no tendrá que
+preocuparse por conceptos obtusos o secuencias de órdenes compitiendo
+por espacio mental con lo que sea que \emph{realmente} esté tratando
+de hacer.  Al mismo tiempo, Mercurial tiene alto desempeño y su
+naturaleza peer-to-peer le permite escalar indoloramente para manejar
+grandes proyectos.
 
-No revision control tool can rescue a poorly run project, but a good
-choice of tools can make a huge difference to the fluidity with which
-you can work on a project.
+Ninguna herramienta de control de revisiones puede salvar un
+proyecto mal administrado, pero la elección de herramientas puede
+hacer una gran diferencia en la fluidez con la cual puede trabajar en
+el proyecto.
 
-\subsection{The many names of revision control}
+\subsection{La cantidad de nombres del control de revisiones}
 
-Revision control is a diverse field, so much so that it doesn't
-actually have a single name or acronym.  Here are a few of the more
-common names and acronyms you'll encounter:
+El control de revisiones es un campo amplio, tan ampli que no hay un
+acrónimo o nombre único. A continuación presentamos un listado de
+nombres comunes y acrónimos que se podrían encontrar:
 \begin{itemize}
-\item Revision control (RCS)
-\item Software configuration management (SCM), or configuration management
-\item Source code management
-\item Source code control, or source control
-\item Version control (VCS)
+\item Control de revisiones (RCS)
+\item Manejo de Configuraciones de Programas(SCM), o administracón de
+  configuraciones
+\item Administración de código fuente
+\item Control de Código Fuente, o Control de Fuentes
+\item Control de Versiones(VCS)
 \end{itemize}
-Some people claim that these terms actually have different meanings,
-but in practice they overlap so much that there's no agreed or even
-useful way to tease them apart.
+Algunas personas aducen que estos términos tienen significados
+diversos, pero en la práctica se sobrelapan tanto que no hay un
+acuerdo o una forma adecuada de separarlos.
 
-\section{A short history of revision control}
+\section{Historia resumida del control de revisiones}
 
-The best known of the old-time revision control tools is SCCS (Source
-Code Control System), which Marc Rochkind wrote at Bell Labs, in the
-early 1970s.  SCCS operated on individual files, and required every
-person working on a project to have access to a shared workspace on a
-single system.  Only one person could modify a file at any time;
-arbitration for access to files was via locks.  It was common for
-people to lock files, and later forget to unlock them, preventing
-anyone else from modifying those files without the help of an
-administrator.  
+La herramienta de control de revisiones más antigua conocida es SCCS 
+(Sistema de Control de Código), escrito por Marc Rochkind en Bell
+Labs, a comienzos de los setentas(1970s).  SCCS operaba sobre archivos
+individuales, y requería que cada persona que trabajara en el proyecto
+tuviera acceso a un espacio compartido en un solo sistema.  Solamente
+una persona podía modificar un archivo en un momento dado; el
+arbitramiento del acceso a los ficheros se hacía con candados. Era
+común que la gente pusiera los candados a los ficheros, y que
+posteriormente olvidara quitarlos, impidiendo que otro pudiera
+modificar los ficheros en cuestión sin la intervención del
+administrador.
 
-Walter Tichy developed a free alternative to SCCS in the early 1980s;
-he called his program RCS (Revison Control System).  Like SCCS, RCS
-required developers to work in a single shared workspace, and to lock
-files to prevent multiple people from modifying them simultaneously.
+Walter Tichy desarrolló una alternativa gratutita a SCCS a comienzos
+de los ochentas(1980s), llamó a su programa RCS(Sistema de Control de
+Revisiones).  Al igual que SCCS, RCS requería que los desarrolladores
+trabajaran en un único espacio compartido y colocaran candados a los
+ficheros para evitar que varias personas los estuvieran modificando
+simultáneamente.
 
-Later in the 1980s, Dick Grune used RCS as a building block for a set
-of shell scripts he initially called cmt, but then renamed to CVS
-(Concurrent Versions System).  The big innovation of CVS was that it
-let developers work simultaneously and somewhat independently in their
-own personal workspaces.  The personal workspaces prevented developers
-from stepping on each other's toes all the time, as was common with
-SCCS and RCS.  Each developer had a copy of every project file, and
-could modify their copies independently.  They had to merge their
-edits prior to committing changes to the central repository.
+Después en los ochenta, Dick Grune usó RCS como un bloque de
+construcción para un conjunto de guiones de línea de comando, que
+inicialmente llamó cmt, pero que renombró a CVS(Sistema Concurrente de
+Versiones).  La gran innovación de CVS era que permitía a los
+desarrolladores trabajar simultáneamente de una forma más o menos
+independiente en sus propios espacios de trabajo. Los espacios de
+trabajo personales impedian que los desarrolladores se pisaran las
+mangueras todo el tiempo, situación común con SCCS y RCS.  Cada
+desarrollador tenía una copia de todo el fichero del proyecto y podía
+modificar su copia independientemente, Tenían que fusionar sus
+ediciones antes de consignar los cambios al repositorio central.
 
-Brian Berliner took Grune's original scripts and rewrote them in~C,
-releasing in 1989 the code that has since developed into the modern
-version of CVS.  CVS subsequently acquired the ability to operate over
-a network connection, giving it a client/server architecture.  CVS's
-architecture is centralised; only the server has a copy of the history
-of the project.  Client workspaces just contain copies of recent
-versions of the project's files, and a little metadata to tell them
-where the server is.  CVS has been enormously successful; it is
-probably the world's most widely used revision control system.
+Brian Berliner tomó los scripts originales de Grune y los reescribió
+en~C, haciéndolos públicos en 1989, código sobre el cual se ha
+desarrollado la versión moderna de CVS.  CVS posteriormente adquirió
+la habilidad de operar sobre una conexión de red, dotándolo de una
+arquitectura, cliente/servidor. La arquitectura de CVS es
+centralizada; La historia del proyecto está únicamente en el
+repositorio central.  Los espacios de trabajo de los clientes
+contienen únicamente copias recientes de las versiones de los
+ficheros, y pocos metadatos para indicar dónde está el servidor. CVS
+ha tenido un éxito enorme; Es probablemente el sistema de control de
+revisiones más extendido del planeta.
 
 In the early 1990s, Sun Microsystems developed an early distributed
 revision control system, called TeamWare.  A TeamWare workspace
