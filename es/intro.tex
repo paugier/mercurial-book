@@ -15,7 +15,7 @@ herramientas que ayudan en este proceso.  Las primeras herramientas
 para automatizar el control de revisiones fueron pensadas para que un
 usuario administrara un solo fichero.  En las décadas pasadas, el
 alcance de las herramientas de control de revisiones ha ido aumentando
-considerablemente; ahora manejan muchos archivos y facilitan el
+considerablemente; ahora manejan muchos ficheros y facilitan el
 trabajo en conjunto de varias personas. Las mejores herramientas de
 control de revisiones de la actualidad no tienen problema con miles de
 personas trabajando en proyectos que consisten de decenas de miles de
@@ -100,10 +100,10 @@ acuerdo o una forma adecuada de separarlos.
 
 La herramienta de control de revisiones más antigua conocida es SCCS 
 (Sistema de Control de Código), escrito por Marc Rochkind en Bell
-Labs, a comienzos de los setentas(1970s).  SCCS operaba sobre archivos
+Labs, a comienzos de los setentas(1970s).  SCCS operaba sobre ficheros
 individuales, y requería que cada persona que trabajara en el proyecto
 tuviera acceso a un espacio compartido en un solo sistema.  Solamente
-una persona podía modificar un archivo en un momento dado; el
+una persona podía modificar un fichero en un momento dado; el
 arbitramiento del acceso a los ficheros se hacía con candados. Era
 común que la gente pusiera los candados a los ficheros, y que
 posteriormente olvidara quitarlos, impidiendo que otro pudiera
@@ -150,7 +150,7 @@ TeamWare usaba SCCS.)
 
 A medida que avanzaba la decada de los noventa, se empezño a
 evidenciar los problemas de CVS.  Alacena cambios simultáneos a muchos
-archivos de forma individual, en lugar de agruparlos como una
+ficheros de forma individual, en lugar de agruparlos como una
 operación única y atómica lógicamente.  No maneja bien su jerarquía de
 ficheros bien; es fácil desordenar un repositorio renombrando ficheros
 y directorios. Peor aún, su código fuente es difícil de leer y
@@ -187,7 +187,7 @@ de control de revisiones en las pasadas cuatro décadas, mientras la
 gente se ha vuelto familiar con las capacidades de sus herramientas
 así mismo con sus limitaciones.
 
-La primera generación comenzó administrando archivos individuales en
+La primera generación comenzó administrando ficheros individuales en
 computadores por persona. A pesar de que tales herramientas
 representaron un avance importante frente al control de revisiones
 manual, su modelo de candados y la limitación a un sólo computador,
@@ -420,7 +420,7 @@ funciones son nuevas,
 Mercurial tiene una ventaja considerable en el desempeño sobre
 Subversion en cualquier operación de control de revisiones que yo haya
 medido. He medido sus ventajas con factores desde dos hasta seis veces
-comparando con almacenamiento de archivos \emph{ra\_local}
+comparando con almacenamiento de ficheros \emph{ra\_local}
 Subversion~1.4.3, el cual es el método de acceso más rápido.  En los
 escenarios más sencillos incluyendo almacenamiento con la red de por
 medio, Subversion se encuentra en desventaja aún mayor. Dado que casi
@@ -444,139 +444,154 @@ disminuyendo, y algunas de las herramientas GUI\NdT{Interfaz de
   Usuario Gráfica}, eclipsan sus equivalentes de Subversion. Al igual
 que Mercurial, Subversion tiene un excelente manual de usuario.
 
-Because Subversion doesn't store revision history on the client, it is
-well suited to managing projects that deal with lots of large, opaque
-binary files.  If you check in fifty revisions to an incompressible
-10MB file, Subversion's client-side space usage stays constant The
-space used by any distributed SCM will grow rapidly in proportion to
-the number of revisions, because the differences between each revision
-are large.
+Dado que Subversion no almacena la historia de revisiones en el
+cliente, es muy bueno para administrar proyectos que tienen muchos
+ficheros binarios grandes y opacos. Si consigna cincuenta revisiones
+de un fichero de 10MB que no es comprimible, el esapacio en el cliente
+de Subversion se mantendrá constante mientras que el espacio usado por
+cualquier Sistema Distribuido de Control de Revisiones crecerá
+rápidamente en proporción con el número de revisiones, debido a que
+las diferencias entre cada revisión es grande.
 
-In addition, it's often difficult or, more usually, impossible to
-merge different versions of a binary file.  Subversion's ability to
-let a user lock a file, so that they temporarily have the exclusive
-right to commit changes to it, can be a significant advantage to a
-project where binary files are widely used.
+Adicionalmente, generalmente es difícil o más bien, imposible mezclar
+diferentes versiones de un fichero binario. La habilidad de Subversion
+para permitirle al usuario poner una cerradura  a un fichero, de modo
+que tenga un permiso exclusivo para consignar cambios, puede ser una
+ventaja significativa en un proyecto donde los ficheros binarios sean
+usados ampliamente.
 
-Mercurial can import revision history from a Subversion repository.
-It can also export revision history to a Subversion repository.  This
-makes it easy to ``test the waters'' and use Mercurial and Subversion
-in parallel before deciding to switch.  History conversion is
-incremental, so you can perform an initial conversion, then small
-additional conversions afterwards to bring in new changes.
-
+Mercurial puede importar la historia de revisiones de un repositorio
+de Subversion. También puede exportar historia de revisiones a un
+repositorio de Subversion.  De esta forma es sencillo ``dar un
+vistazo'' y usar Mercurial y Subversion en paralelo antes de decidirse
+a dar el paso. La conversión de la historia es incremental, de modo
+que puede aplicar una conversión inicial, y después conversiones
+pequeñas y adicionales posteriormente para traer nuevos cambios.
 
 \subsection{Git}
 
-Git is a distributed revision control tool that was developed for
-managing the Linux kernel source tree.  Like Mercurial, its early
-design was somewhat influenced by Monotone.
+Git es una herramienta distribuida de control de revisiones
+desarrollada para administrar el arbol del Kernel de Linux.  Al igual
+que Mercurial los principios de su diseño fueron influenciados por 
+Monotone.
 
-Git has a very large command set, with version~1.5.0 providing~139
-individual commands.  It has something of a reputation for being
-difficult to learn.  Compared to Git, Mercurial has a strong focus on
-simplicity.
+Git tiene un conjunto de órdenes muy grande en la versión~1.5.0
+ofrece~139 órdenes individuales.  Tiene cierta reputación de ser
+difícil de aprender. Comparado con Git, Mercurial tiene un fuerte
+enfoque hacia la facilidad.
 
-In terms of performance, Git is extremely fast.  In several cases, it
-is faster than Mercurial, at least on Linux, while Mercurial performs
-better on other operations.  However, on Windows, the performance and
-general level of support that Git provides is, at the time of writing,
-far behind that of Mercurial.
+En términos de rendimiento, Git es extremadamente rápido. En muchos
+casos, es más rápido que Mercurial, por lo menos en Linux, mientras
+que Mercurial se comporta mejor en otras operaciones.  De todas
+maneras en Windows, el desempeño y el nivel general de soporte que
+ofrece Git, al momento de la escritura, está lejos detrás de
+Mercurial.
 
-While a Mercurial repository needs no maintenance, a Git repository
-requires frequent manual ``repacks'' of its metadata.  Without these,
-performance degrades, while space usage grows rapidly.  A server that
-contains many Git repositories that are not rigorously and frequently
-repacked will become heavily disk-bound during backups, and there have
-been instances of daily backups taking far longer than~24 hours as a
-result.  A freshly packed Git repository is slightly smaller than a
-Mercurial repository, but an unpacked repository is several orders of
-magnitude larger.
+Mientras que el repositorio de Mercurial no requiere mantenimiento, el
+repositorio de Git requiere frecuentes ``repacks'' a sus metadatos.
+Sin estos, el desempeño se degrada y el espacio crece rápidamente. Un
+servidor que contenga repositorios de Git que no sean reempacados
+rigurosa y frecuentemente requerirá trabajo-intenso de disco durante
+las copias de seguridad, y ha habido situaciones en copias de
+seguridad diaria que toman más de 24 horas como resultado. Un
+repositorio recién reempacado de Git es un poco más pequeño que un
+repositorio de Mercurial, pero un repositorio sin reempacar es varios
+órdenes de magnitud más grande.
 
-The core of Git is written in C.  Many Git commands are implemented as
-shell or Perl scripts, and the quality of these scripts varies widely.
-I have encountered several instances where scripts charged along
-blindly in the presence of errors that should have been fatal.
+El corazón de Git está escrito en C.  Muchas órdenes de Git están
+implementadas como scripts de shell o Perl y la calidad de esos
+scripts varía ampliamente. He encontrado muchas situaciones en las
+cuales los scripts no tuvieron en cuenta la presencia de errores que
+podrían haber sido fatales.
 
-Mercurial can import revision history from a Git repository.
-
+Mercurial puede importar el historial de revisiones de un repositorio
+de Git.
 
 \subsection{CVS}
 
-CVS is probably the most widely used revision control tool in the
-world.  Due to its age and internal untidiness, it has been only
-lightly maintained for many years.
+CVS es probablemente la herramienta de control de revisiones más
+ampliamente usada en el planeta.  Debido a su edad y su poca pulcritud
+nterna, ha sido ligeramente mantenido en muchos años.
 
-It has a centralised client/server architecture.  It does not group
-related file changes into atomic commits, making it easy for people to
-``break the build'': one person can successfully commit part of a
-change and then be blocked by the need for a merge, causing other
-people to see only a portion of the work they intended to do.  This
-also affects how you work with project history.  If you want to see
-all of the modifications someone made as part of a task, you will need
-to manually inspect the descriptions and timestamps of the changes
-made to each file involved (if you even know what those files were).
+Tiene una arquitectura centralizada cliente/servidor. No agrupa
+cambios relacionadso en consignaciones atómicas, pemitiendo que con
+facilidad la gente ``rompa la construcción'': una persona puede
+consignar exitósamente parte del cambio y estar bloqueada por la
+necesidad de una mezcla, forzando a otras personas a ver solamente una
+porción del trabajo que estaban buscando hacer.  Esto afecta también
+la forma como usted trabaja con la historia del proyecto. Si quiere
+ver todas las modificaciones que alguien hizo como parte de una tarea,
+necesitará inspeccionar manualmente las descripciones y las marcas de
+tiempo de cambio de cada fichero involucrado(esto, si usted saber
+cuáles eran tales ficheros).
 
-CVS has a muddled notion of tags and branches that I will not attempt
-to even describe.  It does not support renaming of files or
-directories well, making it easy to corrupt a repository.  It has
-almost no internal consistency checking capabilities, so it is usually
-not even possible to tell whether or how a repository is corrupt.  I
-would not recommend CVS for any project, existing or new.
+CVS tiene una noción confusa de etiquetas y ramas que yo no trataría
+incluso de describir.  No soporta renombramiento de ficheros o
+directorios de buena forma, facilitando el corromper un
+repositorio. Casi no tiene chequeo de consistencia interna, por lo
+tanto es casi imposible identificar por que o cómo se corrompió un
+repositorio. Yo no recomendaría un repositorio de CVS para proyecto
+alguno, ni existente ni nuevo.
 
-Mercurial can import CVS revision history.  However, there are a few
-caveats that apply; these are true of every other revision control
-tool's CVS importer, too.  Due to CVS's lack of atomic changes and
-unversioned filesystem hierarchy, it is not possible to reconstruct
-CVS history completely accurately; some guesswork is involved, and
-renames will usually not show up.  Because a lot of advanced CVS
-administration has to be done by hand and is hence error-prone, it's
-common for CVS importers to run into multiple problems with corrupted
-repositories (completely bogus revision timestamps and files that have
-remained locked for over a decade are just two of the less interesting
-problems I can recall from personal experience).
+Mercurial puede importar la historia de revisiones de CVS.  De todas
+maneras hay ciertos trucos para aplicar; los cuales también son
+necesarios para cualquier herramienta importadora de historial de
+CVS. Debido a la falta de atomicidad de cambios y el no versionamiento
+de la jerarquía del sistema de archivos, es imposible reconstruir la
+completamente la historia de CVS acertadamente; hay cierto trabajo de
+conjetura involucrado y los renombramientos tampoco se
+mostrarán. Debido a que gran parte de la administración avanzada de
+CVS tiene que hacerse manualmente y por lo tanto es proclive al error,
+es común que los importadores de CVS encuentren muchos problemas con
+repositorios corruptos( marcas de tiempo totalmente desubicadas y
+archivos que han permanecido con candados por más de una década son
+dos de los problemas más interesantes de los que puedo retomar de mi
+experiencia personal).
 
-Mercurial can import revision history from a CVS repository.
+Mercurial puede importar la historia de revisiones de un repositorio
+CVS.
+
+\subsection{Herramientas comerciales}
+
+Perforce tiene una arquitectura centralizada cliente/servidor sin
+almacenamiento de dato alguno en el lado del cliente. A diferencia de
+las herramientas modernas de control de revisiones, Perforce requiere
+que un usuario ejecute una orden para informar al servidor acerca de
+todo fichero que se vaya a editar.
+
+El rendimiento de Perforce es muy bueno para equipos pequeños, pero se
+degrada rápidamente cuando el número de usuarios va más allá de pocas
+docenas. Instalaciones modestamente grandes de Perforce requiere la
+organización de proxies para soportar la carga que sus usuarios generan.
+
+\subsection{Elegir una herramienta de control de revisiones}
+
+Con la excepción de CVS, toda las herramientas que se han listado
+anteriormente tienen fortalezas que los hacen valiosos de acuerdo al
+tipo de trabajo. No hay una única herramienta de control de revisiones
+que sea la mejor en todas las situaciones.
+
+Por ejemplo, Subversion es una buena elección para trabajar con
+edición frecuente de ficheros binarios, debido a su naturaleza
+centralizada y soporte para poner candados a ficheros.
+
+Personalmente encuentro las propiedades de simplicidad, desempeño, y
+buen soporte de fusiones de Mercurial una combinación llamativa que ha
+dado buenos frutos por varios años.
 
 
-\subsection{Commercial tools}
+\section{Migrar de otra herramienta hacia Mercurial}
 
-Perforce has a centralised client/server architecture, with no
-client-side caching of any data.  Unlike modern revision control
-tools, Perforce requires that a user run a command to inform the
-server about every file they intend to edit.
+Mercurial viene con una extensión llamada \hgext{convert}, que puede
+importar historiales de revisiones de forma incremental desde varias
+herramientas de control de revisiones. Por ``incremental'', quiero
+decir que puede migrar toda la historia de un proyecto en una primera
+instancia y después volver a ejecutar la migración posteriormente para
+obtener los nuevos cambios que han sucedido después de la migración
+inicial.
 
-The performance of Perforce is quite good for small teams, but it
-falls off rapidly as the number of users grows beyond a few dozen.
-Modestly large Perforce installations require the deployment of
-proxies to cope with the load their users generate.
-
-
-\subsection{Choosing a revision control tool}
-
-With the exception of CVS, all of the tools listed above have unique
-strengths that suit them to particular styles of work.  There is no
-single revision control tool that is best in all situations.
-
-As an example, Subversion is a good choice for working with frequently
-edited binary files, due to its centralised nature and support for
-file locking.
-
-I personally find Mercurial's properties of simplicity, performance,
-and good merge support to be a compelling combination that has served
-me well for several years.
-
-
-\section{Switching from another tool to Mercurial}
-
-Mercurial is bundled with an extension named \hgext{convert}, which
-can incrementally import revision history from several other revision
-control tools.  By ``incremental'', I mean that you can convert all of
-a project's history to date in one go, then rerun the conversion later
-to obtain new changes that happened after the initial conversion.
-
-The revision control tools supported by \hgext{convert} are as
-follows:
+A continuación presentamos las herramientas de revisiones que la
+orden\hgext{convert} soporta:
 \begin{itemize}
 \item Subversion
 \item CVS
@@ -584,16 +599,16 @@ follows:
 \item Darcs
 \end{itemize}
 
-In addition, \hgext{convert} can export changes from Mercurial to
-Subversion.  This makes it possible to try Subversion and Mercurial in
-parallel before committing to a switchover, without risking the loss
-of any work.
+Adicionalmente, \hgext{convert} puede exportar cambios de Mercurial
+hacia Subversion.  Lo que hace posible probar Subversion y Mercurial
+en paralelo antes de lanzarse a un migración total, sin arriesgarse a
+perder trabajo alguno.
 
-The \hgxcmd{conver}{convert} command is easy to use.  Simply point it
-at the path or URL of the source repository, optionally give it the
-name of the destination repository, and it will start working.  After
-the initial conversion, just run the same command again to import new
-changes.
+La orden \hgxcmd{conver}{convert} es sencilla de usar. Basta con
+apuntarla hacia la ruta o el URL del repositorio fuente, opcionalmente
+darle el nombre del nombre del repositorio destino y comenzará a hacer
+su trabajo. Después de la conversión inicial, basta con invocar de
+nuevo la orden para importar nuevos cambios.
 
 
 %%% Local Variables: 
