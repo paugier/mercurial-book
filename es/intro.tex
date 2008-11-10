@@ -312,128 +312,137 @@ bifurcación porque:
 
 Algunas personas se resisten a las herramientas distribuidas porque
 desean mantener control completo sobre sus proyectos, y creen que las
-herramientas centralizadas les dan tal control. En todo caso, si este
+herramientas centralizadas les da tal control. En todo caso, si este
 es su parecer, y publica sus repositorios de CVS o Subversion, hay
 muchas herramientas disponibles que pueden obtener la historia
 completa(A pesar de lo lento) y recrearla en otro sitio que usted no
-controla. Siendo así un control ilusorio, está impidiendo la fluidez
-de colaboración frente a quien se sienta impulsado a obtener una copia
-y hacer una bifurcación con su historia.
+controla. Siendo así un control ilusorio, puesto que está impidiendo
+la fluidez de colaboración en lugar de prevenir que alguien se sienta
+impulsado a obtener una copia y hacer una bifurcación con su historia.
 
-\subsection{Advantages for commercial projects}
+\subsection{Ventajas para proyectos comerciales}
 
-Many commercial projects are undertaken by teams that are scattered
-across the globe.  Contributors who are far from a central server will
-see slower command execution and perhaps less reliability.  Commercial
-revision control systems attempt to ameliorate these problems with
-remote-site replication add-ons that are typically expensive to buy
-and cantankerous to administer.  A distributed system doesn't suffer
-from these problems in the first place.  Better yet, you can easily
-set up multiple authoritative servers, say one per site, so that
-there's no redundant communication between repositories over expensive
-long-haul network links.
+Muchos proyectos comerciales tienen grupos de trabajo distribuidos
+alrededor del globo.  Quienes contribuyen y están lejos de un
+repositorio central verán una ejecución más lenta de las órdenes y tal
+vez menos confiabilidad. Los sistemas de control de revisión
+comerciales intentan amortiguar estos problemas con adiciones de
+replicación remota que usualmente son muy costosos y complicados de
+administradr. Un sistema distribuido no padece estos problemas. Mejor
+aún, puede colocar varios servidores autorizados, por ejemplo, uno por
+sitio, de tal forma que no haya comunicación redundante entre
+repositorios sobre enlaces de conexión costosos.
 
-Centralised revision control systems tend to have relatively low
-scalability.  It's not unusual for an expensive centralised system to
-fall over under the combined load of just a few dozen concurrent
-users.  Once again, the typical response tends to be an expensive and
-clunky replication facility.  Since the load on a central server---if
-you have one at all---is many times lower with a distributed
-tool (because all of the data is replicated everywhere), a single
-cheap server can handle the needs of a much larger team, and
-replication to balance load becomes a simple matter of scripting.
+Los sistemas de control de revisiones distribuidos tienden a ser poco
+escalables. No es inusual quw costosos sistemas centralizados caigan
+ante la carga combinada de unas cuantas docenas de usuarios
+concurrentes. De nuevo, las respuestas típicas de replibcación tienden
+a ser costosas y complejas de instalar y administrar. Dado que la
+carga en un servidor central---si es que tiene uno---es muchas veces
+menor con una herramienta distribuida(debido a que los datos están
+replicados en todas partes), un sólo servidor económico puede tratar
+las necesidades de equipos mucho más grandes, y la replicación para
+balancear la carga se vuelve cosa de scripts.
 
-If you have an employee in the field, troubleshooting a problem at a
-customer's site, they'll benefit from distributed revision control.
-The tool will let them generate custom builds, try different fixes in
-isolation from each other, and search efficiently through history for
-the sources of bugs and regressions in the customer's environment, all
-without needing to connect to your company's network.
+Si tiene un empleado en el campo, se beneficiará grandemente de un
+sistema distribuido de control de versiones al resolver problemas en
+el sitio del cliente. La herramienta le permitirá generar
+construcciones a la medida, probar diferentes arreglos de forma
+independiente y buscar de forma eficiente las fuentes de fallos en la
+historia y regresiones en los ambientes de los clientes, todo, sin
+necesidad de conectarse al servidor de su compañía.
 
-\section{Why choose Mercurial?}
+\section{¿Por qué elegir Mercurial?}
 
-Mercurial has a unique set of properties that make it a particularly
-good choice as a revision control system.
+Mercurial cuenta con un conjunto único de propiedades que lo hacen
+particularmente una buena elección como un sistema de control de
+revisiones, puesto que:
 \begin{itemize}
-\item It is easy to learn and use.
-\item It is lightweight.
-\item It scales excellently.
-\item It is easy to customise.
+\item Es fácil de aprender y usar.
+\item Es liviano.
+\item Escala de forma excelente.
+\item Es fácil de acondicionar.
 \end{itemize}
 
-If you are at all familiar with revision control systems, you should
-be able to get up and running with Mercurial in less than five
-minutes.  Even if not, it will take no more than a few minutes
-longer.  Mercurial's command and feature sets are generally uniform
-and consistent, so you can keep track of a few general rules instead
-of a host of exceptions.
+Si los sistemas de control de revisiones le son familiares, debería
+estar listo para usar Mercurial en menos de cinco minutos. Si no, va a
+tomar unos pocos minutos más. Las órdenes de Mercurial y su conjunto
+de características son uniformes y consistentes generalmente, y basta
+con que siga unas pocas reglas generales en lugar de un montón de
+excepciones.
 
-On a small project, you can start working with Mercurial in moments.
-Creating new changes and branches; transferring changes around
-(whether locally or over a network); and history and status operations
-are all fast.  Mercurial attempts to stay nimble and largely out of
-your way by combining low cognitive overhead with blazingly fast
-operations.
+En un proyecto pequeño, puede comenzar a trabajar con Mercurial poco a
+poco. Creando nuevos cambios y ramas, transfiriendo cambios(localmente
+o por la red); y las operaciones relacionadas con el estado y la
+historia son rápidas. Mercurial buscar ser ligero y no incomodar en su
+camino combinando poca sobrecarga cognitiva con operaciones
+asombrosamente rápidas.
 
-The usefulness of Mercurial is not limited to small projects: it is
-used by projects with hundreds to thousands of contributors, each
-containing tens of thousands of files and hundreds of megabytes of
-source code.
+La utilidad de Mercurial no se limita a proyectos pequeños: está
+siendo usado por proyectos con centenas de miles de contribuyentes,
+cada uno conteniendo decenas de miles de ficheros y centenas de
+megabytes de código fuente
 
-If the core functionality of Mercurial is not enough for you, it's
-easy to build on.  Mercurial is well suited to scripting tasks, and
-its clean internals and implementation in Python make it easy to add
-features in the form of extensions.  There are a number of popular and
-useful extensions already available, ranging from helping to identify
-bugs to improving performance.
+Si la funcionalidad básica de Mercurial no es suficiente para usted,
+es muy fácil extenderlo. Mercurial se comporta muy bien con tareas de
+scripting y su limpieza interna junto con su implementación en Python
+permiten añadir características fácilmente en forma de extensiones.
+Hay un buen número de extensiones útiles y populares en este momento,
+desde ayudar a identificar fallos hasta el mejoramiento de su
+desempeño.
 
-\section{Mercurial compared with other tools}
+\section{Comparación de Mercurial con otras herramientas}
 
-Before you read on, please understand that this section necessarily
-reflects my own experiences, interests, and (dare I say it) biases.  I
-have used every one of the revision control tools listed below, in
-most cases for several years at a time.
+Antes de leer, por favor tenga en cuenta que esta sección
+necesariamente refleja mis propias experiencias, intereses y(tengo que
+decirlo) mis preferencias. He usado cada una de las herramientas de
+control de versiones listadas a continuación, y en muchos casos por
+varios años.
 
 
 \subsection{Subversion}
 
-Subversion is a popular revision control tool, developed to replace
-CVS.  It has a centralised client/server architecture.
+Subversion es una herramienta de control de revisiones muy popular,
+desarrollada para reemplazar a CVS.  Su arquitectura es centralizada
+en cliente/servidor.
 
-Subversion and Mercurial have similarly named commands for performing
-the same operations, so if you're familiar with one, it is easy to
-learn to use the other.  Both tools are portable to all popular
-operating systems.
+Subversion y Mercurial tienen órdenes con nombres similares para hacer
+las mismas operaciones, por lo que si le son familiares en una, será
+sencillo aprender a usar la otra. Ambas herramientas son portables en
+todos los sistemas operativos populares.
 
-Prior to version 1.5, Subversion had no useful support for merges.
-At the time of writing, its merge tracking capability is new, and known to be
-\href{http://svnbook.red-bean.com/nightly/en/svn.branchmerge.advanced.html#svn.branchmerge.advanced.finalword}{complicated
-  and buggy}.
+Antes de la versión 1.5, Subversion no tenía soporte para fusiones. En
+el momento de la escritura, sus capcidades para llevar cuenta de las
+funciones son nuevas,
+\href{http://svnbook.red-bean.com/nightly/en/svn.branchmerge.advanced.html#svn.branchmerge.advanced.finalword}{complicadas
+  y poco estables\NdT{buggy}}.
 
-Mercurial has a substantial performance advantage over Subversion on
-every revision control operation I have benchmarked.  I have measured
-its advantage as ranging from a factor of two to a factor of six when
-compared with Subversion~1.4.3's \emph{ra\_local} file store, which is
-the fastest access method available.  In more realistic deployments
-involving a network-based store, Subversion will be at a substantially
-larger disadvantage.  Because many Subversion commands must talk to
-the server and Subversion does not have useful replication facilities,
-server capacity and network bandwidth become bottlenecks for modestly
-large projects.
+Mercurial tiene una ventaja considerable en el desempeño sobre
+Subversion en cualquier operación de control de revisiones que yo haya
+medido. He medido sus ventajas con factores desde dos hasta seis veces
+comparando con almacenamiento de archivos \emph{ra\_local}
+Subversion~1.4.3, el cual es el método de acceso más rápido.  En los
+escenarios más sencillos incluyendo almacenamiento con la red de por
+medio, Subversion se encuentra en desventaja aún mayor. Dado que casi
+todas las órdenes de Subversion deben tratar con el servidor y
+Subversion no tiene utilidades de replicación sencillas, la capacidad
+del servidor y el ancho de banda se convierten en cuellos de botella
+para proyectos modestamente grandes.
 
-Additionally, Subversion incurs substantial storage overhead to avoid
-network transactions for a few common operations, such as finding
-modified files (\texttt{status}) and displaying modifications against
-the current revision (\texttt{diff}).  As a result, a Subversion
-working copy is often the same size as, or larger than, a Mercurial
-repository and working directory, even though the Mercurial repository
-contains a complete history of the project.
+Adicionalmente, Subversion tiene un sobrecosto en almacentamiento
+considerable para evitar transacciones por red en algunas operaciones,
+tales como encontrar ficheros modificados(\texttt{status}) y desplegar
+información frente a la revisión actual(\texttt{diff}).  Como
+resultado, la copia de trabajo de Subversion termina siendo del mismo
+tamaño o más grande que un repositorio de Mercurial y el directorio de
+trabajo, a pesar de que el repositorio de Mercurial contiene la
+historia completa  del proyecto.
 
-Subversion is widely supported by third party tools.  Mercurial
-currently lags considerably in this area.  This gap is closing,
-however, and indeed some of Mercurial's GUI tools now outshine their
-Subversion equivalents.  Like Mercurial, Subversion has an excellent
-user manual.
+Subversion tiene soporte amplio de otras herramientas. Mercurial por
+ahora está bastante atrás en este aspecto.  Esta diferencia está
+disminuyendo, y algunas de las herramientas GUI\NdT{Interfaz de
+  Usuario Gráfica}, eclipsan sus equivalentes de Subversion. Al igual
+que Mercurial, Subversion tiene un excelente manual de usuario.
 
 Because Subversion doesn't store revision history on the client, it is
 well suited to managing projects that deal with lots of large, opaque
