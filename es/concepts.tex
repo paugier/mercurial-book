@@ -125,66 +125,71 @@ son enfoques que desperdician bastantes recursos. Mercurial puede
 manejar deltas de ficheros con contenido binario arbitrario; no
 necesita tratar el texto plano como un caso especial.
 
-\subsection{Safe operation}
+\subsection{Operación segura}
 \label{sec:concepts:txn}
 
-Mercurial only ever \emph{appends} data to the end of a revlog file.
-It never modifies a section of a file after it has written it.  This
-is both more robust and efficient than schemes that need to modify or
-rewrite data.
+Mercurial sólo \emph{añade} datos al final de los ficheros de revlog. Nunca
+modifica ninguna sección de un fichero una vez ha sido escrita. Esto es más
+robusto y eficiente que otros esquemas que requieren modificar o reescribir
+datos.
 
-In addition, Mercurial treats every write as part of a
-\emph{transaction} that can span a number of files.  A transaction is
-\emph{atomic}: either the entire transaction succeeds and its effects
-are all visible to readers in one go, or the whole thing is undone.
-This guarantee of atomicity means that if you're running two copies of
-Mercurial, where one is reading data and one is writing it, the reader
-will never see a partially written result that might confuse it.
+Adicionalmente, Mercurial trata cada escritura como parte de una
+\emph{transacción}, que puede cubrir varios ficheros. Una transacción es
+\emph{atómica}: o bien la transacción tiene éxito y entonces todos sus efectos
+son visibles para todos los lectores, o la operación completa es cancelada.
+% TODO atomicidad no existe de acuerdo a DRAE, reemplazar
+Esta garantía de atomicidad implica que, si usted está ejecutando dos copias de
+Mercurial, donde una de ellas está leyendo datos y la otra los está escribiendo,
+el lector nunca verá un resultado escrito parcialmente que podría confundirlo.
 
-The fact that Mercurial only appends to files makes it easier to
-provide this transactional guarantee.  The easier it is to do stuff
-like this, the more confident you should be that it's done correctly.
+El hecho de que Mercurial sólo hace adiciones a los ficheros hace más fácil
+proveer esta garantía transaccional. A medida que sea más fácil hacer
+operaciones como ésta, más confianza tendrá usted en que sean hechas
+correctamente.
 
-\subsection{Fast retrieval}
+\subsection{Recuperación rápida de datos}
 
-Mercurial cleverly avoids a pitfall common to all earlier
-revision control systems: the problem of \emph{inefficient retrieval}.
-Most revision control systems store the contents of a revision as an
-incremental series of modifications against a ``snapshot''.  To
-reconstruct a specific revision, you must first read the snapshot, and
-then every one of the revisions between the snapshot and your target
-revision.  The more history that a file accumulates, the more
-revisions you must read, hence the longer it takes to reconstruct a
-particular revision.
+Mercurial evita ingeniosamente un problema común a todos los sistemas de control
+de revisiones anteriores> el problema de la
+\emph{recuperación\ndt{\emph{Retrieval}. Recuperación en el sentido de traer los
+datos, o reconstruirlos a partir de otros datos, pero no debido a una falla o
+calamidad, sino a la operación normal del sistema.} ineficiente de datos}.
+Muchos sistemas de control de revisiones almacenan los contenidos de una
+revisión como una serie incremental de modificaciones a una ``instantánea''.
+Para reconstruir una versión cualquiera, primero usted debe leer la instantánea,
+y luego cada una de las revisiones entre la instantánea y su versión objetivo.
+Entre más largo sea el historial de un fichero, más revisiones deben ser leídas,
+y por tanto toma más tiempo reconstruir una versión particular.
 
 \begin{figure}[ht]
   \centering
   \grafix{snapshot}
-  \caption{Snapshot of a revlog, with incremental deltas}
+  \caption{Instantánea de un revlog, con deltas incrementales}
   \label{fig:concepts:snapshot}
 \end{figure}
 
-The innovation that Mercurial applies to this problem is simple but
-effective.  Once the cumulative amount of delta information stored
-since the last snapshot exceeds a fixed threshold, it stores a new
-snapshot (compressed, of course), instead of another delta.  This
-makes it possible to reconstruct \emph{any} revision of a file
-quickly.  This approach works so well that it has since been copied by
-several other revision control systems.
+La innovación que aplica Mercurial a este problema es simple pero efectiva.
+Una vez la cantidad de información de deltas acumulada desde la última
+instantánea excede un umbral fijado de antemano, se almacena una nueva
+instantánea (comprimida, por supuesto), en lugar de otro delta. Esto hace
+posible reconstruir \emph{cualquier} versión de un fichero rápidamente. Este
+enfoque funciona tan bien que desde entonces ha sido copiado por otros sistemas
+de control de revisiones.
 
-Figure~\ref{fig:concepts:snapshot} illustrates the idea.  In an entry
-in a revlog's index file, Mercurial stores the range of entries from
-the data file that it must read to reconstruct a particular revision.
+La figura~\ref{fig:concepts:snapshot} ilustra la idea. En una entrada en el
+fichero índice de un revlog, Mercurial almacena el rango de entradas (deltas)
+del fichero de datos que se deben leer para reconstruir una revisión en
+particular.
 
-\subsubsection{Aside: the influence of video compression}
+\subsubsection{Nota al margen: la influencia de la compresión de vídeo}
 
-If you're familiar with video compression or have ever watched a TV
-feed through a digital cable or satellite service, you may know that
-most video compression schemes store each frame of video as a delta
-against its predecessor frame.  In addition, these schemes use
-``lossy'' compression techniques to increase the compression ratio, so
-visual errors accumulate over the course of a number of inter-frame
-deltas.
+Si le es familiar la compresión de vídeo, o ha mirado alguna vez una emisión de
+TV a través de cable digital o un servicio de satélite, puede que sepa que la 
+mayor parte de los esquemas de compresión de vídeo almacenan cada cuadro del
+mismo como un delta contra el cuadro predecesor. Adicionalmente, estos esquemas
+usan técnicas de compresión ``con pérdida'' para aumentar la tasa de
+compresión, por lo que los errores visuales se acumulan a lo largo de una
+cantidad de deltas inter-cuadros.
 
 Because it's possible for a video stream to ``drop out'' occasionally
 due to signal glitches, and to limit the accumulation of artefacts
