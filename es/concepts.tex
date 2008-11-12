@@ -191,18 +191,20 @@ usan técnicas de compresión ``con pérdida'' para aumentar la tasa de
 compresión, por lo que los errores visuales se acumulan a lo largo de una
 cantidad de deltas inter-cuadros.
 
-Because it's possible for a video stream to ``drop out'' occasionally
-due to signal glitches, and to limit the accumulation of artefacts
-introduced by the lossy compression process, video encoders
-periodically insert a complete frame (called a ``key frame'') into the
-video stream; the next delta is generated against that frame.  This
-means that if the video signal gets interrupted, it will resume once
-the next key frame is received.  Also, the accumulation of encoding
-errors restarts anew with each key frame.
+Ya que existe la posibilidad de que un flujo de vídeo se ``pierda''
+ocasionalmente debido a fallas en la señal, y para limitar la acumulación de
+errores introducida por la compresión con pérdidas, los codificadores de vídeo
+insertan periódicamente un cuadro completo (también llamado ``cuadro clave'') en
+el flujo de vídeo; el siguiente delta es generado con respecto a dicho cuadro.
+Esto quiere decir que si la señal de vídeo se interrumpe, se reanudará una vez
+se reciba el siguiente cuadro clave. Además, la acumulación de errores de
+codificación se reinicia con cada cuadro clave.
 
-\subsection{Identification and strong integrity}
+\subsection{Identificación e integridad fuerte}
 
-Along with delta or snapshot information, a revlog entry contains a
+Además de la información de deltas e instantáneas, una entrada en un revlog
+% TODO de pronto aclarar qué diablos es un hash?
+contiene un hash criptográfico de los datos que representa. Esto hace difícil 
 cryptographic hash of the data that it represents.  This makes it
 difficult to forge the contents of a revision, and easy to detect
 accidental corruption.  
