@@ -202,31 +202,34 @@ codificación se reinicia con cada cuadro clave.
 
 \subsection{Identificación e integridad fuerte}
 
-Además de la información de deltas e instantáneas, una entrada en un revlog
+Además de la información de deltas e instantáneas, una entrada en un
 % TODO de pronto aclarar qué diablos es un hash?
-contiene un hash criptográfico de los datos que representa. Esto hace difícil 
-cryptographic hash of the data that it represents.  This makes it
-difficult to forge the contents of a revision, and easy to detect
-accidental corruption.  
+revlog contiene un hash criptográfico de los datos que representa.
+Esto hace difícil falsificar el contenido de una revisión, y hace
+fácil detectar una corrupción accidental.
 
-Hashes provide more than a mere check against corruption; they are
-used as the identifiers for revisions.  The changeset identification
-hashes that you see as an end user are from revisions of the
-changelog.  Although filelogs and the manifest also use hashes,
-Mercurial only uses these behind the scenes.
+Los hashes proveen más que una simple revisión de corrupción: son
+usados como los identificadores para las revisiones. 
+% TODO no entendí completamente la frase a continuación
+Los hashes de
+identificación de conjuntos de cambios que usted ve como usuario final
+son de las revisiones de la bitácora de cambios. Aunque los ficheros
+de registro y el manifiesto también usan hashes, Mercurial sólo los
+usa tras bambalinas.
 
-Mercurial verifies that hashes are correct when it retrieves file
-revisions and when it pulls changes from another repository.  If it
-encounters an integrity problem, it will complain and stop whatever
-it's doing.
+Mercurial verifica que los hashes sean correctos cuando recupera
+revisiones de ficheros y cuando jala cambios desde otro repositorio.
+Si se encuentra un problema de integridad, Mercurial se quejará y
+detendrá cualquier operación que esté haciendo.
 
-In addition to the effect it has on retrieval efficiency, Mercurial's
-use of periodic snapshots makes it more robust against partial data
-corruption.  If a revlog becomes partly corrupted due to a hardware
-error or system bug, it's often possible to reconstruct some or most
-revisions from the uncorrupted sections of the revlog, both before and
-after the corrupted section.  This would not be possible with a
-delta-only storage model.
+Además del efecto que tiene en la eficiencia en la recuperación, el
+uso periódico de instantáneas de Mercurial lo hace más robusto frente
+a la corrupción parcial de datos. Si un fichero de registro se
+corrompe parcialmente debido a un error de hardware o del sistema, a
+menudo es posible reconstruir algunas o la mayoría de las revisiones a
+partir de las secciones no corrompidas del fichero de registro, tanto
+antes como después de la sección corrompida. Esto no sería posible con
+un sistema de almacenamiento basado únicamente en deltas.
 
 \section{Revision history, branching,
   and merging}
