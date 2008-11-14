@@ -231,27 +231,28 @@ partir de las secciones no corrompidas del fichero de registro, tanto
 antes como después de la sección corrompida. Esto no sería posible con
 un sistema de almacenamiento basado únicamente en deltas.
 
-\section{Revision history, branching,
-  and merging}
+\section{Historial de revisiones, ramas y fusiones}
 
-Every entry in a Mercurial revlog knows the identity of its immediate
-ancestor revision, usually referred to as its \emph{parent}.  In fact,
-a revision contains room for not one parent, but two.  Mercurial uses
-a special hash, called the ``null ID'', to represent the idea ``there
-is no parent here''.  This hash is simply a string of zeroes.
+Cada entrada en el revlog de Mercurial conoce la identidad de la
+revisión de su ancestro inmediato, al que se conoce usualmente como su
+\emph{padre}. De hecho, una revisión contiene sitio no sólo para un
+padre, sino para dos. Mercurial usa un hash especial, llamado el
+``ID nulo'', para representar la idea de ``no hay padre aquí''. Este
+hash es simplemente una cadena de ceros.
 
-In figure~\ref{fig:concepts:revlog}, you can see an example of the
-conceptual structure of a revlog.  Filelogs, manifests, and changelogs
-all have this same structure; they differ only in the kind of data
-stored in each delta or snapshot.
+En la figura~\ref{fig:concepts:revlog} usted puede ver un ejemplo de
+la estructura conceptual de un revlog. Los ficheros de registro,
+manifiestos, y bitácoras de cambios comparten la misma estructura;
+sólo difieren en el tipo de datos almacenados en cada delta o
+instantánea.
 
-The first revision in a revlog (at the bottom of the image) has the
-null ID in both of its parent slots.  For a ``normal'' revision, its
-first parent slot contains the ID of its parent revision, and its
-second contains the null ID, indicating that the revision has only one
-real parent.  Any two revisions that have the same parent ID are
-branches.  A revision that represents a merge between branches has two
-normal revision IDs in its parent slots.
+La primera revisión en un revlog (al final de la imagen) tiene como
+padre al ID nulo, en las dos ranuras disponibles para padres. En una
+revisión normal, la primera ranura para padres contiene el ID de la
+revisión padre, y la segunda contiene el ID nulo, señalando así que la
+revisión sólo tiene un padre real. Un par de revisiones que tenga el
+mismo ID padre son ramas. Una revisión que representa una fusión entre
+ramas tiene dos IDs de revisión normales en sus ranuras para padres.
 
 \begin{figure}[ht]
   \centering
