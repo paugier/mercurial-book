@@ -116,192 +116,199 @@ La rama principal contendtrá aún los cambios que no están en la
 estable y contendrá además todos los arreglos de fallos de la rama
 estable.  La rama estable permanece incólume a tales cambios.
 
-\subsection{Feature branches}
+\subsection{Ramas de Características}
 
-For larger projects, an effective way to manage change is to break up
-a team into smaller groups.  Each group has a shared branch of its
-own, cloned from a single ``master'' branch used by the entire
-project.  People working on an individual branch are typically quite
-isolated from developments on other branches.
+En proyectos grandes, una forma efectiva de administrar los cambios es
+dividir el equipo en grupos más pequeños. Cada grupo tiene una rama
+compartida, clonada de una rama ``principal'' que conforma el proyecto
+completo.   Aquellos que trabajan en ramas individuales típicamente
+están aislados de los desarrollos de otras ramas.
 
 \begin{figure}[ht]
   \centering
   \grafix{feature-branches}
-  \caption{Feature branches}
+  \caption{Ramas de Características}
   \label{fig:collab:feature-branches}
 \end{figure}
 
-When a particular feature is deemed to be in suitable shape, someone
-on that feature team pulls and merges from the master branch into the
-feature branch, then pushes back up to the master branch.
+Cuando una rama particular alcanza un estado deseado, alguien del
+equipo de características jala y fusiona de la rama principal hacia
+la rama de características y publica posteriormente a la rama principal.
 
-\subsection{The release train}
+\subsection{El tren de publicación}
 
-Some projects are organised on a ``train'' basis: a release is
-scheduled to happen every few months, and whatever features are ready
-when the ``train'' is ready to leave are allowed in.
+Algunos proyectos se organizan al estilo``tren'': Una versión se
+planifica para ser liberada cada cierto tiempo, y las características
+que estén listas cuando ha llegado el momento ``tren'', se incorporan.
 
-This model resembles working with feature branches.  The difference is
-that when a feature branch misses a train, someone on the feature team
-pulls and merges the changes that went out on that train release into
-the feature branch, and the team continues its work on top of that
-release so that their feature can make the next release.
+Este modelo tiene cierta similitud a las ramas de características. La
+diferencia es que cuando una característica pierde el tren, alguien en
+el equipo de características jala y fusiona los cambios que se fueron
+en la versión liberada hacia la rama de característica, y el trabajo
+continúa sobre lo fusionado para que la característica logre estar en
+la próxima versión.
 
-\subsection{The Linux kernel model}
+\subsection{El modelo del kernel linux}
 
-The development of the Linux kernel has a shallow hierarchical
-structure, surrounded by a cloud of apparent chaos.  Because most
-Linux developers use \command{git}, a distributed revision control
-tool with capabilities similar to Mercurial, it's useful to describe
-the way work flows in that environment; if you like the ideas, the
-approach translates well across tools.
+El desarrollo del Kernel Linux tiene una estructura jerárquica
+bastante horizontal, rodeada de una nube de caos aparente. Dado que la
+mayoría de desarrolladores usan \command{git}, una herramienta distribuida
+de control de versiones con capacidades similares a Mercurial, resulta
+de utilidad describir la forma en que el trabajo fluye en tal
+ambiente; si le gustan las ideas, la aproximación se traduce bien
+entre Git y Mercurial.
 
-At the center of the community sits Linus Torvalds, the creator of
-Linux.  He publishes a single source repository that is considered the
-``authoritative'' current tree by the entire developer community.
-Anyone can clone Linus's tree, but he is very choosy about whose trees
-he pulls from.
+En el centro de la comunidad está Linus Torvalds, el creador de Linux.
+Él publica un único repositorio que es considerado el árbol
+``oficial'' actual por la comunidad completa de
+desarrolladores. Cualquiera puede clonar el árbol de Linus, pero él es
+muy selectivo acerca de los árboles de los cuales jala.
 
-Linus has a number of ``trusted lieutenants''.  As a general rule, he
-pulls whatever changes they publish, in most cases without even
-reviewing those changes.  Some of those lieutenants are generally
-agreed to be ``maintainers'', responsible for specific subsystems
-within the kernel.  If a random kernel hacker wants to make a change
-to a subsystem that they want to end up in Linus's tree, they must
-find out who the subsystem's maintainer is, and ask that maintainer to
-take their change.  If the maintainer reviews their changes and agrees
-to take them, they'll pass them along to Linus in due course.
+Linux tiene varios ``lugartenientes confiables''.  Como regla, él jala
+todos los cambios que ellos publican, en la mayoría de los casos sin
+siquiera revisarlos.  Algunos de sus lugartenientes generalmente
+aceptan ser los ``mantenedores'', responsables de subsistemas
+específicos dentro del kernel.  Si un hacker cualquiera desea hacer un
+cambio a un subsistema y busca que termine en el árbol de Linus, debe
+encontrar quien es el mantenedor del subsistema y solicitarle que
+tenga en cuenta su cambio.  Si el mantenedor revisa los cambios y está
+de acuerdo en tomarlos, estos pasarán al árbol de Linus de acuerdo a
+lo expuesto.
 
-Individual lieutenants have their own approaches to reviewing,
-accepting, and publishing changes; and for deciding when to feed them
-to Linus.  In addition, there are several well known branches that
-people use for different purposes.  For example, a few people maintain
-``stable'' repositories of older versions of the kernel, to which they
-apply critical fixes as needed.  Some maintainers publish multiple
-trees: one for experimental changes; one for changes that they are
-about to feed upstream; and so on.  Others just publish a single
-tree.
+Cada lugarteniente tiene su forma particular de revisar, aceptar y
+publicar los cambios; y para decidir cuando hacerlos presentes a
+Linus.  Adicionalmente existen varias ramas conocidas que mucha gente
+usa para propósitos distintos. Por ejemplo, pocas personas mantienen
+repositorios ``estables'' de versiones anteriores del kernel, a los
+cuales aplican arreglos de fallos críticos necesarios. Algunos
+mantenedores publican varios árboles: uno para cambios
+experimentales; uno para cambios que van a ofrecer al mantenedor
+principal; y así sucesivamente. Otros publican un solo árbol.
 
-This model has two notable features.  The first is that it's ``pull
-only''.  You have to ask, convince, or beg another developer to take a
-change from you, because there are almost no trees to which more than
-one person can push, and there's no way to push changes into a tree
-that someone else controls.
+Este modelo tiene dos características notables. La primera es que son
+de ``jalar exclusivamente''.  Usted debe solicitar, convencer o
+incluso rogar a otro desarrollador para que tome sus cabmios, porque
+casi no hay árboles en los cuales más de una persona pueda publicar, y
+no hay forma de publicar cambios en un árbol que otra persona controla.
 
-The second is that it's based on reputation and acclaim.  If you're an
-unknown, Linus will probably ignore changes from you without even
-responding.  But a subsystem maintainer will probably review them, and
-will likely take them if they pass their criteria for suitability.
-The more ``good'' changes you contribute to a maintainer, the more
-likely they are to trust your judgment and accept your changes.  If
-you're well-known and maintain a long-lived branch for something Linus
-hasn't yet accepted, people with similar interests may pull your
-changes regularly to keep up with your work.
+El segundo está basado en reputación y meritocracia.  Si usted es un
+desconocido, Linus probablemente ignorará sus cambios, sin siquiera
+responderle.  Pero un mantenedor de un subsistema probablemente los
+revisara, y los acogerá en caso de que aprueben su criterio de
+aplicabilidad.  A medida que usted ofrezca ``mejores'' cambios a un
+mantenedor, habrá más posibilidad de que se confie en su juicio y se
+acepten los cambios.   Si usted es reconocido y matiene una rama
+durante bastante tiempo para algo que Linus no ha aceptado, personas
+con intereses similares pueden jalar sus cambios regularmente para
+estar al día con su trabajo.
 
-Reputation and acclaim don't necessarily cross subsystem or ``people''
-boundaries.  If you're a respected but specialised storage hacker, and
-you try to fix a networking bug, that change will receive a level of
-scrutiny from a network maintainer comparable to a change from a
-complete stranger.
+La reputación y meritocracia no necesariamente es transversal entre
+``personas'' de diferentes subsistemas.  Si usted es respetado pero es
+un hacker en almacenamiento y trata de arreglar un fallo de redes,
+tal cambio puede recibir un nivel de escrutinio de un mantenedor de
+redes comparable con el que se le haría a un completo extraño.
 
-To people who come from more orderly project backgrounds, the
-comparatively chaotic Linux kernel development process often seems
-completely insane.  It's subject to the whims of individuals; people
-make sweeping changes whenever they deem it appropriate; and the pace
-of development is astounding.  And yet Linux is a highly successful,
-well-regarded piece of software.
+Personas que vienen de proyectos con un ordenamiento distinto, sienten
+que el proceso comparativamente caótico del Kernel Linux es
+completamente lunático.  Es objeto de los caprichos individuales; la
+gente desecha cambios cuando lo desean; y la fase de desarrollo es
+alucinante. A pesar de eso Linux es una pieza de software exitosa y
+bien reconocida.
 
-\subsection{Pull-only versus shared-push collaboration}
+\subsection{Solamente jalar frente a colaboración pública}
 
-A perpetual source of heat in the open source community is whether a
-development model in which people only ever pull changes from others
-is ``better than'' one in which multiple people can push changes to a
-shared repository.
+Una fuente perpetua de discusiones en la comunidad de código abierto
+yace en el modelo de desarrollo en el cual la gente solamente jala
+cambios de otros ``es mejor que'' uno  en el cual muchas personas
+pueden publicar cambios a un repositorio compartido.
 
-Typically, the backers of the shared-push model use tools that
-actively enforce this approach.  If you're using a centralised
-revision control tool such as Subversion, there's no way to make a
-choice over which model you'll use: the tool gives you shared-push,
-and if you want to do anything else, you'll have to roll your own
-approach on top (such as applying a patch by hand).
+Tícamente los partidarios del modelo de publicar usan las herramientas
+que se apegan a este modelo.  Si usted usa una herramienta
+centralizada de control de versiones como Subversion, no hay forma de
+elegir qué modelo va a usar: La herramienta le ofrece publicación
+compartida, y si desea hacer cualquier otra cosa, va a tener que
+aplicar una aproximación artificial (tal como aplicar parches a mano).
 
-A good distributed revision control tool, such as Mercurial, will
-support both models.  You and your collaborators can then structure
-how you work together based on your own needs and preferences, not on
-what contortions your tools force you into.
+Una buena herramienta distribuida de control de versiones, tal como
+Mercurial soportará los dos modelos.   Usted y sus colaboradores
+pueden estructurar cómo trabajarán juntos basados en sus propias
+necesidades y preferencias,  sin depender de las peripecias que la
+herramienta les obligue a hacer.
 
-\subsection{Where collaboration meets branch management}
+\subsection{Cuando la colaboración encuentra la administración ramificada}
 
-Once you and your team set up some shared repositories and start
-propagating changes back and forth between local and shared repos, you
-begin to face a related, but slightly different challenge: that of
-managing the multiple directions in which your team may be moving at
-once.  Even though this subject is intimately related to how your team
-collaborates, it's dense enough to merit treatment of its own, in
-chapter~\ref{chap:branch}.
+Una vez que usted y su equipo configurar algunos repositorios
+compartidos y comienzan a propagar cambios entre sus repositorios
+locales y compartidos, comenzará a encarar un reto relacionado, pero
+un poco distinto:  Administrar las direcciones en las cuales su equipo
+puede moverse.   A pesar de que está intimamente ligado acerca de cómo
+interactúa su equipo, es lo suficientemente denso para ameritar un
+tratamiento en el capítulo~\ref{chap:branch}.
 
-\section{The technical side of sharing}
+\section{Aspectos técnicos de la colaboración}
 
-The remainder of this chapter is devoted to the question of serving
-data to your collaborators.
+Lo que resta del capítulo lo dedicamos a las cuestiones de servir
+datos a sus colaboradores.
 
-\section{Informal sharing with \hgcmd{serve}}
+\section{Compartir informalmente con \hgcmd{serve}}
 \label{sec:collab:serve}
 
-Mercurial's \hgcmd{serve} command is wonderfully suited to small,
-tight-knit, and fast-paced group environments.  It also provides a
-great way to get a feel for using Mercurial commands over a network.
+La orden \hgcmd{serve} de Mercurial satisface de forma espectacular
+las necesidades de un grupo pequeño, acoplado y de corto
+tiempo.  Se constituye en una demostración de cómo se siente usar los
+comandos usando la red.
 
-Run \hgcmd{serve} inside a repository, and in under a second it will
-bring up a specialised HTTP server; this will accept connections from
-any client, and serve up data for that repository until you terminate
-it.  Anyone who knows the URL of the server you just started, and can
-talk to your computer over the network, can then use a web browser or
-Mercurial to read data from that repository.  A URL for a
-\hgcmd{serve} instance running on a laptop is likely to look something
-like \Verb|http://my-laptop.local:8000/|.
+Ejecute \hgcmd{serve} dentro de un repositorio, y en pocos segundos
+iniciará un servidor HTTP especializado; aceptará conexiones desde
+cualquier cliente y servirá datos de este repositorio mientrs lo
+mantenga funcionando. Todo el que sepa el URL del servidor que ha
+iniciado, y que puede comunicarse con su computador por la red, puede
+usar un navegador web o Mercurial para leer datos del repositorio. Un
+URL para una instancia de \hgcmd{serve} ejecutándose en un portátil
+debería lucir algo \Verb|http://my-laptop.local:8000/|.
 
-The \hgcmd{serve} command is \emph{not} a general-purpose web server.
-It can do only two things:
+La orden \hgcmd{serve} \emph{no} es un servidor web de propósito
+general. Solamente puede hacer dos cosas:
 \begin{itemize}
-\item Allow people to browse the history of the repository it's
-  serving, from their normal web browsers.
-\item Speak Mercurial's wire protocol, so that people can
-  \hgcmd{clone} or \hgcmd{pull} changes from that repository.
+\item Permitir que se pueda visualizar la historia del repositorio que
+  está sirviendo desde navegadores web.
+\item Hablar el protocolo de conexión de Mercurial para que puedan hacer
+  \hgcmd{clone} o \hgcmd{pull} (jalar) cambios de tal repositorio.
 \end{itemize}
-In particular, \hgcmd{serve} won't allow remote users to \emph{modify}
-your repository.  It's intended for read-only use.
+En particular, \hgcmd{serve} no permitirá que los usuarios remotos
+puedan \emph{modificar} su repositorio.  Es de tipo solo lectura.
 
-If you're getting started with Mercurial, there's nothing to prevent
-you from using \hgcmd{serve} to serve up a repository on your own
-computer, then use commands like \hgcmd{clone}, \hgcmd{incoming}, and
-so on to talk to that server as if the repository was hosted remotely.
-This can help you to quickly get acquainted with using commands on
-network-hosted repositories.
+Si está comenzando con Mercurial, no hay nada que le impida usar
+\hgcmd{serve} para servir un repositorio en su propio computador, y
+usar posteriormente órdenes como \hgcmd{clone}, \hgcmd{incoming}, para
+comunicarse con el servidor como si el repositorio estuviera alojado
+remotamente. Lo que además puede ayudarle a adecuarse rápidamente para
+usar comandos en repositorios alojados en la red.
 
-\subsection{A few things to keep in mind}
+\subsection{Cuestiones adicionales para tener en cuenta}
 
-Because it provides unauthenticated read access to all clients, you
-should only use \hgcmd{serve} in an environment where you either don't
-care, or have complete control over, who can access your network and
-pull data from your repository.
+Dado que permite lectura sin autenticación a todos sus clientes,
+debería usar \hgcmd{serve} exclusivamente en ambientes en los cuáles
+no tenga problema en que otros vean, o en los cuales tenga control
+completo acerca de quien puede acceder a su red y jalar cambios de su
+repositorio.
 
-The \hgcmd{serve} command knows nothing about any firewall software
-you might have installed on your system or network.  It cannot detect
-or control your firewall software.  If other people are unable to talk
-to a running \hgcmd{serve} instance, the second thing you should do
-(\emph{after} you make sure that they're using the correct URL) is
-check your firewall configuration.
+La orden \hgcmd{serve} no tiene conocimiento acerca de programas
+cortafuegos que puedan estar instalados en su sistema o en su red. No
+puede detectar o controlar sus cortafuegos.  Si otras personas no
+pueden acceder a su instancia \hgcmd{serve}, lo siguiente que debería hacer
+(\emph{después} de asegurarse que tienen el URL correcto) es verificar
+su configuración de cortafuegos.
 
-By default, \hgcmd{serve} listens for incoming connections on
-port~8000.  If another process is already listening on the port you
-want to use, you can specify a different port to listen on using the
-\hgopt{serve}{-p} option.
+De forma predeterminada, \hgcmd{serve} escucha conexiones entrantes en
+el puerto~8000.  Si otro proceso está escuchando en tal puerto, usted
+podrá especificar un puerto distinto para escuchar con la opción
+\hgopt{serve}{-p} .
 
-Normally, when \hgcmd{serve} starts, it prints no output, which can be
-a bit unnerving.  If you'd like to confirm that it is indeed running
-correctly, and find out what URL you should send to your
-collaborators, start it with the \hggopt{-v} option.
+Normalmente, cuando se inicia \hgcmd{serve}, no imprime nada, lo cual
+puede ser desconcertante.  Si desea confirmar que en efecto está
+ejecutándose correctamente, y darse cuenta qué URL debería enviar a
+sus colaboradores, inícielo con la opción \hggopt{-v}.
 
 \section{Using the Secure Shell (ssh) protocol}
 \label{sec:collab:ssh}
