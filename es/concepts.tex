@@ -261,72 +261,83 @@ ramas tiene dos IDs de revisión normales en sus ranuras para padres.
   \label{fig:concepts:revlog}
 \end{figure}
 
-\section{The working directory}
+\section{El directorio de trabajo}
 
-In the working directory, Mercurial stores a snapshot of the files
-from the repository as of a particular changeset.
+% TODO revisar párrafo, no me convence la traducción
+En el directorio de trabajo, Mercurial almacena una instantánea de los
+ficheros  del repositorio como si fueran los de un conjunto de cambios
+particular.
 
-The working directory ``knows'' which changeset it contains.  When you
-update the working directory to contain a particular changeset,
-Mercurial looks up the appropriate revision of the manifest to find
-out which files it was tracking at the time that changeset was
-committed, and which revision of each file was then current.  It then
-recreates a copy of each of those files, with the same contents it had
-when the changeset was committed.
+El directorio de trabajo ``sabe'' qué conjunto de cambios contiene.
+Cuando usted actualiza el directorio de trabajo para que contenga un
+conjunto de cambios particular, Mercurial busca la revisión adecuada
+del manifiesto para averiguar qué ficheros estaba monitoreando cuando
+se hizo la consignación del conjunto de cambios, y qué revisión de
+cada fichero era la actual en ese momento. Luego de eso, recrea una
+copia de cada uno de esos ficheros, con los mismos contenidos que
+tenían cuando fue consignado el conjunto de cambios.
 
-The \emph{dirstate} contains Mercurial's knowledge of the working
-directory.  This details which changeset the working directory is
-updated to, and all of the files that Mercurial is tracking in the
-working directory.
+El \emph{estado de directorio}\ndt{dirstate, en inglés en el
+original.} contiene el conocimiento de Mercurial acerca del directorio
+de trabajo. Allí se detalla a qué conjunto de cambios es actualizado
+el directorio de trabajo, y todos los ficheros que Mercurial está
+monitoreando en este directorio.
 
-Just as a revision of a revlog has room for two parents, so that it
-can represent either a normal revision (with one parent) or a merge of
-two earlier revisions, the dirstate has slots for two parents.  When
-you use the \hgcmd{update} command, the changeset that you update to
-is stored in the ``first parent'' slot, and the null ID in the second.
-When you \hgcmd{merge} with another changeset, the first parent
-remains unchanged, and the second parent is filled in with the
-changeset you're merging with.  The \hgcmd{parents} command tells you
-what the parents of the dirstate are.
+Tal como la revisión de un revlog tiene espacio para dos padres, para
+que pueda representar tanto una revisión normal (con un solo padre) o
+una fusión de dos revisiones anteriores, el estado de directorio tiene
+espacio para dos padres. Cuando usted usa el comando \hgcmd{update},
+el conjunto de cambios al que usted se actualiza es almacenado en la
+casilla destinada al ``primer padre'', y un ID nulo es almacenado en
+la segunda. Cuando usted hace una fusión (\hgcmd{merge}) con otro
+conjunto de cambios, la casilla para el primer padre permanece sin
+cambios, y la casilla para el segundo es actualizada con el conjunto
+de cambios con el que usted acaba de hacer la fusión. El comando
+\hgcmd{parents} le indica cuáles son los padres del estado de
+directorio.
 
-\subsection{What happens when you commit}
+\subsection{Qué pasa en una consignación}
 
-The dirstate stores parent information for more than just book-keeping
-purposes.  Mercurial uses the parents of the dirstate as \emph{the
-  parents of a new changeset} when you perform a commit.
+El estado de directorio almacena información sobre los padres para
+algo más que mero registro. Mercurial usa los padres del estado de
+directorio como \emph{los padres de un nuevo conjunto de cambios}
+cuando usted hace una consignación.
 
 \begin{figure}[ht]
   \centering
   \grafix{wdir}
-  \caption{The working directory can have two parents}
+  \caption{El directorio de trabajo puede tener dos padres}
   \label{fig:concepts:wdir}
 \end{figure}
 
-Figure~\ref{fig:concepts:wdir} shows the normal state of the working
-directory, where it has a single changeset as parent.  That changeset
-is the \emph{tip}, the newest changeset in the repository that has no
-children.
+La figura~\ref{fig:concepts:wdir} muestra el estado normal del
+directorio de trabajo, que tiene un único conjunto de cambios como
+padre. Dicho conjunto de cambios es la \emph{punta}, el conjunto de
+cambios más reciente en el repositorio que no tiene hijos.
 
 \begin{figure}[ht]
   \centering
   \grafix{wdir-after-commit}
-  \caption{The working directory gains new parents after a commit}
+  \caption{El directorio de trabajo obtiene nuevos padres luego de una
+  consignación}
   \label{fig:concepts:wdir-after-commit}
 \end{figure}
 
-It's useful to think of the working directory as ``the changeset I'm
-about to commit''.  Any files that you tell Mercurial that you've
-added, removed, renamed, or copied will be reflected in that
-changeset, as will modifications to any files that Mercurial is
-already tracking; the new changeset will have the parents of the
-working directory as its parents.
+Es útil pensar en el directorio de trabajo como en ``el conjunto de
+cambios que estoy a punto de enviar''. Cualquier fichero que usted le
+diga a Mercurial que fue añadido, borrado, renombrado o copiado, se
+verá reflejado en ese conjunto de cambios, como también se verán las
+modificaciones a cualquiera de los ficheros que Mercurial ya esté
+monitoreando; el nuevo conjunto de cambios dentrá los padres del
+directorio de trabajo como propios.
 
-After a commit, Mercurial will update the parents of the working
-directory, so that the first parent is the ID of the new changeset,
-and the second is the null ID.  This is shown in
-figure~\ref{fig:concepts:wdir-after-commit}.  Mercurial doesn't touch
-any of the files in the working directory when you commit; it just
-modifies the dirstate to note its new parents.
+Luego de una consignación, Mercurial actualizará los padres del
+directorio de trabajo, de tal manera que el primer padre sea el ID del
+nuevo conjunto de cambios, y el segundo sea el ID nulo. Esto puede
+verse en la figura~\ref{fig:concepts:wdir-after-commit}.  Mercurial no
+toca ninguno de los ficheros del directorio de trabajo cuando usted
+hace la consignación; sólo modifica el estado de directorio para
+anotar sus nuevos padres.
 
 \subsection{Creating a new head}
 
