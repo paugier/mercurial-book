@@ -339,99 +339,109 @@ toca ninguno de los ficheros del directorio de trabajo cuando usted
 hace la consignación; sólo modifica el estado de directorio para
 anotar sus nuevos padres.
 
-\subsection{Creating a new head}
+\subsection{Creación de un nuevo frente}
 
-It's perfectly normal to update the working directory to a changeset
-other than the current tip.  For example, you might want to know what
-your project looked like last Tuesday, or you could be looking through
-changesets to see which one introduced a bug.  In cases like this, the
-natural thing to do is update the working directory to the changeset
-you're interested in, and then examine the files in the working
-directory directly to see their contents as they werea when you
-committed that changeset.  The effect of this is shown in
-figure~\ref{fig:concepts:wdir-pre-branch}.
+Es perfectamente normal actualizar el directorio de trabajo a un
+conjunto de cambios diferente a la punta actual. Por ejemplo, usted
+podría desear saber en qué estado se encontraba su proyecto el martes
+pasado, o podría estar buscando en todos los conjuntos de cambios para
+saber cuándo se introdujo un fallo. En casos como éstos, la acción
+natural es actualizar el directorio de trabajo al conjunto de cambios
+de su interés, y examinar directamente los ficheros en el directorio
+de trabajo para ver sus contenidos tal como estaban en el momento de
+hacer la consignación. El efecto que tiene esto se muestra en la
+figura~\ref{fig:concepts:wdir-pre-branch}.
 
 \begin{figure}[ht]
   \centering
   \grafix{wdir-pre-branch}
-  \caption{The working directory, updated to an older changeset}
+  \caption{El directorio de trabajo, actualizado a un conjunto de
+  cambios anterior}
   \label{fig:concepts:wdir-pre-branch}
 \end{figure}
 
-Having updated the working directory to an older changeset, what
-happens if you make some changes, and then commit?  Mercurial behaves
-in the same way as I outlined above.  The parents of the working
-directory become the parents of the new changeset.  This new changeset
-has no children, so it becomes the new tip.  And the repository now
-contains two changesets that have no children; we call these
-\emph{heads}.  You can see the structure that this creates in
-figure~\ref{fig:concepts:wdir-branch}.
+Una vez se ha actualizado el directorio de trabajo a un conjunto de
+cambios anterior, qué pasa si se hacen cambios, y luego se hace una
+consignación? Mercurial se comporta en la misma forma que describí
+anteriormente. Los padres del directorio de trabajo se convierten en
+los padres del nuevo conjunto de cambios. Este nuevo conjunto de
+cambios no tiene hijos, así que se convierte en la nueva punta. Y el
+repositorio tiene ahora dos conjuntos de cambios que no tienen hijos;
+a éstos los llamamos \emph{frentes}. Usted puede apreciar la
+estructura que esto crea en la figura~\ref{fig:concepts:wdir-branch}.
 
 \begin{figure}[ht]
   \centering
   \grafix{wdir-branch}
-  \caption{After a commit made while synced to an older changeset}
+  \caption{Después de una consignación hecha mientras se usaba un
+  conjunto de cambios anterior}
   \label{fig:concepts:wdir-branch}
 \end{figure}
 
 \begin{note}
-  If you're new to Mercurial, you should keep in mind a common
-  ``error'', which is to use the \hgcmd{pull} command without any
-  options.  By default, the \hgcmd{pull} command \emph{does not}
-  update the working directory, so you'll bring new changesets into
-  your repository, but the working directory will stay synced at the
-  same changeset as before the pull.  If you make some changes and
-  commit afterwards, you'll thus create a new head, because your
-  working directory isn't synced to whatever the current tip is.
+    Si usted es nuevo en Mercurial, debería tener en mente un
+    ``error'' común, que es usar el comando \hgcmd{pull} sin ninguna
+    opción. Por defecto, el comando \hgcmd{pull} \emph{no} actualiza
+    el directorio de trabajo, así que usted termina trayendo nuevos
+    conjuntos de cambios a su repositorio, pero el directorio de
+    trabajo sigue usando el mismo conjunto de cambios que tenía antes
+    de jalar. Si usted hace algunos cambios, y luego hace una
+    consignación, estará creando un nuevo frente, porque su directorio
+    de trabajo no es sincronizado a cualquiera que sea la nueva punta.
 
-  I put the word ``error'' in quotes because all that you need to do
-  to rectify this situation is \hgcmd{merge}, then \hgcmd{commit}.  In
-  other words, this almost never has negative consequences; it just
-  surprises people.  I'll discuss other ways to avoid this behaviour,
-  and why Mercurial behaves in this initially surprising way, later
-  on.
+    Pongo la palabra ``error'' en comillas porque todo lo que usted
+    debe hacer para rectificar la situación es hacer una fusión
+    (\hgcmd{merge}), y luego una consignación (\hgcmd{commit}). En
+    otras palabras, esto casi nunca tiene consecuencias negativas;
+    sólo sorprende a la gente. Discutiré otras formas de evitar este
+    comportamiento, y porqué Mercurial se comporta de esta forma,
+    inicialmente sorprendente, más adelante.
 \end{note}
 
-\subsection{Merging heads}
+\subsection{Fusión de frentes}
 
-When you run the \hgcmd{merge} command, Mercurial leaves the first
-parent of the working directory unchanged, and sets the second parent
-to the changeset you're merging with, as shown in
-figure~\ref{fig:concepts:wdir-merge}.
+Cuando usted ejecuta el comando \hgcmd{merge}, Mercurial deja el
+primer padre del directorio de trabajo intacto, y escribe como segundo
+padre el conjunto de cambios contra el cual usted está haciendo la
+fusión, como se muestra en la figura~\ref{fig:concepts:wdir-merge}.
 
 \begin{figure}[ht]
   \centering
   \grafix{wdir-merge}
-  \caption{Merging two heads}
+  \caption{Fusión de dos frentes}
   \label{fig:concepts:wdir-merge}
 \end{figure}
 
-Mercurial also has to modify the working directory, to merge the files
-managed in the two changesets.  Simplified a little, the merging
-process goes like this, for every file in the manifests of both
-changesets.
+Mercurial también debe modificar el directorio de trabajo, para
+fusionar los ficheros que él monitorea en los dos conjuntos de
+cambios. Con algunas simplificaciones, el proceso es el siguiente, por
+cada fichero en los manifiestos de ambos conjuntos de cambios.
 \begin{itemize}
-\item If neither changeset has modified a file, do nothing with that
-  file.
-\item If one changeset has modified a file, and the other hasn't,
-  create the modified copy of the file in the working directory.
-\item If one changeset has removed a file, and the other hasn't (or
-  has also deleted it), delete the file from the working directory.
-\item If one changeset has removed a file, but the other has modified
-  the file, ask the user what to do: keep the modified file, or remove
-  it?
-\item If both changesets have modified a file, invoke an external
-  merge program to choose the new contents for the merged file.  This
-  may require input from the user.
-\item If one changeset has modified a file, and the other has renamed
-  or copied the file, make sure that the changes follow the new name
-  of the file.
+\item Si ningún conjunto de cambios ha modificado un fichero, no se
+    hace nada con el mismo.
+\item Si un conjunto de cambios ha modificado un fichero, y el otro no
+    lo ha hecho, se crea una copia del fichero con las modificaciones
+    pertinentes en el directorio de trabajo.
+\item Si un conjunto de cambios borra un fichero, y el otro no lo ha
+    hecho (o también lo borró), se borra dicho fichero del directorio
+    de trabajo.
+\item Si un conjunto de cambios ha borrado un fichero, pero el otro lo ha
+    modificado, se le pregunta al usuario qué hacer: conservar el
+    fichero modificado, o borrarlo?
+\item Si ambos conjuntos de cambios han modificado un fichero, se
+    invoca el programa externo de fusión para definir el nuevo
+    contenido del fichero fusionado. Esto puede requerir interacción
+    directa de parte del usuario.
+\item Si un conjunto de cambios ha modificado un fichero, y el otro ha
+    renombrado o copiado el mismo, asegurarse de que los cambios sigan
+    al nuevo nombre de fichero.
 \end{itemize}
-There are more details---merging has plenty of corner cases---but
-these are the most common choices that are involved in a merge.  As
-you can see, most cases are completely automatic, and indeed most
-merges finish automatically, without requiring your input to resolve
-any conflicts.
+Hay más detalles---hacer una fusión tiene una gran cantidad de casos
+especiales---pero éstas son las elecciones más comunes que se ven
+involucradas en una fusión. Como usted puede ver, muchos de los casos
+son completamente automáticos, y de hecho la mayoría de las fusiones
+terminan automáticamente, sin requerir la interacción del usuario para
+resolver ningún conflicto.
 
 When you're thinking about what happens when you commit after a merge,
 once again the working directory is ``the changeset I'm about to
