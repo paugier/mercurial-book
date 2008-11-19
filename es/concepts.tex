@@ -443,71 +443,77 @@ son completamente automáticos, y de hecho la mayoría de las fusiones
 terminan automáticamente, sin requerir la interacción del usuario para
 resolver ningún conflicto.
 
-When you're thinking about what happens when you commit after a merge,
-once again the working directory is ``the changeset I'm about to
-commit''.  After the \hgcmd{merge} command completes, the working
-directory has two parents; these will become the parents of the new
-changeset.
+Cuando considere qué pasa cuando usted hace una consignación después
+de una fusión, de nuevo el directorio de trabajo es ``el conjunto de
+cambios que estoy a punto de consignar''. Una vez termina su trabajo
+el comando \hgcmd{merge}, el directorio de trabajo tiene dos padre;
+éstos se convertirán en los padres del nuevo conjunto de cambios.
 
-Mercurial lets you perform multiple merges, but you must commit the
-results of each individual merge as you go.  This is necessary because
-Mercurial only tracks two parents for both revisions and the working
-directory.  While it would be technically possible to merge multiple
-changesets at once, the prospect of user confusion and making a
-terrible mess of a merge immediately becomes overwhelming.
+Mercurial le permite hacer múltiples fusiones, pero usted debe
+consignar los resultados de cada fusión sucesivamente. Esto es
+necesario porque Mercurial sólo monitorea dos padres, tanto para las
+revisiones como para los directorios de trabajo. Aunque técnicamente
+es posible fusionar varios conjuntos de trabajo en una sola operación,
+la posibilidad de confundir al usuario y crear un desorden terrible en
+la fusión se hace incontenible de inmediato.
 
-\section{Other interesting design features}
+\section{Otras características de diseño interesantes}
 
-In the sections above, I've tried to highlight some of the most
-important aspects of Mercurial's design, to illustrate that it pays
-careful attention to reliability and performance.  However, the
-attention to detail doesn't stop there.  There are a number of other
-aspects of Mercurial's construction that I personally find
-interesting.  I'll detail a few of them here, separate from the ``big
-ticket'' items above, so that if you're interested, you can gain a
-better idea of the amount of thinking that goes into a well-designed
-system.
+En las secciones anteriores, he tratado de resaltar algunos de los
+aspectos más importantes del diseño de Mercurial, para mostrar que se
+presta gran cuidado y atención a la confiabilidad y el desempeño. Sin
+embargo, la atención a los detalles no para ahí. Hay una cantidad de
+aspectos de la construcción de Mercurial que encuentro interesantes
+personalmente. Detallaré unos cuantos de ellos aquí, aparte de los
+elementos ``importantes'' de arriba, para que, si usted está
+% TODO the amount of thinking => (la cantidad de) esfuerzo mental
+interesado, pueda obetener una idea mejor de la cantidad de esfuerzo
+mental invertido en el diseño de un sistema bien diseñado.
 
-\subsection{Clever compression}
 
-When appropriate, Mercurial will store both snapshots and deltas in
-compressed form.  It does this by always \emph{trying to} compress a
-snapshot or delta, but only storing the compressed version if it's
-smaller than the uncompressed version.
+\subsection{Compresión ingeniosa}
 
-This means that Mercurial does ``the right thing'' when storing a file
-whose native form is compressed, such as a \texttt{zip} archive or a
-JPEG image.  When these types of files are compressed a second time,
-the resulting file is usually bigger than the once-compressed form,
-and so Mercurial will store the plain \texttt{zip} or JPEG.
+Cuando es adecuado, Mercurial almacenará tanto las instantáneas como
+los deltas en formato comprimido. Lo hace \emph{tratando} siempre de
+comprimir una instantánea o delta, y conservando la versión comprimida
+sólo si es más pequeña que la versión sin compresión.
 
-Deltas between revisions of a compressed file are usually larger than
-snapshots of the file, and Mercurial again does ``the right thing'' in
-these cases.  It finds that such a delta exceeds the threshold at
-which it should store a complete snapshot of the file, so it stores
-the snapshot, again saving space compared to a naive delta-only
-approach.
+Esto implica que Mercurial hace ``lo correcto'' cuando almacena un
+fichero cuyo formato original está comprimido, como un fichero
+\texttt{zip} o una imagen JPEG.  Cuando estos tipos de ficheros son
+comprimidos por segunda vez, el fichero resultante usualmente es más
+grande que la versión comprimida una sola vez, por lo que Mercurial
+almacenará el fichero \texttt{zip} o JPEG original.
 
-\subsubsection{Network recompression}
+Los deltas entre revisiones de un fichero comprimido usualmente son
+más grandes que las instantáneas del mismo fichero, y Mercurial de
+nuevo hace ``lo correcto'' en estos casos. Él encuentra que dicho
+delta excede el umbral respecto al cual se debería almacenar una
+instantánea completa del fichero, así que almacena la instantánea,
+ahorrando espacio de nuevo respecto al enfoque simplista de usar
+únicamente deltas.
 
-When storing revisions on disk, Mercurial uses the ``deflate''
-compression algorithm (the same one used by the popular \texttt{zip}
-archive format), which balances good speed with a respectable
-compression ratio.  However, when transmitting revision data over a
-network connection, Mercurial uncompresses the compressed revision
-data.
+\subsubsection{Recompresión de red}
 
-If the connection is over HTTP, Mercurial recompresses the entire
-stream of data using a compression algorithm that gives a better
-compression ratio (the Burrows-Wheeler algorithm from the widely used
-\texttt{bzip2} compression package).  This combination of algorithm
-and compression of the entire stream (instead of a revision at a time)
-substantially reduces the number of bytes to be transferred, yielding
-better network performance over almost all kinds of network.
+Cuando almacena las revisiones en disco, Mercurial usa el algoritmo de
+compresión ``deflación'' (el mismo usado en el popular formato de
+fichero \texttt{zip}), que provee una buena velocidad con una tasa de
+compresión respetable. Sin embargo, cuando se transmiten datos de
+revisiones a través de una conexión de red, Mercurial descomprime los
+datos comprimidos de las revisiones.
 
-(If the connection is over \command{ssh}, Mercurial \emph{doesn't}
-recompress the stream, because \command{ssh} can already do this
-itself.)
+Si la conexión es hecha a través de HTTP, Mercurial recomprime el
+flujo completo de datos usando un algoritmo de compresión que brinda
+una mejor tasa de compresión (el algoritmo Burrows-Wheeler de el
+ampliamente usado paquete de compresión \texttt{bzip2}). Esta
+combinación de algoritmo y compresión del flujo completo de datos
+(en vez de una revisión a la vez) reduce sustancialmente la cantidad
+de bytes a transferir, brindando así un mejor desempeño de red sobre
+casi todo tipo de redes.
+
+(Si la conexión se hace sobre \command{ssh}, Mercurial \emph{no}
+recomprmime el flujo, porque \command{ssh} puede hacer esto por sí
+mismo.)
 
 \subsection{Read/write ordering and atomicity}
 
