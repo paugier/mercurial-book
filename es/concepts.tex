@@ -515,18 +515,20 @@ casi todo tipo de redes.
 recomprmime el flujo, porque \command{ssh} puede hacer esto por sí
 mismo.)
 
-\subsection{Read/write ordering and atomicity}
+\subsection{Reordenado de lectura/escritura y atomicidad}
 
-Appending to files isn't the whole story when it comes to guaranteeing
-that a reader won't see a partial write.  If you recall
-figure~\ref{fig:concepts:metadata}, revisions in the changelog point to
-revisions in the manifest, and revisions in the manifest point to
-revisions in filelogs.  This hierarchy is deliberate.
+Añadir datos al final de un fichero no es todo lo que hace falta para
+garantizar que un lector no verá una escritura parcial. Si recuerda la
+figura~\ref{fig:concepts:metadata}, las revisiones en la bitácora de
+cambios apuntan a revisiones en el manifiesto, y las revisiones en el
+manifiesto apuntan a revisiones en ficheros de registro. Esta
+jerarquía es deliberada.
 
-A writer starts a transaction by writing filelog and manifest data,
-and doesn't write any changelog data until those are finished.  A
-reader starts by reading changelog data, then manifest data, followed
-by filelog data.
+Un escritor inicia una transacción al escribir los datos del ficheros
+del fichero de registro y el manifiesto, y no escribe nada en la
+bitácora de cambios hasta que dichas escrituras hayan terminado. Un
+lector empieza leyendo datos de la bitácora de cambios, luego del
+manifiesto, y finalmente del fichero de registro.
 
 Since the writer has always finished writing filelog and manifest data
 before it writes to the changelog, a reader will never read a pointer
