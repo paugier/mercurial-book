@@ -530,21 +530,26 @@ bitácora de cambios hasta que dichas escrituras hayan terminado. Un
 lector empieza leyendo datos de la bitácora de cambios, luego del
 manifiesto, y finalmente del fichero de registro.
 
-Since the writer has always finished writing filelog and manifest data
-before it writes to the changelog, a reader will never read a pointer
-to a partially written manifest revision from the changelog, and it will
-never read a pointer to a partially written filelog revision from the
-manifest.
+%TODO revisar párrafo completo, no me gusta el resultado
+Como el escritor siempre termina de escribir los datos en el fichero
+de registro y en el manifiesto antes de escribir a la bitácora de
+cambios, un lector nunca verá un apuntador a una versión parcialmente
+escrita de revisiones del manifiesto desde la bitácora de cambios, y
+nunca leerá un apuntador a una revisión parcialmente escrita del
+fichero de registro desde el manifiesto.
 
-\subsection{Concurrent access}
+\subsection{Acceso concurrente}
 
-The read/write ordering and atomicity guarantees mean that Mercurial
-never needs to \emph{lock} a repository when it's reading data, even
-if the repository is being written to while the read is occurring.
-This has a big effect on scalability; you can have an arbitrary number
-of Mercurial processes safely reading data from a repository safely
-all at once, no matter whether it's being written to or not.
+El reordenado de lectura/escritura y la atomicidad garantizan que
+Mercurial nunca necesita \emph{bloquear} un repositorio cuando está
+leyendo datos, aún si se está escribiendo al repositorio mientras se
+hace la lectura. Esto tiene un gran efecto en la escalabilidad; usted
+puede tener cualquier cantidad de procesos Mercurial leyendo datos de
+un repositorio de manera segura al mismo tiempo, sin importar si se
+está escribiendo al mismo o no.
 
+La naturaleza carente de bloqueos de la lectura significa que si usted
+está compartiendo un repositorio
 The lockless nature of reading means that if you're sharing a
 repository on a multi-user system, you don't need to grant other local
 users permission to \emph{write} to your repository in order for them
