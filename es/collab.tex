@@ -310,127 +310,130 @@ puede ser desconcertante.  Si desea confirmar que en efecto está
 ejecutándose correctamente, y darse cuenta qué URL debería enviar a
 sus colaboradores, inícielo con la opción \hggopt{-v}.
 
-\section{Using the Secure Shell (ssh) protocol}
+\section{Uso del protocolo Secure Shell (ssh)}
 \label{sec:collab:ssh}
 
-You can pull and push changes securely over a network connection using
-the Secure Shell (\texttt{ssh}) protocol.  To use this successfully,
-you may have to do a little bit of configuration on the client or
-server sides.
+Usted puede publicar y jalar cambios en la red de forma segura usando
+el protocolo Secure Shell (\texttt{ssh}).  Para usarlo satisfactoriamente,
+tendrá que hacer algo de configuración a nivel de cliente o el
+servidor.
 
-If you're not familiar with ssh, it's a network protocol that lets you
-securely communicate with another computer.  To use it with Mercurial,
-you'll be setting up one or more user accounts on a server so that
-remote users can log in and execute commands.
+Si no está familizarizado con ssh, es un protocolo de red que le permite
+comunicarse con seguridad con otro computador.  Para usarlo con
+Mercurial, estará estableciendo una o más cuentas de usuario en un
+servidor de forma tal que los usuarios remotos puedan entrar y
+ejecutar órdenes.
 
-(If you \emph{are} familiar with ssh, you'll probably find some of the
-material that follows to be elementary in nature.)
+(Si ssh le \emph{es} familiar, encontrará probablemente elemental una
+porción del material a continuación.)
 
-\subsection{How to read and write ssh URLs}
+\subsection{Cómo leer y escribir URLs de ssh}
 
-An ssh URL tends to look like this:
+Los URLs de ssh tienden a lucir de la siguiente forma:
 \begin{codesample2}
   ssh://bos@hg.serpentine.com:22/hg/hgbook
 \end{codesample2}
 \begin{enumerate}
-\item The ``\texttt{ssh://}'' part tells Mercurial to use the ssh
-  protocol.
-\item The ``\texttt{bos@}'' component indicates what username to log
-  into the server as.  You can leave this out if the remote username
-  is the same as your local username.
-\item The ``\texttt{hg.serpentine.com}'' gives the hostname of the
-  server to log into.
-\item The ``:22'' identifies the port number to connect to the server
-  on.  The default port is~22, so you only need to specify this part
-  if you're \emph{not} using port~22.
-\item The remainder of the URL is the local path to the repository on
-  the server.
+\item La parte ``\texttt{ssh://}'' indica a Mercurial que use el
+  protocolo ssh.
+\item El componente ``\texttt{bos@}'' indica el nombre del usuario que
+  está entrando al servidor.  Puede omitirl si el usuario remoto
+  coincide con el usuario local.
+\item ``\texttt{hg.serpentine.com}'' es el nombre del servidor al cual
+  se desea entrar.
+\item El ``:22'' identifica el número del puerto en el servidor al cual
+  se conectará.  El predeterminado es el~22, así que solamente
+  necesitará especificar esa porción si \emph{no} está usando el
+  puerto~22.
+\item La última porción del URL es la ruta local al repositorio en el
+  servidor.
 \end{enumerate}
 
-There's plenty of scope for confusion with the path component of ssh
-URLs, as there is no standard way for tools to interpret it.  Some
-programs behave differently than others when dealing with these paths.
-This isn't an ideal situation, but it's unlikely to change.  Please
-read the following paragraphs carefully.
+El componente de la ruta del URL para ssh es una fuente de confusión,
+puesto que no hay una forma estándar para que las herramientas puedan
+interpretarlo.  Algunos programas se comportan de manera distinta a
+otros cuando manipulan estas rutas.  No es la situación ideal, pero
+es muy poco probable que vaya a cambiar.  Por favor lea los párrafos
+siguientes cuidadosamente.
 
-Mercurial treats the path to a repository on the server as relative to
-the remote user's home directory.  For example, if user \texttt{foo}
-on the server has a home directory of \dirname{/home/foo}, then an ssh
-URL that contains a path component of \dirname{bar}
-\emph{really} refers to the directory \dirname{/home/foo/bar}.
+Mercurial trata la ruta al repositorio en el servidor como relativo al
+directorio chasa del usuario remoto.  Por ejemplo, si el usuario
+\texttt{foo} en el servidor tiene el directorio casa
+\dirname{/home/foo},
+entonces un URL ssh que contenga en su ruta a \dirname{bar}
+\emph{realmente} se refiere al directorio \dirname{/home/foo/bar}.
 
-If you want to specify a path relative to another user's home
-directory, you can use a path that starts with a tilde character
-followed by the user's name (let's call them \texttt{otheruser}), like
-this.
+Si desea especificar una ruta relativa a otro directorio de usuario,
+puede usar una ruta que comience con un caracter tildado, seguido del
+nombre del usuario(llamémosle \texttt{otrousuario}, así
 \begin{codesample2}
-  ssh://server/~otheruser/hg/repo
+  ssh://server/~otrousuario/hg/repo
 \end{codesample2}
 
-And if you really want to specify an \emph{absolute} path on the
-server, begin the path component with two slashes, as in this example.
+Y si realmente desea especifica una ruta \emph{absoluta} en el
+servidor, comience con el componente de la ruta con dos barras como
+en el siguiente ejemplo:
 \begin{codesample2}
   ssh://server//absolute/path
 \end{codesample2}
 
-\subsection{Finding an ssh client for your system}
+\subsection{Encontrar un cliente ssh para su sistema}
 
-Almost every Unix-like system comes with OpenSSH preinstalled.  If
-you're using such a system, run \Verb|which ssh| to find out if
-the \command{ssh} command is installed (it's usually in
-\dirname{/usr/bin}).  In the unlikely event that it isn't present,
-take a look at your system documentation to figure out how to install
-it.
+Casi todos los sistemas tipo Unix vienen con OpenSSH preinstalado.  Si
+usted está usando un sistema de estos, ejecute \Verb|which ssh| para
+identificar dónde está instalada la orden \command{ssh} (usualmente
+estará en \dirname{/usr/bin}).  Si por casualidad no está presente,
+vea la documentación de sus sistema para lograr instalarlo.
 
-On Windows, you'll first need to choose download a suitable ssh
-client.  There are two alternatives.
+En Windows, tendrá que escoger primero un cliente adecuado para
+descargarlo.  Hay dos alternativas:
 \begin{itemize}
-\item Simon Tatham's excellent PuTTY package~\cite{web:putty} provides
-  a complete suite of ssh client commands.
-\item If you have a high tolerance for pain, you can use the Cygwin
-  port of OpenSSH.
+\item El excelente paquete PuTTY~\cite{web:putty} de Simon Tatham, que
+  ofrece un suite completo de órdenes de cliente ssh.
+\item Si tiene alta tolerancia al dolor, puede usar el porte de Cygwin
+  para OpenSSH.
 \end{itemize}
-In either case, you'll need to edit your \hgini\ file to tell
-Mercurial where to find the actual client command.  For example, if
-you're using PuTTY, you'll need to use the \command{plink} command as
-a command-line ssh client.
+En cualquier caso, tendrá que editar su fichero \hgini\ para indicarle
+a Mercurial dónde encontrar la orden real del cliente.  Por ejemplo, si
+está usando PuTTY, tendrá que usar la orden \command{plink} como un
+cliente de línea de órdenes.
 \begin{codesample2}
   [ui]
-  ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"
+  ssh = C:/ruta/a/plink.exe -ssh -i "C:/ruta/a/mi/llave/privada"
 \end{codesample2}
 
 \begin{note}
-  The path to \command{plink} shouldn't contain any whitespace
-  characters, or Mercurial may not be able to run it correctly (so
-  putting it in \dirname{C:\\Program Files} is probably not a good
-  idea).
+  La ruta a \command{plink} no debería contener espacios o caracteres
+  en blanco, o Mercurial no podrá encontrarlo correctamente (por lo
+  tanto, probablemente no sería buena idea colocarlo en 
+  \dirname{C:\\Program Files}
 \end{note}
 
-\subsection{Generating a key pair}
+\subsection{Generar un par de llaves}
 
-To avoid the need to repetitively type a password every time you need
-to use your ssh client, I recommend generating a key pair.  On a
-Unix-like system, the \command{ssh-keygen} command will do the trick.
-On Windows, if you're using PuTTY, the \command{puttygen} command is
-what you'll need.
+Para evitar la necesidad de teclera una clave de forma repetitiva cada
+vez que necesita usar el cliente, recomiendo generar un par de llaves.
+En un sistema tipo Unix, la orden \command{ssh-keygen} también se
+comportará bien. En Windows, si está usando PuTTY, la orden
+\command{puttygen} es la que necesitará.
 
-When you generate a key pair, it's usually \emph{highly} advisable to
-protect it with a passphrase.  (The only time that you might not want
-to do this id when you're using the ssh protocol for automated tasks
-on a secure network.)
+Cuando genera un par de llaves, se aconseja \emph{comedidamente} 
+protegerlas con una frase de clave.  (La única oportunidad en la cual
+usted querría identificarse una única vez, es cuando está usando
+el protocolo ssh para tareas automatizadas en una red segura.)
 
-Simply generating a key pair isn't enough, however.  You'll need to
-add the public key to the set of authorised keys for whatever user
-you're logging in remotely as.  For servers using OpenSSH (the vast
-majority), this will mean adding the public key to a list in a file
-called \sfilename{authorized\_keys} in their \sdirname{.ssh}
-directory.
+No basta con generar un par de llaves.  Se requiere adicionar una llave
+pública al conjunto de llaves autorizadas para todos los usuarios
+remotos que se vayan a autenticar.  Para aquellos servidores que usen
+OpenSSH(la gran mayoría), significará añadir la llave pública a la
+lista en el fichero llamado \sfilename{authorized\_keys} en su
+directorio \sdirname{.ssh}.
 
-On a Unix-like system, your public key will have a \filename{.pub}
-extension.  If you're using \command{puttygen} on Windows, you can
-save the public key to a file of your choosing, or paste it from the
-window it's displayed in straight into the
-\sfilename{authorized\_keys} file.
+En sistemas tipo Unix, su llave pública tendrá la extensión
+\filename{.pub}.  Si usa \command{puttygen} en Windows, puede
+guardar la llave pública en un fichero de su elección, o pegarla desde
+la ventana en la cual se despliega directamente en el fichero
+\sfilename{authorized\_keys}.
 
 \subsection{Using an authentication agent}
 
