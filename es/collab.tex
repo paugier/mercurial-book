@@ -435,180 +435,187 @@ guardar la llave pública en un fichero de su elección, o pegarla desde
 la ventana en la cual se despliega directamente en el fichero
 \sfilename{authorized\_keys}.
 
-\subsection{Using an authentication agent}
+\subsection{Uso de un agente de autenticación}
 
-An authentication agent is a daemon that stores passphrases in memory
-(so it will forget passphrases if you log out and log back in again).
-An ssh client will notice if it's running, and query it for a
-passphrase.  If there's no authentication agent running, or the agent
-doesn't store the necessary passphrase, you'll have to type your
-passphrase every time Mercurial tries to communicate with a server on
-your behalf (e.g.~whenever you pull or push changes).
+Un agente de autentitcación es un daemonio que almacena frases clave en
+memoria(olvidará las frases clave si sale y vuelve a entrar).  Un cliente
+ssh notará si está corriendo, y solicitará una frase clave.  Si no hay
+un agente de autenticación corriendo, o el agente no almacena la frase
+clave necesaria, tendrá que teclear su frase clave cada vez que 
+Mercurial intente comunicarse con un servidor para usted(p.e.~cada vez
+que jale o publique cambios).
 
-The downside of storing passphrases in an agent is that it's possible
-for a well-prepared attacker to recover the plain text of your
-passphrases, in some cases even if your system has been power-cycled.
-You should make your own judgment as to whether this is an acceptable
-risk.  It certainly saves a lot of repeated typing.
+El problema de almacenar frases claves en un agente es que es posible
+para un atacante bien preparado recuperar el texto plano de su frase
+clave, en alguntos casos incluso si su sistema sea muy alternante.
+Es su decisión si es un riesgo aceptable.  Lo que si es seguro es que
+evita reteclear.
 
-On Unix-like systems, the agent is called \command{ssh-agent}, and
-it's often run automatically for you when you log in.  You'll need to
-use the \command{ssh-add} command to add passphrases to the agent's
-store.  On Windows, if you're using PuTTY, the \command{pageant}
-command acts as the agent.  It adds an icon to your system tray that
-will let you manage stored passphrases.
+En sistemas tipo Unix, el agente se llama \command{ssh-agent}, y
+usualmente se ejecuta automáticamente cuando usted entra.  Tendrá que
+usar la orden \command{ssh-add} para añadir frases claves al agente.  En
+Windows, si está usando PuTTY, la orden \command{pageant} actúa como
+el agente.  Añade un ícono a su barra del sistema que le permitirá
+almacenar frases clave.
 
-\subsection{Configuring the server side properly}
+\subsection{Configurar el lado del servidor apropiadamente}
 
-Because ssh can be fiddly to set up if you're new to it, there's a
-variety of things that can go wrong.  Add Mercurial on top, and
-there's plenty more scope for head-scratching.  Most of these
-potential problems occur on the server side, not the client side.  The
-good news is that once you've gotten a configuration working, it will
-usually continue to work indefinitely.
+Dado que puede ser dispendioso configurar ssh si usted es nuevo, hay 
+una variedad de cosas que podrían ir mal.  Añada piense primero en
+Mercurial y hay mucho más en qué pensar.  La mayor parte de estos
+problemas potenciales occuren en el lado del servidor, no en el cliente.
+Las buenas noticias es que una vez tiene una configuración funcional,
+usualmente continuará trabajando indefinidamente.
 
-Before you try using Mercurial to talk to an ssh server, it's best to
-make sure that you can use the normal \command{ssh} or \command{putty}
-command to talk to the server first.  If you run into problems with
-using these commands directly, Mercurial surely won't work.  Worse, it
-will obscure the underlying problem.  Any time you want to debug
-ssh-related Mercurial problems, you should drop back to making sure
-that plain ssh client commands work first, \emph{before} you worry
-about whether there's a problem with Mercurial.
+Antes de intentar que Mercurial hable con un servidor ssh, es mejor
+asegurarse que puede usar la orden normal \command{ssh} o \command{putty}
+para comunicarse con el servidor primero.  Si tiene problemas usando
+estas órdenes directamente, de seguro Mercurial no funcionará.  Pero aún,
+esconderá el problema subyacente.  Cuando desee revisar un problema
+relacionado con ssh y Mercurial, debería asegurarse primero que las
+órdenes de ssh en el lado del cliente funcionan primero, \emph{antes}
+de preocuparse por si existe un problema con Mercurial.
 
-The first thing to be sure of on the server side is that you can
-actually log in from another machine at all.  If you can't use
-\command{ssh} or \command{putty} to log in, the error message you get
-may give you a few hints as to what's wrong.  The most common problems
-are as follows.
+Lo primero para asegurar en el lado del servidor es que puede entrar
+desde otra máquina.  Si no puede entrar con \command{ssh} o 
+\command{putty}, el mensaje de error que obtenga le puede dar pistas
+de qué ha ido mal.  Los problemas más comunes son los siguientes:
 \begin{itemize}
-\item If you get a ``connection refused'' error, either there isn't an
-  SSH daemon running on the server at all, or it's inaccessible due to
-  firewall configuration.
-\item If you get a ``no route to host'' error, you either have an
-  incorrect address for the server or a seriously locked down firewall
-  that won't admit its existence at all.
-\item If you get a ``permission denied'' error, you may have mistyped
-  the username on the server, or you could have mistyped your key's
-  passphrase or the remote user's password.
+\item Si obitene un error de ``conexión rehusada'', es posible que no 
+  haya un daemonio SSH corriendo en el servidor o que no pueda accederse
+  a él por configuraciones de cortafuegos.
+\item Si obtiene un error de ``no hay ruta hasta el servidor'', puede
+  tener la dirección del servidor incorrecta o un cortafuegos con
+  bloqueo agresivo que no permitirá su existencia.
+\item Si obtiene un mensaje de ``permiso denegado'', puede que haya
+  tecleado mal el usuario en el servidor, o que haya tecleado
+  incorrectamente la frase clave o la clave del usuario remoto.
 \end{itemize}
-In summary, if you're having trouble talking to the server's ssh
-daemon, first make sure that one is running at all.  On many systems
-it will be installed, but disabled, by default.  Once you're done with
-this step, you should then check that the server's firewall is
-configured to allow incoming connections on the port the ssh daemon is
-listening on (usually~22).  Don't worry about more exotic
-possibilities for misconfiguration until you've checked these two
-first.
+En resumen, si tiene problemas al comunicarse con el daemonio ssh del
+servidor, primero asegúrese de que está corriendo.  En muchos sistemas
+estará instalado, pero deshabilitado de forma predeterminada.  Una vez
+que haya hecho este paso tendrá que revisar si el cortafuegos del
+servidor está configurado para recibir conexiones entrantes en el
+puerto en el cual el daemonio de ssh está escuchando(usualmente el~22).
+No trate de buscar otras posibilidades exóticas o configuraciones
+erradas haste que haya revisado primero estas dos.
 
-If you're using an authentication agent on the client side to store
-passphrases for your keys, you ought to be able to log into the server
-without being prompted for a passphrase or a password.  If you're
-prompted for a passphrase, there are a few possible culprits.
+Si está usando un agente de autenticación en el lado del cliente para
+almacenar las frase claves de sus contraseñas, debería poder entrar al
+servidor sin necesidad de que se le solicite frases claves o
+contraseñas.  Si se le pregunta alguna, a continuación algunas
+posibilidades:
 \begin{itemize}
-\item You might have forgotten to use \command{ssh-add} or
-  \command{pageant} to store the passphrase.
-\item You might have stored the passphrase for the wrong key.
+\item Puede haber olvidado usar \command{ssh-add} o
+  \command{pageant} para guardar la frase clave.
+\item Puede haber almacenado una frase clave errónea para la llave.
 \end{itemize}
-If you're being prompted for the remote user's password, there are
-another few possible problems to check.
+Si se le solicita la clave del usuario remoto, hay otras posibilidades
+que deben revisarse:
 \begin{itemize}
-\item Either the user's home directory or their \sdirname{.ssh}
-  directory might have excessively liberal permissions.  As a result,
-  the ssh daemon will not trust or read their
-  \sfilename{authorized\_keys} file.  For example, a group-writable
-  home or \sdirname{.ssh} directory will often cause this symptom.
-\item The user's \sfilename{authorized\_keys} file may have a problem.
-  If anyone other than the user owns or can write to that file, the
-  ssh daemon will not trust or read it.
+\item O bien el directorio del usuario o su directorio \sdirname{.ssh}
+  tiene permisos excesivamente abiertos.  Como resultado el daemonio
+  ssh no creerá o leerá su fichero \sfilename{authorized\_keys}.  
+  Por ejemplo, un directorio casa o \sdirname{.ssh} causará aveces
+  este síntoma.
+\item El fichero de usuario \sfilename{authorized\_keys} puede tener
+  un problema.  Si alguien distinto al usuario es dueño o puede
+  escribir el archivo, el daemonio ssh no confiará o lo leerá.
 \end{itemize}
 
-In the ideal world, you should be able to run the following command
-successfully, and it should print exactly one line of output, the
-current date and time.
+En un mundo ideal, debería poder ejecutar la siguiente orden
+exitósamente, y debería imprimir exactamente una línea de salida,
+la fecha y hora actual.
 \begin{codesample2}
-  ssh myserver date
+  ssh miservidor fecha
 \end{codesample2}
 
-If, on your server, you have login scripts that print banners or other
-junk even when running non-interactive commands like this, you should
-fix them before you continue, so that they only print output if
-they're run interactively.  Otherwise these banners will at least
-clutter up Mercurial's output.  Worse, they could potentially cause
-problems with running Mercurial commands remotely.  Mercurial makes
-tries to detect and ignore banners in non-interactive \command{ssh}
-sessions, but it is not foolproof.  (If you're editing your login
-scripts on your server, the usual way to see if a login script is
-running in an interactive shell is to check the return code from the
-command \Verb|tty -s|.)
+Si en su servidor tiene guión que se ejecuta a la entrada e imprimie
+letreros o cualquier otra cosa, incluso cuando se ejecutan órdenes no
+interactivas como esta, debería arreglarlo antes de continuar, de
+forma que solamente imprima algo si se ejecuta interactivamente.  De
+otra forma estos letreros al menos llenarán la salida de Mercurial.
+incluso podrían causar problemas potenciales cuando se ejecuten
+órdenes de forma remota.  Mercurial intenta detectar e ignorar los
+letreros en sesiones no interactivas de \command{ssh}, pero no es
+a prueba de tontos.  (Si edita sus guiones de entrada en el servidor,
+la forma usual de ver si un guión de script se ejecuta en un shell
+interactivo, es verificar el código de retorno de la orden
+\Verb|tty -s|.)
 
-Once you've verified that plain old ssh is working with your server,
-the next step is to ensure that Mercurial runs on the server.  The
-following command should run successfully:
+Cuando verifique que el venerado ssh funciona en su servidor, el
+paso siguiente es asegurar que Mercurial corre en el servidor.  La
+orden siguiente debería ejecutarse satisfactoriamente:
 \begin{codesample2}
-  ssh myserver hg version
+  ssh miservidor hg version
 \end{codesample2}
-If you see an error message instead of normal \hgcmd{version} output,
-this is usually because you haven't installed Mercurial to
-\dirname{/usr/bin}.  Don't worry if this is the case; you don't need
-to do that.  But you should check for a few possible problems.
+Si ve un mensaje de error en lugar de la salida usual de 
+\hgcmd{version}, será porque no ha instalado Mercurial en
+\dirname{/usr/bin}.  No se preocupe si este es el caso; no necesita
+hacerlo.  Pero debería revisar los posibles problemas presentados a
+continuación:
 \begin{itemize}
-\item Is Mercurial really installed on the server at all?  I know this
-  sounds trivial, but it's worth checking!
-\item Maybe your shell's search path (usually set via the \envar{PATH}
-  environment variable) is simply misconfigured.
-\item Perhaps your \envar{PATH} environment variable is only being set
-  to point to the location of the \command{hg} executable if the login
-  session is interactive.  This can happen if you're setting the path
-  in the wrong shell login script.  See your shell's documentation for
-  details.
-\item The \envar{PYTHONPATH} environment variable may need to contain
-  the path to the Mercurial Python modules.  It might not be set at
-  all; it could be incorrect; or it may be set only if the login is
-  interactive.
+\item Está instalado Mercurial en el servidor?  Se que suena trivial
+  pero es mejor revisar!
+\item Tal vez la ruta de búsqueda de la interfaz de órdenes
+  (normalmente vía la variable de ambiente \envar{PATH}) simplemente
+  está mal configurada.
+\item Puede ser que su variable de ambiente \envar{PATH} soalamente
+  apunte al lugar en el cual está el ejecutable \command{hg} si la
+  sesión de entrada es interactiva.  Puede suceder si establece la
+  ruta en el guión de shell de entrada incorrecto.  Consulte la
+  documentación de su línea de órdenes.
+\item La variable de ambiente \envar{PYTHONPATH} puede requerir la
+  ruta a los módulos de Mercurial en Python.  Puede que nisiquiera
+  está establecida; podría estar incorrecta; o puede ser que se
+  establezca únicamente cuando hay entradas interactivas.
 \end{itemize}
 
-If you can run \hgcmd{version} over an ssh connection, well done!
-You've got the server and client sorted out.  You should now be able
-to use Mercurial to access repositories hosted by that username on
-that server.  If you run into problems with Mercurial and ssh at this
-point, try using the \hggopt{--debug} option to get a clearer picture
-of what's going on.
+Si puede ejecutar \hgcmd{version} sobre una conexión ssh,
+felicitaciones!  Ha logrado la interacción entre el cliente y el 
+servidor.  Ahora debería poder acceder a los repositorios de
+Mercurial que tiene el usuario en el servidor.  Si tiene problemas
+con Mercurial y ssh en este punto, intente usar la opción
+\hggopt{--debug} para tener información más clara de lo que está
+sucediendo.
 
-\subsection{Using compression with ssh}
+\subsection{Compresión con ssh}
 
-Mercurial does not compress data when it uses the ssh protocol,
-because the ssh protocol can transparently compress data.  However,
-the default behaviour of ssh clients is \emph{not} to request
-compression.
+Mercurial no comprime datos cuando usa el protocolo ssh, dado que
+el protocolo puede comprimir datos transparentemente.  Pero el
+comportamiento predeterminado del cliente ssh es \emph{no}
+solicitar compresión.
 
-Over any network other than a fast LAN (even a wireless network),
-using compression is likely to significantly speed up Mercurial's
-network operations.  For example, over a WAN, someone measured
-compression as reducing the amount of time required to clone a
-particularly large repository from~51 minutes to~17 minutes.
+Sobre cualquier red distinta a una LAN rápida(incluso con una red
+inalámbrica), hacer uso de compresión puede mejorar el rendimiento
+de las operaciones de Mercurial que involucren la red.  Por ejemplo,
+sobre WAN, alguien ha medido la compresión reduciendo la cantidad
+de tiempo requerido para clonar un repositorio particularmente
+grande de~51 minutos a~17 minutos.
 
-Both \command{ssh} and \command{plink} accept a \cmdopt{ssh}{-C}
-option which turns on compression.  You can easily edit your \hgrc\ to
-enable compression for all of Mercurial's uses of the ssh protocol.
+Tanto \command{ssh} como \command{plink} aceptan la opción
+\cmdopt{ssh}{-C} que activa la compresión.  Puede editar fácilmente
+su \hgrc\ para habilitar la compresión para todos los usos de
+Mercurial sobre el protocolo ssh.
 \begin{codesample2}
   [ui]
   ssh = ssh -C
 \end{codesample2}
 
-If you use \command{ssh}, you can configure it to always use
-compression when talking to your server.  To do this, edit your
-\sfilename{.ssh/config} file (which may not yet exist), as follows.
+Si usa \command{ssh}, puede reconfigurarlo para que siempre use
+compresión cuando se comunique con su servidor.  Para hacerlo,
+edite su fichero \sfilename{.ssh/config}(que puede no existir
+aún), de la siguiente forma:
 \begin{codesample2}
   Host hg
     Compression yes
-    HostName hg.example.com
+    HostName hg.ejemplo.com
 \end{codesample2}
-This defines an alias, \texttt{hg}.  When you use it on the
-\command{ssh} command line or in a Mercurial \texttt{ssh}-protocol
-URL, it will cause \command{ssh} to connect to \texttt{hg.example.com}
-and use compression.  This gives you both a shorter name to type and
-compression, each of which is a good thing in its own right.
+Que define un alias, \texttt{hg}.  Cuando lo usa con la orden
+\command{ssh} o con una URL de Mercurial con protocolo\texttt{ssh},
+logrará que \command{ssh} se conecte a \texttt{hg.ejemplo.com}
+con compresión.  Que le dará un nombre más corto para teclear y
+compresión, los cuales por derecho propio son buenos.
 
 \section{Serving over HTTP using CGI}
 \label{sec:collab:cgi}
