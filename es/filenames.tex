@@ -1,32 +1,36 @@
 \chapter{File names and pattern matching}
 \label{chap:names}
 
-Mercurial provides mechanisms that let you work with file names in a
-consistent and expressive way.
+Mercurial provee mecanismos que le permiten trabajar con nombres de
+ficheros en una manera consistente y expresiva.
 
-\section{Simple file naming}
+\section{Nombrado de ficheros simple}
 
-Mercurial uses a unified piece of machinery ``under the hood'' to
-handle file names.  Every command behaves uniformly with respect to
-file names.  The way in which commands work with file names is as
-follows.
+% TODO traducción literal de "under the hood". revisar
+Mercurial usa un mecanismo unificado ``bajo el capó'' para manejar
+nombres de ficheros. Cada comando se comporta de manera uniforme con
+respecto a los nombres de fichero. La manera en que los comandos
+operan con nombres de fichero es la siguiente.
 
-If you explicitly name real files on the command line, Mercurial works
-with exactly those files, as you would expect.
+Si usted especifica explícitamente nombres reales de ficheros en la
+línea de comandos, Mercurial opera únicamente sobre dichos ficheros,
+como usted esperaría.
 \interaction{filenames.files}
 
-When you provide a directory name, Mercurial will interpret this as
-``operate on every file in this directory and its subdirectories''.
-Mercurial traverses the files and subdirectories in a directory in
-alphabetical order.  When it encounters a subdirectory, it will
-traverse that subdirectory before continuing with the current
-directory.
+Cuando usted provee el nombre de un directorio, Mercurial interpreta
+eso como ``opere en cada fichero en este directorio y sus
+subdirectorios''. Mercurial va por todos los ficheros y subdirectorios
+de un directorio en orden alfabético. Cuando encuentra un
+subdirectorio, lo recorrerá antes de continuar con el directorio
+actual.
 \interaction{filenames.dirs}
 
-\section{Running commands without any file names}
+\section{Ejecución de comandos sin ningún nombre de fichero}
 
-Mercurial's commands that work with file names have useful default
-behaviours when you invoke them without providing any file names or
+Los comandos de Mercurial que trabajan con nombres de fichero tienen
+comportamientos por defecto adecuados cuando son utilizados sin pasar
+ningún patrón o nombre de fichero. El tipo de comportamiento depende
+de lo que haga el comando. Aquí presento unas cuantas 
 patterns.  What kind of behaviour you should expect depends on what
 the command does.  Here are a few rules of thumb you can use to
 predict what a command is likely to do if you don't give it any names
