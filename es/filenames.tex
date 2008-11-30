@@ -155,20 +155,23 @@ clase de caracteres es un ``\texttt{!}'', se \emph{niega} la clase,
 haciendo que se asocie con cualquier caracter sencillo que no se
 encuentre en la clase.
 
-A ``\texttt{\{}'' begins a group of subpatterns, where the whole group
-matches if any subpattern in the group matches.  The ``\texttt{,}''
-character separates subpatterns, and ``\texttt{\}}'' ends the group.
+Un ``\texttt{\{}'' marca el inicio de un grupo de subpatrones, en
+donde todo el grupo es asociado si cualquier subpatrón en el grupo
+puede ser asociado. El caracter ``\texttt{,}'' separa los subpatrones,
+y el ``\texttt{\}}'' finaliza el grupo.
 \interaction{filenames.glob.group}
 
-\subsubsection{Watch out!}
+\subsubsection{Cuidado!}
 
-Don't forget that if you want to match a pattern in any directory, you
-should not be using the ``\texttt{*}'' match-any token, as this will
-only match within one directory.  Instead, use the ``\texttt{**}''
-token.  This small example illustrates the difference between the two.
+No olvide que si usted desea asocia un patrón con cualquier
+directorio, no debería usar el elemento para asociar con cualquier
+cadena ``\texttt{*}'', ya que éste sólo generará asociaciones dentro
+de un solo directorio. En vez de eso, use el caracter para asociar con
+cualquier cadena ``\texttt{**}''. Este pequeño ejemplo ilustra la
+diferencia entre los dos.
 \interaction{filenames.glob.star-starstar}
 
-\subsection{Regular expression matching with \texttt{re} patterns}
+\subsection{Asociación con patrones de expresiones regulares \texttt{re}}
 
 Mercurial accepts the same regular expression syntax as the Python
 programming language (it uses Python's regexp engine internally).
