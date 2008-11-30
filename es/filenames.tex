@@ -30,118 +30,130 @@ actual.
 Los comandos de Mercurial que trabajan con nombres de fichero tienen
 comportamientos por defecto adecuados cuando son utilizados sin pasar
 ningún patrón o nombre de fichero. El tipo de comportamiento depende
-de lo que haga el comando. Aquí presento unas cuantas 
-patterns.  What kind of behaviour you should expect depends on what
-the command does.  Here are a few rules of thumb you can use to
-predict what a command is likely to do if you don't give it any names
-to work with.
+de lo que haga el comando. Aquí presento unas cuantas reglas generales
+que usted puede usar para que es lo que probablemente hará un comando
+si usted no le pasa ningún nombre de fichero con el cual trabajar.
 \begin{itemize}
-\item Most commands will operate on the entire working directory.
-  This is what the \hgcmd{add} command does, for example.
-\item If the command has effects that are difficult or impossible to
-  reverse, it will force you to explicitly provide at least one name
-  or pattern (see below).  This protects you from accidentally
-  deleting files by running \hgcmd{remove} with no arguments, for
-  example.
+\item Muchos comandos operarán sobre el directorio de trabajo
+    completo. Por ejemplo, esto es lo que hace el comando
+    \hgcmd{add},
+\item Si el comando tiene efectos difíciles o incluso imposibles de
+    revertir, se le obligará a usted a proveer explícitamente al menos
+    % TODO revisar ese "lo proteje a usted"
+    un nombre o patrón (ver más abajo). Esto lo proteje a usted de,
+    por ejemplo, borrar ficheros accidentalmente al ejecutar
+    \hgcmd{remove} sin ningún argumento.
 \end{itemize}
 
-It's easy to work around these default behaviours if they don't suit
-you.  If a command normally operates on the whole working directory,
-you can invoke it on just the current directory and its subdirectories
-by giving it the name ``\dirname{.}''.
+
+Es fácil evitar este comportamiento por defecto, si no es el adecuado
+para usted. Si un comando opera normalmente en todo el directorio de
+trabajo, usted puede llamarlo para que trabaje sólo en el directorio
+actual y sus subdirectorio pasándole el nombre ``\dirname{.}''.
 \interaction{filenames.wdir-subdir}
 
-Along the same lines, some commands normally print file names relative
-to the root of the repository, even if you're invoking them from a
-subdirectory.  Such a command will print file names relative to your
-subdirectory if you give it explicit names.  Here, we're going to run
-\hgcmd{status} from a subdirectory, and get it to operate on the
-entire working directory while printing file names relative to our
-subdirectory, by passing it the output of the \hgcmd{root} command.
+Siguiendo la misma línea, algunos comandos normalmente imprimen las
+rutas de ficheros con respecto a la raíz del repositorio, aún si usted
+los llama dentro de un subdirectorio. Dichos comandos imprimirán las
+rutas de los ficheros respecto al directorio en que usted se encuentra
+si se les pasan nombres explícitos. Vamos a ejecutar el comando
+\hgcmd{status} desde un subdirectorio, y a hacer que opere en el
+directorio de trabajo completo, a la vez que todas las rutas de
+ficheros se imprimen respecto a nuestro subdirectorio, pasándole la
+salida del comando \hgcmd{root}.
 \interaction{filenames.wdir-relname}
 
-\section{Telling you what's going on}
+\section{Reportar que está pasando}
 
-The \hgcmd{add} example in the preceding section illustrates something
-else that's helpful about Mercurial commands.  If a command operates
-on a file that you didn't name explicitly on the command line, it will
-usually print the name of the file, so that you will not be surprised
-what's going on.
+El ejemplo con el comando \hgcmd{add} en la sección anterior ilustra
+algo más que es útil acerca de los comandos de Mercurial. Si un
+comando opera en un fichero que usted no pasó explícitamente en la
+línea de comandos, usualmente se imprimirá el nombre del fichero, para
+que usted no sea sorprendido por lo que sucede.
 
-The principle here is of \emph{least surprise}.  If you've exactly
-named a file on the command line, there's no point in repeating it
-back at you.  If Mercurial is acting on a file \emph{implicitly},
-because you provided no names, or a directory, or a pattern (see
-below), it's safest to tell you what it's doing.
+Esto es el principio de \emph{mínima sorpresa}. Si usted se ha
+referido explícitamente a un fichero en la línea de comandos, no tiene
+mucho sentido repetir esto de vuelta a usted. Si Mercurial está
+actuando en un fichero \emph{implícitamente}, porque usted no pasó
+nombres, ni directorios, ni patrones (ver más abajo), lo más seguro es
+decirle a usted qué se está haciendo.
 
-For commands that behave this way, you can silence them using the
-\hggopt{-q} option.  You can also get them to print the name of every
-file, even those you've named explicitly, using the \hggopt{-v}
-option.
+Usted puede silenciar a los comandos que se comportan de esta manera
+usando la opción \hggopt{-q}.  También puede hacer que impriman el
+nombre de cada fichero, aún aquellos que usted indicó explícitamente,
+usando la opción \hggopt{-v}.
 
-\section{Using patterns to identify files}
+\section{Uso de patrones para identificar ficheros}
 
-In addition to working with file and directory names, Mercurial lets
-you use \emph{patterns} to identify files.  Mercurial's pattern
-handling is expressive.
+Además de trabajar con nombres de ficheros y directorios, Mercurial le
+permite usar \emph{patrones} para identificar ficheros. El manejo de
+patrones de Mercurial es expresivo.
 
-On Unix-like systems (Linux, MacOS, etc.), the job of matching file
-names to patterns normally falls to the shell.  On these systems, you
-must explicitly tell Mercurial that a name is a pattern.  On Windows,
-the shell does not expand patterns, so Mercurial will automatically
-identify names that are patterns, and expand them for you.
+En sistemas tipo Unix (Linux, MacOS, etc.), el trabajo de asociar
+patrones con nombres de ficheros recae sobre el intérprete de comandos.
+En estos sistemas, usted debe indicarle explícitamente a Mercurial que
+el nombre que se le pasa es un patrón. En Windows, el intérprete no
+expande los patrones, así que Mercurial identificará automáticamente
+los nombres que son patrones, y hará la expansión necesaria.
 
-To provide a pattern in place of a regular name on the command line,
-the mechanism is simple:
+Para pasar un patrón en vez de un nombre normal en la línea de
+comandos, el mecanismo es simple:
 \begin{codesample2}
   syntax:patternbody
 \end{codesample2}
-That is, a pattern is identified by a short text string that says what
-kind of pattern this is, followed by a colon, followed by the actual
-pattern.
+Un patrón es identificado por una cadena de texto corta que indica qué
+tipo de patrón es, seguido por un dos puntos, seguido por el patrón en
+sí.
 
-Mercurial supports two kinds of pattern syntax.  The most frequently
-used is called \texttt{glob}; this is the same kind of pattern
-matching used by the Unix shell, and should be familiar to Windows
-command prompt users, too.  
+Mercurial soporta dos tipos de sintaxis para patrones. La que se usa
+con más frecuencia  se denomina \texttt{glob}\ndt{Grupo, colección,
+aglomeración.}; es el mismo tipo de asociación de patrones usado por
+el intérprete de Unix, y también debería ser familiar para los
+usuarios de la línea de comandos de Windows.
 
-When Mercurial does automatic pattern matching on Windows, it uses
-\texttt{glob} syntax.  You can thus omit the ``\texttt{glob:}'' prefix
-on Windows, but it's safe to use it, too.
+Cuando Mercurial hace asociación automática de patrones en Windows,
+usa la sintaxis \texttt{glob}.  Por esto, usted puede omitir el
+prefijo ``\texttt{glob:}'' en Windows, pero también es seguro usarlo.
 
-The \texttt{re} syntax is more powerful; it lets you specify patterns
-using regular expressions, also known as regexps.
+La sintaxis \texttt{re}\ndt{Expresiones regulares.} es más poderosa;
+le permite especificar patrones usando expresiones regulares, también
+conocidas como regexps.
 
-By the way, in the examples that follow, notice that I'm careful to
-wrap all of my patterns in quote characters, so that they won't get
-expanded by the shell before Mercurial sees them.
+A propósito, en los ejemplos siguientes, por favor note que yo tengo
+el cuidado de rodear todos mis patrones con comillas sencillas, para
+que no sean expandidos por el intérprete antes de que Mercurial pueda
+verlos.
 
-\subsection{Shell-style \texttt{glob} patterns}
+\subsection{Patrones \texttt{glob} estilo intérprete}
 
-This is an overview of the kinds of patterns you can use when you're
-matching on glob patterns.
+Este es un vistazo general de los tipos de patrones que usted puede
+usar cuando está usando asociación con patrone glob.
 
-The ``\texttt{*}'' character matches any string, within a single
-directory.
+La secuencia ``\texttt{*}'' se asocia con cualquier cadena, dentro de
+un único directorio.
 \interaction{filenames.glob.star}
 
-The ``\texttt{**}'' pattern matches any string, and crosses directory
-boundaries.  It's not a standard Unix glob token, but it's accepted by
-several popular Unix shells, and is very useful.
+La secuencia ``\texttt{**}'' se asocia con cualquier cadena, y cruza los
+% TODO token
+límites de los directorios. No es una elemento estándar de los tokens
+de glob de Unix, pero es aceptado por varios intérpretes Unix
+populares, y es muy útil.
 \interaction{filenames.glob.starstar}
 
-The ``\texttt{?}'' pattern matches any single character.
+La secuencia ``\texttt{?}'' se asocia con cualquier caracter sencillo.
 \interaction{filenames.glob.question}
 
-The ``\texttt{[}'' character begins a \emph{character class}.  This
-matches any single character within the class.  The class ends with a
-``\texttt{]}'' character.  A class may contain multiple \emph{range}s
-of the form ``\texttt{a-f}'', which is shorthand for
+El caracter ``\texttt{[}'' marca el inicio de una \emph{clase de
+caracteres}.  Ella se asocia con cualquier caracter sencillo dentro de
+la clase. La clase se finaliza con un caracter ``\texttt{]}''. Una
+clase puede contener múltiples \emph{rango}s de la forma
+``\texttt{a-f}'', que en este caso es una abreviación para
 ``\texttt{abcdef}''.
 \interaction{filenames.glob.range}
-If the first character after the ``\texttt{[}'' in a character class
-is a ``\texttt{!}'', it \emph{negates} the class, making it match any
-single character not in the class.
+Si el primer caracter en aparecer después de ``\texttt{[}'' en la
+clase de caracteres es un ``\texttt{!}'', se \emph{niega} la clase,
+haciendo que se asocie con cualquier caracter sencillo que no se
+encuentre en la clase.
 
 A ``\texttt{\{}'' begins a group of subpatterns, where the whole group
 matches if any subpattern in the group matches.  The ``\texttt{,}''
