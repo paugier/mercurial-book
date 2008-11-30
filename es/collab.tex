@@ -617,79 +617,79 @@ logrará que \command{ssh} se conecte a \texttt{hg.ejemplo.com}
 con compresión.  Que le dará un nombre más corto para teclear y
 compresión, los cuales por derecho propio son buenos.
 
-\section{Serving over HTTP using CGI}
+\section{Uso de CGI a través de HTTP}
 \label{sec:collab:cgi}
 
-Depending on how ambitious you are, configuring Mercurial's CGI
-interface can take anything from a few moments to several hours.
+Dependiendo de qué tan ambicioso sea, configurar la interfaz CGI
+de Mercurial puede tomar desde unos minutos hasta varias horas.
 
-We'll begin with the simplest of examples, and work our way towards a
-more complex configuration.  Even for the most basic case, you're
-almost certainly going to need to read and modify your web server's
-configuration.
+Comenzaremos con el ejemplo más sencillo, y nos dirigiremos hacia
+configuraciones más complejas.  Incluso para el caso más básico
+necesitará leer y modificar su configuración del servidor web.
 
 \begin{note}
-  Configuring a web server is a complex, fiddly, and highly
-  system-dependent activity.  I can't possibly give you instructions
-  that will cover anything like all of the cases you will encounter.
-  Please use your discretion and judgment in following the sections
-  below.  Be prepared to make plenty of mistakes, and to spend a lot
-  of time reading your server's error logs.
+  Configurar un servidor web es una actividad compleja, engorrosa y
+  altamente dependiente del sistema.  De ninguna manera podremos
+  cubrir todos los casos posibles con los cuales pueda encontrarse.
+  Use su discresión y juicio respecto a las secciones siguientes.
+  Esté preparado para cometer muchas equivocaciones, y emplear
+  bastante tiempo leyendo sus bitácoras de error del servidor.
 \end{note}
 
-\subsection{Web server configuration checklist}
+\subsection{Lista de chequeo de la configuración del servidor web}
 
-Before you continue, do take a few moments to check a few aspects of
-your system's setup.
+Antes de continuar, tómese un tiempo para revisar ciertos aspectos de
+la configuración de su sistema:
 
 \begin{enumerate}
-\item Do you have a web server installed at all?  Mac OS X ships with
-  Apache, but many other systems may not have a web server installed.
-\item If you have a web server installed, is it actually running?  On
-  most systems, even if one is present, it will be disabled by
-  default.
-\item Is your server configured to allow you to run CGI programs in
-  the directory where you plan to do so?  Most servers default to
-  explicitly disabling the ability to run CGI programs.
+\item ¿Tiene un servidor web?  Mac OS X viene con Apache, pero otros
+  sistemas pueden no tener un servidor web instalado.
+\item Si tiene un servidor web instalado, ¿Está ejecutándose?  En la
+  mayoría de sistemas, aunque esté presente, puede no estar habilitado
+  de forma predeterminada.
+\item ¿u servidor está configurado para permitir ejecutar programas
+  CGI en el directorio donde planea hacerlo?  Casi todos los
+  servidores de forma predeterminada explícitamente inhiben la
+  habilidad de ejecutar programas CGI.
 \end{enumerate}
 
-If you don't have a web server installed, and don't have substantial
-experience configuring Apache, you should consider using the
-\texttt{lighttpd} web server instead of Apache.  Apache has a
-well-deserved reputation for baroque and confusing configuration.
-While \texttt{lighttpd} is less capable in some ways than Apache, most
-of these capabilities are not relevant to serving Mercurial
-repositories.  And \texttt{lighttpd} is undeniably \emph{much} easier
-to get started with than Apache.
+Si no tiene un servidor web instalado, y no tiene cierta experiencia
+configurando  Apache, debería considerar usar el servidor web
+\texttt{lighttpd} en lugar de Apache.  Apache tiene una reputación
+bien ganada por su configuración barroca y confusa.
+A pesar de que \texttt{lighttpd} tiene menos características que
+Apache en ciertas áreas, las mismas no son relevantes para servir
+repositorios de Mercurial.  Definitivamente es mucho más sencillo
+comenzar con \texttt{lighttpd} que con Apache.
 
-\subsection{Basic CGI configuration}
+\subsection{Configuración básica de CGI}
 
-On Unix-like systems, it's common for users to have a subdirectory
-named something like \dirname{public\_html} in their home directory,
-from which they can serve up web pages.  A file named \filename{foo}
-in this directory will be accessible at a URL of the form
+En sistemas tipo Unix es común que los usuarios tengan un subdirectorio
+con un nombre como \dirname{public\_html} en su directorio personal,
+desde el cual pueden servir páginas web.  Un fichero llamado \filename{foo}
+en este directorio será visible en una URL de la forma
 \texttt{http://www.example.com/\~username/foo}.
 
-To get started, find the \sfilename{hgweb.cgi} script that should be
-present in your Mercurial installation.  If you can't quickly find a
-local copy on your system, simply download one from the master
-Mercurial repository at
+Para comenzar, encuentre el guión \sfilename{hgweb.cgi} que debería
+estar presente en su instalación de Mercurial.  Si no puede
+encontrarlo rápidamente una copia local en su sistema, puede
+descargarlo del repositorio principal de Mercurial en
 \url{http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi}.
 
-You'll need to copy this script into your \dirname{public\_html}
-directory, and ensure that it's executable.
+Tendrá que copiar este guión en su directorio \dirname{public\_html},
+y asegurarse que sea ejecutable.
 \begin{codesample2}
   cp .../hgweb.cgi ~/public_html
   chmod 755 ~/public_html/hgweb.cgi
 \end{codesample2}
-The \texttt{755} argument to \command{chmod} is a little more general
-than just making the script executable: it ensures that the script is
-executable by anyone, and that ``group'' and ``other'' write
-permissions are \emph{not} set.  If you were to leave those write
-permissions enabled, Apache's \texttt{suexec} subsystem would likely
-refuse to execute the script.  In fact, \texttt{suexec} also insists
-that the \emph{directory} in which the script resides must not be
-writable by others.
+El argumento \texttt{755} de la orden \command{chmod} es un poco más
+general que hacerlo ejecutable: Asegura que el guión sea ejecutable
+por cualquiera, y que el ``grupo'' y los ``otros'' \emph{not}  tengan
+permiso de escritura.  Si dejara los permisos de escritura abiertos,
+, el subsistema \texttt{suexec} de  Apache probablemente se negaría
+a ejecutar el guión.  De hecho, \texttt{suexec} también insiste en que
+el \emph{directorio} en el cual reside el guión no tenga permiso de
+escritura para otros.
 \begin{codesample2}
   chmod 755 ~/public_html
 \end{codesample2}
