@@ -173,21 +173,25 @@ diferencia entre los dos.
 
 \subsection{Asociación con patrones de expresiones regulares \texttt{re}}
 
-Mercurial accepts the same regular expression syntax as the Python
-programming language (it uses Python's regexp engine internally).
-This is based on the Perl language's regexp syntax, which is the most
-popular dialect in use (it's also used in Java, for example).
+Mercurial acepta la misma sintaxis para expresiones regulares del
+lenguaje de programación Python (internamente se usa el motor de
+expresiones regulares de Python). Esta sintaxis está basada en la
+misma del lenguaje Perl, que es el dialecto más popular en uso
+(por ejemplo, también se usa en Java).
 
-I won't discuss Mercurial's regexp dialect in any detail here, as
-regexps are not often used.  Perl-style regexps are in any case
-already exhaustively documented on a multitude of web sites, and in
-many books.  Instead, I will focus here on a few things you should
-know if you find yourself needing to use regexps with Mercurial.
+No discutiré el dialecto de expresiones regulares de Mercurial en
+detalle aquí, ya que las mismas no son usadas frecuentemente. Las
+expresiones regulares al estilo Perl se encuentran documentadas
+exhaustivamente en una multitud de sitios web, y en muchos libros.
+En vez de eso, me enfocaré en unas cuantas cosas que usted debería
+conocer si tiene la necesidad de usar expresiones regulares en
+Mercurial.
 
-A regexp is matched against an entire file name, relative to the root
-of the repository.  In other words, even if you're already in
-subbdirectory \dirname{foo}, if you want to match files under this
-directory, your pattern must start with ``\texttt{foo/}''.
+Una expresión regular es comparada contra un nombre de fichero
+completo, relativo a la raíz del repositorio. En otras palabras, aún
+si usted se encuentra en un subdirectorio \dirname{foo}, si desea
+asociar ficheros en este directorio, su patrón debe empezar con
+``\texttt{foo/}''.
 
 One thing to note, if you're familiar with Perl-style regexps, is that
 Mercurial's are \emph{rooted}.  That is, a regexp starts matching
