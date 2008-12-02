@@ -193,45 +193,51 @@ si usted se encuentra en un subdirectorio \dirname{foo}, si desea
 asociar ficheros en este directorio, su patrón debe empezar con
 ``\texttt{foo/}''.
 
-One thing to note, if you're familiar with Perl-style regexps, is that
-Mercurial's are \emph{rooted}.  That is, a regexp starts matching
-against the beginning of a string; it doesn't look for a match
-anywhere within the string.  To match anywhere in a string, start
-your pattern with ``\texttt{.*}''.
+Un detalle a tener en cuenta es que, si le son familiares las
+expresiones regulares al estilo Perl, las de Mercurial están
+\emph{enraízadas}. Esto es, que la asociación de una expresión se hace
+desde el inicio de la cadena; no se buscan coincidencias dentro de la
+cadena. Para buscar coincidencias en cualquier sitio dentro de una
+cadena, empiece su patrón con un ``\texttt{.*}''.
 
-\section{Filtering files}
+\section{Filtrado de archivos}
 
-Not only does Mercurial give you a variety of ways to specify files;
-it lets you further winnow those files using \emph{filters}.  Commands
-that work with file names accept two filtering options.
+Mercurial no sólo le provee una variedad de formas para especificar
+ficheros; le permite limitar aún más dichos ficheros mediante el uso
+de \emph{filtros}. Los comandos que operan con nombres de fichero
+aceptan dos opciones de filtrado.
 \begin{itemize}
-\item \hggopt{-I}, or \hggopt{--include}, lets you specify a pattern
-  that file names must match in order to be processed.
-\item \hggopt{-X}, or \hggopt{--exclude}, gives you a way to
-  \emph{avoid} processing files, if they match this pattern.
+\item \hggopt{-I}, o \hggopt{--include}, le permite especificar un
+    patrón con el que deben coincidir los ficheros para ser
+    procesados.
+\item \hggopt{-X}, o \hggopt{--exclude}, le brinda una manera de 
+  \emph{evitar} procesar ficheros, si coinciden con este patrón.
 \end{itemize}
-You can provide multiple \hggopt{-I} and \hggopt{-X} options on the
-command line, and intermix them as you please.  Mercurial interprets
-the patterns you provide using glob syntax by default (but you can use
-regexps if you need to).
+Usted puede pasar múltiples veces las opciones \hggopt{-I} y
+\hggopt{-X} en la línea de comandos, e intercalarlos como desee.
+Por defecto, Mercurial interpreta los patrones que usted pase usando
+la sintaxis glob (pero usted puede usar expresiones regulares si lo
+necesita).
 
-You can read a \hggopt{-I} filter as ``process only the files that
-match this filter''.
+El filtro \hggopt{-I} puede verse como un ``procese todos los ficheros
+que coincidan con este filtro''.
 \interaction{filenames.filter.include}
-The \hggopt{-X} filter is best read as ``process only the files that
-don't match this pattern''.
+El filtro \hggopt{-X} puede verse como ``procese únicamente los
+ficheros que no coincidan con este patrón''.
 \interaction{filenames.filter.exclude}
 
-\section{Ignoring unwanted files and directories}
+\section{Ignorar ficheros y directorios no deseados}
 
 XXX.
 
 \section{Case sensitivity}
 \label{sec:names:case}
 
-If you're working in a mixed development environment that contains
-both Linux (or other Unix) systems and Macs or Windows systems, you
-should keep in the back of your mind the knowledge that they treat the
+Si usted está trabajando en un ambiente de desarrollo mixto que
+contiene tanto sistemas Linux (u otro Unix) y sistemas Mac o Windows,
+debería tener en mente el hecho de que ellos tratan 
+%TODO FIXME seguir desde aqui, no tengo idea de como traducir case
+%sensitivity
 case (``N'' versus ``n'') of file names in incompatible ways.  This is
 not very likely to affect you, and it's easy to deal with if it does,
 but it could surprise you if you don't know about it.
@@ -263,17 +269,23 @@ USB thumb drive formatted with a FAT32 filesystem on a Linux system,
 Linux will handle names on that filesystem in a case preserving, but
 insensitive, way.
 
-\subsection{Safe, portable repository storage}
+\subsection{Almacenamiento portable y seguro de repositorios}
 
-Mercurial's repository storage mechanism is \emph{case safe}.  It
-translates file names so that they can be safely stored on both case
-sensitive and case insensitive filesystems.  This means that you can
-use normal file copying tools to transfer a Mercurial repository onto,
-for example, a USB thumb drive, and safely move that drive and
-repository back and forth between a Mac, a PC running Windows, and a
-Linux box.
+El mecanismo de almacenamiento de los repositorios en Mercurial es
+%TODO aarrrgh, más case!!!
+\emph{robusto frente a case sensitivity/insensitivity}. Los nombres de
+fichero son traducidos para que puedan ser almacenados de manera
+%TODO GRRRRR
+segura tanto en sistemas case sensitive o case insensitive. Esto
+significa que usted puede usar herramientas normales de copia de
+ficheros para transferir un repositorio Mercurial a, por ejemplo, una
+memoria USB, y trasladar de manera segura la memoria y el repositorio
+de ida y vuelta entre un Mac, un PC ejecutando Windows, y un sistema
+Linux
 
-\subsection{Detecting case conflicts}
+\subsection{Detección de conflictos de mayúsculas/minúsculas}
+%TODO FIXME continuar aca, me niego a seguir traduciendo esto de
+%momento
 
 When operating in the working directory, Mercurial honours the naming
 policy of the filesystem where the working directory is located.  If
