@@ -1,109 +1,124 @@
-\chapter{Handling repository events with hooks}
+\chapter{Manejo de eventos en repositorios con ganchos}
 \label{chap:hook}
 
-Mercurial offers a powerful mechanism to let you perform automated
-actions in response to events that occur in a repository.  In some
-cases, you can even control Mercurial's response to those events.
+Mercurial ofrece un poderoso mecanismo para permitirle a usted
+automatizar la ejecución de acciones en respuesta a eventos que
+ocurran en un repositorio. En algunos casos, usted puede controlar
+incluso la respuesta de Mercurial a dichos eventos.
 
-The name Mercurial uses for one of these actions is a \emph{hook}.
-Hooks are called ``triggers'' in some revision control systems, but
-the two names refer to the same idea.
+Mercurial usa el término \emph{gancho} para identificar estas
+acciones. Los ganchos son conocidos como ``disparadores'' en algunos
+sistemas de control de revisiones, pero los dos nombres se refieren al
+mismo concepto.
 
-\section{An overview of hooks in Mercurial}
+\section{Vistazo general de ganchos en Mercurial}
 
-Here is a brief list of the hooks that Mercurial supports.  We will
-revisit each of these hooks in more detail later, in
-section~\ref{sec:hook:ref}.
+A continuación se encuentra una breve lista de los ganchos que
+Mercurial soporta. Volveremos a cada uno de estos ganchos con más
+detalle después, en la sección~\ref{sec:hook:ref}.
 
 \begin{itemize}
-\item[\small\hook{changegroup}] This is run after a group of
-  changesets has been brought into the repository from elsewhere.
-\item[\small\hook{commit}] This is run after a new changeset has been
-  created in the local repository.
-\item[\small\hook{incoming}] This is run once for each new changeset
-  that is brought into the repository from elsewhere.  Notice the
-  difference from \hook{changegroup}, which is run once per
-  \emph{group} of changesets brought in.
-\item[\small\hook{outgoing}] This is run after a group of changesets
-  has been transmitted from this repository.
-\item[\small\hook{prechangegroup}] This is run before starting to
-  bring a group of changesets into the repository.
-\item[\small\hook{precommit}] Controlling. This is run before starting
-  a commit.
-\item[\small\hook{preoutgoing}] Controlling. This is run before
-  starting to transmit a group of changesets from this repository.
-\item[\small\hook{pretag}] Controlling. This is run before creating a tag.
-\item[\small\hook{pretxnchangegroup}] Controlling. This is run after a
-  group of changesets has been brought into the local repository from
-  another, but before the transaction completes that will make the
-  changes permanent in the repository.
-\item[\small\hook{pretxncommit}] Controlling. This is run after a new
-  changeset has been created in the local repository, but before the
-  transaction completes that will make it permanent.
-\item[\small\hook{preupdate}] Controlling. This is run before starting
-  an update or merge of the working directory.
-\item[\small\hook{tag}] This is run after a tag is created.
-\item[\small\hook{update}] This is run after an update or merge of the
-  working directory has finished.
+\item[\small\hook{changegroup}] Es ejecutado luego de que un grupo de
+    conjuntos de cambios ha sido traído al repositorio desde algún
+    otro sitio.
+\item[\small\hook{commit}] Es ejecutado después de la creación de
+    un conjunto de cambios en el repositorio local.
+\item[\small\hook{incoming}] Es ejecutado una vez por cada conjunto de
+    cambios traído al repositorio desde otra ubicación. Note la
+    diferencia respecto al gancho \hook{changegroup}, que es ejecutado
+    una vez por cada \emph{grupo} de conjuntos de cambios que se
+    traiga.
+\item[\small\hook{outgoing}] Es ejecutado luego de que un grupo de
+    conjuntos de cambios ha sido transmitido desde el repositorio.
+\item[\small\hook{prechangegroup}] Es ejecutado antes de iniciar la
+    recepción de un grupo de conjuntos de cambios en el repositorio.
+\item[\small\hook{precommit}] De control. Es ejecutado antes de
+    iniciar una consignación.
+\item[\small\hook{preoutgoing}] De control. Es ejecutado antes de
+    iniciar la transmisión de un grupo de conjuntos de cambios desde
+    el repositorio.
+\item[\small\hook{pretag}] De control. Es ejecutado antes de crear una
+    etiqueta.
+\item[\small\hook{pretxnchangegroup}] De control. Es ejecutado después
+    de haber recibido un grupo de conjuntos de cambios en el
+    repositorio local, pero antes de que la transacción se complete y
+    los cambios sean permanentes dentro del repositorio.
+\item[\small\hook{pretxncommit}] De control. Es ejecutado luego de la
+    creación de un conjunto de cambios en el repositorio local, pero
+    antes de que la transacción que hace permanente el cambio sea
+    completada.
+\item[\small\hook{preupdate}] De control. Es ejecutado antes de
+    iniciar una actualización o fusión en el directorio de trabajo.
+\item[\small\hook{tag}] Es ejecutado después de la creación de una
+    etiqueta.
+\item[\small\hook{update}] Es ejecutado después de que termina una
+    actualización o una fusión.
 \end{itemize}
-Each of the hooks whose description begins with the word
-``Controlling'' has the ability to determine whether an activity can
-proceed.  If the hook succeeds, the activity may proceed; if it fails,
-the activity is either not permitted or undone, depending on the hook.
+Cada uno de los ganchos cuya descripción empieza con la frase
+``de control'' tiene la facultad de determinar si una actividad puede
+continuar. Si el gancho se ejecuta con éxito, la actividad puede
+continuar; si falla, o bien la actividad no es permitida, o se
+deshacen los cambios que se puedan haber llevado a cabo, dependiendo
+del gancho involucrado.
 
-\section{Hooks and security}
+\section{Ganchos y seguridad}
 
-\subsection{Hooks are run with your privileges}
+\subsection{Los ganchos se ejecutan con sus privilegios de usuario}
 
-When you run a Mercurial command in a repository, and the command
-causes a hook to run, that hook runs on \emph{your} system, under
-\emph{your} user account, with \emph{your} privilege level.  Since
-hooks are arbitrary pieces of executable code, you should treat them
-with an appropriate level of suspicion.  Do not install a hook unless
-you are confident that you know who created it and what it does.
+Cuando usted ejecuta un comando de Mercurial en un repositorio, y el
+comando causa la ejecución de un gancho, dicho gancho se ejecuta en
+\emph{su} sistema, en \emph{su} cuenta de usuario, con \emph{sus}
+privilegios. Ya que los ganchos son elementos arbitrarios de código
+ejecutable, usted debería tratarlos con un nivel adecuado de
+desconfianza. No instale un gancho a menos en que confíe en quien lo
+creó y en lo que el gancho hace.
 
-In some cases, you may be exposed to hooks that you did not install
-yourself.  If you work with Mercurial on an unfamiliar system,
-Mercurial will run hooks defined in that system's global \hgrc\ file.
+En algunos casos, usted puede estar expuesto a ganchos que usted no
+%TODO acá introduzco algo de texto por mi cuenta, por claridad
+instaló. Si usted usa Mercurial en un sistema extraño, tenga en cuenta
+que Mercurial ejecutará los ganchos definidos en el fichero \hgrc.
 
-If you are working with a repository owned by another user, Mercurial
-can run hooks defined in that user's repository, but it will still run
-them as ``you''.  For example, if you \hgcmd{pull} from that
-repository, and its \sfilename{.hg/hgrc} defines a local
-\hook{outgoing} hook, that hook will run under your user account, even
-though you don't own that repository.
+Si está trabajando con un repositorio propiedad de otro usuario,
+Mercurial podrá ejecutar los ganchos definidos en el repositorio de
+dicho usuario, pero los ejecutará como ``usted''. Por ejemplo, si
+usted jala (\hgcmd{pull}) desde ese repositorio, y el
+\sfilename{.hg/hgrc} define un gancho saliente (\hook{outgoing}),
+dicho gancho se ejecuta bajo su cuenta de usuario, aun cuando usted no
+es el propietario del repositorio.
 
 \begin{note}
-  This only applies if you are pulling from a repository on a local or
-  network filesystem.  If you're pulling over http or ssh, any
-  \hook{outgoing} hook will run under whatever account is executing
-  the server process, on the server.
+  Esto sólo aplica si usted está jalando desde un repositorio en un
+  sistema de ficheros local o de red. Si está jalando a través de http
+  o ssh, cualquier gancho saliente (\hook{outgoing}) se ejecutará bajo
+  la cuenta que está ejecutando el proceso servidor, en el servidor.
 \end{note}
 
-XXX To see what hooks are defined in a repository, use the
-\hgcmdargs{config}{hooks} command.  If you are working in one
-repository, but talking to another that you do not own (e.g.~using
-\hgcmd{pull} or \hgcmd{incoming}), remember that it is the other
-repository's hooks you should be checking, not your own.
+XXX Para ver qué ganchos han sido definidos en un repositorio, use el
+comando \hgcmdargs{config}{hooks}. Si usted está trabajando en un
+repositorio, pero comunicándose con otro que no le pertenece
+(por ejemplo, usando \hgcmd{pull} o \hgcmd{incoming}), recuerde que
+los ganchos que debe considerar son los del otro repositorio, no los
+del suyo.
 
-\subsection{Hooks do not propagate}
+\subsection{Los ganchos no se propagan}
 
-In Mercurial, hooks are not revision controlled, and do not propagate
-when you clone, or pull from, a repository.  The reason for this is
-simple: a hook is a completely arbitrary piece of executable code.  It
-runs under your user identity, with your privilege level, on your
-machine.
+En Mercurial, no se hace control de revisiones de los ganchos, y no se
+propagan cuando usted clona, o jala de, un repositorio. El motivo para
+esto es simple: un gancho es código ejecutable arbitrario. Se ejecuta
+bajo su identidad, con su nivel de privilegios, en su máquina.
 
-It would be extremely reckless for any distributed revision control
-system to implement revision-controlled hooks, as this would offer an
-easily exploitable way to subvert the accounts of users of the
-revision control system.
+Sería extremadamente descuidado de parte de cualquier sistema
+distribuido de control de revisiones el implementar control de
+revisiones para ganchos, ya que esto ofrecería maneras fácilmente
+%TODO subvertir
+aprovechables de subvertir las cuentas de los usuarios del sistema de
+control de revisiones.
 
-Since Mercurial does not propagate hooks, if you are collaborating
-with other people on a common project, you should not assume that they
-are using the same Mercurial hooks as you are, or that theirs are
-correctly configured.  You should document the hooks you expect people
-to use.
+Ya que Mercurial no propaga los ganchos, si usted está colaborando con
+otras personas en un proyecto común, no debería asumir que ellos están
+usando los mismos ganchos para Mercurial que usted usa, o que los de
+ellos están configurado correctamente. Usted debería documentar los
+ganchos que usted espera que la gente use.
 
 In a corporate intranet, this is somewhat easier to control, as you
 can for example provide a ``standard'' installation of Mercurial on an
