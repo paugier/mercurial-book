@@ -694,47 +694,52 @@ escritura para otros.
   chmod 755 ~/public_html
 \end{codesample2}
 
-\subsubsection{What could \emph{possibly} go wrong?}
+\subsubsection{¿Qué \emph{podría} resultar mal?}
 \label{sec:collab:wtf}
 
-Once you've copied the CGI script into place, go into a web browser,
-and try to open the URL \url{http://myhostname/~myuser/hgweb.cgi},
-\emph{but} brace yourself for instant failure.  There's a high
-probability that trying to visit this URL will fail, and there are
-many possible reasons for this.  In fact, you're likely to stumble
-over almost every one of the possible errors below, so please read
-carefully.  The following are all of the problems I ran into on a
-system running Fedora~7, with a fresh installation of Apache, and a
-user account that I created specially to perform this exercise.
+Cuando haya ubicado el CGI en el sitio correspondiente con un navegador
+intente visitar el URL \url{http://myhostname/~myuser/hgweb.cgi},
+\emph{sin} dejarse abatir por un error.  Hay una alta probabilidad de
+que esta primera visita al URL sea fallida, y hay muchas razones posibles
+para este comportamiento.  De hecho, podría toparse con cada uno de los
+errores que describimos a continuación, así que no deje de leerlos
+cuidadosamente.   A continuación presento los problemas que yo tuve en
+un sistema con Fedora~7, con una instalación nueva de Apache, y una
+cuenta de usuario que creé específicamente para desarrollar este
+ejercicio.
 
-Your web server may have per-user directories disabled.  If you're
-using Apache, search your config file for a \texttt{UserDir}
-directive.  If there's none present, per-user directories will be
-disabled.  If one exists, but its value is \texttt{disabled}, then
-per-user directories will be disabled.  Otherwise, the string after
-\texttt{UserDir} gives the name of the subdirectory that Apache will
-look in under your home directory, for example \dirname{public\_html}.
+Su servidor web puede tener directorios por usuario deshabilitados. Si
+usa Apache, busque el fichero de configuración que contenga la
+directiva \texttt{UserDir}.  Si no está presente en sitio alguno, los
+directorios por usuario están deshabilitados.  Si la hay, pero su
+valor es \texttt{disabled}, los directorios por usuario estarán
+deshabilitados. La directiva \texttt{UserDir} en caso contrario tendrá
+el nombre del subdirectorio bajo el cual Apache mirará en el
+directorio de cada usuario, por ejemplo \dirname{public\_html}.
 
-Your file access permissions may be too restrictive.  The web server
-must be able to traverse your home directory and directories under
-your \dirname{public\_html} directory, and read files under the latter
-too.  Here's a quick recipe to help you to make your permissions more
-appropriate.
+Los permisos de sus ficheros pueden ser demasiado restrictivos.  El
+servidor web debe poder recorrer su directorio personal y los
+directorios que estén bajo \dirname{public\_html}, además de tener
+permiso para leer aquellos que estén adentro.  A continúación una
+receta rápida para hacer que sus permisos estén acordes con las
+necesidades básicas.
 \begin{codesample2}
   chmod 755 ~
   find ~/public_html -type d -print0 | xargs -0r chmod 755
   find ~/public_html -type f -print0 | xargs -0r chmod 644
 \end{codesample2}
 
-The other possibility with permissions is that you might get a
-completely empty window when you try to load the script.  In this
-case, it's likely that your access permissions are \emph{too
-  permissive}.  Apache's \texttt{suexec} subsystem won't execute a
-script that's group-~or world-writable, for example.
+Otra posibilidad con los permisos es que obtenga una ventana
+completamente en blanco cuando trata de cargar el script. En cuyo
+caso, es posible que los permisos que tiene son \emph{demasiado
+ permisivos}.  El subsistema \texttt{suexec} de Apache no ejecutará un
+script que tenga permisos de escritura para el group o el planeta, por
+ejemplo.
 
-Your web server may be configured to disallow execution of CGI
-programs in your per-user web directory.  Here's Apache's
-default per-user configuration from my Fedora system.
+Su servidor web puede estar configurado para evitar la ejecución de
+programas CGI en los directorios de usuario.  A continuación presento
+una configuración predeterminada por usuario en mi sistema Fedora.
+
 \begin{codesample2}
   <Directory /home/*/public_html>
       AllowOverride FileInfo AuthConfig Limit
@@ -749,38 +754,38 @@ default per-user configuration from my Fedora system.
       </LimitExcept>
   </Directory>
 \end{codesample2}
-If you find a similar-looking \texttt{Directory} group in your Apache
-configuration, the directive to look at inside it is \texttt{Options}.
-Add \texttt{ExecCGI} to the end of this list if it's missing, and
-restart the web server.
+Si encuentra un grupo de instrucciones de \texttt{Directory} similares
+en su configuración de Apache,  la directiva a revisar es \texttt{Options}.
+Adicione \texttt{ExecCGI} al final de esta lista en caso de que haga
+falta y reinicie su servidor web.
 
-If you find that Apache serves you the text of the CGI script instead
-of executing it, you may need to either uncomment (if already present)
-or add a directive like this.
+Si resulta que Apache le muestra el texto del script CGI en lugar de
+ejecutarlo, necesitará o bien descomentar(si se encuentra presente) o
+adicionar una directiva como la siguiente:
 \begin{codesample2}
   AddHandler cgi-script .cgi
 \end{codesample2}
 
-The next possibility is that you might be served with a colourful
-Python backtrace claiming that it can't import a
-\texttt{mercurial}-related module.  This is actually progress!  The
-server is now capable of executing your CGI script.  This error is
-only likely to occur if you're running a private installation of
-Mercurial, instead of a system-wide version.  Remember that the web
-server runs the CGI program without any of the environment variables
-that you take for granted in an interactive session.  If this error
-happens to you, edit your copy of \sfilename{hgweb.cgi} and follow the
-directions inside it to correctly set your \envar{PYTHONPATH}
-environment variable.
+Otra posibilidad es que observe una traza de Python en colores
+informando que no puede importar un módulo relacionado con
+\texttt{mercurial}.  Esto es un gran progreso!  El servidor es capaz
+de ejecutar su script CGI.  Este error solamente ocurrirá si está
+ejecutando una instalación privada de Mercurial en lugar de una
+instalación para todo el sistema.  Recuerde que el servidor que
+ejecuta el programa CGI no cuenta con variables de ambiente de las
+cuales usted si dispone en una sesión interactiva.  Si este error le
+ocurre, edite su copia de \sfilename{hgweb.cgi} y siga las indicaciones
+dentro del mismo para establecer de forma adecuada su variable de
+ambiente \envar{PYTHONPATH}.
 
-Finally, you are \emph{certain} to by served with another colourful
-Python backtrace: this one will complain that it can't find
-\dirname{/path/to/repository}.  Edit your \sfilename{hgweb.cgi} script
-and replace the \dirname{/path/to/repository} string with the complete
-path to the repository you want to serve up.
+Finalmente, si encuentra \emph{otra} traza a todo color de Python al visitar
+el URL: Esta seguramente se referirá a que no puede encontrar
+\dirname{/path/to/repository}.  Edite su script \sfilename{hgweb.cgi}
+y reemplaze la cadena \dirname{/path/to/repository} con la ruta
+completa al repositorio que desea servir.
 
-At this point, when you try to reload the page, you should be
-presented with a nice HTML view of your repository's history.  Whew!
+En este punto, cuando trate de recargar la página, deberá visualizar
+una linda vista HTML de la historia de su repositorio. Uff!
 
 \subsubsection{Configuring lighttpd}
 
