@@ -787,180 +787,182 @@ completa al repositorio que desea servir.
 En este punto, cuando trate de recargar la página, deberá visualizar
 una linda vista HTML de la historia de su repositorio. Uff!
 
-\subsubsection{Configuring lighttpd}
+\subsubsection{Configuración de lighttpd}
 
-To be exhaustive in my experiments, I tried configuring the
-increasingly popular \texttt{lighttpd} web server to serve the same
-repository as I described with Apache above.  I had already overcome
-all of the problems I outlined with Apache, many of which are not
-server-specific.  As a result, I was fairly sure that my file and
-directory permissions were good, and that my \sfilename{hgweb.cgi}
-script was properly edited.
+En mi intención de ser exhaustivo, intenté configurar
+\texttt{lighttpd}, un servidor web con creciente aceptación, para
+servir los repositorios de la misma forma como lo describí
+anteriormente con Apache. Después de superar los problemas que mostré
+con Apache, muchos de los cuáles no son específicos del servidor.  Por
+lo tanto estaba seguro de que mis permisos para directorios y ficheros
+eran correctos y que mi guión \sfilename{hgweb.cgi} también lo era.
 
-Once I had Apache running, getting \texttt{lighttpd} to serve the
-repository was a snap (in other words, even if you're trying to use
-\texttt{lighttpd}, you should read the Apache section).  I first had
-to edit the \texttt{mod\_access} section of its config file to enable
-\texttt{mod\_cgi} and \texttt{mod\_userdir}, both of which were
-disabled by default on my system.  I then added a few lines to the end
-of the config file, to configure these modules.
+Dado que ya Apache estaba en ejecución correctamente, lograr que
+\texttt{lighttpd} sirviera mi repositorio fue rápido(en otras
+palabras, si está tratando de usar \texttt{lighttpd}, debe leer la
+sección de Apache).  Primero tuve que editar la sección
+\texttt{mod\_access} para habilitar \texttt{mod\_cgi} y
+\texttt{mod\_userdir}, los cuales estaban inhabilitados en mi
+instalación predeterminada.  Añadí posteriormente unas líneas al final
+del fichero de configuración, para hacer lo propio con los módulos.
 \begin{codesample2}
   userdir.path = "public_html"
   cgi.assign = ( ".cgi" => "" )
 \end{codesample2}
-With this done, \texttt{lighttpd} ran immediately for me.  If I had
-configured \texttt{lighttpd} before Apache, I'd almost certainly have
-run into many of the same system-level configuration problems as I did
-with Apache.  However, I found \texttt{lighttpd} to be noticeably
-easier to configure than Apache, even though I've used Apache for over
-a decade, and this was my first exposure to \texttt{lighttpd}.
+Hecho esto, \texttt{lighttpd} funcionó inmediatamente para
+mí. Configuré \texttt{lighttpd} antes que Apache, tuve casi los mismos
+reparos a nivel de configuración del sistema que con Apache.  De todas
+maneras, considero que \texttt{lighttpd} es bastante más sencillo de
+configurar que Apache, a pesar de haber usado Apache por lo menos por
+una década, y esta fue mi primera experiencia con \texttt{lighttpd}.
 
-\subsection{Sharing multiple repositories with one CGI script}
+\subsection{Compartir varios repositorios con un script CGI}
 
-The \sfilename{hgweb.cgi} script only lets you publish a single
-repository, which is an annoying restriction.  If you want to publish
-more than one without wracking yourself with multiple copies of the
-same script, each with different names, a better choice is to use the
-\sfilename{hgwebdir.cgi} script.
+El guión \sfilename{hgweb.cgi} permite publicar únicamente un
+repositorio, una restricción frustrante.  Si desea publicar más de uno
+sin complicarse con varias copias del mismo guión, cada una con un
+nombre distinto, resulta mucho mejor usar el guión
+\sfilename{hgwebdir.cgi}.
 
-The procedure to configure \sfilename{hgwebdir.cgi} is only a little
-more involved than for \sfilename{hgweb.cgi}.  First, you must obtain
-a copy of the script.  If you don't have one handy, you can download a
-copy from the master Mercurial repository at
+El procedimiento para configurar \sfilename{hgwebdir.cgi} tiene una
+porción adicional frente al trabajo requerido con
+\sfilename{hgweb.cgi}.  Primero se debe obtener una copia del
+guión. Si no tiene una a mano, puede descargar una copia del ftp
+principal del repositorio de Mercurial en
 \url{http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi}.
 
-You'll need to copy this script into your \dirname{public\_html}
-directory, and ensure that it's executable.
+Necesitará una copia del guión en su directorio \dirname{public\_html},
+y asegurarse de que sea ejecutable.
 \begin{codesample2}
   cp .../hgwebdir.cgi ~/public_html
   chmod 755 ~/public_html ~/public_html/hgwebdir.cgi
 \end{codesample2}
-With basic configuration out of the way, try to visit
-\url{http://myhostname/~myuser/hgwebdir.cgi} in your browser.  It
-should display an empty list of repositories.  If you get a blank
-window or error message, try walking through the list of potential
-problems in section~\ref{sec:collab:wtf}.
+Con la configuración básica, intente visitar en su navegador
+\url{http://myhostname/~myuser/hgwebdir.cgi}.  Debería mostar una
+lista vacía de repositorios.  Si obtiene una ventana en blanco o un
+mensaje de error, verifique la lista de problemas potenciales en la 
+sección~\ref{sec:collab:wtf}.
 
-The \sfilename{hgwebdir.cgi} script relies on an external
-configuration file.  By default, it searches for a file named
-\sfilename{hgweb.config} in the same directory as itself.  You'll need
-to create this file, and make it world-readable.  The format of the
-file is similar to a Windows ``ini'' file, as understood by Python's
-\texttt{ConfigParser}~\cite{web:configparser} module.
+El guión \sfilename{hgwebdir.cgi} se apoya en un fichero externo de
+configuración.  En principio, busca un fichero llamado
+\sfilename{hgweb.config} en el mismo directorio.  Tendrá que crear el
+fichero, y permitir lectura de todo el mundo.  El formato del fichero
+es similar a un fichero ``ini'' de Windows, que puede interpretar el módulo
+\texttt{ConfigParser}~\cite{web:configparser} de Python.
 
-The easiest way to configure \sfilename{hgwebdir.cgi} is with a
-section named \texttt{collections}.  This will automatically publish
-\emph{every} repository under the directories you name.  The section
-should look like this:
+La forma más sencilla de configurar \sfilename{hgwebdir.cgi} es con
+una sección llamada \texttt{collections}.  Esta publicará automáticamente
+\emph{todos} los repositorios en los directorios que usted
+especifique.  La sección debería lucir así:
 \begin{codesample2}
   [collections]
-  /my/root = /my/root
+  /mi/ruta = /mi/ruta
 \end{codesample2}
-Mercurial interprets this by looking at the directory name on the
-\emph{right} hand side of the ``\texttt{=}'' sign; finding
-repositories in that directory hierarchy; and using the text on the
-\emph{left} to strip off matching text from the names it will actually
-list in the web interface.  The remaining component of a path after
-this stripping has occurred is called a ``virtual path''.
+Mercurial lo interpreta buscando el nombre del directorio que esté a la
+\emph{derecha} del símbolo ``\texttt{=}''; encontrando repositorios en
+la jerarquía de directorios; y usando el texto a la \emph{izquierda}
+para eliminar el texto de los nombres que mostrará en la interfaz
+web.  El componente restante de la ruta después de esta eliminación
+usualmente se llama ``ruta virtual''.
 
-Given the example above, if we have a repository whose local path is
-\dirname{/my/root/this/repo}, the CGI script will strip the leading
-\dirname{/my/root} from the name, and publish the repository with a
-virtual path of \dirname{this/repo}.  If the base URL for our CGI
-script is \url{http://myhostname/~myuser/hgwebdir.cgi}, the complete
-URL for that repository will be
+Dado el ejemplo de arriba, si tenemos un repositorio cuya ruta local es
+\dirname{/mi/ruta/este/repo}, el guión CGI eliminará la porción inicial
+\dirname{/mi/ruta} del nombre y publicará el repositorio con una ruta
+virtual \dirname{este/repo}.  Si el URL base de nuestro guión CGI es
+\url{http://myhostname/~myuser/hgwebdir.cgi}, el URL completo al
+repositorio será
 \url{http://myhostname/~myuser/hgwebdir.cgi/this/repo}.
 
-If we replace \dirname{/my/root} on the left hand side of this example
-with \dirname{/my}, then \sfilename{hgwebdir.cgi} will only strip off
-\dirname{/my} from the repository name, and will give us a virtual
-path of \dirname{root/this/repo} instead of \dirname{this/repo}.
+Si reemplazamos \dirname{/mi/ruta} en el lado izquierdo de este
+ejemplo con \dirname{/mi}, \sfilename{hgwebdir.cgi} eliminará solamente
+\dirname{/mi} del nombre del repositorio, y nos ofrecerá la ruta
+virtual \dirname{ruta/este/repo} en lugar de \dirname{este/repo}.
 
-The \sfilename{hgwebdir.cgi} script will recursively search each
-directory listed in the \texttt{collections} section of its
-configuration file, but it will \texttt{not} recurse into the
-repositories it finds.
+El guión \sfilename{hgwebdir.cgi} buscará recursivamente en cada
+directorio listado en la sección \texttt{collections} de su archivo de
+configuración, pero \texttt{no} hará el recorrido recursivo dentro de
+los repositorios que encuentre.
 
-The \texttt{collections} mechanism makes it easy to publish many
-repositories in a ``fire and forget'' manner.  You only need to set up
-the CGI script and configuration file one time.  Afterwards, you can
-publish or unpublish a repository at any time by simply moving it
-into, or out of, the directory hierarchy in which you've configured
-\sfilename{hgwebdir.cgi} to look.
+El mecanismo de \texttt{collections} permite publicar fácilmente
+repositorios de una forma ``hacer y olvidar''.  Solamente requiere
+configurar el guión CGI y el archivo de configuración una vez.
+Después de eso puede publicar y sacar de publicación un repositorio en
+cualquier momento incluyéndolo o excluyéndolo de la jerarquía de
+directorios en la cual le haya indicado a \sfilename{hgwebdir.cgi} que
+mirase.
 
-\subsubsection{Explicitly specifying which repositories to publish}
+\subsubsection{Especificación explícita de los repositorios a publicar}
 
-In addition to the \texttt{collections} mechanism, the
-\sfilename{hgwebdir.cgi} script allows you to publish a specific list
-of repositories.  To do so, create a \texttt{paths} section, with
-contents of the following form.
+Además del mecanismo \texttt{collections}, el guión
+\sfilename{hgwebdir.cgi} le permite publicar una lista específica de
+repositorios.  Para hacerlo, cree una sección \texttt{paths}, con los
+contenidos de la siguiente forma:
 \begin{codesample2}
   [paths]
-  repo1 = /my/path/to/some/repo
-  repo2 = /some/path/to/another
+  repo1 = /mi/ruta/a/un/repo
+  repo2 = /ruta/a/otro/repo
 \end{codesample2}
-In this case, the virtual path (the component that will appear in a
-URL) is on the left hand side of each definition, while the path to
-the repository is on the right.  Notice that there does not need to be
-any relationship between the virtual path you choose and the location
-of a repository in your filesystem.
+En este caso, la ruta virtual (el componente que aparecerá en el URL)
+está en el lado derecho de cada definición, mientras que la ruta al
+repositorio está a la derecha.  Note que no tiene que haber relación
+alguna entre la ruta virtual que elija y el lugar del repositorio en
+su sistema de archivos.
 
-If you wish, you can use both the \texttt{collections} and
-\texttt{paths} mechanisms simultaneously in a single configuration
-file.
+Si lo desea, puede usar los dos mecanismos \texttt{collections} y
+\texttt{paths} simultáneamente en un sólo archivo de configuración.
 
 \begin{note}
-  If multiple repositories have the same virtual path,
-  \sfilename{hgwebdir.cgi} will not report an error.  Instead, it will
-  behave unpredictably.
+  Si varios repositorios tienen la misma ruta virtual,
+  \sfilename{hgwebdir.cgi} no reportará error.  Pero se comportará
+  impredeciblemente.
 \end{note}
 
-\subsection{Downloading source archives}
+\subsection{Descarga de ficheros fuente}
 
-Mercurial's web interface lets users download an archive of any
-revision.  This archive will contain a snapshot of the working
-directory as of that revision, but it will not contain a copy of the
-repository data.
+La interfaz web de Mercurial permite a los ususarios descargar
+un conjunto de cualquier revisión.  Este fichero contendrá una réplica
+del directorio de trabajo en la revisión en cuestión, pero no
+contendrá una copia de los datos del repositorio.
 
-By default, this feature is not enabled.  To enable it, you'll need to
-add an \rcitem{web}{allow\_archive} item to the \rcsection{web}
-section of your \hgrc.
+De forma predeterminada esta característica no está habilitada.  Para
+lograrlo adicione un \rcitem{web}{allow\_archive} a la sección \rcsection{web}
+de su fichero \hgrc.
 
-\subsection{Web configuration options}
+\subsection{Opciones de configuración en Web}
 
-Mercurial's web interfaces (the \hgcmd{serve} command, and the
-\sfilename{hgweb.cgi} and \sfilename{hgwebdir.cgi} scripts) have a
-number of configuration options that you can set.  These belong in a
-section named \rcsection{web}.
+Las interfaces web de Mercurial(la orden \hgcmd{serve}, y los guiones
+\sfilename{hgweb.cgi} y \sfilename{hgwebdir.cgi}) tienen varias
+opciones de configuración para establecer. Todas ellas en la sección
+\rcsection{web}.
 \begin{itemize}
-\item[\rcitem{web}{allow\_archive}] Determines which (if any) archive
-  download mechanisms Mercurial supports.  If you enable this
-  feature, users of the web interface will be able to download an
-  archive of whatever revision of a repository they are viewing.
-  To enable the archive feature, this item must take the form of a
-  sequence of words drawn from the list below.
+\item[\rcitem{web}{allow\_archive}] Determina cuáles tipos de archivos
+  de descarga soportará Mercurial.  Si habilita esta característica,
+  los usuarios de la interfaz web podrán descargar una copia de la
+  revisión del repositorio que estén viendo. Para activar la
+  característica de descarga de fichero, el valor tendrá una secuencia
+  de palabras extraídas de la lista de abajo.
   \begin{itemize}
-  \item[\texttt{bz2}] A \command{tar} archive, compressed using
-    \texttt{bzip2} compression.  This has the best compression ratio,
-    but uses the most CPU time on the server.
-  \item[\texttt{gz}] A \command{tar} archive, compressed using
-    \texttt{gzip} compression.
-  \item[\texttt{zip}] A \command{zip} archive, compressed using LZW
-    compression.  This format has the worst compression ratio, but is
-    widely used in the Windows world.
+  \item[\texttt{bz2}] Un fichero \command{tar} con el método de
+    compresión \texttt{bzip2}.  Tiene la mejor taza de compresión,
+    pero usa más tiempo de procesamiento en el servidor.
+  \item[\texttt{gz}] Un fichero \command{tar}, comprimido con
+    \texttt{gzip}.
+  \item[\texttt{zip}] Un fichero \command{zip}, comprimido con LZW.
+    Este formato posee la peor tasa de compresió, pero es muy usado en
+    el mundo Windows.
   \end{itemize}
-  If you provide an empty list, or don't have an
-  \rcitem{web}{allow\_archive} entry at all, this feature will be
-  disabled.  Here is an example of how to enable all three supported
-  formats.
+  Si da una lista vacía o no tiene la entrada
+  \rcitem{web}{allow\_archive}, esta característica se deshabilitará.
+  A continuación un ejemplo de cómo habilitar los tres formatos soportados.
   \begin{codesample4}
     [web]
     allow_archive = bz2 gz zip
   \end{codesample4}
-\item[\rcitem{web}{allowpull}] Boolean.  Determines whether the web
-  interface allows remote users to \hgcmd{pull} and \hgcmd{clone} this
-  repository over~HTTP.  If set to \texttt{no} or \texttt{false}, only
-  the ``human-oriented'' portion of the web interface is available.
+\item[\rcitem{web}{allowpull}] Booleano.  Determina si la interfaz web
+  permite a los usuarios remotos emplear \hgcmd{pull} y \hgcmd{clone}
+  sobre el repositorio~HTTP.  Si se coloca \texttt{no} o
+  \texttt{false}, solamente la porción de los procesos
+  ``human-oriented'' se habilita de la interfaz web.
 \item[\rcitem{web}{contact}] String.  A free-form (but preferably
   brief) string identifying the person or group in charge of the
   repository.  This often contains the name and email address of a
