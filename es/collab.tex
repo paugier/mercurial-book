@@ -962,92 +962,95 @@ opciones de configuración para establecer. Todas ellas en la sección
   permite a los usuarios remotos emplear \hgcmd{pull} y \hgcmd{clone}
   sobre el repositorio~HTTP.  Si se coloca \texttt{no} o
   \texttt{false}, solamente la porción de los procesos
-  ``human-oriented'' se habilita de la interfaz web.
-\item[\rcitem{web}{contact}] String.  A free-form (but preferably
-  brief) string identifying the person or group in charge of the
-  repository.  This often contains the name and email address of a
-  person or mailing list.  It often makes sense to place this entry in
-  a repository's own \sfilename{.hg/hgrc} file, but it can make sense
-  to use in a global \hgrc\ if every repository has a single
-  maintainer.
-\item[\rcitem{web}{maxchanges}] Integer.  The default maximum number
-  of changesets to display in a single page of output.
-\item[\rcitem{web}{maxfiles}] Integer.  The default maximum number
-  of modified files to display in a single page of output.
-\item[\rcitem{web}{stripes}] Integer.  If the web interface displays
-  alternating ``stripes'' to make it easier to visually align rows
-  when you are looking at a table, this number controls the number of
-  rows in each stripe.
-\item[\rcitem{web}{style}] Controls the template Mercurial uses to
-  display the web interface.  Mercurial ships with two web templates,
-  named \texttt{default} and \texttt{gitweb} (the latter is much more
-  visually attractive).  You can also specify a custom template of
-  your own; see chapter~\ref{chap:template} for details.  Here, you
-  can see how to enable the \texttt{gitweb} style.
+  ``orientados-a-humanos'' se habilita de la interfaz web.
+\item[\rcitem{web}{contact}] Cadena.  Una cadena en forma libre(pero
+  preferiblemente corta) que identifica a la persona o grupo a cargo
+  del repositorio.  Usualmente contiene el nombre y la dirección de
+  correo electrónico de una persona o de una lista de correo.  Aveces
+  tiene sentido colocar esta opción en el fichero \sfilename{.hg/hgrc}
+  del repositorio, pero en otras oportunidades en el \hgrc\ global si
+  todos los repositorios tienen un único mantenedor.
+\item[\rcitem{web}{maxchanges}] Entero.  La cantidad máxima de
+  conjuntos de cambios a mostrar de forma predeterminada en cada página.
+\item[\rcitem{web}{maxfiles}] Entero.  La cantidad máxima
+  predeterminada de ficheros modificados a desplegar en una página.
+\item[\rcitem{web}{stripes}] Entero.  Si la interfaz web despliega
+  ``franjas'' para facilitar la visualización alineada de filas cuando
+  se ve una tabla, este valor controla la cantidad de filas en cada
+  franja.
+\item[\rcitem{web}{style}] Controla la plantilla que Mercurial usa para
+  desplegar la interfaz web.  Mercurial viene con dos plantillas web,
+  llamadas \texttt{default} y \texttt{gitweb} (La primera es
+  visualmente más atractiva).  Puede especificar una plantilla propia;
+  consulte el capítulo~\ref{chap:template}.  A continuación mostramos
+  cómo habilitar el estilo \texttt{gitweb}.
   \begin{codesample4}
     [web]
     style = gitweb
   \end{codesample4}
-\item[\rcitem{web}{templates}] Path.  The directory in which to search
-  for template files.  By default, Mercurial searches in the directory
-  in which it was installed.
+\item[\rcitem{web}{templates}] Ruta.  Directorio en el que se buscarán
+  los archivos plantilla.  De forma predeterminada, busca en el
+  directorio en el cual fue instalado.
 \end{itemize}
-If you are using \sfilename{hgwebdir.cgi}, you can place a few
-configuration items in a \rcsection{web} section of the
-\sfilename{hgweb.config} file instead of a \hgrc\ file, for
-convenience.  These items are \rcitem{web}{motd} and
+Si usa \sfilename{hgwebdir.cgi}, puede añadir otras opciones de
+configuración en una sección \section{web} del fichero
+\sfilename{hgweb.config} en lugar del fichero \hgrc\, si lo considera
+más conveniente.  Estas opciones son \rcitem{web}{motd} y
 \rcitem{web}{style}.
 
-\subsubsection{Options specific to an individual repository}
+\subsubsection{Opciones específicas para repositorios individuales}
 
-A few \rcsection{web} configuration items ought to be placed in a
-repository's local \sfilename{.hg/hgrc}, rather than a user's or
-global \hgrc.
+Ciertas opciones de configuración de \rcsection{web} deben estar
+ubicadas en el \sfilename{.hg/hgrc} de un repositorio en lugar del
+fichero del usuario o el \hgrc global.
 \begin{itemize}
-\item[\rcitem{web}{description}] String.  A free-form (but preferably
-  brief) string that describes the contents or purpose of the
-  repository.
-\item[\rcitem{web}{name}] String.  The name to use for the repository
-  in the web interface.  This overrides the default name, which is the
-  last component of the repository's path.
+\item[\rcitem{web}{description}] Cadena.  Una cadena de forma
+  libre(preferiblemente corta) que describa los contenidos o el
+  propósito del repositorio.
+\item[\rcitem{web}{name}] Cadena.  El nombre para visualizar en la
+  interfaz web del repositorio. Sustituye el nombre predeterminado, el
+  cual es el último componente de la ruta del repositorio.
 \end{itemize}
 
-\subsubsection{Options specific to the \hgcmd{serve} command}
+\subsubsection{Opciones específicas a la orden \hgcmd{serve}}
 
-Some of the items in the \rcsection{web} section of a \hgrc\ file are
-only for use with the \hgcmd{serve} command.
+Algunas opciones en la sección \rcsection{web} de un fichero \hgrc\
+son de uso exclusivo para la orden \hgcmd{serve}.
 \begin{itemize}
-\item[\rcitem{web}{accesslog}] Path.  The name of a file into which to
-  write an access log.  By default, the \hgcmd{serve} command writes
-  this information to standard output, not to a file.  Log entries are
-  written in the standard ``combined'' file format used by almost all
-  web servers.
-\item[\rcitem{web}{address}] String.  The local address on which the
-  server should listen for incoming connections.  By default, the
-  server listens on all addresses.
-\item[\rcitem{web}{errorlog}] Path.  The name of a file into which to
-  write an error log.  By default, the \hgcmd{serve} command writes this
-  information to standard error, not to a file.
-\item[\rcitem{web}{ipv6}] Boolean.  Whether to use the IPv6 protocol.
-  By default, IPv6 is not used. 
-\item[\rcitem{web}{port}] Integer.  The TCP~port number on which the
-  server should listen.  The default port number used is~8000.
+\item[\rcitem{web}{accesslog}] Ruta.  El nombre del fichero en el cual
+  se escribe la bitácora de acceso.  En principio, la orden
+  \hgcmd{serve} escribe esta información a la salida estándar, no a un
+  fichero. Las líneas de la bitácora se escriben en un formato de
+  fichero ``combinado'' estándar, usado por casi todos los servidores
+  web.
+\item[\rcitem{web}{address}] Cadena.  La dirección local en la cual el
+  servidor debe escuchar peticiones entrantes.  En principio, el
+  servidor escucha en todas las direcciones.
+\item[\rcitem{web}{errorlog}] Ruta.  El nombre de un fichero en el
+  cual escribir la bitácora de error.  En principio, la orden
+  \hgcmd{serve} escribe esta información en la salida de error
+  estándar, no a un fichero.
+\item[\rcitem{web}{ipv6}] Booleano.  Si se usa o no el protocolo
+  IPv6. En principio, IPv6 no se usa.
+\item[\rcitem{web}{port}] Entero.  El número del puerto~TCP en el cuál
+  el servidor escuchará.  El puerto predeterminado es el~8000.
 \end{itemize}
 
-\subsubsection{Choosing the right \hgrc\ file to add \rcsection{web}
-  items to}
+\subsubsection{Elegir el fichero \hgrc\ correcto para las
+  configuraciones de \rcsection{web}}
 
-It is important to remember that a web server like Apache or
-\texttt{lighttpd} will run under a user~ID that is different to yours.
-CGI scripts run by your server, such as \sfilename{hgweb.cgi}, will
-usually also run under that user~ID.
+Es importante recordar que un servidor web como Apache o
+\texttt{lighttpd} se ejecutarán bajo el usuario~ID que generalmente no
+es el suyo  Los guiones CGI ejecutados por su servidor, tales como
+\sfilename{hgweb.cgi}, se ejecutarán también con el usuario~ID.
 
-If you add \rcsection{web} items to your own personal \hgrc\ file, CGI
-scripts won't read that \hgrc\ file.  Those settings will thus only
-affect the behaviour of the \hgcmd{serve} command when you run it.  To
-cause CGI scripts to see your settings, either create a \hgrc\ file in
-the home directory of the user ID that runs your web server, or add
-those settings to a system-wide \hgrc\ file.
+Si añade opciones \rcsection{web} a su fichero personal \hgrc\, Los
+guiones CGI no leerán tal fichero \hgrc\.  Tales configuraciones
+solamente afectarán el comportamiento de la orden \hgcmd{serve} cuando
+usted lo ejecuta.  Para logar que los guiones CGI vean sus
+configuraciones, o bien cree un fichero \hgrc\ en el directorio hogar
+del usuario ID que ejecuta su servidor web, o añada tales
+configuraciones al fichero global \hgrc\.
 
 
 %%% Local Variables: 
