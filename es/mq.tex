@@ -4,217 +4,234 @@
 \section{El problema de la administración de parches}
 \label{sec:mq:patch-mgmt}
 
-Here is a common scenario: you need to install a software package from
-source, but you find a bug that you must fix in the source before you
-can start using the package.  You make your changes, forget about the
-package for a while, and a few months later you need to upgrade to a
-newer version of the package.  If the newer version of the package
-still has the bug, you must extract your fix from the older source
-tree and apply it against the newer version.  This is a tedious task,
-and it's easy to make mistakes.
+Un escenario frecuente: usted necesita instalar un paquete de software
+desde las fuentes, pero encuentra un fallo que debe arreglar antes de
+poder comenzar a usarlo.  Hace sus cambios, y se olvida del paquete
+por un tiempo, unos meses después necesita actualizar a una nueva
+versión del paquete.  Si la nueva versión del paquete todavía tiene el
+fallo, debe extraer su arreglo del árbol de fuentes anteriores y
+aplicarlo a la nueva versión.  Una tarea tediosa en la cual es fácil
+equivocarse.
 
-This is a simple case of the ``patch management'' problem.  You have
-an ``upstream'' source tree that you can't change; you need to make
-some local changes on top of the upstream tree; and you'd like to be
-able to keep those changes separate, so that you can apply them to
-newer versions of the upstream source.
+Este es un caso simple del problema del ``manejo de parches''.  Usted
+tiene un árbol de fuentes del ``mantenedor principal'' que no puede
+cambiar: necesita hacer algunos cambios locales sobre el árbol
+principal; y desearía poder mantener tales cambios separados, de forma
+tal que pueda aplicarlos a versiones más nuevas del árbol principal.
 
-The patch management problem arises in many situations.  Probably the
-most visible is that a user of an open source software project will
-contribute a bug fix or new feature to the project's maintainers in the
-form of a patch.
+El problema de administración de parches surge en muchas situaciones.
+Probablemente la más visible es cuando un usuario de un proyecto de
+software de fuentes abiertas contribuye con un arreglo de un fallo o
+una nueva característica a los mantenedores del proyecto en la forma
+de un parche.
 
-Distributors of operating systems that include open source software
-often need to make changes to the packages they distribute so that
-they will build properly in their environments.
+Aquellos que distribuyen sistemas operativos que incluyen programas
+abiertos usualmente requieren hacer cambios en los paquetes que
+distribuyen de tal forma que se armen apropiadamente en sus ambientes.
 
-When you have few changes to maintain, it is easy to manage a single
-patch using the standard \command{diff} and \command{patch} programs
-(see section~\ref{sec:mq:patch} for a discussion of these tools).
-Once the number of changes grows, it starts to make sense to maintain
-patches as discrete ``chunks of work,'' so that for example a single
-patch will contain only one bug fix (the patch might modify several
-files, but it's doing ``only one thing''), and you may have a number
-of such patches for different bugs you need fixed and local changes
-you require.  In this situation, if you submit a bug fix patch to the
-upstream maintainers of a package and they include your fix in a
-subsequent release, you can simply drop that single patch when you're
-updating to the newer release.
+Cuando hay pocos cambios por mantener, es muy sencillo administrar un
+solo parche con los programas estándar \command{diff} y
+\command{patch}( ver la sección~\ref{sec:mq:patch} para ver cómo
+emplear tales herramientas). Cuando la cantidad de cambios comienza a
+crecer, tiene sentido mantener parches como ``porciones de trabajo''
+individual, de forma que cada cambio contiene solamente un arreglo de
+un fallo(el parche puede modificar varios archivos, pero está
+``haciendo una sola cosa''), y puede tener cierta cantidad de tales
+parches para diferentes fallos y cambios locales.  En esta situación,
+si envía un parche que arregla un fallo a los mantenedores principales
+de un paquete y ellos incluyen su arreglo en una publicación
+posterior, puede deshacerse de tal parche cuando se actualice a la
+nueva versión.
 
-Maintaining a single patch against an upstream tree is a little
-tedious and error-prone, but not difficult.  However, the complexity
-of the problem grows rapidly as the number of patches you have to
-maintain increases.  With more than a tiny number of patches in hand,
-understanding which ones you have applied and maintaining them moves
-from messy to overwhelming.
+Mantener un solo parche frente a un árbol principal es algo tedioso y
+es fácil equivocarse, pero no es difícil.  Aunque, la complejidad del
+problema crece rápidamente a medida que la cantidad de parches que
+tiene que mantener crece.  Con más que una pequeña cantidad de
+cambios, entender cuáles ha aplicado se convierte de algo desordenado
+a algo avasallante.
 
-Fortunately, Mercurial includes a powerful extension, Mercurial Queues
-(or simply ``MQ''), that massively simplifies the patch management
-problem.
+Afortunadamente Mercurial provee una extensión poderos: Colas de
+Mercurial( o simplemente ``MQ''), que simplifica en gran medida el
+problema de administración de parches.
 
-\section{The prehistory of Mercurial Queues}
+\section{La prehistoria de las Colas de Mercurial}
 \label{sec:mq:history}
 
-During the late 1990s, several Linux kernel developers started to
-maintain ``patch series'' that modified the behaviour of the Linux
-kernel.  Some of these series were focused on stability, some on
-feature coverage, and others were more speculative.
+A finales de los 90s, muchos desarrolladores del núcleo de Linux
+comenzaron a mantener ``series de parches'' que modificaron el
+comportamiento del núcleo de Linux.  Algunos se enfocaban en
+estabilidad, otros en aumentar las características, y otros un poco
+más especulativos.
 
-The sizes of these patch series grew rapidly.  In 2002, Andrew Morton
-published some shell scripts he had been using to automate the task of
-managing his patch queues.  Andrew was successfully using these
-scripts to manage hundreds (sometimes thousands) of patches on top of
-the Linux kernel.
+Los tamaños de las series de parches crecieron rápidamente.  En el
+2002, Andrew Morton publicó algunos guiones de línea de órdenes que
+estuvo usando para automatizar la tarea de administrar su cola de
+parches.  Andrew usó exitósamente tales guiones para administrar
+centenas( aveces millares) de parches en el núcleo de Linux.
 
-\subsection{A patchwork quilt}
+\subsection{Trabajar parches con quilt}
 \label{sec:mq:quilt}
 
-In early 2003, Andreas Gruenbacher and Martin Quinson borrowed the
-approach of Andrew's scripts and published a tool called ``patchwork
-quilt''~\cite{web:quilt}, or simply ``quilt''
-(see~\cite{gruenbacher:2005} for a paper describing it).  Because
-quilt substantially automated patch management, it rapidly gained a
-large following among open source software developers.
+A comienzos del 2003, Andreas Gruenbacher y Martin Quinson tomaron la
+aproximación de los guiones de Andrew y publicaron una herramienta
+llamada
+``patchwork quilt''~\cite{web:quilt}, o simplemente ``quilt''
+(ver~\cite{gruenbacher:2005} el paper que lo describe).  Dado que
+quilt automatizaba sustancialmente la administración de parches, fue
+adoptado en gran medida por desarrolladores de programas abiertos.
 
-Quilt manages a \emph{stack of patches} on top of a directory tree.
-To begin, you tell quilt to manage a directory tree, and tell it which
-files you want to manage; it stores away the names and contents of
-those files.  To fix a bug, you create a new patch (using a single
-command), edit the files you need to fix, then ``refresh'' the patch.
+Quilt maneja una \emph{pila de parches} sobre un árbol de directorios.
+Para comenzar, usted le indica a quilt que administre un árbol de
+directorios, le indica qué archivos manejar; Este almacena los nombres
+y los contenidos de estos archivos.  Para arreglar un fallo, usted
+crea un nuevo parche(con una sola orden), edita los archivos que está
+arreglando y ``refresca'' el parche.
 
-The refresh step causes quilt to scan the directory tree; it updates
-the patch with all of the changes you have made.  You can create
-another patch on top of the first, which will track the changes
-required to modify the tree from ``tree with one patch applied'' to
-``tree with two patches applied''.
+El paso de refresco hace que quilt revise el árbol de directorios;
+actualiza el parche con todos los cambios que usted haya hecho.  Puede
+crear otro parche sobre el primero, que hará seguimiento de los
+cambios requeridos para modificar el árbol desde ``el árbol con un
+parch aplicado'' a un ``árbol con dos parches aplicados''.
 
-You can \emph{change} which patches are applied to the tree.  If you
-``pop'' a patch, the changes made by that patch will vanish from the
-directory tree.  Quilt remembers which patches you have popped,
-though, so you can ``push'' a popped patch again, and the directory
-tree will be restored to contain the modifications in the patch.  Most
-importantly, you can run the ``refresh'' command at any time, and the
-topmost applied patch will be updated.  This means that you can, at
-any time, change both which patches are applied and what
-modifications those patches make.
+Usted puede \emph{elegir} qué cambios desea aplicar al árbol.  Si
+``pop''\ndt{saca} un parche, los cambios hechos por tal parchve
+desapareceŕan del árbol de directorios.  Quilt recuerda qué parches ha
+sacado, para que pueda ``introducirlos''\ndt{push} posteriormente, así el
+árbol de directorios se restaurará con las modificaciones que vienen
+del parche.  Lo más importante es que puede ejecutar la orden
+``refresh'' en cualquier momento, y el último parche será
+actualizado.  Esto significa que puede, en cualquier momento, cambiar
+qué parches serán aplicados y qué modificaciones hacen ellos.
 
-Quilt knows nothing about revision control tools, so it works equally
-well on top of an unpacked tarball or a Subversion working copy.
+Quilt no tiene nada que ver con herramientas de control de versiones,
+y puede trabajar bien sobre un conjunto de fuentes que viene de un
+archivo comprimido y empaquetado o una copia de trabajo de Subversion.
 
-\subsection{From patchwork quilt to Mercurial Queues}
+\subsection{Pasar de trabajo con parches con Quilt hacia Colas de Mercurial}
 \label{sec:mq:quilt-mq}
 
-In mid-2005, Chris Mason took the features of quilt and wrote an
-extension that he called Mercurial Queues, which added quilt-like
-behaviour to Mercurial.
+A mediados de 2005, Chris Mason tomó las características de quilt y
+escribió una extensión que llamó Colas de Mercurial\ndt{Mercurial
+Queues}, que proporcionó un comportamiento a Mercurial al estilo
+quilt.
 
-The key difference between quilt and MQ is that quilt knows nothing
-about revision control systems, while MQ is \emph{integrated} into
-Mercurial.  Each patch that you push is represented as a Mercurial
-changeset.  Pop a patch, and the changeset goes away.
+La diferencia clave entre quilt y MQ es que quilt no sabe nada acerca
+del sistema de control de revisiones, mientras que MQ está
+\emph{integrado} con Mercurial.  Cada parche que usted introduce se
+representa como un conjunto de cambios en Mercurial.  Si sustrae un
+parche, el conjunto de cambios desaparece.\ndt{introduce originalmente es
+push y pop es sustraer en este contexto, usaremos el original en inglés
+cuando encontremos que facilita la comprensión}
 
-Because quilt does not care about revision control tools, it is still
-a tremendously useful piece of software to know about for situations
-where you cannot use Mercurial and MQ.
+Dado que quilt no se preocupa por las herramientas de control de
+revisiones, continúa siendo una porción de software tremendamente útil
+para aquellas situaciones en las cuales no puede usar Mercurial y MQ.
 
-\section{The huge advantage of MQ}
+\section{La gran ventaja de MQ}
 
-I cannot overstate the value that MQ offers through the unification of
-patches and revision control.
+No puedo sobreestimar el valor que MQ ofrece en la unificación de
+parches y el control de revisiones.
 
-A major reason that patches have persisted in the free software and
-open source world---in spite of the availability of increasingly
-capable revision control tools over the years---is the \emph{agility}
-they offer.  
+La principal razón por la cual los parches han persistido en el mundo
+del software libre y de fuentes abiertas--a pesar de la creciente
+disponibilidad de herramientas poderosas de control de revisiones-- es
+la \emph{agilidad} que ofrecen.
 
-Traditional revision control tools make a permanent, irreversible
-record of everything that you do.  While this has great value, it's
-also somewhat stifling.  If you want to perform a wild-eyed
-experiment, you have to be careful in how you go about it, or you risk
-leaving unneeded---or worse, misleading or destabilising---traces of
-your missteps and errors in the permanent revision record.
+Las herramientas tradicionales de control de revisiones llevan un
+registro permanente e irreversible de todo lo que usted hace.  A pesar
+de que esto tiene gran valor, también es bastante sutil.  Si requiere
+realizar un experimento ((((wild-eyed)))), debe ser cuidadoso en cómo
+lo hace, o puede dejar trazas innecesarias--o peor aún,
+desconcertantes o desestabilizantes--- de los pasos y errores en el
+registro de revisiones de forma permanente.
 
-By contrast, MQ's marriage of distributed revision control with
-patches makes it much easier to isolate your work.  Your patches live
-on top of normal revision history, and you can make them disappear or
-reappear at will.  If you don't like a patch, you can drop it.  If a
-patch isn't quite as you want it to be, simply fix it---as many times
-as you need to, until you have refined it into the form you desire.
+En contraste, con la cohesión de MQ con el control de revisiones
+distribuidos y los parches, resulta más sencillo aislar su trabajo.
+Sus parches viven encima de la historia de revisiones normales, y
+puede hacer que ellos desaparezcan o reaparezcan cuando lo desee.  Si
+no le gusta un parche, puede desecharlo.  Si un parche no satisface
+todo lo que usted desea, puede arreglarlo---tantas veces como lo
+requiera, hasta que lo haya refinado lo suficiente hacia sus
+expectativas.
 
-As an example, the integration of patches with revision control makes
-understanding patches and debugging their effects---and their
-interplay with the code they're based on---\emph{enormously} easier.
-Since every applied patch has an associated changeset, you can use
-\hgcmdargs{log}{\emph{filename}} to see which changesets and patches
-affected a file.  You can use the \hgext{bisect} command to
-binary-search through all changesets and applied patches to see where
-a bug got introduced or fixed.  You can use the \hgcmd{annotate}
-command to see which changeset or patch modified a particular line of
-a source file.  And so on.
+Por ejemplo, la integración de parches con el control de revisiones
+hace que el entender los parches y revisar sus efectos---y sus
+interacciones con el código en el cuál están enlazados--- sea
+\emph{mucho} más sencillo.  Dado que todo parche que se aplique tiene
+un conjunto de cambios asociado, puede usar
+\hgcmdargs{log}{\emph{filename}} para ver qué conjuntos de cambios y
+parches afectaron un fichero.  Puede usar la orden \hgext{bisect} para
+hacer una búsqueda binaria sobre todos los conjuntos de cambios y
+parches aplicados para ver dónde se introdujo un fallo o dónde fue
+arreglado.  Puede usar la orden \hgcmd{annotate} para ver qué
+conjuntos de cambios o parches modificaron una línea particular de un
+archivo fuente. Y mucho más.
 
-\section{Understanding patches}
+\section{Entender los parches}
 \label{sec:mq:patch}
 
-Because MQ doesn't hide its patch-oriented nature, it is helpful to
-understand what patches are, and a little about the tools that work
-with them.
+Dado que MQ no esconde su naturaleza parche-céntrica, es muy útil para
+entender de qué se tratan los parches, y un poco acerca de las
+herramientas que trabajan con ellos.
 
-The traditional Unix \command{diff} command compares two files, and
-prints a list of differences between them. The \command{patch} command
-understands these differences as \emph{modifications} to make to a
-file.  Take a look at figure~\ref{ex:mq:diff} for a simple example of
-these commands in action.
+La orden de Unix tradicional \command{diff} compara dos ficheros, e
+imprime una lista de diferencias de sus líneas.  La orden
+\command{patch} entiende esas diferencias como \emph{modificaciones}
+para construir un fichero.  Vea en la figura~\ref{ex:mq:diff} un
+ejemplo sencillo de tales órdenes en acción.
 
 \begin{figure}[ht]
   \interaction{mq.dodiff.diff}
-  \caption{Simple uses of the \command{diff} and \command{patch} commands}
+  \caption{Uso sencillo de las órdenes \command{diff} y \command{patch}}
   \label{ex:mq:diff}
 \end{figure}
 
-The type of file that \command{diff} generates (and \command{patch}
-takes as input) is called a ``patch'' or a ``diff''; there is no
-difference between a patch and a diff.  (We'll use the term ``patch'',
-since it's more commonly used.)
+El tipo de fichero que \command{diff} genera (y que \command{patch}
+toma como entrada) se llama un ``parche'' o un ``diff''; no hay
+diferencia entre un parche y un diff.  (Usaremos el término ``parche'',
+dado que es el que más comunmente se usa.)
 
-A patch file can start with arbitrary text; the \command{patch}
-command ignores this text, but MQ uses it as the commit message when
-creating changesets.  To find the beginning of the patch content,
-\command{patch} searches for the first line that starts with the
-string ``\texttt{diff~-}''.
+Un parche puede comenzar con un texto arbitrario; la orden \command{patch}
+ignora este texto, pero MQ lo usa como el mensaje de consignación
+cuando se crean conjuntos de cambios.  Para encontrar el inicio del
+contenido de un parche, la orden \command{patch} busca la primera
+línea que comience con la cadena ``\texttt{diff~-}''.
 
-MQ works with \emph{unified} diffs (\command{patch} can accept several
-other diff formats, but MQ doesn't).  A unified diff contains two
-kinds of header.  The \emph{file header} describes the file being
-modified; it contains the name of the file to modify.  When
-\command{patch} sees a new file header, it looks for a file with that
-name to start modifying.
+MQ trabaja con diffs \emph{unificados} (\command{patch} acepta varios
+formatos de diff adicionales, pero MQ no).  Un diff unificado contiene
+dos clases de encabezados.  El \emph{encabezado de fichero} describe
+el fichero que se está modificando; contiene el nombre del fichero a
+modificar.  Cuando \command{patch} ve un nuevo encabezado de fichero,
+busca un fichero con ese nombre para modificarlo.
 
-After the file header comes a series of \emph{hunks}.  Each hunk
-starts with a header; this identifies the range of line numbers within
-the file that the hunk should modify.  Following the header, a hunk
-starts and ends with a few (usually three) lines of text from the
-unmodified file; these are called the \emph{context} for the hunk.  If
-there's only a small amount of context between successive hunks,
-\command{diff} doesn't print a new hunk header; it just runs the hunks
-together, with a few lines of context between modifications.
+Después del encabezaado vienen varios \emph{trozos}.  Cada trozo
+comienza con un encabezado; que identifica el rango de líneas del
+fichero que el trozo debe modificar.  Después del encabezado, un trozo
+comienza y termina con unas pocas líneas(usualmente tres) de texto del
+fichero que no han sido modificadas; las cuales llamamos el
+\emph{contexto} del trozo.  Si solamente hay una pequeña cantidad de
+contexto entre trozos sucesivos, \command{diff} no imprime un nuevo
+encabezado para el trozo, continua integrando los trozos, con unas
+líneas de contexto entre las modificaciones.
 
-Each line of context begins with a space character.  Within the hunk,
-a line that begins with ``\texttt{-}'' means ``remove this line,''
-while a line that begins with ``\texttt{+}'' means ``insert this
-line.''  For example, a line that is modified is represented by one
-deletion and one insertion.
+Cada línea de contexto comienza con un caracter de espacio.  En el
+trozo, si una línea comienza con ``\texttt{-}'' significa ``elimine
+esta línea'', si la línea comienza con un ``\texttt{+}'' significa
+``inserte esta línea''.  Por ejemplo, una línea que se modifica se
+representa con una línea eliminada y una línea insertada.
 
-We will return to some of the more subtle aspects of patches later (in
-section~\ref{sec:mq:adv-patch}), but you should have enough information
-now to use MQ.
+Retomaremos aspectos más sutiles acerca de parches posteriormente(en
+la sección~\ref{sec:mq:adv-patch}), pero en el momento usted ya
+debería tener suficiente información para usar MQ.
 
-\section{Getting started with Mercurial Queues}
+\section{Comenzar a usar Colas de Mercurial}
 \label{sec:mq:start}
 
-Because MQ is implemented as an extension, you must explicitly enable
-before you can use it.  (You don't need to download anything; MQ ships
-with the standard Mercurial distribution.)  To enable MQ, edit your
-\tildefile{.hgrc} file, and add the lines in figure~\ref{ex:mq:config}.
+Dado que MQ está implementado como una extensión, debe habilitarla
+explícitamente antes de comenzar a usarla.  (No necesita descargar
+nada; MQ viene con la distribución estándar de Mercurial.)  Para
+habilitar MQ, edite su fichero \tildefile{.hgrc}, y añada las líneas
+de la figura~\ref{ex:mq:config}.
 
 \begin{figure}[ht]
   \begin{codesample4}
@@ -222,172 +239,182 @@ with the standard Mercurial distribution.)  To enable MQ, edit your
     hgext.mq =
   \end{codesample4}
   \label{ex:mq:config}
-  \caption{Contents to add to \tildefile{.hgrc} to enable the MQ extension}
+  \caption{Líneas a añadir en \tildefile{.hgrc} para habilitar la extensión MQ}
 \end{figure}
 
-Once the extension is enabled, it will make a number of new commands
-available.  To verify that the extension is working, you can use
-\hgcmd{help} to see if the \hgxcmd{mq}{qinit} command is now available; see
-the example in figure~\ref{ex:mq:enabled}.
+Cuando la extensión esté habilitada, aparecerán varios comandos.  Para
+verificar que la extensión está trabajando, puede usar \hgcmd{help}
+para ver si la orden \hgxcmd{mq}{qinit} está disponible; vea un
+ejemplo en la figura~\ref{ex:mq:enabled}.
 
 \begin{figure}[ht]
   \interaction{mq.qinit-help.help}
-  \caption{How to verify that MQ is enabled}
+  \caption{Cómo verificar que MQ está habilitado}
   \label{ex:mq:enabled}
 \end{figure}
 
-You can use MQ with \emph{any} Mercurial repository, and its commands
-only operate within that repository.  To get started, simply prepare
-the repository using the \hgxcmd{mq}{qinit} command (see
-figure~\ref{ex:mq:qinit}).  This command creates an empty directory
-called \sdirname{.hg/patches}, where MQ will keep its metadata.  As
-with many Mercurial commands, the \hgxcmd{mq}{qinit} command prints nothing
-if it succeeds.
+Puede usar MQ en \emph{cualquier} repositorio de Mercurial, y sus
+comandos solamente operarán con tal repositorio.  Para comenzar, basta
+con preparar el repositorio con la orden \hgxcmd{mq}{qinit}(ver la
+figura~\ref{ex:mq:qinit}).  Esta orden crea un directorio vacío
+llamado \sdirname{.hg/patches}, donde MQ mantendrá sus metadatos. Como
+otras ordenes de Mercurial, la orden \hgxcmd{mq}{qinit} no imprime
+nada cuando es exitosa.
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qinit}
-  \caption{Preparing a repository for use with MQ}
+  \caption{Preparar un repositorio para usar MQ}
   \label{ex:mq:qinit}
 \end{figure}
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qnew}
-  \caption{Creating a new patch}
+  \caption{Crear un nuevo parche}
   \label{ex:mq:qnew}
 \end{figure}
 
-\subsection{Creating a new patch}
+\subsection{Crear un nuevo parche}
 
-To begin work on a new patch, use the \hgxcmd{mq}{qnew} command.  This
-command takes one argument, the name of the patch to create.  MQ will
-use this as the name of an actual file in the \sdirname{.hg/patches}
-directory, as you can see in figure~\ref{ex:mq:qnew}.
+Para comenzar a trabajar en un nuevo parche use la orden
+\hgxcmd{mq}{qnew}. Esta orden recibe un argumento, el nombre del
+parche a crear.  MQ lo usará como el nombre del fichero en el
+directorio \sdirname{.hg/patches}, como puede apreciarlo en la
+figura~\ref{ex:mq:qnew}.
 
-Also newly present in the \sdirname{.hg/patches} directory are two
-other files, \sfilename{series} and \sfilename{status}.  The
-\sfilename{series} file lists all of the patches that MQ knows about
-for this repository, with one patch per line.  Mercurial uses the
-\sfilename{status} file for internal book-keeping; it tracks all of the
-patches that MQ has \emph{applied} in this repository.
+También hay otros dos nuevos ficheros en el directorio
+\sdirname{.hg/patches}:  \sfilename{series} y \sfilename{status}.  El
+fichero \sfilename{series} lista todos los parches de los cuales MQ
+tiene noticia para este repositorio, con un parche por línea.
+Mercurial usa el fichero \sfilename{status} para mantener registros
+interns; da seguimiento a todos los parches que MQ ha \emph{aplicado}
+en el repositorio.
 
 \begin{note}
-  You may sometimes want to edit the \sfilename{series} file by hand;
-  for example, to change the sequence in which some patches are
-  applied.  However, manually editing the \sfilename{status} file is
-  almost always a bad idea, as it's easy to corrupt MQ's idea of what
-  is happening.
+  En ciertas ocasiones usted querrá editar el fichero
+  \sfilename{series} a mano; por ejemplo, cambiar el orden en que se
+  aplican ciertos parches.  A pesar de esto, es una mala idea editar
+  manualmente  el fichero \sfilename{status}, dado que es fácil
+  desorientar a MQ acerca de lo que está pasando.
 \end{note}
 
-Once you have created your new patch, you can edit files in the
-working directory as you usually would.  All of the normal Mercurial
-commands, such as \hgcmd{diff} and \hgcmd{annotate}, work exactly as
-they did before.
+Una vez que haya creado un nuevo parche, puede editar los ficheros en
+el directorio de trabajo, como lo haría usualmente.  Toda las órdenes
+que de a Mercurial, tales como \hgcmd{diff} y \hgcmd{annotate},
+trabajarán de la misma forma como lo han hecho antes.
 
-\subsection{Refreshing a patch}
+\subsection{Refrescar un parche}
 
-When you reach a point where you want to save your work, use the
-\hgxcmd{mq}{qrefresh} command (figure~\ref{ex:mq:qnew}) to update the patch
-you are working on.  This command folds the changes you have made in
-the working directory into your patch, and updates its corresponding
-changeset to contain those changes.
+Cuando usted llega a un punto en el cual desea guardar su trabajo, use
+la orden \hgxcmd{mq}{qrefresh}(figura~\ref{ex:mq:qnew}) para
+actualizar el parche en el cual está trabajando.  Esta orden almacena
+los cambios que haya hecho al directorio actual de trabajo en su
+parche, y almacena el conjunto de cambios correspondiente que contiene
+los cambios.
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qrefresh}
-  \caption{Refreshing a patch}
+  \caption{Refrescar un parche}
   \label{ex:mq:qrefresh}
 \end{figure}
 
-You can run \hgxcmd{mq}{qrefresh} as often as you like, so it's a good way
-to ``checkpoint'' your work.  Refresh your patch at an opportune
-time; try an experiment; and if the experiment doesn't work out,
-\hgcmd{revert} your modifications back to the last time you refreshed.
+Puede ejecutar la orden \hgxcmd{mq}{qrefresh} tan seguido como quiera,
+y es una buena forma de ``colocar marcas'' a su trabajo.  Refresque su
+parche en momentos oportunos; intente un experimento; si el
+experimento no funciona, Use \hgcmd{revert} sobre sus modificaciones
+para volver al refresco anterior.
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qrefresh2}
-  \caption{Refresh a patch many times to accumulate changes}
+  \caption{Refrescar un parche muchas veces para acumular cambios}
   \label{ex:mq:qrefresh2}
 \end{figure}
 
-\subsection{Stacking and tracking patches}
+\subsection{Aplicar un parche tras otro y dar seguimiento}
 
-Once you have finished working on a patch, or need to work on another,
-you can use the \hgxcmd{mq}{qnew} command again to create a new patch.
-Mercurial will apply this patch on top of your existing patch.  See
-figure~\ref{ex:mq:qnew2} for an example.  Notice that the patch
-contains the changes in our prior patch as part of its context (you
-can see this more clearly in the output of \hgcmd{annotate}).
+Cuando haya terminado de trabajar en un parche, o necesite trabajar en
+otro, puede usar la orden \hgxcmd{mq}{qnew} para crear un nuevo
+parche.  Mercurial aplicará este parche sobre su parche anterior.
+Para un ejemplo, ver la figura~\ref{ex:mq:qnew2}.  Note que el parche
+contiene los cambios en nuestro parche anterior como parte de su
+contexto( lo verá más claramente en la salida de \hgcmd{annotate}).
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qnew2}
-  \caption{Stacking a second patch on top of the first}
+  \caption{Aplicar un parche después del primero}
   \label{ex:mq:qnew2}
 \end{figure}
 
-So far, with the exception of \hgxcmd{mq}{qnew} and \hgxcmd{mq}{qrefresh}, we've
-been careful to only use regular Mercurial commands.  However, MQ
-provides many commands that are easier to use when you are thinking
-about patches, as illustrated in figure~\ref{ex:mq:qseries}:
+Hasta ahora, con excepción de \hgxcmd{mq}{qnew} y
+\hgxcmd{mq}{qrefresh}, hemos sido cuidadosos para aplicar únicamente
+órdenes usuaales de Mercurial.  De todas maneras, MQ ofrece muchos
+comandos que son más sencillos de usar cuando esté pensando acerca de
+parches, como se puede ver en la figura~\ref{ex:mq:qseries}:
 
 \begin{itemize}
-\item The \hgxcmd{mq}{qseries} command lists every patch that MQ knows
-  about in this repository, from oldest to newest (most recently
-  \emph{created}).
-\item The \hgxcmd{mq}{qapplied} command lists every patch that MQ has
-  \emph{applied} in this repository, again from oldest to newest (most
-  recently applied).
+\item La orden \hgxcmd{mq}{qseries} lista cada parche del cual MQ
+  tiene noticia en este repositorio, desde el más antiguo hasta el más
+  nuevo(El último \emph{creado}).
+\item La orden \hgxcmd{mq}{qapplied} lista cada parche que MQ haya
+  \emph{aplicado} en este repositorio, de nuevo, desde el más antiguo
+  hasta el más nuevo (El aplicado más recientemente).
 \end{itemize}
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qseries}
-  \caption{Understanding the patch stack with \hgxcmd{mq}{qseries} and
+  \caption{Entender la pila de parches con \hgxcmd{mq}{qseries} y
     \hgxcmd{mq}{qapplied}}
   \label{ex:mq:qseries}
 \end{figure}
 
-\subsection{Manipulating the patch stack}
+\subsection{Manipular la pila de parches}
 
-The previous discussion implied that there must be a difference
-between ``known'' and ``applied'' patches, and there is.  MQ can
-manage a patch without it being applied in the repository.
+La discusión previa indicó que debe haber una diferencia entre los
+parches ``conocidos'' y ``aplicados'', y efectivamente la hay.  MQ
+puede manejar un parche sin que este haya sido aplicado al
+repositorio.
 
-An \emph{applied} patch has a corresponding changeset in the
-repository, and the effects of the patch and changeset are visible in
-the working directory.  You can undo the application of a patch using
-the \hgxcmd{mq}{qpop} command.  MQ still \emph{knows about}, or manages, a
-popped patch, but the patch no longer has a corresponding changeset in
-the repository, and the working directory does not contain the changes
-made by the patch.  Figure~\ref{fig:mq:stack} illustrates the
-difference between applied and tracked patches.
+Un parche \emph{aplicado} tiene su correspondiente conjunto de cambios
+en el repositorio, y los efectos del parche y el conjunto de cambios
+son visibles en el directorio de trabajo.  Puede deshacer la
+aplicación de un parche con la orden \hgxcmd{mq}{qpop}.  MQ 
+\emph{sabe acerca de}, o maneja un parche sustraído, pero el parche ya
+no tendrá un conjunto de cambios correspondientes en el repositorio, y
+el directorio de trabajo no contendrá los cambios hechos por el
+parche.  La figura~\ref{fig:mq:stack} ilustra la diferencia entre
+parches aplicados y seguidos.
 
 \begin{figure}[ht]
   \centering
   \grafix{mq-stack}
-  \caption{Applied and unapplied patches in the MQ patch stack}
+  \caption{Parches aplicados y no aplicados en la pila de parches de MQ}
   \label{fig:mq:stack}
 \end{figure}
 
-You can reapply an unapplied, or popped, patch using the \hgxcmd{mq}{qpush}
-command.  This creates a new changeset to correspond to the patch, and
-the patch's changes once again become present in the working
-directory.  See figure~\ref{ex:mq:qpop} for examples of \hgxcmd{mq}{qpop}
-and \hgxcmd{mq}{qpush} in action.  Notice that once we have popped a patch
-or two patches, the output of \hgxcmd{mq}{qseries} remains the same, while
-that of \hgxcmd{mq}{qapplied} has changed.
+Puede reaplicar un parche no aplicado o sustraído con la orden
+\hgxcmd{mq}{qpush}.  Esto crea un nuevo conjunto de cambios
+correspondiente al parche, y los cambios del parche estarán presentes
+de nuevo en el directorio de trabajo.  Vea ejemplos de
+\hgxcmd{mq}{qpop} y \hgxcmd{mq}{qpush} en acción en la
+figura~\ref{ex:mq:qpop}.  Vea que hemos sustraído uno o dos parches,
+la salida de\hgxcmd{mq}{qseries} continúa igual, mientras que
+\hgxcmd{mq}{qapplied} ha  cambiado.
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qpop}
-  \caption{Modifying the stack of applied patches}
+  \caption{Modificar la pila de parches aplicados}
   \label{ex:mq:qpop}
 \end{figure}
 
-\subsection{Pushing and popping many patches}
+\subsection{Introducir y sustraer muchos parches}
 
-While \hgxcmd{mq}{qpush} and \hgxcmd{mq}{qpop} each operate on a single patch at
-a time by default, you can push and pop many patches in one go.  The
-\hgxopt{mq}{qpush}{-a} option to \hgxcmd{mq}{qpush} causes it to push all
-unapplied patches, while the \hgxopt{mq}{qpop}{-a} option to \hgxcmd{mq}{qpop}
-causes it to pop all applied patches.  (For some more ways to push and
-pop many patches, see section~\ref{sec:mq:perf} below.)
+Mientras que \hgxcmd{mq}{qpush} y \hgxcmd{mq}{qpop} operan sobre un
+único parche cada vez, puede introducir y sustraer varios parches de
+una vez.  La opción \hgxopt{mq}{qpush}{-a} de \hgxcmd{mq}{qpush}
+introduce todos los cambios que no hayan sido aplicados, mientras que
+la opción \hgxopt{mq}{qpop}{-a} de \hgxcmd{mq}{qpop} sustrae todos los
+cambios aplicados.  (Vea la sección~\ref{sec:mq:perf} más adelante
+en la cual se explican otras formas de de introducir y sustraer varios
+cambios.)
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qpush-a}
@@ -395,48 +422,53 @@ pop many patches, see section~\ref{sec:mq:perf} below.)
   \label{ex:mq:qpush-a}
 \end{figure}
 
-\subsection{Safety checks, and overriding them}
+\subsection{Medidas de seguridad y cómo saltarlas}
 
-Several MQ commands check the working directory before they do
-anything, and fail if they find any modifications.  They do this to
-ensure that you won't lose any changes that you have made, but not yet
-incorporated into a patch.  Figure~\ref{ex:mq:add} illustrates this;
-the \hgxcmd{mq}{qnew} command will not create a new patch if there are
-outstanding changes, caused in this case by the \hgcmd{add} of
-\filename{file3}.
+Muchas órdenes MQ revisan el directorio de trabajo antes de hacer
+cualquier cosa, y fallan si encuentran alguna modificación.  Lo hacen
+para garantizar que usted no pierda cambio alguno de los que haya
+hecho, pero que no hayan sido incorporados en algún parche.  La
+figura~\ref{ex:mq:add} ilusta esto; la orden \hgxcmd{mq}{qnew} no
+creará un nuevo parche si hay cambios notorios, causados en este caso
+por aplicado la orden \hgcmd{add} a \filename{file3}.
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.add}
-  \caption{Forcibly creating a patch}
+  \caption{Crear un parche a la fuerza}
   \label{ex:mq:add}
 \end{figure}
 
-Commands that check the working directory all take an ``I know what
-I'm doing'' option, which is always named \option{-f}.  The exact
-meaning of \option{-f} depends on the command.  For example,
-\hgcmdargs{qnew}{\hgxopt{mq}{qnew}{-f}} will incorporate any outstanding
-changes into the new patch it creates, but
-\hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-f}} will revert modifications to any
-files affected by the patch that it is popping.  Be sure to read the
-documentation for a command's \option{-f} option before you use it!
+Las órdenes que revisan el directorio actual cuentan con una opción
+``Se lo que estoy haciendo'', que siempre está nombrada como
+\option{-f}.  El significado exacto de \option{-f} depende de la
+orden.  Por ejemplo, \hgcmdargs{qnew}{\hgxopt{mq}{qnew}{-f}}
+incorporarán cualquier cambio notorio en el nuevo parche que crea pero
+\hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-f}} revertirá las modificaciones a
+cualquier fichero que haya sido afectado por el parche que está siendo
+sustraído. ¡Asegúrese de leer la documentación de la opción \option{-f}
+de cada comando antes de usarla!
 
-\subsection{Working on several patches at once}
+\subsection{Trabajar con varios parches a la vez}
 
-The \hgxcmd{mq}{qrefresh} command always refreshes the \emph{topmost}
-applied patch.  This means that you can suspend work on one patch (by
-refreshing it), pop or push to make a different patch the top, and
-work on \emph{that} patch for a while.
+La orden \hgxcmd{mq}{qrefresh} siempre refresca el \emph{último}
+parche aplicado.  Esto significa que usted puede suspender su trabajo
+en un parche (refrescándolo), sustraerlo o introducirlo para lograr
+que otro parche esté de último y trabajar en \emph{ese} parche por un
+rato.
 
-Here's an example that illustrates how you can use this ability.
-Let's say you're developing a new feature as two patches.  The first
-is a change to the core of your software, and the second---layered on
-top of the first---changes the user interface to use the code you just
-added to the core.  If you notice a bug in the core while you're
-working on the UI patch, it's easy to fix the core.  Simply
-\hgxcmd{mq}{qrefresh} the UI patch to save your in-progress changes, and
-\hgxcmd{mq}{qpop} down to the core patch.  Fix the core bug,
-\hgxcmd{mq}{qrefresh} the core patch, and \hgxcmd{mq}{qpush} back to the UI
-patch to continue where you left off.
+A continuación un ejemplo que ilustra cómo puede usar esta habilidad.
+Digamos que está desarrollando una nueva característica en dos
+parches.  El primero es un cambio en la parte fundamental de su
+programa, y el segundo--sobre el primero---cambia la interfaz de
+usuario para usar el código que ha añadido a la parte fundamental.  Si
+ve que hay un fallo en la parte fundamental mientras está trabajando
+en el parche de UI\ndt{Interfaz de Usuario, User Interface en inglés}, es fácil arreglar la parte fundamental.
+Simplemente use \hgxcmd{mq}{qrefresh} sobre el parche de la UI para
+guardar los cambios de su trabajo en progreso, y use \hgxcmd{mq}{qpop}
+para sacar sustraer el parche de la parte fundamental.  Arregla el
+fallo sobre la parte fundamental, aplique \hgxcmd{mq}{qrefresh} sobre
+el parche fundamental, y aplique \hgxcmd{mq}{qpush} sobre el parche de
+UI para continuar donde había quedado.
 
 \section{More about patches}
 \label{sec:mq:adv-patch}
