@@ -258,82 +258,89 @@ cambios.
 \section{Tutorial corto de uso de ganchos}
 \label{sec:hook:simple}
 
-It is easy to write a Mercurial hook.  Let's start with a hook that
-runs when you finish a \hgcmd{commit}, and simply prints the hash of
-the changeset you just created.  The hook is called \hook{commit}.
+Escribir un gancho para Mercurial es fácil. Empecemos con un gancho
+que se ejecute cuando usted termine un \hgcmd{commit}, y simplemente
+muestre el hash del conjunto de cambios que usted acaba de crear. El
+gancho se llamará \hook{commit}.
 
 \begin{figure}[ht]
   \interaction{hook.simple.init}
-  \caption{A simple hook that runs when a changeset is committed}
+  \caption{Un gancho simple que se ejecuta al hacer la consignación de
+  un conjunto de cambios}
   \label{ex:hook:init}
 \end{figure}
 
-All hooks follow the pattern in example~\ref{ex:hook:init}.  You add
-an entry to the \rcsection{hooks} section of your \hgrc.  On the left
-is the name of the event to trigger on; on the right is the action to
-take.  As you can see, you can run an arbitrary shell command in a
-hook.  Mercurial passes extra information to the hook using
-environment variables (look for \envar{HG\_NODE} in the example).
+Todos los ganchos siguen el patrón del ejemplo~\ref{ex:hook:init}.
+Usted puede añadir una entrada a la sección \rcsection{hooks} de su
+fichero \hgrc.  A la izquierda está el nombre del evento respecto al
+cual dispararse; a la derecha está la acción a llevar a cabo. Como
+puede ver, es posible ejecutar cualquier orden de la línea de comandos
+en un gancho. Mercurial le pasa información extra al gancho usando
+variables de entorno (busque \envar{HG\_NODE} en el ejemplo).
 
-\subsection{Performing multiple actions per event}
+\subsection{Llevar a cabo varias acciones por evento}
 
-Quite often, you will want to define more than one hook for a
-particular kind of event, as shown in example~\ref{ex:hook:ext}.
-Mercurial lets you do this by adding an \emph{extension} to the end of
-a hook's name.  You extend a hook's name by giving the name of the
-hook, followed by a full stop (the ``\texttt{.}'' character), followed
-by some more text of your choosing.  For example, Mercurial will run
-both \texttt{commit.foo} and \texttt{commit.bar} when the
-\texttt{commit} event occurs.
+A menudo, usted querrá definir más de un gancho para un tipo de evento
+particular, como se muestra en el ejemplo~\ref{ex:hook:ext}. 
+Mercurial le permite hacer esto añadiendo una \emph{extensión} al
+final del nombre de un gancho. Usted extiende el nombre del gancho
+%TODO Yuk, no me gusta ese "parada completa"
+poniendo el nombre del gancho, seguido por una parada completa (el
+caracter ``\texttt{.}''), seguido de algo más de texto de su elección.
+Por ejemplo, Mercurial ejecutará tanto \texttt{commit.foo} como
+\texttt{commit.bar} cuando ocurra el evento \texttt{commit}.
 
 \begin{figure}[ht]
   \interaction{hook.simple.ext}
-  \caption{Defining a second \hook{commit} hook}
+  \caption{Definición de un segundo gancho \hook{commit}}
   \label{ex:hook:ext}
 \end{figure}
 
-To give a well-defined order of execution when there are multiple
-hooks defined for an event, Mercurial sorts hooks by extension, and
-executes the hook commands in this sorted order.  In the above
-example, it will execute \texttt{commit.bar} before
-\texttt{commit.foo}, and \texttt{commit} before both.
+Para dar un orden bien definido de ejecución cuando hay múltiples
+ganchos definidos para un evento, Mercurial ordena los ganchos de
+acuerdo a su extensión, y los ejecuta en dicho orden. En el ejemplo de
+arribam \texttt{commit.bar} se ejecutará antes que
+\texttt{commit.foo}, y \texttt{commit} se ejecutará antes de ambos.
 
-It is a good idea to use a somewhat descriptive extension when you
-define a new hook.  This will help you to remember what the hook was
-for.  If the hook fails, you'll get an error message that contains the
-hook name and extension, so using a descriptive extension could give
-you an immediate hint as to why the hook failed (see
-section~\ref{sec:hook:perm} for an example).
+Es una buena idea usar una extensión descriptiva cuando usted define
+un gancho. Esto le ayudará a recordar para qué se usa el gancho. Si el
+gancho falla, usted recibirá un mensaje de error que contiene el
+nombre y la extensión del gancho, así que usar una extensión
+descriptiva le dará una pista inmediata de porqué el gancho falló (vea
+un ejemplo en la sección~\ref{sec:hook:perm}).
 
-\subsection{Controlling whether an activity can proceed}
+\subsection{Controlar cuándo puede llevarse a cabo una actividad}
 \label{sec:hook:perm}
 
-In our earlier examples, we used the \hook{commit} hook, which is
-run after a commit has completed.  This is one of several Mercurial
-hooks that run after an activity finishes.  Such hooks have no way of
-influencing the activity itself.
+En los ejemplos anteriores, usamos el gancho \hook{commit}, que es
+ejecutado después de que se ha completado una consignación. Este es
+uno de los varios ganchos que Mercurial ejecuta luego de que una
+actividad termina. Tales ganchos no tienen forma de influenciar la
+actividad como tal.
 
-Mercurial defines a number of events that occur before an activity
-starts; or after it starts, but before it finishes.  Hooks that
-trigger on these events have the added ability to choose whether the
-activity can continue, or will abort.  
+Mercurial define un número de eventos que ocurren antes de que una
+actividad empiece; o luego de que empiece, pero antes de que termine.
+Los ganchos que se disparan con estos eventos tienen la capacidad
+adicional de elegir si la actividad puede continuar, o si su ejecución
+es abortada.
 
-The \hook{pretxncommit} hook runs after a commit has all but
-completed.  In other words, the metadata representing the changeset
-has been written out to disk, but the transaction has not yet been
-allowed to complete.  The \hook{pretxncommit} hook has the ability to
-decide whether the transaction can complete, or must be rolled back.
+El gancho \hook{pretxncommit} se ejecuta justo antes de que una
+consignación se ejecute. En otras palabras, los metadatos que
+representan el conjunto de cambios han sido escritos al disco, pero no
+se ha terminado la transacción. El gancho \hook{pretxncommit} tiene la
+capacidad de decidir si una transacción se completa, o debe
+deshacerse.
 
-If the \hook{pretxncommit} hook exits with a status code of zero, the
-transaction is allowed to complete; the commit finishes; and the
-\hook{commit} hook is run.  If the \hook{pretxncommit} hook exits with
-a non-zero status code, the transaction is rolled back; the metadata
-representing the changeset is erased; and the \hook{commit} hook is
-not run.
+Si el gancho \hook{pretxncommit} termina con un código de salida de
+cero, se permite que la transacción se complete; la consignación
+termina; y el gancho \hook{commit} es ejecutado. Si el gancho
+\hook{pretxncommit} termina con un código de salida diferente de cero,
+la transacción es revertida; los metadatos representando el conjunto
+de cambios son borrados; y el gancho \hook{commit} no es ejecutado.
 
 \begin{figure}[ht]
   \interaction{hook.simple.pretxncommit}
-  \caption{Using the \hook{pretxncommit} hook to control commits}
+  \caption{Uso del gancho \hook{pretxncommit} hook to control commits}
   \label{ex:hook:pretxncommit}
 \end{figure}
 
