@@ -126,124 +126,136 @@ Mercurial en un sistema de ficheros NFS, y usar un fichero \hgrc\
 global para definir los ganchos que verán todos los usuarios. Sin
 embargo, este enfoque tiene sus límites; vea más abajo.
 
-\subsection{Hooks can be overridden}
+\subsection{Es posible hacer caso omiso de los ganchos}
 
-Mercurial allows you to override a hook definition by redefining the
-hook.  You can disable it by setting its value to the empty string, or
-change its behaviour as you wish.
+Mercurial le permite hacer caso omiso de la deficinión de un gancho,
+a través de la redefinición del mismo. Usted puede deshabilitar el
+gancho fijando su valor como una cadena vacía, o cambiar su
+comportamiento como desee.
 
-If you deploy a system-~or site-wide \hgrc\ file that defines some
-hooks, you should thus understand that your users can disable or
-override those hooks.
+Si usted instala un fichero \hgrc\ a nivel de sistema o sitio completo
+que define algunos ganchos, debe entender que sus usuarios pueden
+deshabilitar o hacer caso omiso de los mismos.
 
-\subsection{Ensuring that critical hooks are run}
+\subsection{Asegurarse de que ganchos críticos sean ejecutados}
 
-Sometimes you may want to enforce a policy that you do not want others
-to be able to work around.  For example, you may have a requirement
-that every changeset must pass a rigorous set of tests.  Defining this
-requirement via a hook in a site-wide \hgrc\ won't work for remote
-users on laptops, and of course local users can subvert it at will by
-overriding the hook.
+Algunas veces usted puede querer hacer respetar una política, y no
+permitir que los demás sean capaces de evitarla. Por ejemplo, usted
+puede tener como requerimiento que cada conjunto de cambios debe pasar
+un riguroso conjunto de pruebas. Definir este requerimientos a través
+de un gancho en un fichero \hgrc\ global no servirá con usuarios
+remotos en computadoras portátiles, y por supuesto que los usuarios
+locales pueden evitar esto a voluntad haciendo caso omiso del gancho.
 
-Instead, you can set up your policies for use of Mercurial so that
-people are expected to propagate changes through a well-known
-``canonical'' server that you have locked down and configured
-appropriately.
+En vez de eso, usted puede definir las políticas para usar Mercurial
+de tal forma que se espere que los usuarios propaguen los cambios a
+través de un servidor ``canónico'' bien conocido que usted ha
+asegurado y configurado apropiadamente.
 
-One way to do this is via a combination of social engineering and
-technology.  Set up a restricted-access account; users can push
-changes over the network to repositories managed by this account, but
-they cannot log into the account and run normal shell commands.  In
-this scenario, a user can commit a changeset that contains any old
-garbage they want.
+Una manera de hacer esto es a través de una combinación de ingeniería
+socual y tecnología. Cree una cuenta de acceso restringido; los
+usuarios pueden empujar cambios a través de la red a los repositorios
+administrados por esta cuenta, pero no podrán ingresar a dicha cuenta
+para ejecutar órdenes en el intérprete de comandos. En este escenario,
+un usuario puede enviar un conjunto de cambios que contenga la
+porquería que él desee.
 
-When someone pushes a changeset to the server that everyone pulls
-from, the server will test the changeset before it accepts it as
-permanent, and reject it if it fails to pass the test suite.  If
-people only pull changes from this filtering server, it will serve to
-ensure that all changes that people pull have been automatically
-vetted.
+Cuando alguien empuja un conjunto de cambios al servidor del que todos
+jalan, el servidor probará el conjunto de cambios antes de aceptarlo
+como permanente, y lo rechazará si no logra pasar el conjunto de
+pruebas. Si la gente sólo jala cambios desde este servidor de filtro,
+servirá para asegurarse de que todos los cambios que la gente jala han
+sido examinados automáticamente
 
-\section{Care with \texttt{pretxn} hooks in a shared-access repository}
+\section{Precauciones con ganchos \texttt{pretxn} en un repositorio de
+acceso compartido}
 
-If you want to use hooks to do some automated work in a repository
-that a number of people have shared access to, you need to be careful
-in how you do this.
+Si usted desea usar ganchos para llevar a cabo automáticamente algún
+trabajo en un repositorio al que varias personas tienen acceso
+compartido, debe tener cuidado con la forma de hacerlo.
 
-Mercurial only locks a repository when it is writing to the
-repository, and only the parts of Mercurial that write to the
-repository pay attention to locks.  Write locks are necessary to
-prevent multiple simultaneous writers from scribbling on each other's
-work, corrupting the repository.
+Mercurial sólo bloquea un repositorio cuando está escribiendo al
+mismo, y sólo las partes de Mercurial que escriben al repositorio le
+prestan atención a los bloqueos. Los bloqueos de escritura son
+necesarios para evitar que múltiples escritores simultáneos
+interfieran entre sí, corrompiendo el repositorio.
 
-Because Mercurial is careful with the order in which it reads and
-writes data, it does not need to acquire a lock when it wants to read
-data from the repository.  The parts of Mercurial that read from the
-repository never pay attention to locks.  This lockless reading scheme
-greatly increases performance and concurrency.
+Ya que Mercurial tiene cuidado con el orden en que lee y escribe
+datos, no necesita adquirir un bloqueo cuando desea leer datos del
+repositorio. Las partes de Mercurial que leen del repositorio nunca le
+prestan atención a los bloqueos. Este esquema de lectura libre de
+bloqueos incremententa en gran medida el desempeño y la concurrencia.
 
-With great performance comes a trade-off, though, one which has the
-potential to cause you trouble unless you're aware of it.  To describe
-this requires a little detail about how Mercurial adds changesets to a
-repository and reads those changes.
+Sin embargo, para tener un gran desempeño es necesario hacer
+sacrificios, uno de los cuales tiene el potencial de causarle
+problemas a menos de que usted esté consciente de él. Describirlo
+requiere algo de detalle respecto a cómo Mercurial añade conjuntos de
+cambios al repositorio y cómo lee esos cambios de vuelta.
 
-When Mercurial \emph{writes} metadata, it writes it straight into the
-destination file.  It writes file data first, then manifest data
-(which contains pointers to the new file data), then changelog data
-(which contains pointers to the new manifest data).  Before the first
-write to each file, it stores a record of where the end of the file
-was in its transaction log.  If the transaction must be rolled back,
-Mercurial simply truncates each file back to the size it was before the
-transaction began.
+Cuando Mercurial \emph{escribe} metadatos, los escribe directamente en
+el fichero de destino. Primero escribe los datos del fichero, luego
+los datos del manifiesto (que contienen punteros a los nuevos datos
+del fichero), luego datos de la bitácora de cambios (que contienen
+punteros a los nuevos datos del manifiesto). Antes de la primera
+escritura a cada fichero, se guarda un registro de dónde estaba el
+final de fichero en su registro de transacciones. Si la transacción
+debe ser deshecha, Mercurial simplemente trunca cada fichero de vuelta
+al tamaño que tenía antes de que empezara la transacción.
 
-When Mercurial \emph{reads} metadata, it reads the changelog first,
-then everything else.  Since a reader will only access parts of the
-manifest or file metadata that it can see in the changelog, it can
-never see partially written data.
+Cuando Mercurial \emph{lee} metadatos, lee la bitácora de cambios
+primero, y luego todo lo demás. Como un lector sólo accederá a las
+partes del manifiesto o de los metadatos de fichero que él puede ver
+en la bitácora de cambios, nunca puede ver datos parcialmente
+escritos.
 
-Some controlling hooks (\hook{pretxncommit} and
-\hook{pretxnchangegroup}) run when a transaction is almost complete.
-All of the metadata has been written, but Mercurial can still roll the
-transaction back and cause the newly-written data to disappear.
+Algunos ganchos de control (\hook{pretxncommit} y
+\hook{pretxnchangegroup}) se ejecutan cuando una transacción está casi
+completa. Todos los metadatos han sido escritos, pero Mercurial aún
+puede deshacer la transacción y hacer que los datos recién escritos
+desaparezcan.
 
-If one of these hooks runs for long, it opens a window of time during
-which a reader can see the metadata for changesets that are not yet
-permanent, and should not be thought of as ``really there''.  The
-longer the hook runs, the longer that window is open.
+Si alguno de estos ganchos permanece en ejecución por mucho tiempo,
+abre una ventana de tiempo en la que un lector puede ver los metadatos
+de conjuntos de cambios que aún no son permanentes y que no debería
+considerarse que estén ``realmante ahí''. Entre más tiempo tome la
+ejecución del gancho, más tiempo estará abierta esta ventana.
 
-\subsection{The problem illustrated}
+\subsection{Ilustración del problema}
 
-In principle, a good use for the \hook{pretxnchangegroup} hook would
-be to automatically build and test incoming changes before they are
-accepted into a central repository.  This could let you guarantee that
-nobody can push changes to this repository that ``break the build''.
-But if a client can pull changes while they're being tested, the
-usefulness of the test is zero; an unsuspecting someone can pull
-untested changes, potentially breaking their build.
+En principio, un buen uso del gancho \hook{pretxnchangegroup} sería
+ensamblar y probar automáticamente todos los cambios entrantes antes
+de que sean aceptados en un repositorio central. Esto le permitiría a
+usted garantizar que nadie pueda empujar cambios que ``rompan el
+ensamblaje''. Pero si un cliente puede jalar cambios mientras están
+siendo probados, la utilidad de esta prueba es nula; alguien confiado
+puede jalar cambios sin probar, lo que potencialmente podría romper su
+proceso de ensamblaje.
 
-The safest technological answer to this challenge is to set up such a
-``gatekeeper'' repository as \emph{unidirectional}.  Let it take
-changes pushed in from the outside, but do not allow anyone to pull
-changes from it (use the \hook{preoutgoing} hook to lock it down).
-Configure a \hook{changegroup} hook so that if a build or test
-succeeds, the hook will push the new changes out to another repository
-that people \emph{can} pull from.
+La respuesta técnica más segura frente a este retos es montar dicho
+repositorio ``guardián'' como \emph{unidireccional}. Permita que
+reciba cambios desde el exterior, pero no permita que nadie jale
+cambios de él (use el gancho \hook{preoutgoing} para bloquear esto).
+Configure un gancho \hook{changegroup} para que si el ensamblaje o
+prueba tiene éxito, el gancho empuje los nuevos cambios a otro
+repositorio del que la gente \emph{pueda} jalar.
 
-In practice, putting a centralised bottleneck like this in place is
-not often a good idea, and transaction visibility has nothing to do
-with the problem.  As the size of a project---and the time it takes to
-build and test---grows, you rapidly run into a wall with this ``try
-before you buy'' approach, where you have more changesets to test than
-time in which to deal with them.  The inevitable result is frustration
-on the part of all involved.
+En la práctica, montar un cuello de botella centralizado como éste a
+menudo no es una buena idea, y la visibilidad de las transacciones no
+tiene nada que ver con el problema. A medida que el tamaño de un
+proyecto---y el tiempo que toma ensamblarlo y probarlo---crece, usted
+se acerca rápidamente a un límite con este enfoque ``pruebe antes de
+comprar'', en el que tiene más conjuntos de cambios a probar que
+tiempo para ocuparse de ellos. El resultado inevitable es frustración
+para todos los que estén involucrados.
 
-An approach that scales better is to get people to build and test
-before they push, then run automated builds and tests centrally
-\emph{after} a push, to be sure all is well.  The advantage of this
-approach is that it does not impose a limit on the rate at which the
-repository can accept changes.
+Una aproximación que permite manejar mejor el crecimiento es hacer que
+la gente ensamble y pruebe antes de empujar, y ejecutar el ensamble y
+pruebas automáticas centralmente \emph{después} de empujar, para
+asegurarse de que todo esté bien. La ventaja de este enfoque es que no
+impone un límite a la rata en la que un repositorio puede aceptar
+cambios.
 
-\section{A short tutorial on using hooks}
+\section{Tutorial corto de uso de ganchos}
 \label{sec:hook:simple}
 
 It is easy to write a Mercurial hook.  Let's start with a hook that
