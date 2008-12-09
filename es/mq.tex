@@ -496,95 +496,103 @@ toda ruta en cada encabezado de fichero, y el nombre del directorio
 modificado estaría al frente de la porción derecha de la ruta del
 archivo.
 
-Since someone receiving a patch from the Alices of the net would be
-unlikely to have unmodified and modified directories with exactly the
-same names, the \command{patch} command has a \cmdopt{patch}{-p}
-option that indicates the number of leading path name components to
-strip when trying to apply a patch.  This number is called the
-\emph{strip count}.
+Como alguien que reciba un parche de Alicia en la red podría obtener
+dos directorios, uno original y el otro modificado con exactamente los
+mismos nombres, la orden \command{patch} tiene la opción
+\cmdopt{patch}{-p} que indica la cantidad de componentes de la ruta
+a eliminar cuando se vaya a aplicar el parche.  Este número se
+llama la \emph{cantidad de eliminaciones}.
 
-An option of ``\texttt{-p1}'' means ``use a strip count of one''.  If
-\command{patch} sees a file name \filename{foo/bar/baz} in a file
-header, it will strip \filename{foo} and try to patch a file named
-\filename{bar/baz}.  (Strictly speaking, the strip count refers to the
-number of \emph{path separators} (and the components that go with them
-) to strip.  A strip count of one will turn \filename{foo/bar} into
-\filename{bar}, but \filename{/foo/bar} (notice the extra leading
-slash) into \filename{foo/bar}.)
+La opción con ``\texttt{-p1}'' significa ``elimine uno''.  Si
+\command{patch} ve un nombre de fichero \filename{foo/bar/baz} en el
+encabezado del fichero, eliminará \filename{foo} y tratará de parchar
+un fichero llamado \filename{bar/baz}.  (Hablando estrictamente, la
+cantidad de eliminaciones se refiere a la cantidad de \emph{separadores de
+ ruta} (y los componentes que vayan con ellos) a eliminar.  Si el
+contador es uno volverá \filename{foo/bar} en \filename{bar}, pero
+\filename{/foo/bar} (note la barra extra) en \filename{foo/bar}.)
 
-The ``standard'' strip count for patches is one; almost all patches
-contain one leading path name component that needs to be stripped.
-Mercurial's \hgcmd{diff} command generates path names in this form,
-and the \hgcmd{import} command and MQ expect patches to have a strip
-count of one.
+La cantidad a eliminar``estándar'' para parches es uno; casi todos los
+parches contienen un componente inicial de la ruta que necesita ser
+eliminado.  La orden \hgcmd{diff} de Mercurial genera nombres de ruta
+de esta forma, y la orden \hgcmd{import} y MQ esperan parches que
+tengan a uno como cuenta de eliminaciones.
 
-If you receive a patch from someone that you want to add to your patch
-queue, and the patch needs a strip count other than one, you cannot
-just \hgxcmd{mq}{qimport} the patch, because \hgxcmd{mq}{qimport} does not yet
-have a \texttt{-p} option (see~\bug{311}).  Your best bet is to
-\hgxcmd{mq}{qnew} a patch of your own, then use \cmdargs{patch}{-p\emph{N}}
-to apply their patch, followed by \hgcmd{addremove} to pick up any
-files added or removed by the patch, followed by \hgxcmd{mq}{qrefresh}.
-This complexity may become unnecessary; see~\bug{311} for details.
-\subsection{Strategies for applying a patch}
+Si recibe un parche de alguien de quien desea adicionar adicionar a su
+cola de parches, y el parche necesita una cuenta de eliminación que no
+sea uno, no podrá aplicar \hgxcmd{mq}{qimport} en primera medida,
+porque \hgxcmd{mq}{qimport} no tiene todavía una opción \texttt{-p}
+option (ver~\bug{311}).  Lo mejor que puede hacer es aplicar
+\hgxcmd{mq}{qnew} por su cuenta, y después usar \cmdargs{patch}{-p\emph{N}}
+para aplicar tal parche, seguido de \hgcmd{addremove} para tener en
+cuenta cualquier fichero adicionado o eliminado por el parche, seguido
+de \hgxcmd{mq}{qrefresh}.  Esta complejidad puede ser innecesaria;
+consulte~\bug{311} para más información.
 
-When \command{patch} applies a hunk, it tries a handful of
-successively less accurate strategies to try to make the hunk apply.
-This falling-back technique often makes it possible to take a patch
-that was generated against an old version of a file, and apply it
-against a newer version of that file.
+\subsection{Estrategias para aplicar parches}
 
-First, \command{patch} tries an exact match, where the line numbers,
-the context, and the text to be modified must apply exactly.  If it
-cannot make an exact match, it tries to find an exact match for the
-context, without honouring the line numbering information.  If this
-succeeds, it prints a line of output saying that the hunk was applied,
-but at some \emph{offset} from the original line number.
+Cuando \command{patch} aplica un trozo, intenta varias estrategias
+sucesivas que decrecen en precisión para intentar aplicarlo.  Esta
+técnica de pruebas y error aveces permite que un parche que fue
+generado contra una versión anterior de un fichero, sea aplicada sobre
+una versión más nueva del mismo.
 
-If a context-only match fails, \command{patch} removes the first and
-last lines of the context, and tries a \emph{reduced} context-only
-match.  If the hunk with reduced context succeeds, it prints a message
-saying that it applied the hunk with a \emph{fuzz factor} (the number
-after the fuzz factor indicates how many lines of context
-\command{patch} had to trim before the patch applied).
+Primero \command{patch} intenta una correspondencia perfecta donde los
+números de línea, el contexto y el texto a modificar deben coincidir
+perfectamente.  Si no lo logra, intenta encontrar una correspondencia
+exacta del contexto, sin tener en cuenta el número de línea.  Si es
+exitoso, imprime una línea indicando que el trozo fue aplicado, pero a
+un \emph{corrimiento} del número de línea original.
 
-When neither of these techniques works, \command{patch} prints a
-message saying that the hunk in question was rejected.  It saves
-rejected hunks (also simply called ``rejects'') to a file with the
-same name, and an added \sfilename{.rej} extension.  It also saves an
-unmodified copy of the file with a \sfilename{.orig} extension; the
-copy of the file without any extensions will contain any changes made
-by hunks that \emph{did} apply cleanly.  If you have a patch that
-modifies \filename{foo} with six hunks, and one of them fails to
-apply, you will have: an unmodified \filename{foo.orig}, a
-\filename{foo.rej} containing one hunk, and \filename{foo}, containing
-the changes made by the five successful five hunks.
+Si falla la correspondencia por contexto, \command{patch} elimina la
+primera y la última línea del contexto, e intenta una correspondencia
+\emph{reducida} del contexto.  Si el trozo con contexto reducido es
+exitoso, imprime un mensaje indicando que aplicó el trozo con un
+\emph{factor difuso} (el número después del factor difuso indica
+cuántas líneas de contexto \command{patch} tuvo que eliminar antes de
+aplicar el parche).
 
-\subsection{Some quirks of patch representation}
+Cuando ninguna de estas técnicas funciona, \command{patch} imprime un
+mensaje indicando que el trozo en cuestión se desechó.  Almacena los
+trozos desechados(también llamados ``descartados'') en un fichero con
+el mismo nombre, y la extensión \sfilename{.rej} añadida.  También
+almacena una copia igual al fichero original con la extensión
+\sfilename{.orig}; la copia del fichero sin extensión contendrá
+cualquier cambio hecho por los trozos que \emph{sí} se aplicaron sin
+problema.  Si usted tiene un parche que modifica \filename{foo} con
+seis trozos, y uno de ellos falla al aplicarse, tendrá : un fichero
+original \filename{foo.orig}, un fichero \filename{foo.rej} que
+contiene el trozo, y \filename{foo}, que contiene los cambios que se
+aplicaron por los cinco trozos exitosos.
 
-There are a few useful things to know about how \command{patch} works
-with files.
+\subsection{Algunos detalles de la representación de parches}
+
+Hay ciertas cosas útiles por saber acerca de cómo trabaja
+\command{patch} con los ficheros:
 \begin{itemize}
-\item This should already be obvious, but \command{patch} cannot
-  handle binary files.
-\item Neither does it care about the executable bit; it creates new
-  files as readable, but not executable.
-\item \command{patch} treats the removal of a file as a diff between
-  the file to be removed and the empty file.  So your idea of ``I
-  deleted this file'' looks like ``every line of this file was
-  deleted'' in a patch.
-\item It treats the addition of a file as a diff between the empty
-  file and the file to be added.  So in a patch, your idea of ``I
-  added this file'' looks like ``every line of this file was added''.
-\item It treats a renamed file as the removal of the old name, and the
-  addition of the new name.  This means that renamed files have a big
-  footprint in patches.  (Note also that Mercurial does not currently
-  try to infer when files have been renamed or copied in a patch.)
-\item \command{patch} cannot represent empty files, so you cannot use
-  a patch to represent the notion ``I added this empty file to the
-  tree''.
+\item Debería ser obvio que \command{patch} no puede manipular
+  ficheros binarios.
+\item No se preocupa por el bit ejecutable; crea ficheros nuevos en
+  modo lectura, pero no ejecutable.
+\item \command{patch} intenta eliminar un fichero como una diferencia
+  entre el fichero a eliminar y un fichero vacío.  Y por lo tanto su
+  idea de ``Borré este fichero'' debería pensarse como ``toda línea de
+  este fichero fue eliminada'' en un parche.
+\item Trata la adición de un fichero como un diff entre un fichero
+  vacío y el fichero a ser adicionado.  Por lo tanto en un parche su
+  idea de ``Añadí este fichero'' se vería como ``toda línea de este
+  fichero fue añadida''.
+\item Trata el renombramiento de un fichero como la eliminación del
+  nombre anterior y la adición del nuevo nombre.  Esto significa que
+  los ficheros renombrados dejan un rastro grande en los parches.
+  (Tenga en cuenta que Mercurial no trata de inferir cuando los
+  archivos han sido renombrados o copiados en un parche en este
+  momento.)
+\item \command{patch} no puede representar ficheros vacíos, por lo
+  tanto no puede usar un parche para representar la noción ``Añadí
+  este fichero vacío al árbol''.
 \end{itemize}
-\subsection{Beware the fuzz}
+\subsection{Cuidado con los difusos}
 
 While applying a hunk at an offset, or with a fuzz factor, will often
 be completely successful, these inexact techniques naturally leave
