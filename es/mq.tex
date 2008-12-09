@@ -470,30 +470,31 @@ fallo sobre la parte fundamental, aplique \hgxcmd{mq}{qrefresh} sobre
 el parche fundamental, y aplique \hgxcmd{mq}{qpush} sobre el parche de
 UI para continuar donde había quedado.
 
-\section{More about patches}
+\section{Más acerca de parches}
 \label{sec:mq:adv-patch}
 
-MQ uses the GNU \command{patch} command to apply patches, so it's
-helpful to know a few more detailed aspects of how \command{patch}
-works, and about patches themselves.
+MQ usa la orden GNU \command{patch} para aplicar los parches, por lo
+tanto es útil conocer ciertos detalles de cómo trabaja
+\command{patch}, y también acerca de los parches.
 
-\subsection{The strip count}
+\subsection{La cantidad de franjas}
 
-If you look at the file headers in a patch, you will notice that the
-pathnames usually have an extra component on the front that isn't
-present in the actual path name.  This is a holdover from the way that
-people used to generate patches (people still do this, but it's
-somewhat rare with modern revision control tools).  
+Si ve el encabezado de un parche, notará que la ruta al archivo tiene
+un componente adicional al principio, que no está presente en la
+ruta. Esta es una traza de cómo generaba anteriormente los parches la
+gente(algunos aún lo hacen, pero es raro con las herramientas de
+control de revisiones del actuales).
 
-Alice would unpack a tarball, edit her files, then decide that she
-wanted to create a patch.  So she'd rename her working directory,
-unpack the tarball again (hence the need for the rename), and use the
-\cmdopt{diff}{-r} and \cmdopt{diff}{-N} options to \command{diff} to
-recursively generate a patch between the unmodified directory and the
-modified one.  The result would be that the name of the unmodified
-directory would be at the front of the left-hand path in every file
-header, and the name of the modified directory would be at the front
-of the right-hand path.
+Alicia desempaquetaría un comprimido, editaría sus archivos, y querría
+crear un parche.  Por lo tanto ella renombraría su directorio de
+trabajo, desempacaría el comprimido de nuevo(para lo cual necesitó el
+renombramiento), y usaría las opciones \cmdopt{diff}{-r} y
+\cmdopt{diff}{-N} de \command{diff} para generar recursivamente un
+parche entre el directorio original y el modificado.  El resultado
+sería que el nombre del directorio original estaría al principio de
+toda ruta en cada encabezado de fichero, y el nombre del directorio
+modificado estaría al frente de la porción derecha de la ruta del
+archivo.
 
 Since someone receiving a patch from the Alices of the net would be
 unlikely to have unmodified and modified directories with exactly the
