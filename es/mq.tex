@@ -594,105 +594,111 @@ Hay ciertas cosas útiles por saber acerca de cómo trabaja
 \end{itemize}
 \subsection{Cuidado con los difusos}
 
-While applying a hunk at an offset, or with a fuzz factor, will often
-be completely successful, these inexact techniques naturally leave
-open the possibility of corrupting the patched file.  The most common
-cases typically involve applying a patch twice, or at an incorrect
-location in the file.  If \command{patch} or \hgxcmd{mq}{qpush} ever
-mentions an offset or fuzz factor, you should make sure that the
-modified files are correct afterwards.  
+Cuando aplique un trozo con un corrimiento, o con un factor difuso,
+aveces será taotalmente exitoso, tales técnicas inexactas dejan
+claramente la posibilidad de corromper el archivo parchado.  Los casos
+más típicos involucran aplicar un parche dos veces o en un sitio
+incorrecto del fichero. Si \command{patch} o \hgxcmd{mq}{qpush} llegan
+a mencionar un corrimiento o un factor difuso, debería asegurarse que
+los ficheros modificados estén correctos después del suceso.
 
-It's often a good idea to refresh a patch that has applied with an
-offset or fuzz factor; refreshing the patch generates new context
-information that will make it apply cleanly.  I say ``often,'' not
-``always,'' because sometimes refreshing a patch will make it fail to
-apply against a different revision of the underlying files.  In some
-cases, such as when you're maintaining a patch that must sit on top of
-multiple versions of a source tree, it's acceptable to have a patch
-apply with some fuzz, provided you've verified the results of the
-patching process in such cases.
+Casi siempre es buena idea refrescar un parche que fue aplicado con un
+corrimiento o un factor difuso; refrescar el parche genera nueva
+información de contexto que permitirá aplicarlo limpiamente.  Digo
+``casi siempre,'' no ``siempre'', puesto que en ciertas ocasiones
+refrescar un parche lo hará fallar frente a una revisión diferente del
+fichero.  En algunos casos, como por ejemplo, cuando usted está
+manteniendo un parche que debe estar encima de múltiples revisiones de
+un árbol de fuentes, es aceptable tener un parche aplicado algo
+difuso, siempre que haya verificado los resultados del proceso de
+parchar.
 
-\subsection{Handling rejection}
+\subsection{Manejo de descartes}
 
-If \hgxcmd{mq}{qpush} fails to apply a patch, it will print an error
-message and exit.  If it has left \sfilename{.rej} files behind, it is
-usually best to fix up the rejected hunks before you push more patches
-or do any further work.
+Si \hgxcmd{mq}{qpush} falla al aplicar un parche, mostrará un texto de
+error y saldrá.  Si ha dejado ficheros \sfilename{.rej}, es mejor
+arreglar los trozos descartados antes de introducir parches
+adicionales o hacer cualquier otra cosa.
 
-If your patch \emph{used to} apply cleanly, and no longer does because
-you've changed the underlying code that your patches are based on,
-Mercurial Queues can help; see section~\ref{sec:mq:merge} for details.
+Si su parche \emph{solía} aplicarse limpiamente, y ya no lo hace
+porque ha cambiado código subyacente en el cual se basa su parche, las
+Colas de Mercurial pueden ayudar; consulte la sección~\ref{sec:mq:merge}.
 
-Unfortunately, there aren't any great techniques for dealing with
-rejected hunks.  Most often, you'll need to view the \sfilename{.rej}
-file and edit the target file, applying the rejected hunks by hand.
+Desafortunadamente, no hay grandes técnicas para tratar los trozos
+descartados.  Casi siempre deberá consultar el fichero
+\sfilename{.rej} y editar el fichero objetivo, aplicando los trozos
+descartados a mano.
 
-If you're feeling adventurous, Neil Brown, a Linux kernel hacker,
-wrote a tool called \command{wiggle}~\cite{web:wiggle}, which is more
-vigorous than \command{patch} in its attempts to make a patch apply.
+Si es aventurero, Neil Brown, un hacker del núcleo Linux, escribió una
+herramienta llamada \command{wiggle}~\cite{web:wiggle}, que es más
+vigorosa que \command{patch} en su intento de hacer que se aplique un
+parche.
 
-Another Linux kernel hacker, Chris Mason (the author of Mercurial
-Queues), wrote a similar tool called
-\command{mpatch}~\cite{web:mpatch}, which takes a simple approach to
-automating the application of hunks rejected by \command{patch}.  The
-\command{mpatch} command can help with four common reasons that a hunk
-may be rejected:
+Otro hacker del nucleo Linux, Chris Mason (el autor de las Colas de
+Mercurial), escribió una herramienta similar llamada
+\command{mpatch}~\cite{web:mpatch}, que sigue una aproximación
+sencilla para automatizar la aplicación de trozos descartados por
+\command{patch}.  La orden \command{mpatch} puede ayudar con cuatro
+razones comunes por las cuales un parche ha sido descartado:
 
 \begin{itemize}
-\item The context in the middle of a hunk has changed.
-\item A hunk is missing some context at the beginning or end.
-\item A large hunk might apply better---either entirely or in
-  part---if it was broken up into smaller hunks.
-\item A hunk removes lines with slightly different content than those
-  currently present in the file.
+\item El contexto en la mitad de un trozo ha cambiado.
+\item Un trozo ha perdido cierto contexto al principio o al final.
+\item Un trozo largo podría aplicarse mejor---por completo o una
+  parte---si estaba cortado en trozos más pequeños.
+\item Un trozo remueve líneas con contenido ligeramente diferente que
+  aquellas que están presentes en el fichero.
 \end{itemize}
 
-If you use \command{wiggle} or \command{mpatch}, you should be doubly
-careful to check your results when you're done.  In fact,
-\command{mpatch} enforces this method of double-checking the tool's
-output, by automatically dropping you into a merge program when it has
-done its job, so that you can verify its work and finish off any
-remaining merges.
+Si usted usa \command{wiggle} o \command{mpatch}, debería ser
+doblemente cuidadoso al revisar sus resultados cuando haya terminado.
+De hecho, \command{mpatch} refuerza este método de revisar por partida
+doble su salida, dejándolo a usted en un programa de fusión cuando la
+herramienta haya terminado su trabajo, de tal forma que usted pueda
+verificar lo que ha hecho y pueda terminar de aplicar cualquier fusión
+faltante.
 
-\section{Getting the best performance out of MQ}
+\section{Contar con el máximo rendimiento de MQ}
 \label{sec:mq:perf}
 
-MQ is very efficient at handling a large number of patches.  I ran
-some performance experiments in mid-2006 for a talk that I gave at the
-2006 EuroPython conference~\cite{web:europython}.  I used as my data
-set the Linux 2.6.17-mm1 patch series, which consists of 1,738
-patches.  I applied these on top of a Linux kernel repository
-containing all 27,472 revisions between Linux 2.6.12-rc2 and Linux
-2.6.17.
+MQ es muy eficiente al tratar con una gran cantidad de parches.  Corrí
+unos experimentos de desempeño a mediados del 2006 para una charla que
+dí en la conferencia EuroPython 2006~\cite{web:europython}.  Empleé la
+serie de parches para el núcleo Linux 2.6.17-mm1, que contaba con 1.738
+parches.  Los apliqué sobre un repositorio del núcleo de Linux con
+todas las 27.472 revisiones entre 2.6.12-rc2 y 2.6.17.
 
-On my old, slow laptop, I was able to
-\hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-a}} all 1,738 patches in 3.5 minutes,
-and \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}} them all in 30 seconds.  (On a
-newer laptop, the time to push all patches dropped to two minutes.)  I
-could \hgxcmd{mq}{qrefresh} one of the biggest patches (which made 22,779
-lines of changes to 287 files) in 6.6 seconds.
+En mi viejo y lento portátil, logré aplicar 
+\hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-a}} a los 1.738 parches en 3.5
+minutos, y \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}} en 30 segundos.
+(En un portátil más nuevo, el tiempo para introducir todos los
+parches, se logró en menos de dos minutos.)  Apliqué
+\hgxcmd{mq}{qrefresh} sobre uno de los parches más grandes(que hizo
+22.779 líneas de cambios en 287 ficheros) en 6,6 segundos.
 
-Clearly, MQ is well suited to working in large trees, but there are a
-few tricks you can use to get the best performance of it.
+Claramente, MQ funciona adecuadamente en árboles grandes, y además hay
+unos trucos que pueden emplearse para obtener el máximo desempeño.
 
-First of all, try to ``batch'' operations together.  Every time you
-run \hgxcmd{mq}{qpush} or \hgxcmd{mq}{qpop}, these commands scan the working
-directory once to make sure you haven't made some changes and then
-forgotten to run \hgxcmd{mq}{qrefresh}.  On a small tree, the time that
-this scan takes is unnoticeable.  However, on a medium-sized tree
-(containing tens of thousands of files), it can take a second or more.
+En primer lugar, trate de hacer ``en lote'' las operaciones.  Cada vez
+que ejecute \hgxcmd{mq}{qpush} o \hgxcmd{mq}{qpop}, tales órdenes
+revisan el directorio de trabajo para asegurarse de que usted no ha
+hecho cambios y ha olvidado ejecutar \hgxcmd{mq}{qrefresh}.  En un
+árbol pequeño, el tiempo de esta revisión puede ser mínimo,  Pero en
+un árbol mediano(con decenas de miles de ficheros), puede tomar un
+segundo o más.
 
-The \hgxcmd{mq}{qpush} and \hgxcmd{mq}{qpop} commands allow you to push and pop
-multiple patches at a time.  You can identify the ``destination
-patch'' that you want to end up at.  When you \hgxcmd{mq}{qpush} with a
-destination specified, it will push patches until that patch is at the
-top of the applied stack.  When you \hgxcmd{mq}{qpop} to a destination, MQ
-will pop patches until the destination patch is at the top.
+Las órdenes \hgxcmd{mq}{qpush} y \hgxcmd{mq}{qpop} le permiten
+introducir o sustraer varios parches en una operación.  Puede
+identificar el ``parche destino'' que desee.  Cuando aplique
+\hgxcmd{mq}{qpush} con un destino, introducirá tantos parches como sea
+necesario hasta que el especificado esté en el tope de la pila.
+Cuando emplee \hgxcmd{mq}{qpop} con un destino, MQ sustraerá parches
+hasta que el parche destino esté en el tope.
 
-You can identify a destination patch using either the name of the
-patch, or by number.  If you use numeric addressing, patches are
-counted from zero; this means that the first patch is zero, the second
-is one, and so on.
+Puede identificar un parche destino con el nombre del parche o con el
+número.  Si se refiere al número, los parches se contarán desde cero;
+esto significa que el primer parche es cero, el segundo es uno y así
+sucesivamente.
 
 \section{Updating your patches when the underlying code changes}
 \label{sec:mq:merge}
