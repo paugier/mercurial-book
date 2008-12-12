@@ -668,7 +668,7 @@ serie de parches para el núcleo Linux 2.6.17-mm1, que contaba con 1.738
 parches.  Los apliqué sobre un repositorio del núcleo de Linux con
 todas las 27.472 revisiones entre 2.6.12-rc2 y 2.6.17.
 
-En mi viejo y lento portátil, logré aplicar 
+En mi portátil antiguo y lento, logré aplicar 
 \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-a}} a los 1.738 parches en 3.5
 minutos, y \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}} en 30 segundos.
 (En un portátil más nuevo, el tiempo para introducir todos los
@@ -700,100 +700,104 @@ número.  Si se refiere al número, los parches se contarán desde cero;
 esto significa que el primer parche es cero, el segundo es uno y así
 sucesivamente.
 
-\section{Updating your patches when the underlying code changes}
+\section{Actualiar los parches cuando el código cambia}
 \label{sec:mq:merge}
 
-It's common to have a stack of patches on top of an underlying
-repository that you don't modify directly.  If you're working on
-changes to third-party code, or on a feature that is taking longer to
-develop than the rate of change of the code beneath, you will often
-need to sync up with the underlying code, and fix up any hunks in your
-patches that no longer apply.  This is called \emph{rebasing} your
-patch series.
+Es común contar con una pila de parches sobre un repositorio que usted
+no modifica directamente.  Si está trabajando en cambios de código de
+otros, o en una característica que tarda bastante en desarrollarse
+comparada con la tasa de cambio del código sobre la cual se está
+trabajando, necesitará sincronizarse con el código, y ajustar
+cualquier trozo en sus parches que ya no estén al día.  A esto se le
+llama hacer \emph{rebase} a su serie de parches.
 
-The simplest way to do this is to \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}}
-your patches, then \hgcmd{pull} changes into the underlying
-repository, and finally \hgcmdargs{qpush}{\hgxopt{mq}{qpop}{-a}} your
-patches again.  MQ will stop pushing any time it runs across a patch
-that fails to apply during conflicts, allowing you to fix your
-conflicts, \hgxcmd{mq}{qrefresh} the affected patch, and continue pushing
-until you have fixed your entire stack.
+La vía más sencilla de hacerlo es con \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}}
+sobre sus parches, después hacer \hgcmd{pull} de los cambios en el
+repositorio, y finalmente hacer
+\hgcmdargs{qpush}{\hgxopt{mq}{qpop}{-a}} con sus parches de nuevo.  MQ
+dejará de de introducir parches siempre que llegue a un parche que no se pueda
+aplicar debido a un conflicto, permitiéndole a usted arreglarlo,
+aplicar \hgxcmd{mq}{qrefresh} al parche afectado y continuar
+introduciendo hasta que haya arreglado la pila completa.
 
-This approach is easy to use and works well if you don't expect
-changes to the underlying code to affect how well your patches apply.
-If your patch stack touches code that is modified frequently or
-invasively in the underlying repository, however, fixing up rejected
-hunks by hand quickly becomes tiresome.
+Esta aproximación es sencilla y funciona bien si no espera cambios en
+el código original que afecte en gran medida los parches que usted
+esté aplicando. Si su pila de parches toca código que es modificado
+frecuentemente o de forma invasiva sobre el código subyacente,
+arreglar trozos manualmente se vuelve desgastante.
 
-It's possible to partially automate the rebasing process.  If your
-patches apply cleanly against some revision of the underlying repo, MQ
-can use this information to help you to resolve conflicts between your
-patches and a different revision.
+Es posible automatizar de forma parcial el proceso de rebase.  Si sus
+parches se aplican limpiamente sobre algunas revisiones del
+repositorio subyacente, MQ puede usar esta información para ayudarle a
+a resolver conflictos entre sus parches y una revisión distinta.
 
-The process is a little involved.
+El proceso resulta un poco complejo:
 \begin{enumerate}
-\item To begin, \hgcmdargs{qpush}{-a} all of your patches on top of
-  the revision where you know that they apply cleanly.
-\item Save a backup copy of your patch directory using
-  \hgcmdargs{qsave}{\hgxopt{mq}{qsave}{-e} \hgxopt{mq}{qsave}{-c}}.  This prints
-  the name of the directory that it has saved the patches in.  It will
-  save the patches to a directory called
-  \sdirname{.hg/patches.\emph{N}}, where \texttt{\emph{N}} is a small
-  integer.  It also commits a ``save changeset'' on top of your
-  applied patches; this is for internal book-keeping, and records the
-  states of the \sfilename{series} and \sfilename{status} files.
-\item Use \hgcmd{pull} to bring new changes into the underlying
-  repository.  (Don't run \hgcmdargs{pull}{-u}; see below for why.)
-\item Update to the new tip revision, using
-  \hgcmdargs{update}{\hgopt{update}{-C}} to override the patches you
-  have pushed.
-\item Merge all patches using \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-m}
-    \hgxopt{mq}{qpush}{-a}}.  The \hgxopt{mq}{qpush}{-m} option to \hgxcmd{mq}{qpush}
-  tells MQ to perform a three-way merge if the patch fails to apply.
+\item Para comenzar, haga \hgcmdargs{qpush}{-a} sobre todos los
+  parches que usted sepa se aplican limpiamente.
+\item Guarde una copia de seguridad de su directorio de parches  con
+  \hgcmdargs{qsave}{\hgxopt{mq}{qsave}{-e} \hgxopt{mq}{qsave}{-c}}.
+  Esto imprime el nombre del directorio en el cual se han guardado los
+  parches.  Guardará los parches en un directorio llamado
+  \sdirname{.hg/patches.\emph{N}}, donde \texttt{\emph{N}} es un
+  entero pequeño.  También consigna un ``conjunto de cambios de
+  seguridad'' sobre sus parches aplicados; esto es para mantener el
+  histórico, y guarda los estados de los ficheros  \sfilename{series}
+  y \sfilename{status}.
+\item Use \hgcmd{pull} para traer los nuevos cambios en el repositorio
+  subyacente. (No ejecute \hgcmdargs{pull}{-u}; vea más adelante por qué.)
+\item Actualice a la nueva revisión punta con 
+  \hgcmdargs{update}{\hgopt{update}{-C}} para sobreescribir los
+  parches que haya introducido.
+\item Fusione todos los parches con \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-m}
+    \hgxopt{mq}{qpush}{-a}}.  La opción \hgxopt{mq}{qpush}{-m} de \hgxcmd{mq}{qpush}
+  le indica a MQ que haga una fusión que involucra tres fuentes si el
+  parche falla al aplicarse.
 \end{enumerate}
 
-During the \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-m}}, each patch in the
-\sfilename{series} file is applied normally.  If a patch applies with
-fuzz or rejects, MQ looks at the queue you \hgxcmd{mq}{qsave}d, and
-performs a three-way merge with the corresponding changeset.  This
-merge uses Mercurial's normal merge machinery, so it may pop up a GUI
-merge tool to help you to resolve problems.
+Durante el \hgcmdargs{qpush}{\hgxopt{mq}{qpush}{-m}}, cada parche en
+el fichero \sfilename{series} se aplica normalmente.  Si un parche se
+aplica difusamente o se niea a aplicarse, MQ consulta la cola que
+usted guardó con \hgxcmd{mq}{qsave}, y aplica una fusión de tres con
+el correspondiente conjunto de cambios.  Esta fusión usa la maquinaria
+de Mercurial, por lo tanto puede mostrar una herramienta de fusión GUI
+para ayudarle a resolver los problemas.
 
-When you finish resolving the effects of a patch, MQ refreshes your
-patch based on the result of the merge.
+Cuando termine de resolver los efectos de un parche, MQ refrescará su
+parche basado en el resultado de la fusión.
 
-At the end of this process, your repository will have one extra head
-from the old patch queue, and a copy of the old patch queue will be in
-\sdirname{.hg/patches.\emph{N}}. You can remove the extra head using
-\hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a} \hgxopt{mq}{qpop}{-n} patches.\emph{N}}
-or \hgcmd{strip}.  You can delete \sdirname{.hg/patches.\emph{N}} once
-you are sure that you no longer need it as a backup.
+Al final de este proceso, su repositorio tendrá una cabeza extra de la
+antigua cola de parches, y una copia de la cola de parches anterio
+estará en \sdirname{.hg/patches.\emph{N}}. Puede eliminar la cabeza
+extra con \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a} \hgxopt{mq}{qpop}{-n} patches.\emph{N}}
+o \hgcmd{strip}.  Puede eliminar \sdirname{.hg/patches.\emph{N}} una
+vez que esté seguro de que no lo necesita más como copia de seguridad.
 
-\section{Identifying patches}
+\section{Identificar parches}
 
-MQ commands that work with patches let you refer to a patch either by
-using its name or by a number.  By name is obvious enough; pass the
-name \filename{foo.patch} to \hgxcmd{mq}{qpush}, for example, and it will
-push patches until \filename{foo.patch} is applied.  
+Las órdenes de MQ le permiten trabajar refiriéndose al nombre del
+parche o al número.  Es obvio hacerlo por el nombre; por ejemplo se
+pasa el nombre \filename{foo.patch} a \hgxcmd{mq}{qpush}, que
+introducirá los parches hasta que \filename{foo.patch} se aplique.  
 
-As a shortcut, you can refer to a patch using both a name and a
-numeric offset; \texttt{foo.patch-2} means ``two patches before
-\texttt{foo.patch}'', while \texttt{bar.patch+4} means ``four patches
-after \texttt{bar.patch}''.
+Para hacerlo más corto, puede referirse a un parche con un nombre y un
+corrimiento de número; por ejemplo,  \texttt{foo.patch-2} significa
+``dos parches antes de \texttt{foo.patch}'', mientras que
+\texttt{bar.patch+4} significa ``cuatro parches después de \texttt{bar.patch}''.
 
-Referring to a patch by index isn't much different.  The first patch
-printed in the output of \hgxcmd{mq}{qseries} is patch zero (yes, it's one
-of those start-at-zero counting systems); the second is patch one; and
-so on.
+Referirse a un parche por su índice no es muy diferente.  El primer
+parche que se imprime en la salida de \hgxcmd{mq}{qseries} es el
+parche cero(si, es el primero en los sistemas que comienzan su conteo
+en cero); el segundo parche es uno y así sucesivamente.
 
-MQ also makes it easy to work with patches when you are using normal
-Mercurial commands.  Every command that accepts a changeset ID will
-also accept the name of an applied patch.  MQ augments the tags
-normally in the repository with an eponymous one for each applied
-patch.  In addition, the special tags \index{tags!special tag
-  names!\texttt{qbase}}\texttt{qbase} and \index{tags!special tag
-  names!\texttt{qtip}}\texttt{qtip} identify the ``bottom-most'' and
-topmost applied patches, respectively.
+MQ facilita el trabajo cuando está usando órdenes normales de
+Mercurial.  Cada comando que acepte Identificadores de conjuntos de
+cambios también aceptará el nombre de un parche aplicado.  MQ aumenta
+los tags normalmente en el repositorio con un distintivo para cada
+parche aplicado.  Adicionalmente, los tags especiales \index{tags!special tag
+  names!\texttt{qbase}}\texttt{qbase} y \index{tags!special tag
+  names!\texttt{qtip}}\texttt{qtip} identifican los parches
+``primero'' y último, respectivamente.
 
 These additions to Mercurial's normal tagging capabilities make
 dealing with patches even more of a breeze.
