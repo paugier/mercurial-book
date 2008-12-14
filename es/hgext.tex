@@ -1,230 +1,240 @@
 \chapter{Añadir funcionalidad con extensiones}
 \label{chap:hgext}
 
-While the core of Mercurial is quite complete from a functionality
-standpoint, it's deliberately shorn of fancy features.  This approach
-of preserving simplicity keeps the software easy to deal with for both
-maintainers and users.
+A pesar de que el corazón de Mercurial es muy completo desde el punto
+de vista de funcionalidad, carece de características rimbombantes
+deliberadamente.  Esta aproximación de preservar la simplicidad
+mantiene el programa sencillo tanto para mantenedores como para
+usuarios.
 
-However, Mercurial doesn't box you in with an inflexible command set:
-you can add features to it as \emph{extensions} (sometimes known as
-\emph{plugins}).  We've already discussed a few of these extensions in
-earlier chapters.
+Si embargo Mercurial no le cierra las posibilidades a un conjunto
+inflexible de órdenes: usted puede añadir características como
+\emph{extensiones} (aveces llamadas \emph{añadidos}\ndt{plugins}).  Ya
+hemos discutido algunas de estas extensiones en capítulos anteriores:
 \begin{itemize}
-\item Section~\ref{sec:tour-merge:fetch} covers the \hgext{fetch}
-  extension; this combines pulling new changes and merging them with
-  local changes into a single command, \hgxcmd{fetch}{fetch}.
-\item In chapter~\ref{chap:hook}, we covered several extensions that
-  are useful for hook-related functionality: \hgext{acl} adds access
-  control lists; \hgext{bugzilla} adds integration with the Bugzilla
-  bug tracking system; and \hgext{notify} sends notification emails on
-  new changes.
-\item The Mercurial Queues patch management extension is so invaluable
-  that it merits two chapters and an appendix all to itself.
-  Chapter~\ref{chap:mq} covers the basics;
-  chapter~\ref{chap:mq-collab} discusses advanced topics; and
-  appendix~\ref{chap:mqref} goes into detail on each command.
+\item La sección~\ref{sec:tour-merge:fetch} cubre la extensión
+  \hgext{fetch}; que combina jalar cambios y fusionarlos con los
+  cambios locales en una sola orden: \hgxcmd{fetch}{fetch}.
+\item En el capítulo~\ref{chap:hook}, cubrimos muchas extensiones que
+  son útiles en funcionalidades relacionadas con ganchos: Los
+  \hgext{acl} añaden listas de control de acceso; \hgext{bugzilla}
+  añade integración con el sistema de seguimiento de fallos Bugzilla; y
+  \hgext{notify} envía notificaciones por correo de nuevos cambios.
+\item La extensión de administración de parches MQ es tan invaluable
+  que amerita dos capítulos y un apéndice por sí misma.
+  El capítulo~\ref{chap:mq} cubre lo básico; el
+  capítulo~\ref{chap:mq-collab} discute temas avanzados; y el
+  apéndice~\ref{chap:mqref} muestra en detalle cada orden.
 \end{itemize}
 
-In this chapter, we'll cover some of the other extensions that are
-available for Mercurial, and briefly touch on some of the machinery
-you'll need to know about if you want to write an extension of your
-own.
+En este capítulo cubriremos algunas extensiones adicionales
+disponibles para Mercurial, y daremos un vistazo a la maquinaria que
+necesita conocer en caso de que desee escribir una extensión.
 \begin{itemize}
-\item In section~\ref{sec:hgext:inotify}, we'll discuss the
-  possibility of \emph{huge} performance improvements using the
-  \hgext{inotify} extension.
+\item En la sección~\ref{sec:hgext:inotify}, discutiremos la
+  posibilidad de mejorar el desempeño \emph{en gran medida} con la extensión
+  \hgext{inotify}.
 \end{itemize}
 
-\section{Improve performance with the \hgext{inotify} extension}
+\section{Mejorar el desempeño con la extensión \hgext{inotify}}
 \label{sec:hgext:inotify}
 
-Are you interested in having some of the most common Mercurial
-operations run as much as a hundred times faster?  Read on!
+¿Desea lograr que las operaciones más comunmente usadas de Mercurial se
+ejecuten centenas de veces más rápido? ¡A leer!
 
-Mercurial has great performance under normal circumstances.  For
-example, when you run the \hgcmd{status} command, Mercurial has to
-scan almost every directory and file in your repository so that it can
-display file status.  Many other Mercurial commands need to do the
-same work behind the scenes; for example, the \hgcmd{diff} command
-uses the status machinery to avoid doing an expensive comparison
-operation on files that obviously haven't changed.
+Mercurial tiene gran desempeño bajo circunstancias normales.  Por
+ejemplo, cuando ejecuta la orden \hgcmd{status}, Mercurial tiene que
+revisar casi todos los ficheros y directorios en su repositorio de
+forma que pueda desplegar el estado de los ficheros.  Muchas otras
+órdenes tienen que hacer tal trabajo tras bambalinas;  por ejemplo la
+orden \hgcmd{diff} usa la maquinaria de estado para evitar hacer
+operaciones de comparación costosas en ficheros que obviamente no han
+cambiado.
 
-Because obtaining file status is crucial to good performance, the
-authors of Mercurial have optimised this code to within an inch of its
-life.  However, there's no avoiding the fact that when you run
-\hgcmd{status}, Mercurial is going to have to perform at least one
-expensive system call for each managed file to determine whether it's
-changed since the last time Mercurial checked.  For a sufficiently
-large repository, this can take a long time.
+Dado que obtener el estado de los ficheros es crucial para obtener
+buen desempeño, los autores de Mercurial han optimizado este código en
+la medida de lo posible.  Sin embargo, no puede obviarse el hecho de
+que cuando ejecuta \hgcmd{status}, Mercurial tendrá que hacer por lo
+menos una costosa llamada al sistema por cada archivo administrado
+para determinar si ha cambiado desde la última vez que se consignó.
+Para un repositorio suficientemente grande, puede tardar bastante
+tiempo.
 
-To put a number on the magnitude of this effect, I created a
-repository containing 150,000 managed files.  I timed \hgcmd{status}
-as taking ten seconds to run, even when \emph{none} of those files had
-been modified.
+Para mostrar en números la magnitud de este efect, creé un repositorio
+que contenía 150.000 archivos administrador.  Tardó diez segundos para
+ejecutar \hgcmd{status}, a pesar de que \emph{ninguno} de los ficheros
+había sido modificado.
 
-Many modern operating systems contain a file notification facility.
-If a program signs up to an appropriate service, the operating system
-will notify it every time a file of interest is created, modified, or
-deleted.  On Linux systems, the kernel component that does this is
-called \texttt{inotify}.
+Muchos sistemas operativos modernos contienen una facilidad de
+notificación de archivos.  Si un programa se registra con un servicio
+apropiado, el sistema operativo le notificará siempre que un fichero
+de interés haya sido creado, modificado o borrado.  En sistemas Linux,
+el componente del núcleo que lo hace se llama \texttt{inotify}.
 
-Mercurial's \hgext{inotify} extension talks to the kernel's
-\texttt{inotify} component to optimise \hgcmd{status} commands.  The
-extension has two components.  A daemon sits in the background and
-receives notifications from the \texttt{inotify} subsystem.  It also
-listens for connections from a regular Mercurial command.  The
-extension modifies Mercurial's behaviour so that instead of scanning
-the filesystem, it queries the daemon.  Since the daemon has perfect
-information about the state of the repository, it can respond with a
-result instantaneously, avoiding the need to scan every directory and
-file in the repository.
+La extensión \hgext{inotify} habla con el componente \texttt{inotify}
+del núcleo para optimizar las órdenes de \hgcmd{status}.  La extensión
+tiene dos componentes.  Un daemonio está en el fondo recibiendo
+notificaciones del subsistema \texttt{inotify}.  También escucha
+conexiones de una orden regular de Mercurial.  La extensión modifica
+el comportamiento de Mercurial de tal forma que, en lugar de revisar
+el sistema de ficheros, le pregunta al daemonio.  Dado que el daemonio
+tiene información perfecta acerca del estado del repositorio, puede
+responder instantáneamente con el resultado, evitando la necesidad de
+revisar cada directorio y fichero del repositorio.
 
-Recall the ten seconds that I measured plain Mercurial as taking to
-run \hgcmd{status} on a 150,000 file repository.  With the
-\hgext{inotify} extension enabled, the time dropped to 0.1~seconds, a
-factor of \emph{one hundred} faster.
+Retomando los diez segundos que medí al ejecutar la orden
+\hgcmd{status} de Mercurial sobre un repositorio de 150.000
+ficheros. Con la extensión \hgext{inotify} habilitada, el tiempo se
+disipó a 0.1~seconds, un factor \emph{cien veces} más rápido.
 
-Before we continue, please pay attention to some caveats.
+Antes de continuar, tenga en cuenta algunos detalles:
 \begin{itemize}
-\item The \hgext{inotify} extension is Linux-specific.  Because it
-  interfaces directly to the Linux kernel's \texttt{inotify}
-  subsystem, it does not work on other operating systems.
-\item It should work on any Linux distribution that was released after
-  early~2005.  Older distributions are likely to have a kernel that
-  lacks \texttt{inotify}, or a version of \texttt{glibc} that does not
-  have the necessary interfacing support.
-\item Not all filesystems are suitable for use with the
-  \hgext{inotify} extension.  Network filesystems such as NFS are a
-  non-starter, for example, particularly if you're running Mercurial
-  on several systems, all mounting the same network filesystem.  The
-  kernel's \texttt{inotify} system has no way of knowing about changes
-  made on another system.  Most local filesystems (e.g.~ext3, XFS,
-  ReiserFS) should work fine.
+\item La extensión \hgext{inotify} es específica de Linux.  Porque se
+  enlaza directamente con el subsistema \texttt{inotify} del núcleo
+  Linux, no funciona en otros sistemas operativos.
+\item Debería funcionar en cualquier distribución Linux a partir de
+  comienzos del 2005.  Las distribuciones más antiguas deben tener un
+  kernel sin \texttt{inotify}, o una versión de \texttt{glibc} que no
+  tiene necesariamente el soporte para la interfaz.
+\item No todos los sistemas de ficheros pueden usarse con la extensión
+  \hgext{inotify}.  Los sistemas de ficheros tales como NFS no lo
+  soportan, por ejemplo, si está corriendo Mercurial en vaios
+  sistemas, montados todos sobre el mismo sistema de ficheros en red.
+  El sistema \texttt{inotify} del kernel no tiene forma de saber
+  acerca de los cambios hechos en otro sistema.  La mayoría de
+  sistemas de ficheros locales (p.e.~ext3, XFS, ReiserFS) deberían
+  funcionar bien.
 \end{itemize}
 
-The \hgext{inotify} extension is not yet shipped with Mercurial as of
-May~2007, so it's a little more involved to set up than other
-extensions.  But the performance improvement is worth it!
+Hacia mayo de 2007 la extensión \hgext{inotify} no venía de forma
+predeterminada en Mercurial\ndt{Desde el 2008 para kernels 2.6 viene
+  en Mercurial, pero no está activada de forma predeterminada}, y es
+un poco más compleja de activar que otras extensiones.  Pero la mejora
+en el desempeño bien vale la pena!
 
-The extension currently comes in two parts: a set of patches to the
-Mercurial source code, and a library of Python bindings to the
-\texttt{inotify} subsystem.
+La extensión venía en dos partes: un conjunto de parches al código
+fuente de Mercurial, y una librería de interfaces de Python hacia el
+subsistema \texttt{inotify}.
 \begin{note}
-  There are \emph{two} Python \texttt{inotify} binding libraries.  One
-  of them is called \texttt{pyinotify}, and is packaged by some Linux
-  distributions as \texttt{python-inotify}.  This is \emph{not} the
-  one you'll need, as it is too buggy and inefficient to be practical.
+  Hay \emph{dos} librerías de enlace de Python hacia \texttt{inotify}.
+  Una de ellas se llama \texttt{pyinotify}, y en algunas
+  distribuciones de Linux se encuentra como \texttt{python-inotify}.
+  Esta es la que \emph{no} necesita, puesto que tiene muchos fallos,
+  y es ineficiente para ser práctica.
 \end{note}
-To get going, it's best to already have a functioning copy of
-Mercurial installed.
+Para comenzar, es mejor tener una copia de Mercurial funcional
+instalada:
 \begin{note}
-  If you follow the instructions below, you'll be \emph{replacing} and
-  overwriting any existing installation of Mercurial that you might
-  already have, using the latest ``bleeding edge'' Mercurial code.
-  Don't say you weren't warned!
+  Si sigue las instrucciones a continuación, estará
+  \emph{reemplazando} y sobreescribiendo cualquier instalación previa
+  de Mercurial que pudiera tener, con el código de Mercurial ``más
+  reciente y peligrosa''.  No diga que no se le advirtio!
 \end{note}
 \begin{enumerate}
-\item Clone the Python \texttt{inotify} binding repository.  Build and
-  install it.
+\item Clone el repositorio de interfaz entre Python e
+  \texttt{inotify}. Ármelo e instálelo:
   \begin{codesample4}
     hg clone http://hg.kublai.com/python/inotify
     cd inotify
     python setup.py build --force
     sudo python setup.py install --skip-build
   \end{codesample4}
-\item Clone the \dirname{crew} Mercurial repository.  Clone the
-  \hgext{inotify} patch repository so that Mercurial Queues will be
-  able to apply patches to your cope of the \dirname{crew} repository.
+\item Clone el repositorio \dirname{crew} de Mercurial.  Clone el
+  repositorio de parches de \hgext{inotify} de forma tal que las colas
+  de Mercurial puedan aplicar los parches sobre el repositorio \dirname{crew}.
   \begin{codesample4}
     hg clone http://hg.intevation.org/mercurial/crew
     hg clone crew inotify
     hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches
   \end{codesample4}
-\item Make sure that you have the Mercurial Queues extension,
-  \hgext{mq}, enabled.  If you've never used MQ, read
-  section~\ref{sec:mq:start} to get started quickly.
-\item Go into the \dirname{inotify} repo, and apply all of the
-  \hgext{inotify} patches using the \hgxopt{mq}{qpush}{-a} option to
-  the \hgxcmd{mq}{qpush} command.
+\item Asegúrese de instalar la extensión Colas de Mercurial
+  \hgext{mq} y que estén habilitadas.  Si nunca ha usado MQ, lea la
+  sección~\ref{sec:mq:start} para poder comenzar rápidamente.
+\item Vaya al repositorio de \dirname{inotify} y aplique todos los
+  parches de \hgext{inotify} con la opción \hgxopt{mq}{qpush}{-a} de
+  la orden \hgxcmd{mq}{qpush}.
   \begin{codesample4}
     cd inotify
     hg qpush -a
   \end{codesample4}
-  If you get an error message from \hgxcmd{mq}{qpush}, you should not
-  continue.  Instead, ask for help.
-\item Build and install the patched version of Mercurial.
+  Si obtiene un mensaje de error de \hgxcmd{mq}{qpush}, no debería
+  continuar.  Mejor pida ayuda.
+\item Arme e instale la versión parchada de Mercurial.
   \begin{codesample4}
     python setup.py build --force
     sudo python setup.py install --skip-build
   \end{codesample4}
 \end{enumerate}
-Once you've build a suitably patched version of Mercurial, all you
-need to do to enable the \hgext{inotify} extension is add an entry to
-your \hgrc.
+Una vez que haya armado una versión funcional parchada de Mercurial,
+todo lo que necesita es habilitar la extensión \hgext{inotify}
+colocando una entrada en su \hgrc.
 \begin{codesample2}
   [extensions]
   inotify =
 \end{codesample2}
-When the \hgext{inotify} extension is enabled, Mercurial will
-automatically and transparently start the status daemon the first time
-you run a command that needs status in a repository.  It runs one
-status daemon per repository.
+Cuando la extensión \hgext{inotify} esté habilitada, Mercurial
+iniciará transparente y automáticamente el daemonio de estado la
+primera vez que ejecute un comando que requiera estado del
+repositorio.  Ejecuta un daemoniot de estado por repositorio.
 
-The status daemon is started silently, and runs in the background.  If
-you look at a list of running processes after you've enabled the
-\hgext{inotify} extension and run a few commands in different
-repositories, you'll thus see a few \texttt{hg} processes sitting
-around, waiting for updates from the kernel and queries from
-Mercurial.
+El daemonio de estado se inicia silenciosamente y se ejecuta en el
+fondo. Si mira a la lista de procesos en ejecución después de
+habilitar la extensión \hgext{inotify} y ejecuta unos pocos comandos
+en diferentes repositorios, verá que hay algunos procesos de
+\texttt{hg} por ahí, esperando actualizaciones del kernel y
+solicitudes de Mercurial.
 
-The first time you run a Mercurial command in a repository when you
-have the \hgext{inotify} extension enabled, it will run with about the
-same performance as a normal Mercurial command.  This is because the
-status daemon needs to perform a normal status scan so that it has a
-baseline against which to apply later updates from the kernel.
-However, \emph{every} subsequent command that does any kind of status
-check should be noticeably faster on repositories of even fairly
-modest size.  Better yet, the bigger your repository is, the greater a
-performance advantage you'll see.  The \hgext{inotify} daemon makes
-status operations almost instantaneous on repositories of all sizes!
+La primera vez que ejecuta un comando de Mercurial en un repositorio
+cuando tiene la extensión \hgext{inotify} habilitada, correrá casi con
+el mismo desempeño que una orden usual de Mercurial.  Esto es debido a
+que el estado del daemonio necesita aplicar una búsqueda normal sobre
+el estado para poder tener una línea de partida frente a la cual
+aplicar posteriormente actualizaciones del núcleo.  De todas formas,
+\emph{todo} comando posterior que haga cualquier clase de revisión del
+estado debería ser notablemente más rápido en repositorios con incluso
+un tamaño modesto.  Aún mejor, a medida que su repositorio sea más
+grande, mejor desempeño verá.  El daemonio \hgext{inotify} hace
+operaciones de estado de forma casi instantánea en repositorios de
+todos los tamaños!
 
-If you like, you can manually start a status daemon using the
-\hgxcmd{inotify}{inserve} command.  This gives you slightly finer
-control over how the daemon ought to run.  This command will of course
-only be available when the \hgext{inotify} extension is enabled.
+Si lo desea, puede iniciar manualmente un daemonio de estado con la orden
+\hgxcmd{inotify}{inserve}.  Esto le da un control un poco más fino
+acerca de cómo debería ejecutarse el daemonio.  Esta orden solamente
+estará disponible cuando haya habilitado la extensión \hgext{inotify}.
 
-When you're using the \hgext{inotify} extension, you should notice
-\emph{no difference at all} in Mercurial's behaviour, with the sole
-exception of status-related commands running a whole lot faster than
-they used to.  You should specifically expect that commands will not
-print different output; neither should they give different results.
-If either of these situations occurs, please report a bug.
+Cuando esté usando la extensión \hgext{inotify},
+\emph{no debería ver diferencia} en el comportamiento de Mercurial,
+con la única excepción de que los comandos relacionados con el estado
+deberían ejectuarse mucho más rápido que como solían hacerlo.  Debería
+esperar específicamente que las órdenes no deberían ofrecer salidas
+distintas; ni ofrecer resultados diferentes.  Si alguna de estas
+situaciones ocurre, por favor reporte el fallo.
 
-\section{Flexible diff support with the \hgext{extdiff} extension}
+\section{Soporte flexible de diff con la extensión \hgext{extdiff}}
 \label{sec:hgext:extdiff}
 
-Mercurial's built-in \hgcmd{diff} command outputs plaintext unified
-diffs.
+La orden predeterminada \hgcmd{diff} de Mercurial despliega diffs en
+texto plano unificadas.
 \interaction{extdiff.diff}
-If you would like to use an external tool to display modifications,
-you'll want to use the \hgext{extdiff} extension.  This will let you
-use, for example, a graphical diff tool.
+Si dese emplear una herramienta externa para desplegar las
+modificaciones, querrá usar la extensión \hgext{extdiff}.  Esta le
+permitirá usar por ejemplo una herramienta gráfica de diff.
 
-The \hgext{extdiff} extension is bundled with Mercurial, so it's easy
-to set up.  In the \rcsection{extensions} section of your \hgrc,
-simply add a one-line entry to enable the extension.
+La extensión \hgext{extdiff} viene con Mercurial, y es fácil
+configurarl.  En la sección \rcsection{extensions} de su \hgrc,
+basta con añadir una entrada de una línea para habilitar la extensión.
 \begin{codesample2}
   [extensions]
   extdiff =
 \end{codesample2}
-This introduces a command named \hgxcmd{extdiff}{extdiff}, which by
-default uses your system's \command{diff} command to generate a
-unified diff in the same form as the built-in \hgcmd{diff} command.
+Esto introduce una orden llamada \hgxcmd{extdiff}{extdiff}, que de
+forma predeterminada usa su orden del sistema \command{diff} para
+generar un diff unificado de la misma forma que lo hace el comando
+predeterminado \hgcmd{diff}.
 \interaction{extdiff.extdiff}
-The result won't be exactly the same as with the built-in \hgcmd{diff}
-variations, because the output of \command{diff} varies from one
-system to another, even when passed the same options.
+El resultado no será exactamente el mismo que con la orden interna
+\hgcmd{diff}, puesto que la salida de \command{diff} varía de un
+sistema a otro, incluso pasando las mismas opciones.
 
 As the ``\texttt{making snapshot}'' lines of output above imply, the
 \hgxcmd{extdiff}{extdiff} command works by creating two snapshots of
