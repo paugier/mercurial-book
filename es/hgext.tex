@@ -236,59 +236,61 @@ El resultado no será exactamente el mismo que con la orden interna
 \hgcmd{diff}, puesto que la salida de \command{diff} varía de un
 sistema a otro, incluso pasando las mismas opciones.
 
-As the ``\texttt{making snapshot}'' lines of output above imply, the
-\hgxcmd{extdiff}{extdiff} command works by creating two snapshots of
-your source tree.  The first snapshot is of the source revision; the
-second, of the target revision or working directory.  The
-\hgxcmd{extdiff}{extdiff} command generates these snapshots in a
-temporary directory, passes the name of each directory to an external
-diff viewer, then deletes the temporary directory.  For efficiency, it
-only snapshots the directories and files that have changed between the
-two revisions.
+Como lo indican las líneas``\texttt{making snapshot}'', la orden
+\hgxcmd{extdiff}{extdiff} funciona creando dos instantáneas de su
+árbol de fuentes.  La primera instantánea es la revisión fuente; la
+segunda es la revisión objetivo del directorio de trabajo.  La orden
+\hgxcmd{extdiff}{extdiff} genera estas instantáneas en un directorio
+temporal, pasa el nombre de cada directorio a un visor de diffs
+temporal y borra los directorios temporales.  Por cuestiones de
+eficiencia solamente genera instantáneas de los directorios y ficheros
+que han cambiado entre dos revisiones.
 
-Snapshot directory names have the same base name as your repository.
-If your repository path is \dirname{/quux/bar/foo}, then \dirname{foo}
-will be the name of each snapshot directory.  Each snapshot directory
-name has its changeset ID appended, if appropriate.  If a snapshot is
-of revision \texttt{a631aca1083f}, the directory will be named
-\dirname{foo.a631aca1083f}.  A snapshot of the working directory won't
-have a changeset ID appended, so it would just be \dirname{foo} in
-this example.  To see what this looks like in practice, look again at
-the \hgxcmd{extdiff}{extdiff} example above.  Notice that the diff has
-the snapshot directory names embedded in its header.
+Los nombres de los directorios de instantáneas tienen los mismos
+nombres base de su repositorio.  Si su repositorio tiene por ruta
+\dirname{/quux/bar/foo}, \dirname{foo} será el nombre de cada
+instantánea de directorio.  Cada instantánea de directorio tiene sus
+identificadores de conjuntos de cambios al final del nombre en caso de
+que sea apropiado.  Si una instantánea viene de la revisión
+\texttt{a631aca1083f}, el directorio se llamará
+\dirname{foo.a631aca1083f}.  Una instantánea del directorio de trabajo
+no tendrá el identificador del conjunto de cambios, y por lo tanto
+será solamente \dirname{foo} en este ejemplo.  Para ver cómo luce en
+la práctica, veamos de nuevo el ejemplo \hgxcmd{extdiff}{extdiff}
+antes mencionado.  Tenga en cuenta que los diffs tienen los nombres de
+las instantáneas de directorio dentro de su encabezado.
 
-The \hgxcmd{extdiff}{extdiff} command accepts two important options.
-The \hgxopt{extdiff}{extdiff}{-p} option lets you choose a program to
-view differences with, instead of \command{diff}.  With the
-\hgxopt{extdiff}{extdiff}{-o} option, you can change the options that
-\hgxcmd{extdiff}{extdiff} passes to the program (by default, these
-options are ``\texttt{-Npru}'', which only make sense if you're
-running \command{diff}).  In other respects, the
-\hgxcmd{extdiff}{extdiff} command acts similarly to the built-in
-\hgcmd{diff} command: you use the same option names, syntax, and
-arguments to specify the revisions you want, the files you want, and
-so on.
+La orden \hgxcmd{extdiff}{extdiff} acepta dos opciones importantes.
+La opción \hgxopt{extdiff}{extdiff}{-p} le permite elegir un programa
+para ver las diferencias, en lugar de \command{diff}.  Con la opción
+\hgxopt{extdiff}{extdiff}{-o} puede cambiar las opciones que
+\hgxcmd{extdiff}{extdiff} pasa a tal programa(de forma predeterminada
+las opciones son``\texttt{-Npru}'', que tienen sentido únicamente si
+está usando \command{diff}).  En otros aspectos, la orden
+\hgxcmd{extdiff}{extdiff} actúa de forma similar a como lo hace la
+orden \hgcmd{diff} de Mercurial: usted usa los mismos nombres de
+opciones, sintaxis y argumentos para especificar las revisiones y los
+ficheros que quiere, y así sucesivamente.
 
-As an example, here's how to run the normal system \command{diff}
-command, getting it to generate context diffs (using the
-\cmdopt{diff}{-c} option) instead of unified diffs, and five lines of
-context instead of the default three (passing \texttt{5} as the
-argument to the \cmdopt{diff}{-C} option).
+Por ejemplo, para ejecutar la orden usual del sistema \command{diff},
+para lograr que se generen diferencias de contexto (con la opción
+\cmdopt{diff}{-c}) en lugar de diferencias unificadas, y cinco líneas
+de contexto en lugar de las tres predeterminadas(pasando \texttt{5}
+como argumento a la opción \cmdopt{diff}{-C}).
 \interaction{extdiff.extdiff-ctx}
 
-Launching a visual diff tool is just as easy.  Here's how to launch
-the \command{kdiff3} viewer.
+Es sencillo lanzar unas herramienta usual de diferencias.  Para lanzar
+el visor \command{kdiff3}:
 \begin{codesample2}
   hg extdiff -p kdiff3 -o ''
 \end{codesample2}
 
-If your diff viewing command can't deal with directories, you can
-easily work around this with a little scripting.  For an example of
-such scripting in action with the \hgext{mq} extension and the
-\command{interdiff} command, see
-section~\ref{mq-collab:tips:interdiff}.
+Si su orden para visualizar diferencias no puede tratar con
+directorios, puede usar un poco de scripting para lograrlo.  Un
+ejemplo de un script con la extensión \hgext{mq} junto con la orden
+\command{interdiff} está en la sección~\ref{mq-collab:tips:interdiff}.
 
-\subsection{Defining command aliases}
+\subsection{Definición de alias de comandos}
 
 It can be cumbersome to remember the options to both the
 \hgxcmd{extdiff}{extdiff} command and the diff viewer you want to use,
