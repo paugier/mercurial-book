@@ -344,40 +344,44 @@ de cambios son borrados; y el gancho \hook{commit} no es ejecutado.
   \label{ex:hook:pretxncommit}
 \end{figure}
 
-The hook in example~\ref{ex:hook:pretxncommit} checks that a commit
-comment contains a bug ID.  If it does, the commit can complete.  If
-not, the commit is rolled back.
+El gancho en el ejemplo~\ref{ex:hook:pretxncommit} revisa si el
+mensaje de consignación contiene el ID de algún fallo. Si lo contiene,
+la consignación puede continuar. Si no, la consignación es cancelada.
 
-\section{Writing your own hooks}
+\section{Escribir sus propios ganchos}
 
-When you are writing a hook, you might find it useful to run Mercurial
-either with the \hggopt{-v} option, or the \rcitem{ui}{verbose} config
-item set to ``true''.  When you do so, Mercurial will print a message
-before it calls each hook.
+Cuando usted escriba un gancho, puede encontrar útil el ejecutar
+Mercurial o bien pasándole la opción \hggopt{-v}, o con el valor de
+configuración \rcitem{ui}{verbose} fijado en ``true'' (verdadero).
+Cuando lo haga, Mercurial imprimirá un mensaje antes de llamar cada
+gancho.
 
-\subsection{Choosing how your hook should run}
+\subsection{Escoger cómo debe ejecutarse su gancho}
 \label{sec:hook:lang}
 
-You can write a hook either as a normal program---typically a shell
-script---or as a Python function that is executed within the Mercurial
-process.
+Usted puede escribir un gancho que funcione como un programa normal
+---típicamente un guión de línea de comandos---o como una función de
+Python que se ejecuta dentro del proceso Mercurial.
 
-Writing a hook as an external program has the advantage that it
-requires no knowledge of Mercurial's internals.  You can call normal
-Mercurial commands to get any added information you need.  The
-trade-off is that external hooks are slower than in-process hooks.
+Escribir un gancho como un programa externo tiene la ventaja de que no
+requiere ningún conocimiento del funcionamiento interno de Mercurial.
+Usted puede ejecutar comandos Mercurial normales para obtener la
+informción extra que pueda necesitar. La contraparte de esto es que
+los ganchos externos son más lentos que los ganchos internos
+ejecutados dentro del proceso.
 
-An in-process Python hook has complete access to the Mercurial API,
-and does not ``shell out'' to another process, so it is inherently
-faster than an external hook.  It is also easier to obtain much of the
-information that a hook requires by using the Mercurial API than by
-running Mercurial commands.
+Un gancho Python interno tiene acceso completo a la API de Mercurial,
+y no se ``externaliza'' a otro proceso, así que es inherentemente más
+rápido que un gancho externo. Adicionalmente es más fácil obtener la
+mayoría de la información que un gancho requiere a través de llamadas
+directas a la API de Mercurial que hacerlo ejecutando comandos
+Mercurial.
 
-If you are comfortable with Python, or require high performance,
-writing your hooks in Python may be a good choice.  However, when you
-have a straightforward hook to write and you don't need to care about
-performance (probably the majority of hooks), a shell script is
-perfectly fine.
+Si se siente a gusto con Python, o requiere un alto desempeño,
+escribir sus ganchos en Python puede ser una buena elección. Sin
+embargo, cuando usted tiene un gancho bastante directo por escribir y
+no le importa el desempeño (el caso de la mayoría de los ganchos), es
+perfectamente admisible un guión de línea de comandos.
 
 \subsection{Hook parameters}
 \label{sec:hook:param}
