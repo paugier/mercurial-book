@@ -292,62 +292,64 @@ ejemplo de un script con la extensión \hgext{mq} junto con la orden
 
 \subsection{Definición de alias de comandos}
 
-It can be cumbersome to remember the options to both the
-\hgxcmd{extdiff}{extdiff} command and the diff viewer you want to use,
-so the \hgext{extdiff} extension lets you define \emph{new} commands
-that will invoke your diff viewer with exactly the right options.
+Acordarse de todas las opciones de las órdenes
+\hgxcmd{extdiff}{extdiff} y el visor de diferencias de su preferencia
+puede ser dispendioso, y por lo tanto la extensión \hgext{extdiff} le
+permite definir \emph{nuevas} órdenes que invocarán su visor de
+diferencias con las opciones exactas.
 
-All you need to do is edit your \hgrc, and add a section named
-\rcsection{extdiff}.  Inside this section, you can define multiple
-commands.  Here's how to add a \texttt{kdiff3} command.  Once you've
-defined this, you can type ``\texttt{hg kdiff3}'' and the
-\hgext{extdiff} extension will run \command{kdiff3} for you.
+Basta con editar su fichero \hgrc, y añadir una sección llamada
+\rcsection{extdiff}.  Dentro de esta sección puede definir varias
+órdenes. Mostraremos como añadir la orden \texttt{kdiff3}.  Después de
+definido, puede teclear ``\texttt{hg kdiff3}'' y la extensión a
+\hgext{extdiff} ejecutará la orden \command{kdiff3}.
 \begin{codesample2}
   [extdiff]
   cmd.kdiff3 =
 \end{codesample2}
-If you leave the right hand side of the definition empty, as above,
-the \hgext{extdiff} extension uses the name of the command you defined
-as the name of the external program to run.  But these names don't
-have to be the same.  Here, we define a command named ``\texttt{hg
-  wibble}'', which runs \command{kdiff3}.
+Si deja vacía la porción derecha de la definición, como en el ejemplo,
+la extensión \hgext{extdiff} usa el nombre de la orden se definirá
+como el nombre del programa externo a ejecutar.  Pero tales nombres no
+tienen por qué ser iguales.  Definimos ahora la orden llamada
+ ``\texttt{hg wibble}'', que ejecuta \command{kdiff3}.
 \begin{codesample2}
   [extdiff]
   cmd.wibble = kdiff3
 \end{codesample2}
 
-You can also specify the default options that you want to invoke your
-diff viewing program with.  The prefix to use is ``\texttt{opts.}'',
-followed by the name of the command to which the options apply.  This
-example defines a ``\texttt{hg vimdiff}'' command that runs the
-\command{vim} editor's \texttt{DirDiff} extension.
+También puede especificar las opciones predeterminadas con las cuales
+desea invocar el visor de diferencias.  Se usa el prefijo ``\texttt{opts.}'',
+seguido por el nombre de la orden a la cual se aplican las opciones.
+En este ejemplos se define la orden ``\texttt{hg vimdiff}'' que
+ejecuta la extensión \texttt{DirDiff} del editor \command{vim}.
 \begin{codesample2}
   [extdiff]  
   cmd.vimdiff = vim
   opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
 \end{codesample2}
 
-\section{Cherrypicking changes with the \hgext{transplant} extension}
+\section{Uso de la extensión \hgext{transplant} para seleccionar}
 \label{sec:hgext:transplant}
 
 Need to have a long chat with Brendan about this.
 
-\section{Send changes via email with the \hgext{patchbomb} extension}
+\section{Enviar cambios vía correo electrónico con la extensión \hgext{patchbomb}}
 \label{sec:hgext:patchbomb}
 
-Many projects have a culture of ``change review'', in which people
-send their modifications to a mailing list for others to read and
-comment on before they commit the final version to a shared
-repository.  Some projects have people who act as gatekeepers; they
-apply changes from other people to a repository to which those others
-don't have access.
+Varios proyectos tienen la cultura de ``revisión de cambios'', en la
+cual la gente envía sus modificaciones a una lista de correo para que
+otros las lean y comenten antes de consignar la versión final a un
+repositorio compartido.  Algunos proyectos tienen personas que actúan
+como cancerberos; ellos aplican los cambios de otras personas a un
+repositorio para aquellos que no tienen acceso.
 
-Mercurial makes it easy to send changes over email for review or
-application, via its \hgext{patchbomb} extension.  The extension is so
-namd because changes are formatted as patches, and it's usual to send
-one changeset per email message.  Sending a long series of changes by
-email is thus much like ``bombing'' the recipient's inbox, hence
-``patchbomb''.
+Mercurial facilita enviar cambios por correo para revisión o
+aplicación gracias a su extensión \hgext{patchbomb}.  La extensión es
+tan popular porque los cambios se formatean como parches y es usual
+que se envía un conjunto de cambios por cada correo.  Enviar una gran
+cantidad de cambios por correos se llama por tanto ``bombardear'' el
+buzón de entrada del destinatario, de ahí su nombre ``bombardeo de
+parches''.
 
 As usual, the basic configuration of the \hgext{patchbomb} extension
 takes just one or two lines in your \hgrc.
