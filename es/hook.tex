@@ -470,72 +470,84 @@ Interface}, Interfaz para Programación de Aplicaciones} para ganchos:
   def myhook(ui, repo, **kwargs):
       pass
 \end{codesample2}
-The first argument to a Python hook is always a
-\pymodclass{mercurial.ui}{ui} object.  The second is a repository object;
-at the moment, it is always an instance of
-\pymodclass{mercurial.localrepo}{localrepository}.  Following these two
-arguments are other keyword arguments.  Which ones are passed in
-depends on the hook being called, but a hook can ignore arguments it
-doesn't care about by dropping them into a keyword argument dict, as
-with \texttt{**kwargs} above.
+El primer argumento para un gancho Python siempre es un objeto
+\pymodclass{mercurial.ui}{ui}.  El segundo es un objeto repositorio;
+de momento, siempre es una instancia de 
+\pymodclass{mercurial.localrepo}{localrepository}.  Después de estos
+dos argumentos están los argumentos de palabra clave. Los argumentos
+que se pasen dependerán del tipo de gancho que se esté llamando, pero
+un gancho siempre puede ignorar los argumentos que no le interesen,
+relegándolos a un diccionario de argumentos por palabras clave, como se
+hizo arriba con \texttt{**kwargs}.
 
-\section{Some hook examples}
+\section{Ejemplos de ganchos}
 
-\subsection{Writing meaningful commit messages}
+\subsection{Escribir mensajes de consignación significativos}
 
-It's hard to imagine a useful commit message being very short.  The
-simple \hook{pretxncommit} hook of figure~\ref{ex:hook:msglen.go}
-will prevent you from committing a changeset with a message that is
-less than ten bytes long.
+Es difícil de imaginar un mensaje de consignación útil y al mismo
+tiempo muy corto. El simple gancho \hook{pretxncommit} de la
+figura~\ref{ex:hook:msglen.go} evitará que usted consigne un conjunto
+de cambios con un mensaje de menos de 10 bytes de longitud.
 
 \begin{figure}[ht]
   \interaction{hook.msglen.go}
-  \caption{A hook that forbids overly short commit messages}
+  \caption{Un gancho que prohíbe mensajes de consignación demasiado
+  cortos}
   \label{ex:hook:msglen.go}
 \end{figure}
 
-\subsection{Checking for trailing whitespace}
+\subsection{Comprobar espacios en blanco finales}
 
-An interesting use of a commit-related hook is to help you to write
-cleaner code.  A simple example of ``cleaner code'' is the dictum that
-a change should not add any new lines of text that contain ``trailing
-whitespace''.  Trailing whitespace is a series of space and tab
-characters at the end of a line of text.  In most cases, trailing
-whitespace is unnecessary, invisible noise, but it is occasionally
-problematic, and people often prefer to get rid of it.
+Un uso interesante para ganchos relacionados con consignaciones es
+ayudarle a escribir código más limpio. Un ejemplo simple de
+%TODO dictum => regla
+``código más limpio'' es la regla de que un cambio no debe añadir
+líneas de texto que contengan ``espacios en blanco finales''. El
+espacio en blanco final es una serie de caracteres de espacio y
+tabulación que se encuentran al final de una línea de texto. En la
+mayoría de los casos, el espacio en blanco final es innecesario, ruido
+invisible, pero ocasionalmente es problemático, y la gente en general
+prefiere deshacerse de él.
 
-You can use either the \hook{precommit} or \hook{pretxncommit} hook to
-tell whether you have a trailing whitespace problem.  If you use the
-\hook{precommit} hook, the hook will not know which files you are
-committing, so it will have to check every modified file in the
-repository for trailing white space.  If you want to commit a change
-to just the file \filename{foo}, but the file \filename{bar} contains
-trailing whitespace, doing a check in the \hook{precommit} hook will
-prevent you from committing \filename{foo} due to the problem with
-\filename{bar}.  This doesn't seem right.
+Usted puede usar cualquiera de los ganchos \hook{precommit} o
+\hook{pretxncommit} para revisar si tiene el problema de los espacios
+en blanco finales. Si usa el gancho \hook{precommit}, el gancho no
+sabrá qué ficheros se están consignando, por lo que se tendrá que
+revisar cada fichero modificado en el repositorio para ver si tiene
+espacios en blanco finales. Si usted sólo quiere consignar un cambio
+al fichero \filename{foo}, y el fichero \filename{bar} contiene
+espacios en blanco finales, hacer la revisión en el gancho
+\hook{precommit} evitará que usted haga la consignación de
+\filename{foo} debido al problem en \filename{bar}.  Este no parece el
+enfoque adeucado.
 
-Should you choose the \hook{pretxncommit} hook, the check won't occur
-until just before the transaction for the commit completes.  This will
-allow you to check for problems only the exact files that are being
-committed.  However, if you entered the commit message interactively
-and the hook fails, the transaction will roll back; you'll have to
-re-enter the commit message after you fix the trailing whitespace and
-run \hgcmd{commit} again.
+Si usted escogiera el gancho \hook{pretxncommit}, la revisión no
+ocurriría sino hasta justo antes de que la transacción para la
+consignación se complete. Esto le permitirá comprobar por posibles
+problemas sólo en los ficheros que serán consignados. Sin embargo, si
+usted ingresó el mensaje de consignación de manera interactiva y el
+%TODO roll-back
+gancho falla, la transacción será deshecha; usted tendrá que
+reingresar el mensaje de consignación luego de que corrija el problema
+con los espacios en blanco finales y ejecute \hgcmd{commit} de nuevo.
 
 \begin{figure}[ht]
   \interaction{hook.ws.simple}
-  \caption{A simple hook that checks for trailing whitespace}
+  \caption{Un gancho simple que revisa si hay espacios en blanco
+  finales}
   \label{ex:hook:ws.simple}
 \end{figure}
 
-Figure~\ref{ex:hook:ws.simple} introduces a simple \hook{pretxncommit}
-hook that checks for trailing whitespace.  This hook is short, but not
-very helpful.  It exits with an error status if a change adds a line
-with trailing whitespace to any file, but does not print any
-information that might help us to identify the offending file or
-line.  It also has the nice property of not paying attention to
-unmodified lines; only lines that introduce new trailing whitespace
-cause problems.
+La figura~\ref{ex:hook:ws.simple} presenta un gancho
+\hook{pretxncommit} simple que comprueba la existencia de espacios en
+blanco finales. Este gancho es corto, pero no brinda mucha ayuda.
+Termina con un código de salida de error si un cambio añade una línea
+con espacio en blanco final a cualquier fichero, pero no muestra
+ninguna información que pueda ser útil para identificar el fichero o
+la línea de texto origen del problema. También tiene la agradable
+propiedad de no prestar atención a las líneas que no sufrieron
+modificaciones; sólo las líneas que introducen nuevos espacios en
+blanco finales causan problemas.
 
 \begin{figure}[ht]
   \interaction{hook.ws.better}
@@ -543,22 +555,25 @@ cause problems.
   \label{ex:hook:ws.better}
 \end{figure}
 
-The example of figure~\ref{ex:hook:ws.better} is much more complex,
-but also more useful.  It parses a unified diff to see if any lines
-add trailing whitespace, and prints the name of the file and the line
-number of each such occurrence.  Even better, if the change adds
-trailing whitespace, this hook saves the commit comment and prints the
-name of the save file before exiting and telling Mercurial to roll the
-transaction back, so you can use
-\hgcmdargs{commit}{\hgopt{commit}{-l}~\emph{filename}} to reuse the
-saved commit message once you've corrected the problem.
+El ejemplo de la figura~\ref{ex:hook:ws.better} es mucho más complejo,
+pero también más útil. El gancho procesa un diff unificado para
+revisar si alguna línea añade espacios en blanco finales, e imprime el
+nombre del fichero y el número de línea de cada ocurrencia. Aún mejor,
+si el cambio añade espacios en blanco finales, este gancho guarda el
+mensaje de consignación e imprime el nombre del fichero en el que el
+mensaje fue guardado, antes de terminar e indicarle a Mercurial que
+deshaga la transacción, para que uste pueda usar
+\hgcmdargs{commit}{\hgopt{commit}{-l}~\emph{nombre\_fichero}} para
+reutilizar el mensaje de consignación guardado anteriormente, una vez
+usted haya corregido el problema.
 
-As a final aside, note in figure~\ref{ex:hook:ws.better} the use of
-\command{perl}'s in-place editing feature to get rid of trailing
-whitespace from a file.  This is concise and useful enough that I will
-reproduce it here.
+Como anotación final, note que en la figura~\ref{ex:hook:ws.better} el
+%TODO on-site => in-situ ?
+uso de la característica de edición \emph{in-situ} de \command{perl}
+para eliminar los espacios en blanco finales en un fichero. Esto es
+lo suficientemente conciso y poderoso para que lo presente aquí.
 \begin{codesample2}
-  perl -pi -e 's,\\s+\$,,' filename
+  perl -pi -e 's,\\s+\$,,' nombre\_fichero
 \end{codesample2}
 
 \section{Bundled hooks}
