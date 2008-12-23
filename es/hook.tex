@@ -567,7 +567,7 @@ deshaga la transacción, para que uste pueda usar
 reutilizar el mensaje de consignación guardado anteriormente, una vez
 usted haya corregido el problema.
 
-Como anotación final, note que en la figura~\ref{ex:hook:ws.better} el
+Como anotación final, note en la figura~\ref{ex:hook:ws.better} el
 %TODO on-site => in-situ ?
 uso de la característica de edición \emph{in-situ} de \command{perl}
 para eliminar los espacios en blanco finales en un fichero. Esto es
@@ -580,83 +580,95 @@ lo suficientemente conciso y poderoso para que lo presente aquí.
     perl -pi -e 's,\textbackslash{}s+\$,,' nombre\_fichero
 \end{codesample2}
 
-\section{Bundled hooks}
+%TODO bundled
+\section{Ganchos bundled}
 
-Mercurial ships with several bundled hooks.  You can find them in the
-\dirname{hgext} directory of a Mercurial source tree.  If you are
-using a Mercurial binary package, the hooks will be located in the
-\dirname{hgext} directory of wherever your package installer put
+Mercurial se instala con varios ganchos bundled. Usted puede
+encontrarlos en el directorio \dirname{hgext} del árbol de ficheros
+fuente de Mercurial. Si usted está usando un paquete binario de
+Mercurial, los ganchos estarán ubicados en el directorio
+\dirname{hgext} en donde su instalador de paquetes haya puesto a
 Mercurial.
 
-\subsection{\hgext{acl}---access control for parts of a repository}
+\subsection{\hgext{acl}---control de acceso a partes de un repositorio}
 
-The \hgext{acl} extension lets you control which remote users are
-allowed to push changesets to a networked server.  You can protect any
-portion of a repository (including the entire repo), so that a
-specific remote user can push changes that do not affect the protected
-portion.
+La extensión \hgext{acl} le permite controlar a qué usuarios remotos
+les está permitido empujar conjuntos de cambios a un servidor en red.
+Usted puede proteger cualquier porción de un repositorio (incluyendo
+el repositorio completo), de tal manera que un usuario remoto
+específico pueda empujar cambios que no afecten la porción protegida.
 
-This extension implements access control based on the identity of the
-user performing a push, \emph{not} on who committed the changesets
-they're pushing.  It makes sense to use this hook only if you have a
-locked-down server environment that authenticates remote users, and
-you want to be sure that only specific users are allowed to push
-changes to that server.
+Esta extensión implementa control de acceso basado en la identidad del
+usuario que empuja los conjuntos de cambios, \emph{no} en la identidad
+de quien hizo la consignación de los mismos. Usar este gancho tiene
+sentido sólo si se tiene un servidor adecuadamente asegurado que
+autentique a los usuarios remotos, y si usted desea segurarse de que
+sólo se le permita a ciertos usuarios empujar cambios a dicho
+servidor.
 
-\subsubsection{Configuring the \hook{acl} hook}
+\subsubsection{Configurar el gancho \hook{acl}}
 
-In order to manage incoming changesets, the \hgext{acl} hook must be
-used as a \hook{pretxnchangegroup} hook.  This lets it see which files
-are modified by each incoming changeset, and roll back a group of
-changesets if they modify ``forbidden'' files.  Example:
+Para administrar los conjuntos de cambios entrantes, se debe usar el
+gancho \hgext{acl} como un gancho de tipo \hook{pretxnchangegroup}.
+Esto le permite ver qué ficheros son modificados por cada conjunto de
+%TODO rollback => "deshacer el efecto"
+cambios entrante, y deshacer el efecto de un grupo de conjuntos de
+cambios si alguno de ellos modifica algún fichero ``prohibido''.
+Ejemplo:
 \begin{codesample2}
   [hooks]
   pretxnchangegroup.acl = python:hgext.acl.hook
 \end{codesample2}
 
-The \hgext{acl} extension is configured using three sections.  
+La extensión \hgext{acl} es configurada mediante tres secciones.
 
-The \rcsection{acl} section has only one entry, \rcitem{acl}{sources},
-which lists the sources of incoming changesets that the hook should
-pay attention to.  You don't normally need to configure this section.
+La sección \rcsection{acl} sólo tiene una entrada,
+\rcitem{acl}{sources}\footnote{Fuentes.}, que lista las fuentes de los
+conjuntos de cambios entrantes a las que el gancho debe prestar
+atención. Usualmente usted no necesita configurar esta sección.
 \begin{itemize}
-\item[\rcitem{acl}{serve}] Control incoming changesets that are arriving
-  from a remote repository over http or ssh.  This is the default
-  value of \rcitem{acl}{sources}, and usually the only setting you'll
-  need for this configuration item.
-\item[\rcitem{acl}{pull}] Control incoming changesets that are
-  arriving via a pull from a local repository.
-\item[\rcitem{acl}{push}] Control incoming changesets that are
-  arriving via a push from a local repository.
-\item[\rcitem{acl}{bundle}] Control incoming changesets that are
-  arriving from another repository via a bundle.
+  \item[\rcitem{acl}{serve}] Controlar conjuntos de
+    cambios entrantes que están llegando desde un repositorio a
+    través de http o ssh. Este es el valor por defecto de
+  \rcitem{acl}{sources}, y usualmente es el único valor de
+  configuración que necesitará para este ítem.
+\item[\rcitem{acl}{pull}] Controlar conjuntos de cambios entrantes que
+  lleguen vía un pull (jalado) desde un repositorio local.
+\item[\rcitem{acl}{push}] Controlar conjuntos de cambios entrantes que
+  lleguen vía un push (empuje) desde un repositorio local.
+\item[\rcitem{acl}{bundle}] Controlar conjuntos de cambios entrantes
+    %TODO bundle
+  que lleguen desde otro repositorio a través de un bundle.
 \end{itemize}
 
-The \rcsection{acl.allow} section controls the users that are allowed to
-add changesets to the repository.  If this section is not present, all
-users that are not explicitly denied are allowed.  If this section is
-present, all users that are not explicitly allowed are denied (so an
-empty section means that all users are denied).
+La sección \rcsection{acl.allow} controla los usuarios a los que les
+está permitido añadir conjuntos de cambios al repositorio. Si esta
+sección no está presente, se le permite acceso a todos los usuarios
+excepto  a los que se les haya negado explícitamente el acceso. Si
+esta sección no está presente, se niega el acceso a todos los usuarios
+excepto a todos a los que se les haya permitido de manera explícita
+(así que una sección vacía implica que se niega el acceso a todos los
+usuarios).
 
-The \rcsection{acl.deny} section determines which users are denied
-from adding changesets to the repository.  If this section is not
-present or is empty, no users are denied.
+La sección \rcsection{acl.deny} determina a qué usuarios no se les
+permite añadir conjuntos de cambios al repositorio. Si esta sección no
+está presente o está vacía, no se niega el acceso a ningún usuario.
 
-The syntaxes for the \rcsection{acl.allow} and \rcsection{acl.deny}
-sections are identical.  On the left of each entry is a glob pattern
-that matches files or directories, relative to the root of the
-repository; on the right, a user name.
+La sintaxis para los ficheros \rcsection{acl.allow} y
+\rcsection{acl.deny} es idéntica. A la izquierda de cada entrada se
+encuentra un patrón glob que asocia ficheros o directorios, respecto a
+la raíz del repositorio; a la derecha, un nombre usuario.
 
-In the following example, the user \texttt{docwriter} can only push
-changes to the \dirname{docs} subtree of the repository, while
-\texttt{intern} can push changes to any file or directory except
-\dirname{source/sensitive}.
+En el siguiente ejemplo, el usuario \texttt{escritordoc} sólo puede
+empujar cambios al directorio \dirname{docs} del repositorio, mientras
+que \texttt{practicante} puede enviar cambios a cualquier fichero o
+directorio excepto \dirname{fuentes/sensitivo}.
 \begin{codesample2}
   [acl.allow]
-  docs/** = docwriter
+  docs/** = escritordoc
 
   [acl.deny]
-  source/sensitive/** = intern
+  fuentes/sensitivo/** = practicante
 \end{codesample2}
 
 \subsubsection{Testing and troubleshooting}
