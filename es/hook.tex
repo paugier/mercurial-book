@@ -728,67 +728,73 @@ hay algunas posibilidades:
   actualizar el estado del fallo 31337 a ``requiere pruebas''.
 \end{itemize}
 
-\subsubsection{Configuring the \hook{bugzilla} hook}
+\subsubsection{Configuración del gancho \hook{bugzilla}}
 \label{sec:hook:bugzilla:config}
 
-You should configure this hook in your server's \hgrc\ as an
-\hook{incoming} hook, for example as follows:
+Usted debería configurar este gancho en el \hgrc\ de su servidor como
+un gancho \hook{incoming}\footnote{Entrante.}, por ejemplo como sigue:
 \begin{codesample2}
   [hooks]
   incoming.bugzilla = python:hgext.bugzilla.hook
 \end{codesample2}
 
-Because of the specialised nature of this hook, and because Bugzilla
-was not written with this kind of integration in mind, configuring
-this hook is a somewhat involved process.
+Debido a la naturaleza especializada de este gancho, y porque Bugzilla
+no fue escrito con este tipo de integración en mente, configurar este
+% TODO involved => complejo ? no intarwebs here :(
+gancho es un proceso algo complejo.
 
-Before you begin, you must install the MySQL bindings for Python on
-the host(s) where you'll be running the hook.  If this is not
-available as a binary package for your system, you can download it
-from~\cite{web:mysql-python}.
+Antes de empezar, usted debe instalar la interfaz de Python para MySQL
+en los sistemas en los que se vaya a ejecutar el gancho. Si no está
+disponible como paquete binario para su sistema, usted puede descargar
+el paquete desde~\cite{web:mysql-python}.
 
-Configuration information for this hook lives in the
-\rcsection{bugzilla} section of your \hgrc.
+La información para configurar este gancho se ubica en la sección 
+\rcsection{bugzilla} de su \hgrc.
 \begin{itemize}
-\item[\rcitem{bugzilla}{version}] The version of Bugzilla installed on
-  the server.  The database schema that Bugzilla uses changes
-  occasionally, so this hook has to know exactly which schema to use.
-  At the moment, the only version supported is \texttt{2.16}.
-\item[\rcitem{bugzilla}{host}] The hostname of the MySQL server that
-  stores your Bugzilla data.  The database must be configured to allow
-  connections from whatever host you are running the \hook{bugzilla}
-  hook on.
-\item[\rcitem{bugzilla}{user}] The username with which to connect to
-  the MySQL server.  The database must be configured to allow this
-  user to connect from whatever host you are running the
-  \hook{bugzilla} hook on.  This user must be able to access and
-  modify Bugzilla tables.  The default value of this item is
-  \texttt{bugs}, which is the standard name of the Bugzilla user in a
-  MySQL database.
-\item[\rcitem{bugzilla}{password}] The MySQL password for the user you
-  configured above.  This is stored as plain text, so you should make
-  sure that unauthorised users cannot read the \hgrc\ file where you
-  store this information.
-\item[\rcitem{bugzilla}{db}] The name of the Bugzilla database on the
-  MySQL server.  The default value of this item is \texttt{bugs},
-  which is the standard name of the MySQL database where Bugzilla
-  stores its data.
-\item[\rcitem{bugzilla}{notify}] If you want Bugzilla to send out a
-  notification email to subscribers after this hook has added a
-  comment to a bug, you will need this hook to run a command whenever
-  it updates the database.  The command to run depends on where you
-  have installed Bugzilla, but it will typically look something like
-  this, if you have Bugzilla installed in
-  \dirname{/var/www/html/bugzilla}:
+\item[\rcitem{bugzilla}{version}] La versión de Bugzilla instalada en
+  el servidor. El esquema de base de datos que Bugzilla usa cambia
+  ocasionalmente, así que este gancho debe saber exactamente qué
+  esquema usar. A la fecha, la única versión soportada es la
+  \texttt{2.16}.
+\item[\rcitem{bugzilla}{host}] El nombre de máquina (\emph{hostname})
+  del servidor MySQL que almacena sus datos Bugzilla. La base de datos
+  debe ser configurada para permitir conexiones desde las máquinas en
+  las que usted ejecute el gancho \hook{bugzilla}.
+\item[\rcitem{bugzilla}{user}] El nombre de usuario que se usará para
+  conectarse al servidor MySQL. La base de datos debe ser configurada
+  para permitir a dicho usuario conectarse desde cualquiera de las
+  máquinas en las que se ejecute el gancho \hook{bugzilla}.  Este
+  usuario debe tener acceso y poder modificar las tablas de Bugzilla.
+  El valor por defecto para este ítem es \texttt{bugs}, que es el
+  nombre estándar del usuario para Bugzilla en una base de datos
+  MySQL.
+\item[\rcitem{bugzilla}{password}] La contraseña MySQL para el usuario
+  configurado anteriormente. Ésta es almacenada como texto plano, así
+  que usted deberá asegurarse de que los usuarios no autorizados no
+  puedan leer el fichero \hgrc\ en donde usted guarda esta
+  información.
+\item[\rcitem{bugzilla}{db}] El nombre de la base de datos Bugzilla en
+  el servidor MySQL. El nombre por defecto para este ítem es
+  \texttt{bugs}, que es el nombre estándar de la base de datos MySQL
+  en donde Bugzilla almacena sus datos.
+\item[\rcitem{bugzilla}{notify}] Si usted desea que Bugzilla envíe un
+    %TODO suBscriptores?
+  correo de notificación a los suscriptores después de que el gancho
+  haya añadido un comentario a un fallo, necesitará que este gancho
+  ejecute un comando siempre que actualice la base de datos. El
+  comando que se ejecute depende de en dónde haya sido instalado
+  Bugzilla, pero típicamente se verá así, si usted ha instalado
+  Bugzilla en \dirname{/var/www/html/bugzilla}:
   \begin{codesample4}
     cd /var/www/html/bugzilla && ./processmail %s nobody@nowhere.com
   \end{codesample4}
-  The Bugzilla \texttt{processmail} program expects to be given a
-  bug~ID (the hook replaces ``\texttt{\%s}'' with the bug~ID) and an
-  email address.  It also expects to be able to write to some files in
-  the directory that it runs in.  If Bugzilla and this hook are not
-  installed on the same machine, you will need to find a way to run
-  \texttt{processmail} on the server where Bugzilla is installed.
+  El programa \texttt{processmail} de Bugzilla espera recibir un ID de
+  fallo (el gancho reemplaza ``\texttt{\%s}'' por el ID del fallo) y
+  una dirección de correo. También espera poder escribir a ciertos
+  ficheros en el directorio en que se ejecuta. Si Bugzilla y éste
+  gancho no están instalados en la misma máquina, usted deberá
+  encontrar una manera de ejecutar \texttt{processmail} en el servidor
+  donde está instalado Bugzilla.
 \end{itemize}
 
 \subsubsection{Mapping committer names to Bugzilla user names}
