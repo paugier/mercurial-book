@@ -671,30 +671,32 @@ directorio excepto \dirname{fuentes/sensitivo}.
   fuentes/sensitivo/** = practicante
 \end{codesample2}
 
-\subsubsection{Testing and troubleshooting}
+\subsubsection{Pruebas y resolución de problemas}
 
-If you want to test the \hgext{acl} hook, run it with Mercurial's
-debugging output enabled.  Since you'll probably be running it on a
-server where it's not convenient (or sometimes possible) to pass in
-the \hggopt{--debug} option, don't forget that you can enable
-debugging output in your \hgrc:
+Si usted desea probar el gancho \hgext{acl}, ejecútelo habilitando la
+opción de salida de depuración habilitada. Ya que usted probablemente
+lo estará ejecutando en un servidor donde no es conveniente (o incluso
+posible) pasar la opción \hggopt{--debug}, no olvide que usted puede
+habilitar la salida de depuración en su \hgrc:
 \begin{codesample2}
   [ui]
   debug = true
 \end{codesample2}
-With this enabled, the \hgext{acl} hook will print enough information
-to let you figure out why it is allowing or forbidding pushes from
-specific users.
+Con esto habilitado, el gancho \hgext{acl} imprimirá suficiente
+información para permitirle saber porqué está permitiendo o denegando
+la operación de empujar a usuarios específicos.
 
-\subsection{\hgext{bugzilla}---integration with Bugzilla}
+\subsection{\hgext{bugzilla}---integración con Bugzilla}
 
-The \hgext{bugzilla} extension adds a comment to a Bugzilla bug
-whenever it finds a reference to that bug ID in a commit comment.  You
-can install this hook on a shared server, so that any time a remote
-user pushes changes to this server, the hook gets run.  
+La extensión \hgext{bugzilla} añade un comentario a un fallo Bugzilla
+siempre que encuentre una referencia al ID de dicho fallo en un
+mensaje de consignación. Usted puede instalar este gancho en un
+servidor compartido, para que cada vez que un usuario remoto empuje
+cambios al servidor, el gancho sea ejecutado.
 
-It adds a comment to the bug that looks like this (you can configure
-the contents of the comment---see below):
+Se añade un comentario al fallo que se ve así (usted puede configurar
+los contenidos del comentario---vea más abajo):
+%TODO traducir?
 \begin{codesample2}
   Changeset aad8b264143a, made by Joe User <joe.user@domain.com> in
   the frobnitz repository, refers to this bug.
@@ -705,23 +707,25 @@ the contents of the comment---see below):
   Changeset description:
         Fix bug 10483 by guarding against some NULL pointers
 \end{codesample2}
-The value of this hook is that it automates the process of updating a
-bug any time a changeset refers to it.  If you configure the hook
-properly, it makes it easy for people to browse straight from a
-Bugzilla bug to a changeset that refers to that bug.
+El valor de este gancho se encuentra en que automatiza el proceso de
+actualizar un fallo cuando un conjunto de cambios se refiera a él. Si
+usted configura este gancho adecuadamente, hará fácil para la gente
+navegar directamente desde un fallo Bugzilla a un conjunto de cambios
+que se refiere a ese fallo.
 
-You can use the code in this hook as a starting point for some more
-exotic Bugzilla integration recipes.  Here are a few possibilities:
+Usted puede usar el código de este gancho como un punto de partida
+para otras recetas de integración con Bugzilla aún más exóticas. Acá
+hay algunas posibilidades:
 \begin{itemize}
-\item Require that every changeset pushed to the server have a valid
-  bug~ID in its commit comment.  In this case, you'd want to configure
-  the hook as a \hook{pretxncommit} hook.  This would allow the hook
-  to reject changes that didn't contain bug IDs.
-\item Allow incoming changesets to automatically modify the
-  \emph{state} of a bug, as well as simply adding a comment.  For
-  example, the hook could recognise the string ``fixed bug 31337'' as
-  indicating that it should update the state of bug 31337 to
-  ``requires testing''.
+\item Requerir que cada conjunto de cambios tenga un ID de fallo en su
+  mensaje de consignación. En este caso, usted querrá configurar el
+  gancho como uno de tipo \hook{pretxncommit}.  Esto le permitirá al
+  gancho rechazar cambios que no contiene IDs de fallos.
+\item Permitir a los conjuntos de cambios entrantes modificar
+  automáticamente el \emph{estado} de un fallo, así como simplemente
+  añadir un comentario. Por ejemplo, el gancho podría reconocer la
+  cadena ``corregido fallo 31337'' como la señal de que debería
+  actualizar el estado del fallo 31337 a ``requiere pruebas''.
 \end{itemize}
 
 \subsubsection{Configuring the \hook{bugzilla} hook}
