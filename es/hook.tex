@@ -800,71 +800,76 @@ La información para configurar este gancho se ubica en la sección
 \subsubsection{Asociar nombres de consignadores a nombres de usuario
 Bugzilla}
 
-By default, the \hgext{bugzilla} hook tries to use the email address
-of a changeset's committer as the Bugzilla user name with which to
-update a bug.  If this does not suit your needs, you can map committer
-email addresses to Bugzilla user names using a \rcsection{usermap}
-section.
+Por defecto, el gancho \hgext{bugzilla} trata de usar la dirección de
+correo electrónico de la persona que hizo la consignación del conjunto
+de cambios como el nombre de usuario Bugzilla con el cual debe
+actualizar el fallo. Si esto no se ajusta a sus necesidades, es
+posible asociar direcciones de correo a nombres de usuario Bugzilla
+usando una sección \rcsection{usermap}.
 
-Each item in the \rcsection{usermap} section contains an email address
-on the left, and a Bugzilla user name on the right.
+Cada ítem en la sección \rcsection{usermap} contiene una dirección de
+correo electrónico a la izquierda, y un nombre de usuario Bugzilla a
+la derecha.
 \begin{codesample2}
   [usermap]
   jane.user@example.com = jane
 \end{codesample2}
-You can either keep the \rcsection{usermap} data in a normal \hgrc, or
-tell the \hgext{bugzilla} hook to read the information from an
-external \filename{usermap} file.  In the latter case, you can store
-\filename{usermap} data by itself in (for example) a user-modifiable
-repository.  This makes it possible to let your users maintain their
-own \rcitem{bugzilla}{usermap} entries.  The main \hgrc\ file might
-look like this:
+Usted puede mantener los datos de \rcsection{usermap} en un fichero
+\hgrc, o decirle al gancho \hgext{bugzilla} que lea la información
+desde un fichero \filename{usermap} externo.  En este caso, usted
+puede almacenar los datos de \filename{usermap} en (por ejemplo) un
+repositorio modificable por los usuarios. Esto hace posible para sus
+usuarios mantener sus propias entradas \rcitem{bugzilla}{usermap}.  El
+fichero \hgrc\ principal se vería así:
 \begin{codesample2}
-  # regular hgrc file refers to external usermap file
+  # fichero hgrc normal se refiere a un fichero usermap externo
   [bugzilla]
   usermap = /home/hg/repos/userdata/bugzilla-usermap.conf
 \end{codesample2}
-While the \filename{usermap} file that it refers to might look like
-this:
+Mientras que el fichero \filename{usermap} al que se hace referencia
+se vería así:
 \begin{codesample2}
-  # bugzilla-usermap.conf - inside a hg repository
+  # bugzilla-usermap.conf - dentro de un repositorio hg
   [usermap]
   stephanie@example.com = steph
 \end{codesample2}
 
-\subsubsection{Configuring the text that gets added to a bug}
+\subsubsection{Configurar el texto que se añade a un fallo}
 
-You can configure the text that this hook adds as a comment; you
-specify it in the form of a Mercurial template.  Several \hgrc\
-entries (still in the \rcsection{bugzilla} section) control this
-behaviour.
+Usted puede configurar el texto que este gancho añade como comentario;
+usted los especifica como una plantilla Mercurial. Varias entradas
+\hgrc\ (aún en la sección \rcsection{bugzilla}) controlan este
+comportamiento.
 \begin{itemize}
-\item[\texttt{strip}] The number of leading path elements to strip
-  from a repository's path name to construct a partial path for a URL.
-  For example, if the repositories on your server live under
-  \dirname{/home/hg/repos}, and you have a repository whose path is
-  \dirname{/home/hg/repos/app/tests}, then setting \texttt{strip} to
-  \texttt{4} will give a partial path of \dirname{app/tests}.  The
-  hook will make this partial path available when expanding a
-  template, as \texttt{webroot}.
-\item[\texttt{template}] The text of the template to use.  In addition
-  to the usual changeset-related variables, this template can use
-  \texttt{hgweb} (the value of the \texttt{hgweb} configuration item
-  above) and \texttt{webroot} (the path constructed using
-  \texttt{strip} above).
+\item[\texttt{strip}] La cantidad de elementos iniciales de ruta a
+  remover de un nombre de ruta del repositorio para construir una ruta
+  parcial para una URL. Por ejemplo, si los repositorios en su
+  servidor se ubican en \dirname{/home/hg/repos}, y usted tiene un
+  repositorio cuya ruta es \dirname{/home/hg/repos/app/tests},
+  entonces fijar \texttt{strip} a \texttt{4} resultará en una ruta
+  parcial de \dirname{app/tests}.  El gancho hará disponible esta ruta
+  parcial cuando expanda una plantilla, como \texttt{webroot}.
+\item[\texttt{template}] El texto de la plantilla a usar. En adición a
+  las variables usuales relacionadas con conjuntos de cambios, esta
+  plantilla puede usar \texttt{hgweb} (el valor del ítem de
+  configuración \texttt{hgweb} de arriba) y \texttt{webroot} (la ruta
+  construida usando \texttt{strip} arriba).
 \end{itemize}
 
-In addition, you can add a \rcitem{web}{baseurl} item to the
-\rcsection{web} section of your \hgrc.  The \hgext{bugzilla} hook will
-make this available when expanding a template, as the base string to
-use when constructing a URL that will let users browse from a Bugzilla
-comment to view a changeset.  Example:
+Adicionalmente, usted puede añadir un ítem \rcitem{web}{baseurl} a la
+sección \rcsection{web} de su \hgrc.  El gancho \hgext{bugzilla}
+publicará esto cuando expanda una plantilla, como la cadena base a
+usar cuando se construya una URL que le permita a los usuarios navegar
+desde un comentario de Bugzilla a la vista de un conjunto de cambios.
+Ejemplo:
 \begin{codesample2}
   [web]
   baseurl = http://hg.domain.com/
 \end{codesample2}
 
-Here is an example set of \hgext{bugzilla} hook config information.
+A continuación se presenta un ejemplo completo de configuración para
+el gancho \hgext{bugzilla}.
+%TODO traducir?
 \begin{codesample2}
   [bugzilla]
   host = bugzilla.example.com
@@ -881,13 +886,15 @@ Here is an example set of \hgext{bugzilla} hook config information.
     description:\\n\\t\{desc|tabindent\}
 \end{codesample2}
 
-\subsubsection{Testing and troubleshooting}
+\subsubsection{Pruebas y resolución de problemas}
 
-The most common problems with configuring the \hgext{bugzilla} hook
-relate to running Bugzilla's \filename{processmail} script and mapping
-committer names to user names.
+Los problemas más comunes que aparecen en la configuración del gancho
+\hgext{bugzilla} suelen estar relacionados con la ejecución del guión
+de Bugzilla \filename{processmail} y la asociación de nombres de
+consignadores a nombres de usuario.
 
-Recall from section~\ref{sec:hook:bugzilla:config} above that the user
+Recuerde que en la sección~\ref{sec:hook:bugzilla:config} arriba que
+el usuario que ejecuta el proceso Mercurial en el servidor es también 
 that runs the Mercurial process on the server is also the one that
 will run the \filename{processmail} script.  The
 \filename{processmail} script sometimes causes Bugzilla to write to
@@ -1039,12 +1046,13 @@ This will produce a message that looks like the following:
   [...snip...]
 \end{codesample2}
 
-\subsubsection{Testing and troubleshooting}
+\subsubsection{Pruebas y resolución de problemas}
 
-Do not forget that by default, the \hgext{notify} extension \emph{will
-  not send any mail} until you explicitly configure it to do so, by
-setting \rcitem{notify}{test} to \texttt{false}.  Until you do that,
-it simply prints the message it \emph{would} send.
+No olvide que por defecto, la extensión \hgext{notify} \emph{no
+enviará ningún correo electrónico} hasta que usted la configure
+explícitamente para hacerlo, fijando el valor de \rcitem{notify}{test}
+a \texttt{false}.  Hasta que usted haga eso, simplemente se imprimirá
+el mensaje que se \emph{enviaría}.
 
 \section{Information for writers of hooks}
 \label{sec:hook:ref}
