@@ -606,7 +606,7 @@ autentique a los usuarios remotos, y si usted desea segurarse de que
 sólo se le permita a ciertos usuarios empujar cambios a dicho
 servidor.
 
-\subsubsection{Configurar el gancho \hook{acl}}
+\subsubsection{Configuración del gancho \hook{acl}}
 
 Para administrar los conjuntos de cambios entrantes, se debe usar el
 gancho \hgext{acl} como un gancho de tipo \hook{pretxnchangegroup}.
@@ -893,126 +893,138 @@ Los problemas más comunes que aparecen en la configuración del gancho
 de Bugzilla \filename{processmail} y la asociación de nombres de
 consignadores a nombres de usuario.
 
-Recuerde que en la sección~\ref{sec:hook:bugzilla:config} arriba que
-el usuario que ejecuta el proceso Mercurial en el servidor es también 
-that runs the Mercurial process on the server is also the one that
-will run the \filename{processmail} script.  The
-\filename{processmail} script sometimes causes Bugzilla to write to
-files in its configuration directory, and Bugzilla's configuration
-files are usually owned by the user that your web server runs under.
+Recuerde que en la sección~\ref{sec:hook:bugzilla:config} arriba el
+usuario que ejecuta el proceso Mercurial en el servidor es también 
+el usuario que ejecutará el guión \filename{processmail}. El guión
+\filename{processmail} algunas veces hace que Bugzilla escriba en
+ficheros en su directorio de configuración, y los ficheros de
+configuración de Bugzilla usualmente son propiedad del usuario bajo el
+cual se ejecuta el servidor web.
 
-You can cause \filename{processmail} to be run with the suitable
-user's identity using the \command{sudo} command.  Here is an example
-entry for a \filename{sudoers} file.
+Usted puede hacer que \filename{processmail} sea ejecutado con la
+identidad del usuario adecuado usando el comando \command{sudo}. A
+continuación se presenta una entrada de ejemplo para un fichero
+\filename{sudoers}.
 \begin{codesample2}
   hg_user = (httpd_user) NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s
 \end{codesample2}
-This allows the \texttt{hg\_user} user to run a
-\filename{processmail-wrapper} program under the identity of
+Esto permite que el usuario \texttt{hg\_user} ejecute el programa
+\filename{processmail-wrapper} con la identidad del usuario
 \texttt{httpd\_user}.
 
-This indirection through a wrapper script is necessary, because
-\filename{processmail} expects to be run with its current directory
-set to wherever you installed Bugzilla; you can't specify that kind of
-constraint in a \filename{sudoers} file.  The contents of the wrapper
-script are simple:
+Esta indirección a través de un guión envoltorio es necesaria, porque
+\filename{processmail} espera que al ser ejecutado su directorio
+actual sea aquel en el cual se instaló Bugzilla; usted no puede
+especificar ese tipo de condición en un fichero \filename{sudoers}.
+Los contenidos del giuón envoltorio son simples:
 \begin{codesample2}
   #!/bin/sh
   cd `dirname $0` && ./processmail "$1" nobody@example.com
 \end{codesample2}
-It doesn't seem to matter what email address you pass to
+No parece importar qué dirección de correo se le pase a
 \filename{processmail}.
 
-If your \rcsection{usermap} is not set up correctly, users will see an
-error message from the \hgext{bugzilla} hook when they push changes
-to the server.  The error message will look like this:
+Si su \rcsection{usermap} no es configurada correctamente, los
+usuarios verán un mensaje de error del gancho \hgext{bugzilla} cuando
+empujen cambios al servidor. El mensaje de error se verá así:
 \begin{codesample2}
   cannot find bugzilla user id for john.q.public@example.com
 \end{codesample2}
-What this means is that the committer's address,
-\texttt{john.q.public@example.com}, is not a valid Bugzilla user name,
-nor does it have an entry in your \rcsection{usermap} that maps it to
-a valid Bugzilla user name.
+Lo que esto quiere decir es que la dirección del consignador,
+\texttt{john.q.public@example.com}, no es un nombre de usuario
+Bugzilla válido, ni tiene una entrada en su \rcsection{usermap} que lo
+asocie con un nombre de usuario válido Bugzilla.
 
-\subsection{\hgext{notify}---send email notifications}
+\subsection{\hgext{notify}---enviar notificaciones de correo
+electrónico}
 
-Although Mercurial's built-in web server provides RSS feeds of changes
-in every repository, many people prefer to receive change
-notifications via email.  The \hgext{notify} hook lets you send out
-notifications to a set of email addresses whenever changesets arrive
-that those subscribers are interested in.
+%TODO feeds => notificaciones: lo más fácil es mirar en wikipedia
+Aunque el servidor web embebido de Mercurial provee notificaciones de
+cambios en cada repositorio, muchas personas prefieren recibir las
+notificaciones de cambios vía correo electrónico. El gancho
+\hgext{notify}\footnote{Notificación.} le permite a usted enviar
+notificaciones a un conjunto de direcciones de correo cuando lleguen
+conjuntos de cambios en los que los subscriptores estén interesados.
 
-As with the \hgext{bugzilla} hook, the \hgext{notify} hook is
-template-driven, so you can customise the contents of the notification
-messages that it sends.
+De la misma forma que con el gancho \hgext{bugzilla}, el gancho
+\hgext{notify} está orientado a plantillas, así que usted puede
+personalizar los contenidos del mensaje de notificación que se envía.
 
-By default, the \hgext{notify} hook includes a diff of every changeset
-that it sends out; you can limit the size of the diff, or turn this
-feature off entirely.  It is useful for letting subscribers review
-changes immediately, rather than clicking to follow a URL.
+Por defecto, el gancho \hgext{notify} incluye un diff de cada conjunto
+%TODO que se envía? revisar, pienso que es ``que se recibe''
+de cambios que se envía; usted puede limitar el tamaño del diff, o
+desactivar completamente esta característica. Es útil para permitir a
+los subscriptores revisar los cambios inmediatamente, en vez de tener
+que hacer clic para visitar una URL.
 
-\subsubsection{Configuring the \hgext{notify} hook}
+\subsubsection{Configuración del gancho \hgext{notify}}
 
-You can set up the \hgext{notify} hook to send one email message per
-incoming changeset, or one per incoming group of changesets (all those
-that arrived in a single pull or push).
+Usted puede configurar el gancho \hgext{notify} para enviar un mensaje
+de correo por conjunto de cambios entrante, o uno por grupo entrante
+de conjuntos de cambios (todos los que llegaron en un único empuje o
+jalado).
 \begin{codesample2}
   [hooks]
-  # send one email per group of changes
+  # enviar un correo por grupo de cambios
   changegroup.notify = python:hgext.notify.hook
-  # send one email per change
+  # enviar un correo por cambio
   incoming.notify = python:hgext.notify.hook
 \end{codesample2}
 
-Configuration information for this hook lives in the
-\rcsection{notify} section of a \hgrc\ file.
+La información para configurar este gancho se ubica en la sección
+\rcsection{notify} de un fichero \hgrc.
 \begin{itemize}
-\item[\rcitem{notify}{test}] By default, this hook does not send out
-  email at all; instead, it prints the message that it \emph{would}
-  send.  Set this item to \texttt{false} to allow email to be sent.
-  The reason that sending of email is turned off by default is that it
-  takes several tries to configure this extension exactly as you would
-  like, and it would be bad form to spam subscribers with a number of
-  ``broken'' notifications while you debug your configuration.
-\item[\rcitem{notify}{config}] The path to a configuration file that
-  contains subscription information.  This is kept separate from the
-  main \hgrc\ so that you can maintain it in a repository of its own.
-  People can then clone that repository, update their subscriptions,
-  and push the changes back to your server.
-\item[\rcitem{notify}{strip}] The number of leading path separator
-  characters to strip from a repository's path, when deciding whether
-  a repository has subscribers.  For example, if the repositories on
-  your server live in \dirname{/home/hg/repos}, and \hgext{notify} is
-  considering a repository named \dirname{/home/hg/repos/shared/test},
-  setting \rcitem{notify}{strip} to \texttt{4} will cause
-  \hgext{notify} to trim the path it considers down to
-  \dirname{shared/test}, and it will match subscribers against that.
-\item[\rcitem{notify}{template}] The template text to use when sending
-  messages.  This specifies both the contents of the message header
-  and its body.
-\item[\rcitem{notify}{maxdiff}] The maximum number of lines of diff
-  data to append to the end of a message.  If a diff is longer than
-  this, it is truncated.  By default, this is set to 300.  Set this to
-  \texttt{0} to omit diffs from notification emails.
-\item[\rcitem{notify}{sources}] A list of sources of changesets to
-  consider.  This lets you limit \hgext{notify} to only sending out
-  email about changes that remote users pushed into this repository
-  via a server, for example.  See section~\ref{sec:hook:sources} for
-  the sources you can specify here.
+\item[\rcitem{notify}{test}] Por defecto, este gancho no envía correos
+  en absoluto; en vez de eso, imprime el mensaje que se
+  \emph{enviaría}. Fije este ítem en \texttt{false} para permitir el
+  envío de correos. El motivo por el que el envío de correos está
+  desactivado es que hacen falta varios intentos para configurar esta
+  extensión exactamente como usted desea, y sería maleducado enviar a
+  los subscriptores una cantidad de notificaciones ``rotas'' mientras
+  usted depura su configuración.
+\item[\rcitem{notify}{config}] La ruta a un fichero de configuración
+  que contiene información de subscripción. Esto se mantiene separado
+  del \hgrc\ principal para que usted pueda mantenerlo en un
+  repositorio. La gente puede clonar ese repositorio, actualizar sus
+  subscripciones, y empujar los cambios de vuelta a su servidor.
+\item[\rcitem{notify}{strip}] La cantidad de caracteres iniciales de
+  separación de ruta a remover de la ruta del repositorio, al decidir
+  si un repositorio tiene subscriptores. Por ejemplo, si los
+  repositorios en su servidor están en \dirname{/home/hg/repos}, y
+  \hgext{notify} está trabajando con un repositorio llamado
+  \dirname{/home/hg/repos/shared/test}, fijar \rcitem{notify}{strip} a
+  \texttt{4} hará que \hgext{notify} elimine las partes iniciales de
+  la ruta hasta \dirname{shared/test}, y asociará los subscriptores
+  frente a dicha ruta.
+\item[\rcitem{notify}{template}] El texto de plantilla a usar cuando
+  se envíen mensajes. Especifica los contenidos de la cabecera del
+  mensaje y el cuerpo del mismo.
+\item[\rcitem{notify}{maxdiff}] El número máximo de líneas de datos de
+  diff a añadir al final de un mensaje. Si la longitud de un diff es
+  mayor a eso, se trunca. Por defecto, está fijado en 300. Fije esto a 
+  \texttt{0} para omitir los diffs en los correos de notificación.
+\item[\rcitem{notify}{sources}] Una lista de fuentes de conjuntos de
+  cambios a considerar. Esto le permite a usted indicar a
+  \hgext{notify} para que sólo envíe correos acerca de cambios que
+  usuarios remotos hayan empujado al repositorio vía un servidor, por
+  ejemplo.  Vea la sección~\ref{sec:hook:sources} para las fuentes que
+  usted puede especificar aquí.
 \end{itemize}
 
-If you set the \rcitem{web}{baseurl} item in the \rcsection{web}
-section, you can use it in a template; it will be available as
-\texttt{webroot}.
+Si usted fija el ítem \rcitem{web}{baseurl} en la sección
+\rcsection{web}, usted lo puede usar en una plantilla; estará
+disponible como \texttt{webroot}.
 
-Here is an example set of \hgext{notify} configuration information.
+A continuación se presenta un ejemplo completo de configuración para
+el gancho \hgext{notify}.
 \begin{codesample2}
   [notify]
-  # really send email
+  # enviar correo
   test = false
-  # subscriber data lives in the notify repo
+  # datos de subscriptores están en el repositorio notify
   config = /home/hg/repos/notify/notify.conf
-  # repos live in /home/hg/repos on server, so strip 4 "/" chars
+  # repos están en /home/hg/repos on server, así que elimine 4
+  # caracteres"/"
   strip = 4
   template = X-Hg-Repo: \{webroot\}
     Subject: \{webroot\}: \{desc|firstline|strip\}
@@ -1027,7 +1039,7 @@ Here is an example set of \hgext{notify} configuration information.
   baseurl = http://hg.example.com/
 \end{codesample2}
 
-This will produce a message that looks like the following:
+Esto producirá un mensaje que se verá como el siguiente:
 \begin{codesample2}
   X-Hg-Repo: tests/slave
   Subject: tests/slave: Handle error case when slave has no buffers
