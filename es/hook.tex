@@ -1066,122 +1066,130 @@ explícitamente para hacerlo, fijando el valor de \rcitem{notify}{test}
 a \texttt{false}.  Hasta que usted haga eso, simplemente se imprimirá
 el mensaje que se \emph{enviaría}.
 
-\section{Information for writers of hooks}
+\section{Información para escritores de ganchos}
 \label{sec:hook:ref}
 
-\subsection{In-process hook execution}
+\subsection{Ejecución de ganchos internos}
 
-An in-process hook is called with arguments of the following form:
+Un gancho interno es llamado con argumentos de la siguiente forma:
 \begin{codesample2}
   def myhook(ui, repo, **kwargs):
       pass
 \end{codesample2}
-The \texttt{ui} parameter is a \pymodclass{mercurial.ui}{ui} object.
-The \texttt{repo} parameter is a
-\pymodclass{mercurial.localrepo}{localrepository} object.  The
-names and values of the \texttt{**kwargs} parameters depend on the
-hook being invoked, with the following common features:
+El parámetro \texttt{ui} es un objeto \pymodclass{mercurial.ui}{ui}.
+El parámetro \texttt{repo} es un objeto
+\pymodclass{mercurial.localrepo}{localrepository}. Los nombres y
+valores de los parámetros en \texttt{**kwargs} dependen del gancho que
+se invoque, con las siguientes características en común:
 \begin{itemize}
-\item If a parameter is named \texttt{node} or
-  \texttt{parent\emph{N}}, it will contain a hexadecimal changeset ID.
-  The empty string is used to represent ``null changeset ID'' instead
-  of a string of zeroes.
-\item If a parameter is named \texttt{url}, it will contain the URL of
-  a remote repository, if that can be determined.
-\item Boolean-valued parameters are represented as Python
-  \texttt{bool} objects.
+\item Si hay un parámetro llamado \texttt{node} o
+  \texttt{parent\emph{N}}, contendrá un ID hexadecimal de un conjunto
+  de cambios. La cadena vacía es usada para representar un
+  ``ID de conjunto de cambios nulo'' en vez de una cadena de ceros.
+\item Si hay un parámetro llamado \texttt{url}, contendrá la URL de un
+  repositorio remoto, si puede ser determinada.
+\item Los parámetros booleanos son representados como objetos
+    \texttt{bool} de Python.
 \end{itemize}
 
-An in-process hook is called without a change to the process's working
-directory (unlike external hooks, which are run in the root of the
-repository).  It must not change the process's working directory, or
-it will cause any calls it makes into the Mercurial API to fail.
+Un gancho interno es ejecutado sin cambiar el directorio de trabajo
+del proceso (a diferencia de los ganchos externos, que son ejecutados
+desde la raíz del repositorio). El gancho no debe cambiar el
+directorio de trabajo del proceso, porque esto haría que falle
+cualquier llamada que se haga a la API de Mercurial.
 
-If a hook returns a boolean ``false'' value, it is considered to have
-succeeded.  If it returns a boolean ``true'' value or raises an
-exception, it is considered to have failed.  A useful way to think of
-the calling convention is ``tell me if you fail''.
+Si un gancho retorna el valor booleano ``false''\footnote{Falso.}, se
+considera que éste tuvo éxito. Si retorna
+``true''\footnote{Verdadero.} o genera una excepción, se considera que
+ha fallado. Una manera útil de pensar en esta convención de llamado es
+``dígame si usted falló''.
 
-Note that changeset IDs are passed into Python hooks as hexadecimal
-strings, not the binary hashes that Mercurial's APIs normally use.  To
-convert a hash from hex to binary, use the
-\pymodfunc{mercurial.node}{bin} function.
+Note que los IDs de conjuntos de cambios son pasados a los ganchos de
+Python como cadenas hexadecimales, no como los hashes binarios que la
+API de Mercurial usa normalmente. Para convertir un hash de
+hexadecimal a binario, use la función \pymodfunc{mercurial.node}{bin}.
 
-\subsection{External hook execution}
+\subsection{Ejecución de ganchos externos}
 
-An external hook is passed to the shell of the user running Mercurial.
-Features of that shell, such as variable substitution and command
-redirection, are available.  The hook is run in the root directory of
-the repository (unlike in-process hooks, which are run in the same
-directory that Mercurial was run in).
+Un gancho externo es pasado al intérprete de comandos del usuario bajo
+el cual se ejecuta Mercurial. Las características del intérprete, como
+sustitución de variables y redirección de comandos, están disponibles.
+El gancho es ejecutado desde el directorio raíz del repositorio
+(a diferencia de los ganchos internos, que se ejecutan desde el mismo
+directorio en que Mercurial fue ejecutado).
 
-Hook parameters are passed to the hook as environment variables.  Each
-environment variable's name is converted in upper case and prefixed
-with the string ``\texttt{HG\_}''.  For example, if the name of a
-parameter is ``\texttt{node}'', the name of the environment variable
-representing that parameter will be ``\texttt{HG\_NODE}''.
+Los parámetros para el gancho se pasan como variables de entorno. El
+nombre de cada variable de entorno se pasa a mayúsculas y se le añade
+el prefijo ``\texttt{HG\_}''.  Por ejemplo, si el nombre de un
+parámetro es ``\texttt{node}'', el nombre de la variable de entorno
+que almacena el parámetro se llamará ``\texttt{HG\_NODE}''.
 
-A boolean parameter is represented as the string ``\texttt{1}'' for
-``true'', ``\texttt{0}'' for ``false''.  If an environment variable is
-named \envar{HG\_NODE}, \envar{HG\_PARENT1} or \envar{HG\_PARENT2}, it
-contains a changeset ID represented as a hexadecimal string.  The
-empty string is used to represent ``null changeset ID'' instead of a
-string of zeroes.  If an environment variable is named
-\envar{HG\_URL}, it will contain the URL of a remote repository, if
-that can be determined.
+Un parámetro booleano se representa con la cadena ``\texttt{1}'' para
+``true'', ``\texttt{0}'' para ``false''.  Si una variable se llama
+\envar{HG\_NODE}, \envar{HG\_PARENT1} o \envar{HG\_PARENT2},  
+contendrá un ID de conjunto de cambios representado como una cadena
+hexadecimal. La cadena vacía es usada para representar un ``ID de
+conjunto de cambios nulo'' en vez de una cadena de ceros. Si una
+variable de entorno se llama \envar{HG\_URL}, contendrá la URL de un
+repositorio remoto, si puede ser determinada.
 
-If a hook exits with a status of zero, it is considered to have
-succeeded.  If it exits with a non-zero status, it is considered to
-have failed.
+Si un gancho termina con un código de salida de cero, se considera que
+tuvo éxito. Si termina con un código de salida diferente de cero, se
+considera que falló.
 
-\subsection{Finding out where changesets come from}
+\subsection{Averiguar de dónde vienen los conjuntos de cambios}
+%TODO los trae la cigüeña. De París. Y quedan debajo de una col.
 
-A hook that involves the transfer of changesets between a local
-repository and another may be able to find out information about the
-``far side''.  Mercurial knows \emph{how} changes are being
-transferred, and in many cases \emph{where} they are being transferred
-to or from.
+Un gancho que involucra la transferencia de conjuntos de cambios entre
+un repositorio local y otro puede ser capaz de averiguar información
+acerca de ``el otro lado''. Mercurial sabe \emph{cómo} son
+transferidos los conjuntos de cambios, y en muchos casos también desde
+o hacia donde están siendo transferidos.
 
-\subsubsection{Sources of changesets}
+\subsubsection{Fuentes de conjuntos de cambios}
 \label{sec:hook:sources}
 
-Mercurial will tell a hook what means are, or were, used to transfer
-changesets between repositories.  This is provided by Mercurial in a
-Python parameter named \texttt{source}, or an environment variable named
-\envar{HG\_SOURCE}.
+Mercurial le indicará a un gancho cuáles son, o fueron, los medios
+usados para transferir los conjuntos de cambios entre repositorios.
+Esta información es provista por Mercurial en un parámetro Python
+llamado \texttt{source}\footnote{Fuente.}, o una variable de entorno
+llamada \envar{HG\_SOURCE}.
 
 \begin{itemize}
-\item[\texttt{serve}] Changesets are transferred to or from a remote
-  repository over http or ssh.
-\item[\texttt{pull}] Changesets are being transferred via a pull from
-  one repository into another.
-\item[\texttt{push}] Changesets are being transferred via a push from
-  one repository into another.
-\item[\texttt{bundle}] Changesets are being transferred to or from a
-  bundle.
+\item[\texttt{serve}] Los conjuntos de cambios son transferidos desde
+  o hacia un repositorio remoto a través de http o ssh.
+\item[\texttt{pull}] Los conjuntos de cambios son transferidos vía una
+  operación de jalado de un repositorio a otro.
+\item[\texttt{push}] Los conjuntos de cambios son transferidos vía un
+  empuje de un repositorio a otro.
+\item[\texttt{bundle}] Los conjuntos de cambios son transferidos desde
+    %TODO bundle
+  o hacia un bundle.
 \end{itemize}
 
-\subsubsection{Where changes are going---remote repository URLs}
+\subsubsection{A dónde van los cambios---URLs de repositorios remotos}
 \label{sec:hook:url}
+%TODO al cielo? no, ésos son los perros
 
-When possible, Mercurial will tell a hook the location of the ``far
-side'' of an activity that transfers changeset data between
-repositories.  This is provided by Mercurial in a Python parameter
-named \texttt{url}, or an environment variable named \envar{HG\_URL}.
+Cuando es posible, Mercurial le indicará a los ganchos la ubicación de
+``el otro lado'' de una actividad que transfiera datos de conjuntos de
+cambios entre repositorios. Esto es provisto por Mercurial en un
+parámetro Python llamado \texttt{url}, o en una variable de entorno
+llamada \envar{HG\_URL}.
 
-This information is not always known.  If a hook is invoked in a
-repository that is being served via http or ssh, Mercurial cannot tell
-where the remote repository is, but it may know where the client is
-connecting from.  In such cases, the URL will take one of the
-following forms:
+No siempre esta información está disponible. Si un gancho es invocado
+un repositorio que es servido a través de http o ssh, Mercurial no
+puede averiguar dónde está el repositorio remoto, pero puede saber
+desde dónde se conecta el cliente. En esos casos, la URL tendrá una de
+las siguientes formas:
 \begin{itemize}
-\item \texttt{remote:ssh:\emph{ip-address}}---remote ssh client, at
-  the given IP address.
-\item \texttt{remote:http:\emph{ip-address}}---remote http client, at
-  the given IP address.  If the client is using SSL, this will be of
-  the form \texttt{remote:https:\emph{ip-address}}.
-\item Empty---no information could be discovered about the remote
-  client.
+\item \texttt{remote:ssh:\emph{ip-address}}---cliente ssh remoto, en
+  la dirección IP dada.
+\item \texttt{remote:http:\emph{ip-address}}---cliente remoto http, en
+  la dirección IP dada. Si el cliente está usando SSL, tendrá la forma
+  \texttt{remote:https:\emph{ip-address}}.
+\item Vacío---no se pudo descubrir información acerca del cliente
+  remoto.
 \end{itemize}
 
 \section{Hook reference}
