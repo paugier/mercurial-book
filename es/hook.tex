@@ -1192,107 +1192,122 @@ las siguientes formas:
   remoto.
 \end{itemize}
 
-\section{Hook reference}
+\section{Referencia de ganchos}
 
-\subsection{\hook{changegroup}---after remote changesets added}
+\subsection{\hook{changegroup}---luego de añadir conjuntos de cambios
+remotos}
 \label{sec:hook:changegroup}
 
-This hook is run after a group of pre-existing changesets has been
-added to the repository, for example via a \hgcmd{pull} or
-\hgcmd{unbundle}.  This hook is run once per operation that added one
-or more changesets.  This is in contrast to the \hook{incoming} hook,
-which is run once per changeset, regardless of whether the changesets
-arrive in a group.
+Este gancho es ejecutado luego de que un grupo de conjuntos de cambios
+preexistentes ha sido añadido al repositorio, por ejemplo vía un
+\hgcmd{pull} o \hgcmd{unbundle}.  Este gancho es ejecutado una vez por
+cada operación que añade uno o más conjuntos de cambios. Este gancho
+se diferencia del gancho \hook{incoming}, que es ejecutado una vez por
+cada conjunto de cambios, sin importar si los cambios llegan en grupo.
 
-Some possible uses for this hook include kicking off an automated
-build or test of the added changesets, updating a bug database, or
-notifying subscribers that a repository contains new changes.
+Algunos usos posibles para este gancho includen el probar o ensamblar
+los conjuntos de cambios añadidos, actualizar una base de datos de
+fallos, o notificar a subscriptores de que el repositorio contiene
+nuevos cambios.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{node}] A changeset ID.  The changeset ID of the first
-  changeset in the group that was added.  All changesets between this
-  and \index{tags!\texttt{tip}}\texttt{tip}, inclusive, were added by
-  a single \hgcmd{pull}, \hgcmd{push} or \hgcmd{unbundle}.
-\item[\texttt{source}] A string.  The source of these changes.  See
-  section~\ref{sec:hook:sources} for details.
-\item[\texttt{url}] A URL.  The location of the remote repository, if
-  known.  See section~\ref{sec:hook:url} for more information.
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del primer conjunto
+  de cambios que fue añadido en el grupo. Todos los conjuntos de
+  cambios entre éste y la punta
+  %TODO mirar qué hacer con el índice
+  \index{tags!\texttt{tip}}(\texttt{tip}), inclusive, fueron añadidos
+  %TODO unbundle
+  por un único jalado (\hgcmd{pull}), empuje (\hgcmd{push}) o \hgcmd{unbundle}.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
 \end{itemize}
 
-See also: \hook{incoming} (section~\ref{sec:hook:incoming}),
-\hook{prechangegroup} (section~\ref{sec:hook:prechangegroup}),
-\hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
+Veta también: \hook{incoming} (sección~\ref{sec:hook:incoming}),
+\hook{prechangegroup} (sección~\ref{sec:hook:prechangegroup}),
+\hook{pretxnchangegroup} (sección~\ref{sec:hook:pretxnchangegroup})
 
-\subsection{\hook{commit}---after a new changeset is created}
+\subsection{\hook{commit}---luego de la creación de un nuevo conjunto
+de cambios}
 \label{sec:hook:commit}
 
-This hook is run after a new changeset has been created.
+Este gancho es ejecutado luego de la creación de un nuevo conjunto de
+cambios.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{node}] A changeset ID.  The changeset ID of the newly
-  committed changeset.
-\item[\texttt{parent1}] A changeset ID.  The changeset ID of the first
-  parent of the newly committed changeset.
-\item[\texttt{parent2}] A changeset ID.  The changeset ID of the second
-  parent of the newly committed changeset.
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID de conjunto
+  de cambios del conjunto de cambios que acabó de ser consignado.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del primer padre del conjunto de cambios que
+  acaba de ser consignado.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del segundo padre del conjunto de cambios que
+  acaba de ser consignado.
 \end{itemize}
 
-See also: \hook{precommit} (section~\ref{sec:hook:precommit}),
-\hook{pretxncommit} (section~\ref{sec:hook:pretxncommit})
+Vea también: \hook{precommit} (sección~\ref{sec:hook:precommit}),
+\hook{pretxncommit} (sección~\ref{sec:hook:pretxncommit})
 
-\subsection{\hook{incoming}---after one remote changeset is added}
+\subsection{\hook{incoming}---luego de que un conjunto de cambios
+remoto es añadido}
 \label{sec:hook:incoming}
 
-This hook is run after a pre-existing changeset has been added to the
-repository, for example via a \hgcmd{push}.  If a group of changesets
-was added in a single operation, this hook is called once for each
-added changeset.
+Este gancho es ejecutado luego de que un conjunto de cambios
+preexistente ha sido añadido al repositorio, por ejemplo, vía un
+\hgcmd{push}.  Si un grupo de conjuntos de cambios fue añadido en una
+sola operación, este gancho es ejecutado una vez por cada conjunto de
+cambios añadido.
 
-You can use this hook for the same purposes as the \hook{changegroup}
-hook (section~\ref{sec:hook:changegroup}); it's simply more convenient
-sometimes to run a hook once per group of changesets, while other
-times it's handier once per changeset.
+Usted puede usar este gancho para los mismos fines que el gancho
+\hook{changegroup} (sección~\ref{sec:hook:changegroup}); simplemente
+algunas veces es más conveniente ejecutar un gancho una vez por cada
+grupo de conjuntos de cambios, mientras que otras es más útil correrlo
+por cada conjunto de cambios.
 
-Parameters to this hook:
+Parámetros para este gancho.
 \begin{itemize}
-\item[\texttt{node}] A changeset ID.  The ID of the newly added
-  changeset.
-\item[\texttt{source}] A string.  The source of these changes.  See
-  section~\ref{sec:hook:sources} for details.
-\item[\texttt{url}] A URL.  The location of the remote repository, if
-  known.  See section~\ref{sec:hook:url} for more information.
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del conjunto
+  de cambios recién añadido.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
 \end{itemize}
 
-See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}) \hook{prechangegroup} (section~\ref{sec:hook:prechangegroup}), \hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
+Vea también: \hook{changegroup} (sección~\ref{sec:hook:changegroup})
+\hook{prechangegroup} (sección~\ref{sec:hook:prechangegroup}),
+\hook{pretxnchangegroup} (sección~\ref{sec:hook:pretxnchangegroup})
 
-\subsection{\hook{outgoing}---after changesets are propagated}
+\subsection{\hook{outgoing}---luego de la propagación de los conjuntos
+de cambios}
 \label{sec:hook:outgoing}
 
-This hook is run after a group of changesets has been propagated out
-of this repository, for example by a \hgcmd{push} or \hgcmd{bundle}
-command.
+Este gancho es ejecutado luego de que un grupo de conjuntos de cambios
+ha sido propagado fuera de éste repositorio, por ejemplo por un
+comando \hgcmd{push} o \hgcmd{bundle}.
 
-One possible use for this hook is to notify administrators that
-changes have been pulled.
+Un uso posible para este gancho es notificar a los administradores que
+los cambios han sido jalados.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{node}] A changeset ID.  The changeset ID of the first
-  changeset of the group that was sent.
-\item[\texttt{source}] A string.  The source of the of the operation
-  (see section~\ref{sec:hook:sources}).  If a remote client pulled
-  changes from this repository, \texttt{source} will be
-  \texttt{serve}.  If the client that obtained changes from this
-  repository was local, \texttt{source} will be \texttt{bundle},
-  \texttt{pull}, or \texttt{push}, depending on the operation the
-  client performed.
-\item[\texttt{url}] A URL.  The location of the remote repository, if
-  known.  See section~\ref{sec:hook:url} for more information.
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del primer conjunto
+  de cambios del grupo que fue enviado.
+\item[\texttt{source}] Una cadena. La fuente de la operación (vea la
+  sección~\ref{sec:hook:sources}).  Si un cliente remoto jaló cambios
+  de este repositorio, \texttt{source} será \texttt{serve}.  Si el
+  cliente que obtuvo los cambios desde este repositorio era local,
+  \texttt{source} será \texttt{bundle}, \texttt{pull}, o
+  \texttt{push}, dependiendo de la operación que llevó a cabo el
+  cliente.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
 \end{itemize}
 
-See also: \hook{preoutgoing} (section~\ref{sec:hook:preoutgoing})
+Vea también: \hook{preoutgoing} (sección~\ref{sec:hook:preoutgoing})
 
 \subsection{\hook{prechangegroup}---before starting to add remote changesets}
 \label{sec:hook:prechangegroup}
