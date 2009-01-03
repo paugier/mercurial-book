@@ -1,51 +1,53 @@
-\chapter{Installing Mercurial from source}
+\chapter{Instalar Mercurial desde las fuentes}
 \label{chap:srcinstall}
 
-\section{On a Unix-like system}
+\section{En un sistema tipo Unix}
 \label{sec:srcinstall:unixlike}
 
-If you are using a Unix-like system that has a sufficiently recent
-version of Python (2.3~or newer) available, it is easy to install
-Mercurial from source.
+Si usa un sistema tipo Unix que tiene una versión suficientemente
+reciente de Python(2.3~o superior) disponible, es fácil instalar
+Mercurial desde las fuentes.
 \begin{enumerate}
-\item Download a recent source tarball from
+\item Descargue un paquete fuente reciente de
   \url{http://www.selenic.com/mercurial/download}.
-\item Unpack the tarball:
+\item Descomprímalo:
   \begin{codesample4}
     gzip -dc mercurial-\emph{version}.tar.gz | tar xf -
   \end{codesample4}
-\item Go into the source directory and run the installer script.  This
-  will build Mercurial and install it in your home directory.
+\item Vaya al directorio fuente y ejecute el guión de instalación.
+  Esto armará Mercurial y lo instalará en su directorio casa:
   \begin{codesample4}
     cd mercurial-\emph{version}
     python setup.py install --force --home=\$HOME
   \end{codesample4}
 \end{enumerate}
-Once the install finishes, Mercurial will be in the \texttt{bin}
-subdirectory of your home directory.  Don't forget to make sure that
-this directory is present in your shell's search path.
+Cuando termine la instalación, Mercurial estará en el subdirectorio
+\texttt{bin} de su directorio casa.  No olvide asegurarse de que este
+directorio esté presente en el camino de búsqueda de su intérprete de
+órdenes.
 
-You will probably need to set the \envar{PYTHONPATH} environment
-variable so that the Mercurial executable can find the rest of the
-Mercurial packages.  For example, on my laptop, I have set it to
-\texttt{/home/bos/lib/python}.  The exact path that you will need to
-use depends on how Python was built for your system, but should be
-easy to figure out.  If you're uncertain, look through the output of
-the installer script above, and see where the contents of the
-\texttt{mercurial} directory were installed to.
+Probablemente necesitará establecer la variable de ambiente
+\envar{PYTHONPATH} de tal forma que los ejecutables de Mercurial
+puedan encontrar el resto de los paquetes de Mercurial.  Por ejemplo,
+en mi portátil, la establecía a \texttt{/home/bos/lib/python}.  La
+ruta exacta que usted use dependerá de como ha sido construído Python
+en su sistema, pero debería ser fácil deducirla.  Si no está seguro,
+mire lo que haya mostrado el script en el paso anterior, y vea dónde
+se instalaron los contenidos del directorio \texttt{mercurial} se
+instalaron.
 
-\section{On Windows}
+\section{En Windows}
 
-Building and installing Mercurial on Windows requires a variety of
-tools, a fair amount of technical knowledge, and considerable
-patience.  I very much \emph{do not recommend} this route if you are a
-``casual user''.  Unless you intend to hack on Mercurial, I strongly
-suggest that you use a binary package instead.
+Armar e instalar Mercurial en Windows requiere una variedad de
+herramientas, cierta suficiencia técnica y paciencia considerable.
+Personalmente, \emph{no le recomiendo} hacerlo si es un ``usuario
+casual''.  A menos que intente hacer hacks a Mercurial, le recomiendo
+que mejor use un paquete binario.
 
-If you are intent on building Mercurial from source on Windows, follow
-the ``hard way'' directions on the Mercurial wiki at
+Si está decidido a construir Mercurial desde las fuentes en Windows,
+siga el ``camino difícil'' indicado en el wiki de Mercurial en
 \url{http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall},
-and expect the process to involve a lot of fiddly work.
+y espere que el proceso sea realmente un trabajo duro.
 
 %%% Local Variables: 
 %%% mode: latex
