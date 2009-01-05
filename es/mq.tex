@@ -31,11 +31,11 @@ distribuyen de tal forma que se armen apropiadamente en sus ambientes.
 
 Cuando hay pocos cambios por mantener, es muy sencillo administrar un
 solo parche con los programas estándar \command{diff} y
-\command{patch}( ver la sección~\ref{sec:mq:patch} para ver cómo
+\command{patch} (ver la sección~\ref{sec:mq:patch} para ver cómo
 emplear tales herramientas). Cuando la cantidad de cambios comienza a
 crecer, tiene sentido mantener parches como ``porciones de trabajo''
 individual, de forma que cada cambio contiene solamente un arreglo de
-un fallo(el parche puede modificar varios ficheros, pero está
+un fallo (el parche puede modificar varios ficheros, pero está
 ``haciendo una sola cosa''), y puede tener cierta cantidad de tales
 parches para diferentes fallos y cambios locales.  En esta situación,
 si envía un parche que arregla un fallo a los mantenedores principales
@@ -51,7 +51,7 @@ cambios, entender cuáles ha aplicado se convierte de algo desordenado
 a algo avasallante.
 
 Afortunadamente Mercurial provee una extensión poderos: Colas de
-Mercurial( o simplemente ``MQ''), que simplifica en gran medida el
+Mercurial (o simplemente ``MQ''), que simplifica en gran medida el
 problema de administración de parches.
 
 \section{La prehistoria de las Colas de Mercurial}
@@ -67,7 +67,7 @@ Los tamaños de las series de parches crecieron rápidamente.  En el
 2002, Andrew Morton publicó algunos guiones de línea de órdenes que
 estuvo usando para automatizar la tarea de administrar su cola de
 parches.  Andrew usó exitósamente tales guiones para administrar
-centenas( aveces millares) de parches en el núcleo de Linux.
+centenas (a veces millares) de parches en el núcleo de Linux.
 
 \subsection{Trabajar parches con quilt}
 \label{sec:mq:quilt}
@@ -84,7 +84,7 @@ Quilt maneja una \emph{pila de parches} sobre un árbol de directorios.
 Para comenzar, usted le indica a quilt que administre un árbol de
 directorios, le indica qué ficheros manejar; Este almacena los nombres
 y los contenidos de estos ficheros.  Para arreglar un fallo, usted
-crea un nuevo parche(con una sola orden), edita los ficheros que está
+crea un nuevo parche (con una sola orden), edita los ficheros que está
 arreglando y ``refresca'' el parche.
 
 El paso de refresco hace que quilt revise el árbol de directorios;
@@ -207,7 +207,7 @@ busca un fichero con ese nombre para modificarlo.
 Después del encabezaado vienen varios \emph{trozos}.  Cada trozo
 comienza con un encabezado; que identifica el rango de líneas del
 fichero que el trozo debe modificar.  Después del encabezado, un trozo
-comienza y termina con unas pocas líneas(usualmente tres) de texto del
+comienza y termina con unas pocas líneas (usualmente tres) de texto del
 fichero que no han sido modificadas; las cuales llamamos el
 \emph{contexto} del trozo.  Si solamente hay una pequeña cantidad de
 contexto entre trozos sucesivos, \command{diff} no imprime un nuevo
@@ -220,7 +220,7 @@ esta línea'', si la línea comienza con un ``\texttt{+}'' significa
 ``inserte esta línea''.  Por ejemplo, una línea que se modifica se
 representa con una línea eliminada y una línea insertada.
 
-Retomaremos aspectos más sutiles acerca de parches posteriormente(en
+Retomaremos aspectos más sutiles acerca de parches posteriormente (en
 la sección~\ref{sec:mq:adv-patch}), pero en el momento usted ya
 debería tener suficiente información para usar MQ.
 
@@ -255,7 +255,7 @@ ejemplo en la figura~\ref{ex:mq:enabled}.
 
 Puede usar MQ en \emph{cualquier} repositorio de Mercurial, y sus
 comandos solamente operarán con tal repositorio.  Para comenzar, basta
-con preparar el repositorio con la orden \hgxcmd{mq}{qinit}(ver la
+con preparar el repositorio con la orden \hgxcmd{mq}{qinit} (ver la
 figura~\ref{ex:mq:qinit}).  Esta orden crea un directorio vacío
 llamado \sdirname{.hg/patches}, donde MQ mantendrá sus metadatos. Como
 otras ordenes de Mercurial, la orden \hgxcmd{mq}{qinit} no imprime
@@ -305,7 +305,7 @@ trabajarán de la misma forma como lo han hecho antes.
 \subsection{Refrescar un parche}
 
 Cuando usted llega a un punto en el cual desea guardar su trabajo, use
-la orden \hgxcmd{mq}{qrefresh}(figura~\ref{ex:mq:qnew}) para
+la orden \hgxcmd{mq}{qrefresh} (figura~\ref{ex:mq:qnew}) para
 actualizar el parche en el cual está trabajando.  Esta orden almacena
 los cambios que haya hecho al directorio actual de trabajo en su
 parche, y almacena el conjunto de cambios correspondiente que contiene
@@ -336,7 +336,7 @@ otro, puede usar la orden \hgxcmd{mq}{qnew} para crear un nuevo
 parche.  Mercurial aplicará este parche sobre su parche anterior.
 Para un ejemplo, ver la figura~\ref{ex:mq:qnew2}.  Note que el parche
 contiene los cambios en nuestro parche anterior como parte de su
-contexto( lo verá más claramente en la salida de \hgcmd{annotate}).
+contexto (lo verá más claramente en la salida de \hgcmd{annotate}).
 
 \begin{figure}[ht]
   \interaction{mq.tutorial.qnew2}
@@ -353,7 +353,7 @@ parches, como se puede ver en la figura~\ref{ex:mq:qseries}:
 \begin{itemize}
 \item La orden \hgxcmd{mq}{qseries} lista cada parche del cual MQ
   tiene noticia en este repositorio, desde el más antiguo hasta el más
-  nuevo(El último \emph{creado}).
+  nuevo (El último \emph{creado}).
 \item La orden \hgxcmd{mq}{qapplied} lista cada parche que MQ haya
   \emph{aplicado} en este repositorio, de nuevo, desde el más antiguo
   hasta el más nuevo (El aplicado más recientemente).
@@ -482,7 +482,7 @@ tanto es útil conocer ciertos detalles de cómo trabaja
 Si ve el encabezado de un parche, notará que la ruta al fichero tiene
 un componente adicional al principio, que no está presente en la
 ruta. Esta es una traza de cómo generaba anteriormente los parches la
-gente(algunos aún lo hacen, pero es raro con las herramientas de
+gente (algunos aún lo hacen, pero es raro con las herramientas de
 control de revisiones del actuales).
 
 Alicia desempaquetaría un comprimido, editaría sus ficheros, y querría
@@ -554,7 +554,7 @@ aplicar el parche).
 
 Cuando ninguna de estas técnicas funciona, \command{patch} imprime un
 mensaje indicando que el trozo en cuestión se desechó.  Almacena los
-trozos desechados(también llamados ``descartados'') en un fichero con
+trozos desechados (también llamados ``descartados'') en un fichero con
 el mismo nombre, y la extensión \sfilename{.rej} añadida.  También
 almacena una copia igual al fichero original con la extensión
 \sfilename{.orig}; la copia del fichero sin extensión contendrá
@@ -673,7 +673,7 @@ En mi portátil antiguo y lento, logré aplicar
 minutos, y \hgcmdargs{qpop}{\hgxopt{mq}{qpop}{-a}} en 30 segundos.
 (En un portátil más nuevo, el tiempo para introducir todos los
 parches, se logró en menos de dos minutos.)  Apliqué
-\hgxcmd{mq}{qrefresh} sobre uno de los parches más grandes(que hizo
+\hgxcmd{mq}{qrefresh} sobre uno de los parches más grandes (que hizo
 22.779 líneas de cambios en 287 ficheros) en 6,6 segundos.
 
 Claramente, MQ funciona adecuadamente en árboles grandes, y además hay
@@ -684,7 +684,7 @@ que ejecute \hgxcmd{mq}{qpush} o \hgxcmd{mq}{qpop}, tales órdenes
 revisan el directorio de trabajo para asegurarse de que usted no ha
 hecho cambios y ha olvidado ejecutar \hgxcmd{mq}{qrefresh}.  En un
 árbol pequeño, el tiempo de esta revisión puede ser mínimo,  Pero en
-un árbol mediano(con decenas de miles de ficheros), puede tomar un
+un árbol mediano (con decenas de miles de ficheros), puede tomar un
 segundo o más.
 
 Las órdenes \hgxcmd{mq}{qpush} y \hgxcmd{mq}{qpop} le permiten
@@ -787,7 +787,7 @@ corrimiento de número; por ejemplo,  \texttt{foo.patch-2} significa
 
 Referirse a un parche por su índice no es muy diferente.  El primer
 parche que se imprime en la salida de \hgxcmd{mq}{qseries} es el
-parche cero(si, es el primero en los sistemas que comienzan su conteo
+parche cero (si, es el primero en los sistemas que comienzan su conteo
 en cero); el segundo parche es uno y así sucesivamente.
 
 MQ facilita el trabajo cuando está usando órdenes normales de
@@ -1056,7 +1056,7 @@ Si desea mover cambios de ficheros completos, puede usar las opciones
 parche, concatenar su salida al final del parche donde desea
 fusionarlo.  Usualmente no necesitará modificar el parche del cuál ha
 fusionado los cambios.  En cambio, MQ reportará que hay unos trozos
-que se han desechado cuando usted aplique \hgxcmd{mq}{qpush}(de los
+que se han desechado cuando usted aplique \hgxcmd{mq}{qpush} (de los
 trozos que haya movido al otro parche), y puede sencillamente aplicar
 \hgxcmd{mq}{qrefresh} para eliminar los trozos replicados.
 
