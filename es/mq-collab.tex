@@ -1,54 +1,61 @@
-\chapter{Advanced uses of Mercurial Queues}
+\chapter{Usos avanzados de las Colas de Mercurial}
 \label{chap:mq-collab}
 
-While it's easy to pick up straightforward uses of Mercurial Queues,
-use of a little discipline and some of MQ's less frequently used
-capabilities makes it possible to work in complicated development
-environments.
+Auunque es fácil aprender los usos más directos de las Colas de
+Mercurial, tener algo de disciplina junto con algunas de las
+capacidadees menos usadas de MQ hace posible trabajar en entornos de
+desarrollo complejos.
 
-In this chapter, I will use as an example a technique I have used to
-manage the development of an Infiniband device driver for the Linux
-kernel.  The driver in question is large (at least as drivers go),
-with 25,000 lines of code spread across 35 source files.  It is
-maintained by a small team of developers.
+En este capítulo, usaré como ejemplo una técnica que he usado para
+administrar el desarrollo de un controlador de dispositivo Infiniband
+para el kernel de Linux. El controlador en cuestión es grande
+(al menos en lo que se refiere a controladores), con 25,000 líneas de
+código esparcidas en 35 ficheros fuente. Es mantenido por un equipo
+pequeño de desarrolladores. 
 
-While much of the material in this chapter is specific to Linux, the
-same principles apply to any code base for which you're not the
-primary owner, and upon which you need to do a lot of development.
+Aunque mucho del material en este capítulo es específico de Linux, los
+mismos principios aplican a cualquier base de código de la que usted
+no sea el propietario principal, y sobre la que usted necesita hacer
+un montón de desarrollo.
 
-\section{The problem of many targets}
+\section{El problema de múltiples objetivos}
 
-The Linux kernel changes rapidly, and has never been internally
-stable; developers frequently make drastic changes between releases.
-This means that a version of the driver that works well with a
-particular released version of the kernel will not even \emph{compile}
-correctly against, typically, any other version.
+El kernel de Linux cambia con rapidez, y nunca ha sido estable
+internamente; los desarrolladores hacen cambios drásticos entre
+%TODO no encontré una traducción adecuada para "release". Por eso el
+%cambio
+versiones frecuentemente. Esto significa que una versión del
+controlador que funciona bien con una versión particular del kernel ni
+siquiera \emph{compilará} correctamente contra, típicamente, cualquier
+otra versión.
 
-To maintain a driver, we have to keep a number of distinct versions of
-Linux in mind.
+Para mantener un controlador, debemos tener en cuenta una buena
+cantidad de versiones de Linux en mente.
 \begin{itemize}
-\item One target is the main Linux kernel development tree.
-  Maintenance of the code is in this case partly shared by other
-  developers in the kernel community, who make ``drive-by''
-  modifications to the driver as they develop and refine kernel
-  subsystems.
-\item We also maintain a number of ``backports'' to older versions of
-  the Linux kernel, to support the needs of customers who are running
-  older Linux distributions that do not incorporate our drivers.  (To
-  \emph{backport} a piece of code is to modify it to work in an older
-  version of its target environment than the version it was developed
-  for.)
-\item Finally, we make software releases on a schedule that is
-  necessarily not aligned with those used by Linux distributors and
-  kernel developers, so that we can deliver new features to customers
-  without forcing them to upgrade their entire kernels or
-  distributions.
+\item Un objetivo es el árbol de desarrollo principal del kernel de
+  Linux. En este caso el mantenimiento del código es compartido
+  parcialmente por otros desarrolladores en la comunidad del kernel, 
+  %TODO drive-by. 
+  quienes hacen modificaciones ``de-afán'' al controlador a medida que 
+  desarrollan y refinan subsistemas en el kernel.
+  %TODO backport
+\item También mantenemos algunos ``backports'' para versiones antiguas
+  del kernel de Linux, para dar soporte a las necesidades de los
+  clientes que están corriendo versiones antiguas de Linux que no
+  incorporan nuestros controladores. (Hacer el \emph{backport} de un
+  pedazo de código es modificarlo para que trabaje en una versión
+  de su entorno objetivo anterior a aquella para la cual fue escrito.)
+\item Finalmente, nosotros liberamos nuestro software de acuerdo a un
+  cronograma que no necesariamente está alineado con el que usan los
+  distribuidores de Linux y los desarrolladores del kernel, así que
+  podemos entregar nuevas características a los clientes sin forzarlos
+  a actualizar kernels completos o distribuciones.
 \end{itemize}
 
-\subsection{Tempting approaches that don't work well}
+\subsection{Aproximaciones tentadoras que no funcionan adecuadamente}
 
-There are two ``standard'' ways to maintain a piece of software that
-has to target many different environments.
+Hay dos maneras estándar de mantener una porción de software que debe
+funcionar en muchos entornos diferentes.
 
 The first is to maintain a number of branches, each intended for a
 single target.  The trouble with this approach is that you must
