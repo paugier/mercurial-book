@@ -1267,7 +1267,7 @@ algunas veces es más conveniente ejecutar un gancho una vez por cada
 grupo de conjuntos de cambios, mientras que otras es más útil correrlo
 por cada conjunto de cambios.
 
-Parámetros para este gancho.
+Parámetros para este gancho:
 \begin{itemize}
 \item[\texttt{node}] Un ID de conjunto de cambios. El ID del conjunto
   de cambios recién añadido.
@@ -1309,237 +1309,259 @@ Parámetros para este gancho:
 
 Vea también: \hook{preoutgoing} (sección~\ref{sec:hook:preoutgoing})
 
-\subsection{\hook{prechangegroup}---before starting to add remote changesets}
+\subsection{\hook{prechangegroup}---antes de empezar la adición de
+conjuntos de cambios remotos}
 \label{sec:hook:prechangegroup}
 
-This controlling hook is run before Mercurial begins to add a group of
-changesets from another repository.
+Este gancho de control es ejecutado antes de que Mercurial empiece a
+añadir un grupo de conjuntos de cambios de otro repositorio.
 
-This hook does not have any information about the changesets to be
-added, because it is run before transmission of those changesets is
-allowed to begin.  If this hook fails, the changesets will not be
-transmitted.
+Este gancho no tiene ninguna información acerca de los conjuntos de
+cambios que van a ser añadidos, porque es ejecutado antes de que se
+permita que empiece la transmisión de dichos conjuntos de cambios. Si
+este gancho falla, los conjuntos de cambios no serán transmitidos.
 
-One use for this hook is to prevent external changes from being added
-to a repository.  For example, you could use this to ``freeze'' a
-server-hosted branch temporarily or permanently so that users cannot
-push to it, while still allowing a local administrator to modify the
-repository.
+Un uso para este gancho es prevenir que se añadan cambios externos a un
+repositorio. Por ejemplo, usted podría usarlo para ``congelar''
+temporal o permanentemente una rama ubicada en un servidor para que
+los usuarios no puedan empujar cambios a ella, y permitiendo al mismo
+tiempo modificaciones al repositorio por parte de un administrador
+local.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{source}] A string.  The source of these changes.  See
-  section~\ref{sec:hook:sources} for details.
-\item[\texttt{url}] A URL.  The location of the remote repository, if
-  known.  See section~\ref{sec:hook:url} for more information.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
 \end{itemize}
 
-See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
-\hook{incoming} (section~\ref{sec:hook:incoming}), ,
-\hook{pretxnchangegroup} (section~\ref{sec:hook:pretxnchangegroup})
+Vea también: \hook{changegroup} (sección~\ref{sec:hook:changegroup}),
+\hook{incoming} (sección~\ref{sec:hook:incoming}), ,
+\hook{pretxnchangegroup} (sección~\ref{sec:hook:pretxnchangegroup})
 
-\subsection{\hook{precommit}---before starting to commit a changeset}
+\subsection{\hook{precommit}---antes de iniciar la consignación de un
+conjunto de cambios}
 \label{sec:hook:precommit}
 
-This hook is run before Mercurial begins to commit a new changeset.
-It is run before Mercurial has any of the metadata for the commit,
-such as the files to be committed, the commit message, or the commit
-date.
+Este gancho es ejecutado antes de que Mercurial inicie la consignación
+de un nuevo conjunto de cambios. Es ejecutado antes de que Mercurial
+tenga cualquier de los metadatos para la consignación, como los
+ficheros a ser consignados, el mensaje de consignación, o la fecha de
+consignación.
 
-One use for this hook is to disable the ability to commit new
-changesets, while still allowing incoming changesets.  Another is to
-run a build or test, and only allow the commit to begin if the build
-or test succeeds.
+Un uso para este gancho es deshabilitar la capacidad de consignar
+nuevos conjuntos de cambios, pero permitiendo conjuntos de cambios
+entrantes. Otro es ejecutar un proceso de ensamble/compilación o
+prueba, y permitir la consignación sólo si el ensamble/compilación o
+prueba tiene éxito.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{parent1}] A changeset ID.  The changeset ID of the first
-  parent of the working directory.
-\item[\texttt{parent2}] A changeset ID.  The changeset ID of the second
-  parent of the working directory.
+  \item[\texttt{parent1}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del primer padre del directorio de trabajo.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del segundo padre del directorio de trabajo.
 \end{itemize}
-If the commit proceeds, the parents of the working directory will
-become the parents of the new changeset.
+Si la consignación continúa, los padres del directorio de trabajo se
+convertirán en los padres del nuevo conjunto de cambios.
 
-See also: \hook{commit} (section~\ref{sec:hook:commit}),
-\hook{pretxncommit} (section~\ref{sec:hook:pretxncommit})
+Vea también: \hook{commit} (sección~\ref{sec:hook:commit}),
+\hook{pretxncommit} (sección~\ref{sec:hook:pretxncommit})
 
-\subsection{\hook{preoutgoing}---before starting to propagate changesets}
+\subsection{\hook{preoutgoing}---antes de empezar la propagación de
+conjuntos de cambios}
 \label{sec:hook:preoutgoing}
 
-This hook is invoked before Mercurial knows the identities of the
-changesets to be transmitted.
+Este gancho es ejecutado antes de que Mercurial conozca las
+identidades de los conjuntos de cambios que deben ser transmitidos.
 
-One use for this hook is to prevent changes from being transmitted to
-another repository.
+Un uso para este gancho es evitar que los cambios sean transmitidos a
+otro repositorio.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{source}] A string.  The source of the operation that is
-  attempting to obtain changes from this repository (see
-  section~\ref{sec:hook:sources}).  See the documentation for the
-  \texttt{source} parameter to the \hook{outgoing} hook, in
-  section~\ref{sec:hook:outgoing}, for possible values of this
-  parameter.
-\item[\texttt{url}] A URL.  The location of the remote repository, if
-  known.  See section~\ref{sec:hook:url} for more information.
+  \item[\texttt{source}] Una cadena. La fuente la operación que está
+    tratando de obtener cambios de éste repositorio (vea
+    la sección~\ref{sec:hook:sources}).  Revise la documentación para
+    el parámetro \texttt{source} del gancho \hook{outgoing}, en la
+    sección~\ref{sec:hook:outgoing}, para ver los posibles valores de
+    este parámetro.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+    es conocida. Vea la sección~\ref{sec:hook:url} para más información.
 \end{itemize}
 
-See also: \hook{outgoing} (section~\ref{sec:hook:outgoing})
+Vea también: \hook{outgoing} (sección~\ref{sec:hook:outgoing})
 
-\subsection{\hook{pretag}---before tagging a changeset}
+\subsection{\hook{pretag}---antes de etiquetar un conjunto de cambios}
 \label{sec:hook:pretag}
 
-This controlling hook is run before a tag is created.  If the hook
-succeeds, creation of the tag proceeds.  If the hook fails, the tag is
-not created.
+Este gancho de control es ejecutado antes de la creación de una
+etiqueta. Si el gancho termina exitosamente, la creación de la
+etiqueta continúa. Si el gancho falla, no se crea la etiqueta.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{local}] A boolean.  Whether the tag is local to this
-  repository instance (i.e.~stored in \sfilename{.hg/localtags}) or
-  managed by Mercurial (stored in \sfilename{.hgtags}).
-\item[\texttt{node}] A changeset ID.  The ID of the changeset to be tagged.
-\item[\texttt{tag}] A string.  The name of the tag to be created.
+\item[\texttt{local}] Un booleano. Indica si la etiqueta es local a
+  ésta instancia del repositorio (p.e.~almacenado en
+  \sfilename{.hg/localtags}) o administrado por Mercurial (almacenado
+  en \sfilename{.hgtags}).
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del conjunto
+  de cambios a etiquetar.
+\item[\texttt{tag}] Una cadena. El nombre de la etiqueta por crear.
 \end{itemize}
 
-If the tag to be created is revision-controlled, the \hook{precommit}
-and \hook{pretxncommit} hooks (sections~\ref{sec:hook:commit}
-and~\ref{sec:hook:pretxncommit}) will also be run.
+Si la etiqueta que se va a crear se encuentra bajo control de
+revisiones, los ganchos \hook{precommit} y \hook{pretxncommit}
+(secciones~\ref{sec:hook:commit} y~\ref{sec:hook:pretxncommit})
+también serán ejecutados.
 
-See also: \hook{tag} (section~\ref{sec:hook:tag})
+Vea también: \hook{tag} (sección~\ref{sec:hook:tag})
 
-\subsection{\hook{pretxnchangegroup}---before completing addition of
-  remote changesets}
+\subsection{\hook{pretxnchangegroup}---antes de completar la adición
+de conjuntos de cambios remotos}
 \label{sec:hook:pretxnchangegroup}
 
-This controlling hook is run before a transaction---that manages the
-addition of a group of new changesets from outside the
-repository---completes.  If the hook succeeds, the transaction
-completes, and all of the changesets become permanent within this
-repository.  If the hook fails, the transaction is rolled back, and
-the data for the changesets is erased.
+Este gancho de control es ejecutado antes de una transacción---la que
+maneja la adición de un grupo de conjuntos de cambios nuevos desde
+fuera del repositorio---se complete.  Si el gancho tiene éxito, la
+transacción se completa, y todos los conjuntos de cambios se vuelven
+permanentes dentro de este repositorio. Si el gancho falla, la
+transacción es deshecha, y los datos para los conjuntos de cambios son
+eliminados.
 
-This hook can access the metadata associated with the almost-added
-changesets, but it should not do anything permanent with this data.
-It must also not modify the working directory.
+Este gancho puede acceder a los metadatos asociados con los conjuntos
+de cambios casi añadidos, pero no debe hacer nada permanente con estos
+datos. Tampoco debe modificar el directorio de trabajo.
 
-While this hook is running, if other Mercurial processes access this
-repository, they will be able to see the almost-added changesets as if
-they are permanent.  This may lead to race conditions if you do not
-take steps to avoid them.
+Mientras este gancho está corriendo, si otro proceso Mercurial accesa
+el repositorio, podrá ver los conjuntos de cambios casi añadidos como
+si fueran permanentes. Esto puede llevar a condiciones de carrera si
+usted no toma precauciones para evitarlas.
 
-This hook can be used to automatically vet a group of changesets.  If
-the hook fails, all of the changesets are ``rejected'' when the
-transaction rolls back.
+Este gancho puede ser usado para examinar automáticamente un grupo de
+conjuntos de cambios. Si el gancho falla, todos los conjuntos de
+cambios son ``rechazados'' cuando la transacción se deshace.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{node}] A changeset ID.  The changeset ID of the first
-  changeset in the group that was added.  All changesets between this
-  and \index{tags!\texttt{tip}}\texttt{tip}, inclusive, were added by
-  a single \hgcmd{pull}, \hgcmd{push} or \hgcmd{unbundle}.
-\item[\texttt{source}] A string.  The source of these changes.  See
-  section~\ref{sec:hook:sources} for details.
-\item[\texttt{url}] A URL.  The location of the remote repository, if
-  known.  See section~\ref{sec:hook:url} for more information.
+  \item[\texttt{node}] Un ID de conjunto de cambios. El ID del primer
+  conjunto de cambios que fue añadido en el grupo. Todos los
+  conjuntos de cambios entre éste y el
+  \index{tags!\texttt{tip}}\texttt{tip}, inclusive, fueron añadidos
+  por un único \hgcmd{pull}, \hgcmd{push} o \hgcmd{unbundle}.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
 \end{itemize}
 
-See also: \hook{changegroup} (section~\ref{sec:hook:changegroup}),
-\hook{incoming} (section~\ref{sec:hook:incoming}),
-\hook{prechangegroup} (section~\ref{sec:hook:prechangegroup})
+Vea también: \hook{changegroup} (sección~\ref{sec:hook:changegroup}),
+\hook{incoming} (sección~\ref{sec:hook:incoming}),
+\hook{prechangegroup} (sección~\ref{sec:hook:prechangegroup})
 
-\subsection{\hook{pretxncommit}---before completing commit of new changeset}
+\subsection{\hook{pretxncommit}---antes de completar la consignación
+de un nuevo conjunto de cambios}
 \label{sec:hook:pretxncommit}
 
-This controlling hook is run before a transaction---that manages a new
-commit---completes.  If the hook succeeds, the transaction completes
-and the changeset becomes permanent within this repository.  If the
-hook fails, the transaction is rolled back, and the commit data is
-erased.
+Este gancho de control es ejecutado antes de que una transacción---que
+maneja una nueva consignación---se complete. Si el gancho tiene éxito,
+la transacción se completa y el conjunto de cambios se hace permanente
+dentro de éste repositorio. Si el gancho falla, la transacción es
+deshecha, y los datos de consignación son borrados.
 
-This hook can access the metadata associated with the almost-new
-changeset, but it should not do anything permanent with this data.  It
-must also not modify the working directory.
+Este gancho tiene acceso a los metadatos asociados con el
+prácticamente nuevo conjunto de cambios, pero no debería hacer nada
+permanente con estos datos. Tampoco debe modificar el directorio de
+trabajo.
 
-While this hook is running, if other Mercurial processes access this
-repository, they will be able to see the almost-new changeset as if it
-is permanent.  This may lead to race conditions if you do not take
-steps to avoid them.
+Mientras este gancho está corriendo, si otro proceso Mercurial accesa
+éste repositorio, podrá ver el prácticamente nuevo conjunto de cambios
+como si fuera permanente. Esto puede llevar a condiciones de carrera si
+usted no toma precauciones para evitarlas.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{node}] A changeset ID.  The changeset ID of the newly
-  committed changeset.
-\item[\texttt{parent1}] A changeset ID.  The changeset ID of the first
-  parent of the newly committed changeset.
-\item[\texttt{parent2}] A changeset ID.  The changeset ID of the second
-  parent of the newly committed changeset.
+  \item[\texttt{node}] Un ID de conjunto de cambios. El ID del
+    conjunto de cambios recién consignado.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del primer padre del conjunto de cambios que
+  acaba de ser consignado.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del segundo padre del conjunto de cambios que
+  acaba de ser consignado.
 \end{itemize}
 
-See also: \hook{precommit} (section~\ref{sec:hook:precommit})
+Vea también: \hook{precommit} (sección~\ref{sec:hook:precommit})
 
-\subsection{\hook{preupdate}---before updating or merging working directory}
+\subsection{\hook{preupdate}---antes de actualizar o fusionar el
+directorio de trabajo}
 \label{sec:hook:preupdate}
 
-This controlling hook is run before an update or merge of the working
-directory begins.  It is run only if Mercurial's normal pre-update
-checks determine that the update or merge can proceed.  If the hook
-succeeds, the update or merge may proceed; if it fails, the update or
-merge does not start.
+Este gancho de control es ejecutado antes de actualizar o fusionar el
+directorio de trabajo. Es ejecutado sólo si las revisiones usuales de
+Mercurial antes de las actualizaciones determinan que la actualización
+o fusión pueden proceder. Si el gancho termina exitosamente, la
+actualización o fusión pueden proceder.; si falla, la actualización o
+fusión no empiezan.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{parent1}] A changeset ID.  The ID of the parent that the
-  working directory is to be updated to.  If the working directory is
-  being merged, it will not change this parent.
-\item[\texttt{parent2}] A changeset ID.  Only set if the working
-  directory is being merged.  The ID of the revision that the working
-  directory is being merged with.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID del
+  padre al que el directorio de trabajo será actualizado. Si se está
+  fusionando el directorio de trabajo, no cambiará este padre.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. Sólo está
+  definido si se está fusionando el directorio de trabajo. El ID de la
+  revisión con la cual está siendo fusionado el directorio de trabajo.
 \end{itemize}
 
-See also: \hook{update} (section~\ref{sec:hook:update})
+Vea también: \hook{update} (sección~\ref{sec:hook:update})
 
-\subsection{\hook{tag}---after tagging a changeset}
+\subsection{\hook{tag}---luego de etiquetar un conjunto de cambios}
 \label{sec:hook:tag}
 
-This hook is run after a tag has been created.
+Este gancho es ejecutado luego de la creación de una etiqueta.
 
-Parameters to this hook:
+Parámetros para este gancho:
 \begin{itemize}
-\item[\texttt{local}] A boolean.  Whether the new tag is local to this
-  repository instance (i.e.~stored in \sfilename{.hg/localtags}) or
-  managed by Mercurial (stored in \sfilename{.hgtags}).
-\item[\texttt{node}] A changeset ID.  The ID of the changeset that was
-  tagged.
-\item[\texttt{tag}] A string.  The name of the tag that was created.
+\item[\texttt{local}] Un booleano. Indica si la etiqueta es local a
+  ésta instancia del repositorio (p.e.~almacenado en
+  \sfilename{.hg/localtags}) o administrado por Mercurial (almacenado
+  en \sfilename{.hgtags}).
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del
+  conjunto de cambios que fue etiquetado.
+\item[\texttt{tag}] Una cadena. El nombre de la etiqueta que fue
+  creada.
 \end{itemize}
 
-If the created tag is revision-controlled, the \hook{commit} hook
-(section~\ref{sec:hook:commit}) is run before this hook.
+Si la etiqueta creada está bajo control de revisiones, el gancho
+\hook{commit} (sección~\ref{sec:hook:commit}) es ejecutado antes de
+este gancho.
 
-See also: \hook{pretag} (section~\ref{sec:hook:pretag})
+Vea también: \hook{pretag} (sección~\ref{sec:hook:pretag})
 
-\subsection{\hook{update}---after updating or merging working directory}
+\subsection{\hook{update}---luego de actualizar o fusionar el
+directorio de trabajo}
 \label{sec:hook:update}
 
-This hook is run after an update or merge of the working directory
-completes.  Since a merge can fail (if the external \command{hgmerge}
-command fails to resolve conflicts in a file), this hook communicates
-whether the update or merge completed cleanly.
+Este gancho es ejecutado después de una actualización o fusión en el
+directorio de trabajo. Ya que una fusión puede fallar (si el comando
+externo \command{hgmerge} no puede resolver los conflictos en un
+fichero), este gancho indica si la actualización o fusión fueron
+completados adecuadamente.
 
 \begin{itemize}
-\item[\texttt{error}] A boolean.  Indicates whether the update or
-  merge completed successfully.
-\item[\texttt{parent1}] A changeset ID.  The ID of the parent that the
-  working directory was updated to.  If the working directory was
-  merged, it will not have changed this parent.
-\item[\texttt{parent2}] A changeset ID.  Only set if the working
-  directory was merged.  The ID of the revision that the working
-  directory was merged with.
+\item[\texttt{error}] Un booleano. Indica si la actualización o fusión
+  fue completada exitosamente.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID del padre
+  al cual fue actualizado el directorio de trabajo. Si se fusionó el
+  directorio de trabajo, no se habrá cambiado este padre.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. Sólo está
+  definido si se fusionó el directorio de trabajo. El ID de la
+  revisión con la que fue fusionado el directorio de trabajo.
 \end{itemize}
 
-See also: \hook{preupdate} (section~\ref{sec:hook:preupdate})
+Vea también: \hook{preupdate} (sección~\ref{sec:hook:preupdate})
 
 %%% Local Variables: 
 %%% mode: latex
