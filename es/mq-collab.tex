@@ -57,38 +57,44 @@ cantidad de versiones de Linux en mente.
 Hay dos maneras estándar de mantener una porción de software que debe
 funcionar en muchos entornos diferentes.
 
-The first is to maintain a number of branches, each intended for a
-single target.  The trouble with this approach is that you must
-maintain iron discipline in the flow of changes between repositories.
-A new feature or bug fix must start life in a ``pristine'' repository,
-then percolate out to every backport repository.  Backport changes are
-more limited in the branches they should propagate to; a backport
-change that is applied to a branch where it doesn't belong will
-probably stop the driver from compiling.
+La primera es mantener varias ramas, cada una pensada para un único
+entorno. El problema de esta aproximación es que usted debe tener una
+disciplina férrea con el flujo de cambios entre repositorios. Una
+nueva característica o un arreglo de fallo deben empezar su vida en un
+repositorio ``prístino'', y luego propagarse a cada repositorio de
+backport. Los cambios para backports están más limitados respecto a
+las ramas a las que deberían propagarse; un cambio para backport que
+es aplicado a una rama en la que no corresponde probablemente hará que
+el controlador no compile.
 
-The second is to maintain a single source tree filled with conditional
-statements that turn chunks of code on or off depending on the
-intended target.  Because these ``ifdefs'' are not allowed in the
-Linux kernel tree, a manual or automatic process must be followed to
-strip them out and yield a clean tree.  A code base maintained in this
-fashion rapidly becomes a rat's nest of conditional blocks that are
-difficult to understand and maintain.
+La segunda es mantener un único árbol de código fuente lleno de
+declaraciones que activen o desactiven secciones de código dependiendo
+del entorno objetivo. Ya que estos ``ifdefs'' no están permitidos en
+el árbol del kernel de Linux, debe seguirse algún proceso manual o
+automático para eliminarlos y producir un árbol limpio. Una base de
+código mantenida de esta manera se convierte rápidamente en un nido de
+ratas de bloques condicionales que son difíciles de entender y
+mantener.
 
-Neither of these approaches is well suited to a situation where you
-don't ``own'' the canonical copy of a source tree.  In the case of a
-Linux driver that is distributed with the standard kernel, Linus's
-tree contains the copy of the code that will be treated by the world
-as canonical.  The upstream version of ``my'' driver can be modified
-by people I don't know, without me even finding out about it until
-after the changes show up in Linus's tree.  
+%TODO canónica?
+Ninguno de estos enfoques es adecuado para situaciones en las que
+usted no es ``dueño'' de la copia canónica de un árbol de fuentes. En
+el caso de un controlador de Linux que es distribuido con el kernel
+estándar, el árbol de Linux contiene la copia del código que será
+considerada por el mundo como la canónica. La versión oficial de
+``mi'' controlador puede ser modificada por gente que no conozco, sin
+que yo siquiera me entere de ello hasta después de que los cambios
+aparecen en el árbol de Linus.
 
-These approaches have the added weakness of making it difficult to
-generate well-formed patches to submit upstream.
+Estos enfoques tienen la debilidad adicional de dificultar la
+%TODO upstream. no no es río arriba
+generación de parches bien formados para enviarlos a la versión
+oficial.
 
-In principle, Mercurial Queues seems like a good candidate to manage a
-development scenario such as the above.  While this is indeed the
-case, MQ contains a few added features that make the job more
-pleasant.
+En principio, las Colas de Mercurial parecen ser un buen candidato
+para administrar un escenario de desarrollo como el de arriba. Aunque
+este es de hecho el caso, MQ tiene unas cuantas características
+adicionales que hacen el trabajo más agradable.
 
 \section{Conditionally applying patches with 
   guards}
