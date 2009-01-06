@@ -464,7 +464,7 @@ Cuando Mercurial ejecuta el gancho \texttt{commit.example}, importa
 \subsection{Escribir un gancho interno}
 
 El gancho interno más sencillo no hace nada, pero ilustra la
-estructura básica de la API\footnote{\emph{Application Progamming
+estructura básica de la API\ndt{\emph{Application Progamming
 Interface}, Interfaz para Programación de Aplicaciones} para ganchos:
 \begin{codesample2}
   def myhook(ui, repo, **kwargs):
@@ -623,7 +623,7 @@ Ejemplo:
 La extensión \hgext{acl} es configurada mediante tres secciones.
 
 La sección \rcsection{acl} sólo tiene una entrada,
-\rcitem{acl}{sources}\footnote{Fuentes.}, que lista las fuentes de los
+\rcitem{acl}{sources}\ndt{Fuentes.}, que lista las fuentes de los
 conjuntos de cambios entrantes a las que el gancho debe prestar
 atención. Usualmente usted no necesita configurar esta sección.
 \begin{itemize}
@@ -732,7 +732,7 @@ hay algunas posibilidades:
 \label{sec:hook:bugzilla:config}
 
 Usted debería configurar este gancho en el \hgrc\ de su servidor como
-un gancho \hook{incoming}\footnote{Entrante.}, por ejemplo como sigue:
+un gancho \hook{incoming}\ndt{Entrante.}, por ejemplo como sigue:
 \begin{codesample2}
   [hooks]
   incoming.bugzilla = python:hgext.bugzilla.hook
@@ -942,7 +942,7 @@ electrónico}
 Aunque el servidor web embebido de Mercurial provee notificaciones de
 cambios en cada repositorio, muchas personas prefieren recibir las
 notificaciones de cambios vía correo electrónico. El gancho
-\hgext{notify}\footnote{Notificación.} le permite a usted enviar
+\hgext{notify}\ndt{Notificación.} le permite a usted enviar
 notificaciones a un conjunto de direcciones de correo cuando lleguen
 conjuntos de cambios en los que los subscriptores estén interesados.
 
@@ -1098,9 +1098,9 @@ desde la raíz del repositorio). El gancho no debe cambiar el
 directorio de trabajo del proceso, porque esto haría que falle
 cualquier llamada que se haga a la API de Mercurial.
 
-Si un gancho retorna el valor booleano ``false''\footnote{Falso.}, se
+Si un gancho retorna el valor booleano ``false''\ndt{Falso.}, se
 considera que éste tuvo éxito. Si retorna
-``true''\footnote{Verdadero.} o genera una excepción, se considera que
+``true''\ndt{Verdadero.} o genera una excepción, se considera que
 ha fallado. Una manera útil de pensar en esta convención de llamado es
 ``dígame si usted falló''.
 
@@ -1152,7 +1152,7 @@ o hacia donde están siendo transferidos.
 Mercurial le indicará a un gancho cuáles son, o fueron, los medios
 usados para transferir los conjuntos de cambios entre repositorios.
 Esta información es provista por Mercurial en un parámetro Python
-llamado \texttt{source}\footnote{Fuente.}, o una variable de entorno
+llamado \texttt{source}\ndt{Fuente.}, o una variable de entorno
 llamada \envar{HG\_SOURCE}.
 
 \begin{itemize}
