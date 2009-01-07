@@ -25,7 +25,7 @@ p.e.~usted creó el directorio con
 
 Esta orden es un atajo para \hgcmdargs{commit}{--cwd .hg/patches}.
 
-\subsection{\hgxcmd{mq}{qdelete}---elimina un parche del fichero
+\subsection{\hgxcmd{mq}{qdelete}---eliminar un parche del fichero
   \sfilename{series}}
 
 La orden \hgxcmd{mq}{qdelete} elimina la entrada del fichero
@@ -45,7 +45,7 @@ Opciones:
 La orden \hgxcmd{mq}{qdiff} imprime un diff del parche más
 recientemente aplicado.  Es equivalente a \hgcmdargs{diff}{-r-2:-1}.
 
-\subsection{\hgxcmd{mq}{qfold}---fusionar (``fold'') varios parches en
+\subsection{\hgxcmd{mq}{qfold}---fusionar (``integrar'') varios parches en
   uno solo}
 
 La orden \hgxcmd{mq}{qfold} fusiona muchos parches en el último parche
@@ -58,7 +58,7 @@ aplicado.  El orden en el cual los parches se pliegan es
 significativo; \hgcmdargs{qfold}{a b} significa ``aplique el parche
 más reciente, seguido de \texttt{a}, y seguido de \texttt{b}''.
 
-Los comentarios de los parches plegados se colocan al final de los
+Los comentarios de los parches integrados se colocan al final de los
 comentarios del parche destino, con cada bloque de comentarios
 separado con tres asteriscos(``\texttt{*}'').  Se usa la opción
 \hgxopt{mq}{qfold}{-e} para editar el mensaje de consignación para el
@@ -67,69 +67,74 @@ conjunto de cambios/parches después de completarse el pliegue.
 Opciones:
 \begin{itemize}
 \item[\hgxopt{mq}{qfold}{-e}] Edita el mensaje de consignación y la
-  descripción del parche del parche que se ha plegado.
+  descripción del parche del parche que se ha integrado.
 \item[\hgxopt{mq}{qfold}{-l}] Usa los contenidos del fichero dado como
   el nuevo mensaje de consignación y descripción del parche para el
-  parche a plegar.
+  parche a integrar.
 \item[\hgxopt{mq}{qfold}{-m}] Usa el texto dado como el mensaje de
-  consignación y descripción del parche para el parche plegado.
+  consignación y descripción del parche para el parche integrado.
 \end{itemize}
 
-\subsection{\hgxcmd{mq}{qheader}---display the header/description of a patch}
+\subsection{\hgxcmd{mq}{qheader}---desplegar el encabezado/descripción
+  de un parche}
 
-The \hgxcmd{mq}{qheader} command prints the header, or description, of a
-patch.  By default, it prints the header of the topmost applied patch.
-Given an argument, it prints the header of the named patch.
+La orden \hgxcmd{mq}{qheader} imprime el encabezado o descripción de
+un parche.  De forma predeterminada, imprime el encabezado del último
+parche aplicado. Si se da un argumento, imprime el encabezado del
+parche referenciado.
 
-\subsection{\hgxcmd{mq}{qimport}---import a third-party patch into the queue}
+\subsection{\hgxcmd{mq}{qimport}---importar el parche de un tercero en
+  la cola}
 
-The \hgxcmd{mq}{qimport} command adds an entry for an external patch to the
-\sfilename{series} file, and copies the patch into the
-\sdirname{.hg/patches} directory.  It adds the entry immediately after
-the topmost applied patch, but does not push the patch.
+La orden \hgxcmd{mq}{qimport} añade una entrada de un parche externo
+al fichero \sfilename{series} y copia el parche en el directorio
+\sdirname{.hg/patches}.  Añade la entrada inmediatamente después del
+último parche aplicado, pero no introduce el parche.
 
-If the \sdirname{.hg/patches} directory is a repository,
-\hgxcmd{mq}{qimport} automatically does an \hgcmd{add} of the imported
-patch.
+Si el directorio \sdirname{.hg/patches} es un repositorio, 
+\hgxcmd{mq}{qimport} automáticamente hace un \hgcmd{add} del parche
+importado.
 
-\subsection{\hgxcmd{mq}{qinit}---prepare a repository to work with MQ}
+\subsection{\hgxcmd{mq}{qinit}---preparar un repositorio para trabajar
+  con MQ}
 
-The \hgxcmd{mq}{qinit} command prepares a repository to work with MQ.  It
-creates a directory called \sdirname{.hg/patches}.
+La orden \hgxcmd{mq}{qinit} prepara un repositorio para trabajar con
+MQ.  Crea un directorio llamado \sdirname{.hg/patches}.
 
-Options:
+Opciones:
 \begin{itemize}
-\item[\hgxopt{mq}{qinit}{-c}] Create \sdirname{.hg/patches} as a repository
-  in its own right.  Also creates a \sfilename{.hgignore} file that
-  will ignore the \sfilename{status} file.
+\item[\hgxopt{mq}{qinit}{-c}] Crea \sdirname{.hg/patches} como un
+  repositorio por sí mismo.  También crea un fichero
+  \sfilename{.hgignore} que ignorará el fichero \sfilename{status}.
 \end{itemize}
 
-When the \sdirname{.hg/patches} directory is a repository, the
-\hgxcmd{mq}{qimport} and \hgxcmd{mq}{qnew} commands automatically \hgcmd{add}
-new patches.
+Cuando el directorio \sdirname{.hg/patches} es un repositorio, las órdenes
+\hgxcmd{mq}{qimport} y \hgxcmd{mq}{qnew} hacen \hgcmd{add}
+automáticamente a los parches nuevos.
 
-\subsection{\hgxcmd{mq}{qnew}---create a new patch}
+\subsection{\hgxcmd{mq}{qnew}---crear un parche nuevo}
 
-The \hgxcmd{mq}{qnew} command creates a new patch.  It takes one mandatory
-argument, the name to use for the patch file.  The newly created patch
-is created empty by default.  It is added to the \sfilename{series}
-file after the current topmost applied patch, and is immediately
-pushed on top of that patch.
+La orden \hgxcmd{mq}{qnew} crea un parche nuevo.  Exige un argumento,
+el nombre que se usará para tal parche.  El parche recién creado está
+vacío inicialmente.   Se añade al fichero \sfilename{series} después
+del último parche aplicado, y se introduce en el tope de ese parche.
 
-If \hgxcmd{mq}{qnew} finds modified files in the working directory, it will
-refuse to create a new patch unless the \hgxopt{mq}{qnew}{-f} option is
-used (see below).  This behaviour allows you to \hgxcmd{mq}{qrefresh} your
-topmost applied patch before you apply a new patch on top of it.
+Si \hgxcmd{mq}{qnew} encuentra ficheros modificados en el directorio
+de trabajo, rehusará crear un parche nuevo a meos que se emplee
+\hgxopt{mq}{qnew}{-f} la opción(ver más adelante).  Este
+comportamiento le permite hacer \hgxcmd{mq}{qrefresh} al último parche
+aplicado antes de aplicar un parche nuevo encima de este.
 
-Options:
+Opciones:
 \begin{itemize}
-\item[\hgxopt{mq}{qnew}{-f}] Create a new patch if the contents of the
-  working directory are modified.  Any outstanding modifications are
-  added to the newly created patch, so after this command completes,
-  the working directory will no longer be modified.
-\item[\hgxopt{mq}{qnew}{-m}] Use the given text as the commit message.
-  This text will be stored at the beginning of the patch file, before
-  the patch data.
+\item[\hgxopt{mq}{qnew}{-f}] Crea un parche nuevo si los contenidos
+  del directorio actual han sido modificados.  Cualquier modificación
+  significativa se añade al parche recientemente creado,  de tal forma
+  que al finalizar la orden, el directorio de trabajo no lucirá
+  modificado.
+\item[\hgxopt{mq}{qnew}{-m}] Usa el texto dado como el mensaje de
+  consignación.  Este texto se almacenará al principio del fichero del
+  parche, antes de los datos del parche.
 \end{itemize}
 
 \subsection{\hgxcmd{mq}{qnext}---print the name of the next patch}
