@@ -277,33 +277,36 @@ Los parches ``backport'' y ``no enviar'' flotan al final del fichero
 de todos los otros parches, y los parches ``no enviar'' pueden
 perfectamente quedarse fuera del camino.
 
-\section{Maintaining the patch series}
+\section{Mantener la serie de parches}
 
-In my work, I use a number of guards to control which patches are to
-be applied.
+En mi trabajo, uso varios guardias para controlar qué parches deben
+ser aplicados.
 
 \begin{itemize}
-\item ``Accepted'' patches are guarded with \texttt{accepted}.  I
-  enable this guard most of the time.  When I'm applying the patches
-  on top of a tree where the patches are already present, I can turn
-  this patch off, and the patches that follow it will apply cleanly.
-\item Patches that are ``finished'', but not yet submitted, have no
-  guards.  If I'm applying the patch stack to a copy of the upstream
-  tree, I don't need to enable any guards in order to get a reasonably
-  safe source tree.
-\item Those patches that need reworking before being resubmitted are
-  guarded with \texttt{rework}.
-\item For those patches that are still under development, I use
+\item Los parches ``aceptados'' son vigilados con
+  \texttt{accepted}. Yo habilito este guardia la mayoría de las veces.
+  Cuando aplico los parches sobre un árbol donde los parches ya están
+  %TODO no será ``desactivar este guardia''? si sí, corregir versión
+  %en inglés también
+  presentes, puedo desactivar este parche, y los parches que lo siguen
+  se aplicarán sin problemas.
+\item Los parches que están ``terminados'', pero no han sido enviados,
+  no tienen guardias. Si estoy aplicando la pila de parches a una
+  copia del árbol oficial, no necesito habilitar ningún guardia para
+  obtener un árbol de fuentes razonablemente seguro.
+\item Los parches que necesitan revisión antes de ser reenviados
+  tienen el guardia \texttt{rework}.
+\item Para aquellos parches que aún están bajo desarrollo, uso
   \texttt{devel}.
-\item A backport patch may have several guards, one for each version
-  of the kernel to which it applies.  For example, a patch that
-  backports a piece of code to~2.6.9 will have a~\texttt{2.6.9} guard.
+\item Un parche de backport puede tener varios guardias, uno para cada
+  versión del kernel a la que aplica. Por ejemplo, un parche que hace
+  backport de un segmento de código a~2.6.9 tendrá un guardia~\texttt{2.6.9}.
 \end{itemize}
-This variety of guards gives me considerable flexibility in
-determining what kind of source tree I want to end up with.  For most
-situations, the selection of appropriate guards is automated during
-the build process, but I can manually tune the guards to use for less
-common circumstances.
+La variedad de guardias me brinda una flexibilidad considerable para
+determinar qué tipo de árbol de fuentes acabaré por obtener. En la
+mayoría de las situaciones, la selección de guardias apropiados es
+automatizada durante el proceso de compilación, pero puedo ajustar
+manualmente los guardias a usar para circunstancias poco comunes.
 
 \subsection{The art of writing backport patches}
 
