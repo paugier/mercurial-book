@@ -137,57 +137,61 @@ Opciones:
   parche, antes de los datos del parche.
 \end{itemize}
 
-\subsection{\hgxcmd{mq}{qnext}---print the name of the next patch}
+\subsection{\hgxcmd{mq}{qnext}---imprimir el nombre del próximo parche}
 
-The \hgxcmd{mq}{qnext} command prints the name name of the next patch in
-the \sfilename{series} file after the topmost applied patch.  This
-patch will become the topmost applied patch if you run \hgxcmd{mq}{qpush}.
+La orden \hgxcmd{mq}{qnext} imprime el nombre del siguiente parche en
+el fichero \sfilename{series} a continuación del último parche
+aplicado.  Este parche sería el próximo parche a aplicar si se
+ejecutara la orden \hgxcmd{mq}{qpush}.
 
-\subsection{\hgxcmd{mq}{qpop}---pop patches off the stack}
+\subsection{\hgxcmd{mq}{qpop}---sustraer parches de la pila}
 
-The \hgxcmd{mq}{qpop} command removes applied patches from the top of the
-stack of applied patches.  By default, it removes only one patch.
+La orden \hgxcmd{mq}{qpop} elimina los parches aplicados del tope de
+la pila de parches aplicados.  De forma predeterminada solamente
+remueve un parche.
 
-This command removes the changesets that represent the popped patches
-from the repository, and updates the working directory to undo the
-effects of the patches.
+Esta orden elimina los conjuntos de cambios que representan los
+parches sustraídos del repositorio, y actualiza el directorio de
+trabajo para deshacer los efectos de los parches.
 
-This command takes an optional argument, which it uses as the name or
-index of the patch to pop to.  If given a name, it will pop patches
-until the named patch is the topmost applied patch.  If given a
-number, \hgxcmd{mq}{qpop} treats the number as an index into the entries in
-the series file, counting from zero (empty lines and lines containing
-only comments do not count).  It pops patches until the patch
-identified by the given index is the topmost applied patch.
+Esta orden toma un argumento opcional, que usa como el nombre o el
+índice del parche que desea sustraer.  Si se da el nombre, sustraerá
+los parches hasta que el parche nombrado sea el último parche
+aplicado.  Si se da un número, \hgxcmd{mq}{qpop} lo trata como un
+índice dentro del fichero \sfilename{series},  contando desde
+cero(no cuenta las líneas vacías o aquellas que sean únicamente
+comentarios).  Sustrae los parches hasta que el parche identificado
+por el índice sea el último parche aplicado.
 
-The \hgxcmd{mq}{qpop} command does not read or write patches or the
-\sfilename{series} file.  It is thus safe to \hgxcmd{mq}{qpop} a patch that
-you have removed from the \sfilename{series} file, or a patch that you
-have renamed or deleted entirely.  In the latter two cases, use the
-name of the patch as it was when you applied it.
+La orden \hgxcmd{mq}{qpop} no lee o escribe parches en el fichero
+\sfilename{series}.  \hgxcmd{mq}{qpop} se constituye por tanto en una
+forma segura de sustraer un parche del fichero \sfilename{series} o un
+parche que ha eliminado o renombrado completamente.  En los dos
+últimos casos, use el nombre del parche tal como lo hizo cuando lo
+aplicó.
 
-By default, the \hgxcmd{mq}{qpop} command will not pop any patches if the
-working directory has been modified.  You can override this behaviour
-using the \hgxopt{mq}{qpop}{-f} option, which reverts all modifications in
-the working directory.
+De forma predeterminada, la orden \hgxcmd{mq}{qpop} no sustraerá
+parche alguno si el directorio de trabajo ha sido modificado.  Puede
+modificar este comportamiento con la opción \hgxopt{mq}{qpop}{-f}, que
+revierte todas las modificaciones del directorio de trabajo.
 
-Options:
+Opciones:
 \begin{itemize}
-\item[\hgxopt{mq}{qpop}{-a}] Pop all applied patches.  This returns the
-  repository to its state before you applied any patches.
-\item[\hgxopt{mq}{qpop}{-f}] Forcibly revert any modifications to the
-  working directory when popping.
-\item[\hgxopt{mq}{qpop}{-n}] Pop a patch from the named queue.
+\item[\hgxopt{mq}{qpop}{-a}] Sustrae todos los parches aplicados.
+  Restaura el repositorio al estado antes de haber aplicado parche alguno.
+\item[\hgxopt{mq}{qpop}{-f}] Revertir forzadamente cualquier
+  modificación del directorio de trabajo cuando se hace sustracciones.
+\item[\hgxopt{mq}{qpop}{-n}] Sustraer un parche de la cola dado un nombre.
 \end{itemize}
 
-The \hgxcmd{mq}{qpop} command removes one line from the end of the
-\sfilename{status} file for each patch that it pops.
+La orden \hgxcmd{mq}{qpop} elimina una línea del final del fichero
+\sfilename{status} por cada parche que se sustrae.
 
-\subsection{\hgxcmd{mq}{qprev}---print the name of the previous patch}
+\subsection{\hgxcmd{mq}{qprev}---imprimir el nombre del parche anterior}
 
-The \hgxcmd{mq}{qprev} command prints the name of the patch in the
-\sfilename{series} file that comes before the topmost applied patch.
-This will become the topmost applied patch if you run \hgxcmd{mq}{qpop}.
+La orden \hgxcmd{mq}{qprev} imprime el nombre del parche en el fichero
+\sfilename{series} que está antes del último parche aplicado.   Este
+se volverá el último parche aplicado si ejecuta \hgxcmd{mq}{qpop}.
 
 \subsection{\hgxcmd{mq}{qpush}---push patches onto the stack}
 \label{sec:mqref:cmd:qpush}
