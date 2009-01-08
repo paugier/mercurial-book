@@ -96,28 +96,30 @@ para administrar un escenario de desarrollo como el de arriba. Aunque
 este es de hecho el caso, MQ tiene unas cuantas características
 adicionales que hacen el trabajo más agradable.
 
-\section{Conditionally applying patches with 
-  guards}
+\section{Aplicar parches condicionalmente mediante guardias}
 
-Perhaps the best way to maintain sanity with so many targets is to be
-able to choose specific patches to apply for a given situation.  MQ
-provides a feature called ``guards'' (which originates with quilt's
-\texttt{guards} command) that does just this.  To start off, let's
-create a simple repository for experimenting in.
+Tal vez la mejor manera de conservar la cordura con tantos entornos
+objetivo es poder escoger parches específicos para aplicar para cada
+situación. MQ provee una característica llamada ``guardias''
+(que se origina del comando \texttt{guards} de Quilt) que hace
+precisamente ésto. Para empezar, creemos un repositorio sencillo para
+experimentar.
 \interaction{mq.guards.init}
-This gives us a tiny repository that contains two patches that don't
-have any dependencies on each other, because they touch different files.
+Esto nos brinda un pequeño repositorio que contiene dos parches que no
+tienen ninguna dependencia respecto al otro, porque tocan ficheros
+diferentes.
 
-The idea behind conditional application is that you can ``tag'' a
-patch with a \emph{guard}, which is simply a text string of your
-choosing, then tell MQ to select specific guards to use when applying
-patches.  MQ will then either apply, or skip over, a guarded patch,
-depending on the guards that you have selected.
+La idea detrás de la aplicación condicional es que usted puede
+``etiquetar'' un parche con un \emph{guardia}, que simplemente es una
+cadena de texto de su elección, y luego decirle a MQ que seleccione
+guardias específicos para usar cuando aplique parches. MQ entonces
+aplicará, u omitirá, un parche vigilado, dependiendo de los guardias
+que usted haya seleccionado.
 
-A patch can have an arbitrary number of guards;
-each one is \emph{positive} (``apply this patch if this guard is
-selected'') or \emph{negative} (``skip this patch if this guard is
-selected'').  A patch with no guards is always applied.
+Un parche puede tener una cantidad arbitraria de guardias; cada uno es
+\emph{positivo} (``aplique el parche si este guardia es
+seleccionado'') o \emph{negativo} (``omita este parche si este guardia
+es seleccionado''). Un parche sin guardias siempre es aplicado.
 
 \section{Controlling the guards on a patch}
 
