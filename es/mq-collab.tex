@@ -121,33 +121,33 @@ Un parche puede tener una cantidad arbitraria de guardias; cada uno es
 seleccionado'') o \emph{negativo} (``omita este parche si este guardia
 es seleccionado''). Un parche sin guardias siempre es aplicado.
 
-\section{Controlling the guards on a patch}
+\section{Controlar los guardias de un parche}
 
-The \hgxcmd{mq}{qguard} command lets you determine which guards should
-apply to a patch, or display the guards that are already in effect.
-Without any arguments, it displays the guards on the current topmost
-patch.
+El comando \hgxcmd{mq}{qguard} le permite determinar qué guardias
+deben aplicarse a un parche, o mostrar los guardias que están en
+efecto. Sin ningún argumento, el comando muestra los guardias del
+parche actual de la parte más alta de la pila.
 \interaction{mq.guards.qguard}
-To set a positive guard on a patch, prefix the name of the guard with
-a ``\texttt{+}''.
+Para poner un guardia positivo en un parche, prefije el nombre del
+guardia con un ``\texttt{+}''.
 \interaction{mq.guards.qguard.pos}
-To set a negative guard on a patch, prefix the name of the guard with
-a ``\texttt{-}''.
+Para poner un guardia negativo en un parche, prefije el nombre del
+guardia con un ``\texttt{-}''.
 \interaction{mq.guards.qguard.neg}
 
 \begin{note}
-  The \hgxcmd{mq}{qguard} command \emph{sets} the guards on a patch; it
-  doesn't \emph{modify} them.  What this means is that if you run
-  \hgcmdargs{qguard}{+a +b} on a patch, then \hgcmdargs{qguard}{+c} on
-  the same patch, the \emph{only} guard that will be set on it
-  afterwards is \texttt{+c}.
+  El comando \hgxcmd{mq}{qguard} \emph{pone} los guardias en un
+  parche; no los \emph{modifica}. Esto significa que si usted ejecuta
+  \hgcmdargs{qguard}{+a +b} sobre un parche, y luego
+  \hgcmdargs{qguard}{+c} en el mismo parche, el único guardia sobre el
+  parche después del comando será \texttt{+c}.
 \end{note}
 
-Mercurial stores guards in the \sfilename{series} file; the form in
-which they are stored is easy both to understand and to edit by hand.
-(In other words, you don't have to use the \hgxcmd{mq}{qguard} command if
-you don't want to; it's okay to simply edit the \sfilename{series}
-file.)
+Mercurial almacena los guardias en el fichero \sfilename{series}; la
+forma en que son almacenados es fácil tanto de entender como de editar
+a mano. (En otras palabras, usted no tiene que usar el comando
+\hgxcmd{mq}{qguard} si no lo desea; está bien simplemente editar el
+fichero \sfilename{series})
 \interaction{mq.guards.series}
 
 \section{Selecting the guards to use}
