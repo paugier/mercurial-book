@@ -123,6 +123,7 @@ es seleccionado''). Un parche sin guardias siempre es aplicado.
 
 \section{Controlar los guardias de un parche}
 
+%TODO tal vez no decir determinar, sino definir?
 El comando \hgxcmd{mq}{qguard} le permite determinar qué guardias
 deben aplicarse a un parche, o mostrar los guardias que están en
 efecto. Sin ningún argumento, el comando muestra los guardias del
@@ -150,34 +151,36 @@ a mano. (En otras palabras, usted no tiene que usar el comando
 fichero \sfilename{series})
 \interaction{mq.guards.series}
 
-\section{Selecting the guards to use}
+\section{Selecccionar los guardias a usar}
 
-The \hgxcmd{mq}{qselect} command determines which guards are active at a
-given time.  The effect of this is to determine which patches MQ will
-apply the next time you run \hgxcmd{mq}{qpush}.  It has no other effect; in
-particular, it doesn't do anything to patches that are already
-applied.
+%TODO tal vez no decir determinar, sino definir?
+El comando \hgxcmd{mq}{qselect} determina qué guardias están activos
+en cualquier momento. El efecto de esto es determinar qué parches
+aplicará MQ la próxima vez que usted ejecute \hgxcmd{mq}{qpush}.  No
+tiene ningún otro efecto; en particular, no hace nada a los parches
+que ya han sido aplicados.
 
-With no arguments, the \hgxcmd{mq}{qselect} command lists the guards
-currently in effect, one per line of output.  Each argument is treated
-as the name of a guard to apply.
+Sin argumentos, el comando \hgxcmd{mq}{qselect} lista los guardias en
+efecto actualmente, uno por cada línea de salida. Cada argumento es
+tratado como el nombre de un guardia a aplicar.
 \interaction{mq.guards.qselect.foo}
-In case you're interested, the currently selected guards are stored in
-the \sfilename{guards} file.
+Si está interesado, los guardias seleccionados actualmente están
+almacenados en el fichero \sfilename{guards}.
 \interaction{mq.guards.qselect.cat}
-We can see the effect the selected guards have when we run
-\hgxcmd{mq}{qpush}.
+Podemos ver el efecto que tienen los guardias seleccionados cuando
+ejecutamos \hgxcmd{mq}{qpush}.
 \interaction{mq.guards.qselect.qpush}
 
-A guard cannot start with a ``\texttt{+}'' or ``\texttt{-}''
-character.  The name of a guard must not contain white space, but most
-other characters are acceptable.  If you try to use a guard with an
-invalid name, MQ will complain:
+Un guardia no puede empezar con un  caracter ``\texttt{+}'' o
+``\texttt{-}''. El nombre del guardia no debe contener espacios en
+blanco, pero muchos otros caracteres son aceptables. Si usted trata de
+usar un guardia con un nombre inválido, MQ se quejará:
 \interaction{mq.guards.qselect.error} 
-Changing the selected guards changes the patches that are applied.
+Cambiar los guardias seleccionados cambia los parches que son
+aplicados.
 \interaction{mq.guards.qselect.quux} 
-You can see in the example below that negative guards take precedence
-over positive guards.
+Usted puede ver en el ejemplo de abajo que los guardias negativos
+tienen precedencia sobre los guardias positivos.
 \interaction{mq.guards.qselect.foobar}
 
 \section{MQ's rules for applying patches}
