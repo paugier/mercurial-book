@@ -338,84 +338,89 @@ el que se aplica un parche regular subsecuente, haciendo imposible
 aplicar el parche normal limpiamente \emph{sin} que el parche de
 backport sea aplicado antes.
 
-\section{Useful tips for developing with MQ}
+\section{Consejos útiles para hacer desarrollo con MQ}
 
-\subsection{Organising patches in directories}
+\subsection{Organizar parches en directorios}
 
-If you're working on a substantial project with MQ, it's not difficult
-to accumulate a large number of patches.  For example, I have one
-patch repository that contains over 250 patches.
+Si está trabajando en un proyecto grande con MQ, no es difícil
+acumular un gran número de parches. Por ejemplo, tengo un repositorio
+de parches que contiene más de 250 parches.
 
-If you can group these patches into separate logical categories, you
-can if you like store them in different directories; MQ has no
-problems with patch names that contain path separators.
+Si usted puede agrupar estos parches en categorías lógicas separadas,
+usted puede almacenarlos en diferentes directorios si lo desea; MQ no
+tiene problemas manejando nombres de parches que contienen separadores
+de ruta.
 
-\subsection{Viewing the history of a patch}
+\subsection{Ver la historia de un parche}
 \label{mq-collab:tips:interdiff}
 
-If you're developing a set of patches over a long time, it's a good
-idea to maintain them in a repository, as discussed in
-section~\ref{sec:mq:repo}.  If you do so, you'll quickly discover that
-using the \hgcmd{diff} command to look at the history of changes to a
-patch is unworkable.  This is in part because you're looking at the
-second derivative of the real code (a diff of a diff), but also
-because MQ adds noise to the process by modifying time stamps and
-directory names when it updates a patch.
+Si usted está desarrollando un conjunto de parches en un período de
+tiempo grande, es una buena idea mantenerlos en un repositorio, como
+se discutió en la sección~\ref{sec:mq:repo}.  Si lo hace, notará
+rápidamente que usar el comando \hgcmd{diff} para mirar la historia
+del repositorio no es viable. Esto es debido en parte a que usted está
+mirando la segunda derivada del código real (el diff de un diff), pero
+también porque MQ añade ruido al proceso al modificar las marcas de
+tiempo y los nombres de directorio cuando actualiza un parche.
 
-However, you can use the \hgext{extdiff} extension, which is bundled
-with Mercurial, to turn a diff of two versions of a patch into
-something readable.  To do this, you will need a third-party package
-called \package{patchutils}~\cite{web:patchutils}.  This provides a
-command named \command{interdiff}, which shows the differences between
-two diffs as a diff.  Used on two versions of the same diff, it
-generates a diff that represents the diff from the first to the second
-version.
+Sin embargo, usted puede usar la extensión \hgext{extdiff}, que es
+provisto junto con Mercurial, para convertir un diff de dos versiones
+de un parche en algo legible. Para hacer esto, usted necesitará un
+paquete de un tercero llamado
+\package{patchutils}~\cite{web:patchutils}.  Éste paquete provee un
+comando llamado \command{interdiff}, que muestra las diferencias entre
+dos diffs como un diff. Al usarlo en dos versiones del mismo diff,
+genera un diff que representa el diff de la primera a la segunda
+versión.
 
-You can enable the \hgext{extdiff} extension in the usual way, by
-adding a line to the \rcsection{extensions} section of your \hgrc.
+Usted puede habilitar la extensión \hgext{extdiff} de la manera usual,
+añadiendo una línea a la sección \rcsection{extensions} de su \hgrc.
 \begin{codesample2}
   [extensions]
   extdiff =
 \end{codesample2}
-The \command{interdiff} command expects to be passed the names of two
-files, but the \hgext{extdiff} extension passes the program it runs a
-pair of directories, each of which can contain an arbitrary number of
-files.  We thus need a small program that will run \command{interdiff}
-on each pair of files in these two directories.  This program is
-available as \sfilename{hg-interdiff} in the \dirname{examples}
-directory of the source code repository that accompanies this book.
+El comando  \command{interdiff} espera recibir los nombres de dos
+ficheros, pero la extensión \hgext{extdiff} le pasa un par de
+directorios al programa que ejecuta, cada uno de los cuales puede
+contener una cantidad arbitraria de ficheros. Por esto necesitamos un
+programa pequeño que ejecute \command{interdiff} en cada par de
+ficheros de estos dos directorios. Este programa está disponible como
+\sfilename{hg-interdiff} en el directorio \dirname{examples} del
+repositorio de código fuente que acompaña a este libro.
 \excode{hg-interdiff}
 
-With the \sfilename{hg-interdiff} program in your shell's search path,
-you can run it as follows, from inside an MQ patch directory:
+Con el programa \sfilename{hg-interdiff} en la ruta de búsqueda de su
+intérprete de comandos, puede ejecutarlo como sigue, desde dentro de
+un directorio de parches MQ:
 \begin{codesample2}
   hg extdiff -p hg-interdiff -r A:B my-change.patch
 \end{codesample2}
-Since you'll probably want to use this long-winded command a lot, you
-can get \hgext{hgext} to make it available as a normal Mercurial
-command, again by editing your \hgrc.
+Ya que usted seguramente querrá usar este comando tan largo a menudo,
+puede hacer que \hgext{hgext} lo haga disponible como un comando
+normal de Mercurial, editando de nuevo su \hgrc.
 \begin{codesample2}
   [extdiff]
   cmd.interdiff = hg-interdiff
 \end{codesample2}
-This directs \hgext{hgext} to make an \texttt{interdiff} command
-available, so you can now shorten the previous invocation of
-\hgxcmd{extdiff}{extdiff} to something a little more wieldy.
+Esto le indica a \hgext{hgext} que ponga a disposición un comando
+\texttt{interdiff}, con lo que usted puede abreviar la invocación
+anterior de \hgxcmd{extdiff}{extdiff} a algo un poco más manejable.
 \begin{codesample2}
   hg interdiff -r A:B my-change.patch
 \end{codesample2}
 
 \begin{note}
-  The \command{interdiff} command works well only if the underlying
-  files against which versions of a patch are generated remain the
-  same.  If you create a patch, modify the underlying files, and then
-  regenerate the patch, \command{interdiff} may not produce useful
-  output.
+    %TODO revisar redacción
+  El comando \command{interdiff} trabaja bien sólo si los ficheros
+  contra los cuales son generadas las versiones de un parche se
+  mantienen iguales. Si usted crea un parche, modifica los ficheros
+  subyacentes, y luego regenera el parche, \command{interdiff} podría
+  no producir ningún resultado útil.
 \end{note}
 
-The \hgext{extdiff} extension is useful for more than merely improving
-the presentation of MQ~patches.  To read more about it, go to
-section~\ref{sec:hgext:extdiff}.
+La extensión \hgext{extdiff} es útil para más que solamente mejorar la
+presentación de los parches~MQ. Para leer más acerca de esto, vaya a
+la sección~\ref{sec:hgext:extdiff}.
 
 %%% Local Variables: 
 %%% mode: latex
