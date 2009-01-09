@@ -308,33 +308,35 @@ mayoría de las situaciones, la selección de guardias apropiados es
 automatizada durante el proceso de compilación, pero puedo ajustar
 manualmente los guardias a usar para circunstancias poco comunes.
 
-\subsection{The art of writing backport patches}
+\subsection{El arte de escribir parches de backport}
 
-Using MQ, writing a backport patch is a simple process.  All such a
-patch has to do is modify a piece of code that uses a kernel feature
-not present in the older version of the kernel, so that the driver
-continues to work correctly under that older version.
+Al usar MQ, escribir un parche de backport es un proceso simple. Todo
+lo que dicho parche debe hacer es modificar una sección de código que
+usa una característica del kernel que no está presente en la versión
+anterior del kernel, para que el controlador siga funcionando
+correctamente en esa versión anterior.
 
-A useful goal when writing a good backport patch is to make your code
-look as if it was written for the older version of the kernel you're
-targeting.  The less obtrusive the patch, the easier it will be to
-understand and maintain.  If you're writing a collection of backport
-patches to avoid the ``rat's nest'' effect of lots of
-\texttt{\#ifdef}s (hunks of source code that are only used
-conditionally) in your code, don't introduce version-dependent
-\texttt{\#ifdef}s into the patches.  Instead, write several patches,
-each of which makes unconditional changes, and control their
-application using guards.
+Una meta útil al escribir un buen parche de backport es hacer parecer
+que el código hubiera sido escrito para la versión vieja del kernel
+que usted tiene como objetivo. Entre menos intrusivo el parche, más
+fácil será entenderlo y mantenerlo. Si usted está escribiendo una
+colección de parches de backport para evitar el efecto de ``nido de
+ratas'' de tener muchos \texttt{\#ifdef}s (secciones de código fuente
+que sólo son usados condicionalmente) en su código, no introduzca
+\texttt{\#ifdef}s dependientes de versiones específicas en los
+parches. En vez de eso, escriba varios parches, cada uno de ellos
+haciendo cambios incondicionales, y controle su aplicación usando
+guardias.
 
-There are two reasons to divide backport patches into a distinct
-group, away from the ``regular'' patches whose effects they modify.
-The first is that intermingling the two makes it more difficult to use
-a tool like the \hgext{patchbomb} extension to automate the process of
-submitting the patches to an upstream maintainer.  The second is that
-a backport patch could perturb the context in which a subsequent
-regular patch is applied, making it impossible to apply the regular
-patch cleanly \emph{without} the earlier backport patch already being
-applied.
+Hay dos razones para ubicar los parches de backport en un grupo
+diferente, aparte de los parches ``regulares'' cuyos efectos son
+modificados por ellos. La primera es que mezclar los dos hace más
+difícil usar herramientas como la extensión \hgext{patchbomb} para
+automatizar el proceso de enviar los parches a un mantenedor oficial.
+La segunda es que un parche de backport puede perturbar el contexto en
+el que se aplica un parche regular subsecuente, haciendo imposible
+aplicar el parche normal limpiamente \emph{sin} que el parche de
+backport sea aplicado antes.
 
 \section{Useful tips for developing with MQ}
 
