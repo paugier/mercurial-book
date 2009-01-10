@@ -69,7 +69,7 @@ Lee Cantey publica un instalador de Mercurial para Mac OS~X en
 en Macs basados en Intel como basados en PowerPC. Antes de que pueda
 usarlo, usted debe instalar una versión compatible de Universal
 MacPython~\cite{web:macpython}. Esto es fácil de hacer; simplemente
-siga las instrucciones de el sitio de Lee.
+siga las instrucciones del sitio de Lee.
 
 También es posible instalar Mercurial usando Fink o MacPorts, dos
 administradores de paquetes gratuitos y populares para Mac OS X. Si
@@ -177,12 +177,12 @@ proyecto en un punto particular del historial.
 \section{Vistazo rápido al historial}
 
 Una de las primeras cosas que se desea hacer con un repositorio nuevo,
-poco conocido, es conocer su historial. el comando \hgcmd{log} nos
+poco conocido, es conocer su historial. El comando \hgcmd{log} nos
 permite ver el mismo.
 \interaction{tour.log}
 Por defecto este programa imprime un párrafo breve por cada cambio al
 proyecto que haya sido grabado. Dentro de la terminología de
-Mercurial, cada uno de estos eventos es llamado \emph{conjuntos de
+Mercurial, cada uno de estos eventos es llamado \emph{conjunto de
 cambios}, porque pueden contener un registro de cambios a varios
 ficheros.
 
@@ -207,7 +207,7 @@ Los campos de la salida de \hgcmd{log} son los siguientes.
     que el conjunto de cambios fue creado, y la zona horaria en la que
     fue creado. (La fecha y hora son locales a dicha zona horaria;
     ambos muestran la fecha y hora para la persona que creó el
-    changeset).
+    conjunto de cambios).
     
 \item[\texttt{summary}]\hspace{-0.5em}\ndt{Sumario.} 
     La primera línea del texto que usó la persona que creó el conjunto
@@ -224,7 +224,7 @@ a esto varias veces en este capítulo y en los siguientes.
 \begin{figure}[ht]
   \centering
   \grafix{tour-history}
-  \caption{Historial gráfico de el repositorio \dirname{hello}}
+  \caption{Historial gráfico del repositorio \dirname{hello}}
   \label{fig:tour-basic:history}
 \end{figure}
 
@@ -263,7 +263,7 @@ número como una cadena hexadecimal.
 La diferencia es importante. Si usted le envía a alguien un correo
 electrónico hablando acerca de la ``revisión~33'', hay una
 probabilidad alta de que la revisión~33 de esa persona \emph{no sea la
-misma suya}. Esto sucede porque el número de revisión depende de el
+misma suya}. Esto sucede porque el número de revisión depende del
 orden en que llegan los cambios al repositorio, y no hay ninguna
 garantía de que los mismos cambios llegarán en el mismo orden en
 diferentes repositorios. Tres cambios dados $a,b,c$ pueden aparecer en
@@ -297,7 +297,7 @@ que \hgcmdargs{log}{-r 4:2} muestra $4,3,2$.
 \subsection{Información más detallada}
 Aunque la información presentada por \hgcmd{log} es útil si usted sabe
 de antemano qué está buscando, puede que necesite ver una descripción
-completa de el cambio, o una lista de los ficheros que cambiaron, si
+completa del cambio, o una lista de los ficheros que cambiaron, si
 está tratando de averiguar si un conjunto de cambios dado es el que
 usted está buscando. La opción \hggopt{-v} (or \hggopt{--verbose}) del
 comando \hgcmd{log} le da este nivel extra de detalle.
@@ -354,7 +354,7 @@ examinarlos.
 
 Lo primero que haremos será aislar nuestro experimento en un
 repositorio propio. Usaremos el comando \hgcmd{clone}, pero no hace
-falta clonar una copia de el repositorio remoto. Como ya contamos con
+falta clonar una copia del repositorio remoto. Como ya contamos con
 una copia local del mismo, podemos clonar esa. Esto es mucho más
 rápido que clonar a través de la red, y en la mayoría de los casos
 clonar un repositorio local usa menos espacio en disco también.
@@ -609,7 +609,7 @@ Puede parecer algo raro que \hgcmd{pull} no actualice el directorio de
 trabajo automáticamente. De hecho, hay una buena razón para esto:
 usted puede usar \hgcmd{update} para actualizar el directorio de
 trabajo al estado en que se encontraba en \emph{cualquier revisión}
-de el historial del repositorio. Si usted hubiera actualizado el
+del historial del repositorio. Si usted hubiera actualizado el
 directorio de trabajo a una revisión anterior---digamos, para buscar
 el origen de un fallo---y hubiera corrido un \hgcmd{pull} que hubiera
 actualizado el directorio de trabajo automáticamente a la nueva
