@@ -230,7 +230,7 @@ ficheros que no coincidan con este patrón''.
 
 XXX.
 
-\section{Case sensitivity}
+\section{Sensibilidad a mayúsculas}
 \label{sec:names:case}
 
 Si usted está trabajando en un ambiente de desarrollo mixto que
@@ -272,11 +272,9 @@ insensitive, way.
 \subsection{Almacenamiento portable y seguro de repositorios}
 
 El mecanismo de almacenamiento de los repositorios en Mercurial es
-%TODO aarrrgh, más case!!!
-\emph{robusto frente a case sensitivity/insensitivity}. Los nombres de
+\emph{robusto frente a sensibilidad/insensibilidad a mayúsculas}. Los nombres de
 fichero son traducidos para que puedan ser almacenados de manera
-%TODO GRRRRR
-segura tanto en sistemas case sensitive o case insensitive. Esto
+segura tanto en sistemas sensibles como insensibles a mayúsculas. Esto
 significa que usted puede usar herramientas normales de copia de
 ficheros para transferir un repositorio Mercurial a, por ejemplo, una
 memoria USB, y trasladar de manera segura la memoria y el repositorio
@@ -284,55 +282,60 @@ de ida y vuelta entre un Mac, un PC ejecutando Windows, y un sistema
 Linux
 
 \subsection{Detección de conflictos de mayúsculas/minúsculas}
-%TODO FIXME continuar aca, me niego a seguir traduciendo esto de
-%momento
 
-When operating in the working directory, Mercurial honours the naming
-policy of the filesystem where the working directory is located.  If
-the filesystem is case preserving, but insensitive, Mercurial will
-treat names that differ only in case as the same.
+Al operar en el directorio de trabajo, Mercurial respeta la política
+de nombrado del sistema de archivos en que se encuentre el directorio
+de trabajo. Si el sistema de ficheros conserva las diferencias entre
+mayúsculas, pero no es sensible a ellas, Mercurial tratará los nombres
+que sólo difieren en mayúsculas como uno solo y el mismo.
 
-An important aspect of this approach is that it is possible to commit
-a changeset on a case sensitive (typically Linux or Unix) filesystem
-that will cause trouble for users on case insensitive (usually Windows
-and MacOS) users.  If a Linux user commits changes to two files, one
-named \filename{myfile.c} and the other named \filename{MyFile.C},
-they will be stored correctly in the repository.  And in the working
-directories of other Linux users, they will be correctly represented
-as separate files.
+Un aspecto importante de este enfoque es que es posible consignar un
+conjunto de cambios en un sistema de ficheros sensible a mayúsculas
+(típicamente Linux o Unix) que terminará causando problemas para
+usuarios en sistemas insensibles a mayúsculas (usualmente en Windows o
+MacOS). Si un usuario de Linux consigna cambios a dos ficheros, uno de
+ellos llamado \filename{myfile.c} y el otro llamado \filename{MyFile.C},
+ambos serán almacenados correctamente en el repositorio. Y serán
+representados correctamente como ficheros separados, en los
+directorios de trabajo de otros usuarios de Linux.
 
-If a Windows or Mac user pulls this change, they will not initially
-have a problem, because Mercurial's repository storage mechanism is
-case safe.  However, once they try to \hgcmd{update} the working
-directory to that changeset, or \hgcmd{merge} with that changeset,
-Mercurial will spot the conflict between the two file names that the
-filesystem would treat as the same, and forbid the update or merge
-from occurring.
+Si un usuario de Windows o Mac jalan este cambio, no tendrán problemas
+inicialmente, porque el mecanismo de almacenamiento de Mercurial es
+seguro frente a sensibilidad/insensibilidad a mayúsculas. Sin embargo,
+una vez que ellos traten de actualizar (\hgcmd{update}) el directorio
+de trabajo con ese conjunto de cambios, o hagan fusión (\hgcmd{merge})
+con ese conjunto de cambios, Mercurial verá el conflicto entre los dos
+nombres de fichero que el sistema de ficheros trataría como el mismo,
+e impedirá que ocurra la actualización o fusión.
 
-\subsection{Fixing a case conflict}
+\subsection{Arreglar un conflicto de mayúsculas/minúsculas}
 
-If you are using Windows or a Mac in a mixed environment where some of
-your collaborators are using Linux or Unix, and Mercurial reports a
-case folding conflict when you try to \hgcmd{update} or \hgcmd{merge},
-the procedure to fix the problem is simple.
+Si usted está usando Windows o Mac en un entorno mixto donde algunos
+de sus colaboradores están usando Linux o Unix, y Mercurial reporta un
+conflicto de mayúsculas/minúsculas cuando usted trata de actualizar
+(\hgcmd{update}) o fusionar (\hgcmd{merge}), el procedimiento para
+arreglar el problema es simple.
 
-Just find a nearby Linux or Unix box, clone the problem repository
-onto it, and use Mercurial's \hgcmd{rename} command to change the
-names of any offending files or directories so that they will no
-longer cause case folding conflicts.  Commit this change, \hgcmd{pull}
-or \hgcmd{push} it across to your Windows or MacOS system, and
-\hgcmd{update} to the revision with the non-conflicting names.
+Sólo busque un sistema Linux o Unix cercano, clone el repositorio
+problema allí, y use el comando \hgcmd{rename} de Mercurial para
+cambiar los nombres de cualquiera de los ficheros o directorios
+problemáticos para que no causen más conflictos. Consigne este cambio,
+y jálelo (\hgcmd{pull}) o empújelo (\hgcmd{push}) a su sistema Windows
+o MacOS, y actualícelo (\hgcmd{update}) a la revisión con los nombres
+que ya no generan conflictos.
 
-The changeset with case-conflicting names will remain in your
-project's history, and you still won't be able to \hgcmd{update} your
-working directory to that changeset on a Windows or MacOS system, but
-you can continue development unimpeded.
+El conjunto de cambios con los nombres con conflictos de
+mayúsculas/minúsculas permanecerá en el historial de su proyecto, y
+usted no podrá actualizar (\hgcmd{update}) su directorio de trabajo a
+dicho conjunto de cambios en un sistema Windows o MacOS, pero puede
+continuar el desarrollo sin impedimentos.
 
 \begin{note}
-  Prior to version~0.9.3, Mercurial did not use a case safe repository
-  storage mechanism, and did not detect case folding conflicts.  If
-  you are using an older version of Mercurial on Windows or MacOS, I
-  strongly recommend that you upgrade.
+  Antes de la versión~0.9.3, Mercurial no usaba un mecanismos seguro
+  frente a sensibilidad/insensibilidad a mayúsculas o minúsculas, y no
+  detectaba los conflictos con nombres de ficheros. Si usted está
+  usando una versión más antigua de Mercurial en Windows o MacOS, le
+  recomiendo enérgicamente que se actualice.
 \end{note}
 
 %%% Local Variables: 
