@@ -94,7 +94,8 @@ example-prereqs := \
 dist-sources := \
 	../html/hgicon.png \
 	../html/index.html.var \
-	../html/index.en.html
+	../html/index.en.html \
+	../html/index.es.html
 
 latex-options = \
 	-interaction batchmode \
