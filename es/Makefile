@@ -210,12 +210,14 @@ clean:
 		$(image-svg:%.svg=%.png) \
 		examples/*.{lxo,run} examples/.run build_id.tex hg_id.tex
 
-install: pdf split $(dist-sources)
+install: pdf split $(dist-sources) 
 	rm -rf dist
 	mkdir -p dist
 	cp pdf/hgbook.pdf dist
 	cp html/split/*.{css,html,png} dist
+	cp html/onepage/hgbook.html dist/onepage.html
+	ln -s index.es.html dist/index.html
 	cp $(dist-sources) dist
 
 rsync: install
-	rsync -avz --delete dist sp.red-bean.com:public_html/hgbook
+	rsync -avz --delete dist/ ikks@sulaco.devnull.li:public_html/hgbook/
