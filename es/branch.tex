@@ -104,35 +104,35 @@ marcar con un tag una revisión incorrecta; lo único que debe hacer es
 mover el tag hacia la revisión correcta tan pronto como localice el
 error.
 
-Mercurial almacena las etiquetas en un archivo controlado por revisiones en
-su repositorio. Si ha creado etiquetas, las encontrará en un archivo
+Mercurial almacena las etiquetas en un fichero controlado por revisiones en
+su repositorio. Si ha creado etiquetas, las encontrará en un fichero
 llamado \sfilename{.hgtags}.  Cuando invoca la orden \hgcmd{tag},
-Mercurial modifica este archivo, y automáticamente hace consignación del
+Mercurial modifica este fichero, y automáticamente hace consignación del
 cambio al mismo.  Esto significa que cada vez que ejecuta \hgcmd{tag},
 verá el conjunto de cambios correspondiente en la salida de \hgcmd{log}.
 \interaction{tag.tip}
 
 \subsection{Manejo de conflictos entre etiquetas durante una fusión}
 
-Es usual no tener que preocuparse por el archivo \sfilename{.hgtags},
+Es usual no tener que preocuparse por el fichero \sfilename{.hgtags},
 pero aveces hace su aparición durante una fusión. El formato del
-archivo es sencillo: Consiste de una serie de líneas. Cada línea
+fichero es sencillo: Consiste de una serie de líneas. Cada línea
 comienza con un hash de Conjunto de Cambios, seguido por un espacio,
 seguido por el nombre de un tag.
 
-Si está resolviendo un conflicto en el archivo \sfilename{.hgtags}
+Si está resolviendo un conflicto en el fichero \sfilename{.hgtags}
 durante una fusión, hay un detalle para tener en cuenta al modificar
-el archivo \sfilename{.hgtags}:
+el fichero \sfilename{.hgtags}:
 cuando Mercurial parsea las etiquetas en el repositorio \emph{nunca}
-lee la copia de trabajo del archivo \sfilename{.hgtags}.  En cambio,
-lee la versión \emph{consignada más reciente} del archivo.
+lee la copia de trabajo del fichero \sfilename{.hgtags}.  En cambio,
+lee la versión \emph{consignada más reciente} del fichero.
 
 Una consecuencia desafortunada de este diseño es que usted no puede
-verificar que su archivo \sfilename{.hgtags} fusionado es correcto hasta
+verificar que su fichero \sfilename{.hgtags} fusionado es correcto hasta
 \emph{después} de haber consignado(hecho commit). Así que si se
 encuentra resolviendo un conflicto en \sfilename{.hgtags} durante una
 fusión, asegúrese de ejecutar la orden \hgcmd{tags} después de
-consignar. Si encuentra un error en el archivo \sfilename{.hgtags}, 
+consignar. Si encuentra un error en el fichero \sfilename{.hgtags}, 
 reportará el lugar del error, que podrá arreglar y después
 consignar. Posteriormente ejecute de nuevo la orden \hgcmd{tags} para
 asegurar que su arreglo fue correctamente aplicado.
@@ -142,24 +142,24 @@ asegurar que su arreglo fue correctamente aplicado.
 Puede haber notado que la orden \hgcmd{clone} tiene la opción
 \hgopt{clone}{-r} que le permite clonar una copia exacta del
 repositorio hasta un conjunto de cambios específico. El nuevo clon no
-tendrá historia posterior a la revisión que usted haya
+tendrá historial posterior a la revisión que usted haya
 especificado. Esta forma de interactuar puede sorprender a los
 desprevenidos.
 
-Recuerde que un tag se almacena como una revisión al archivo
+Recuerde que un tag se almacena como una revisión al fichero
 \sfilename{.hgtags}, consecuente con esto, cuando crea un tag, el
 conjunto de cambios en el cual este se almacena necesariamente se
 refiere a un conjunto de cambios anterior. Cuando ejecuta
 \hgcmdargs{clone}{-r foo} para clonar un repositorio hasta el tag
-\texttt{foo}, el nuevo clon \emph{no contendrá la historia que creo
+\texttt{foo}, el nuevo clon \emph{no contendrá el historial que creo
 el tag} que usó para clonar el repositorio. El resultado es que tendrá
-exactamente el subconjunto correcto de la historia del proyecto en el
+exactamente el subconjunto correcto de el historial del proyecto en el
 nuevo repositorio, pero, \emph{no} el tag que podría haber esperado.
 
 \subsection{Cuando las etiquetas permanentes son demasiado}
 
 Dado que las etiquetas de Mercurial están controladas por revisiones y se
-llevan en la historia del proyecto, todas las personas involucradas
+llevan en el historial del proyecto, todas las personas involucradas
 verán las etiquetas que usted haya creado. El hecho de dar nombres a las
 revisiones tiene usos más allá que simplemente hacer notar que la
 revisión \texttt{4237e45506ee} es realmente \texttt{v2.0.2}.  Si está
@@ -168,7 +168,7 @@ tag recordándole algo como ``Ana vió los síntomas con esta revisión''.
 
 Para estos casos, lo que posiblemente desearía serían tags
 \emph{locales}. Puede crear un tag local con la opción \hgopt{tag}{-l}
-de la orden \hgcmd{tag}.  Esto guardará el tag en un archivo llamado
+de la orden \hgcmd{tag}.  Esto guardará el tag en un fichero llamado
 \sfilename{.hg/localtags}.  A diferencia de \sfilename{.hgtags},
 \sfilename{.hg/localtags} no está controlado por revisiones.
 Cualquier tag que usted cree usando \hgopt{tag}{-l} se mantendrá
@@ -187,7 +187,7 @@ modo de mantenimiento.
 
 Usualmente la gente se refiere a esas direcciones
 concurrentes de desarrollo es como ``ramas''.  Aunque hemos visto que
-en variadas ocasiones Mercurial trata a \emph{toda la historia} como
+en variadas ocasiones Mercurial trata a \emph{toda el historial} como
 una serie de ramas y fusiones.  Realmente lo que tenemos aquí es dos
 ideas que se relacionan periféricamente, pero que en esencia comparten
 un nombre.
@@ -246,7 +246,7 @@ ramas en los repositorios.  Es fácil de entender gracias a su
 facilidad; y es difícil cometer errores. Hay una relación uno a uno
 entre las ramas y los directorios con los que está trabajando en su
 sistema. Esto le permite usar emplear herramientas usuales(para los
-nuevos a Mercurial) para trabajar con los archivos dentro de su
+nuevos a Mercurial) para trabajar con los ficheros dentro de su
 rama/repositorio.
 
 Si se encuentra más en la categoría ``usuario diestro'' (\emph{y} sus
@@ -291,8 +291,8 @@ Después de crear la rama, usted podría desear ver el efecto que tuvo
 la orden \hgcmd{branch}.  ¿Qué reportan las ordenes \hgcmd{status} y
 \hgcmd{tip} commands report?
 \interaction{branch-named.status}
-Nada cambia en el directorio actual, y no se ha añadido nada a la
-historia. Esto sugiere que al ejecutar la orden \hgcmd{branch} no hay
+Nada cambia en el directorio actual, y no se ha añadido nada al
+historial. Esto sugiere que al ejecutar la orden \hgcmd{branch} no hay
 un efecto permanente; solamente le indica a que nombre de rama usará
 la \emph{próxima} vez que consigne un conjunto de cambios.
 
@@ -336,7 +336,7 @@ llamada \hgcmd{foo}.
 Podemos hacer \hgcmd{update} entre los tipos de las ramas \texttt{foo}
 y \texttt{bar} sin necesidad de usar la opción \hgopt{update}{-C},
 puesto que esto solamente implica ir linealmente hacia adelante y
-atrás en nuestra historia de cambios.
+atrás en nuestro historial de cambios.
 \interaction{branch-named.update-switchy}
 
 Si volvemos a la rama \texttt{foo} e invocamos la orden \hgcmd{update},
@@ -389,8 +389,8 @@ una-rama-por-repositorio.
 
 En el caso más sencillo, dar un nombre a cada rama ofrece un registro
 permanente acerca de en qué conjunto de cambios se generó la rama.
-Esto le ofrece más contexto cuando esté tratando de seguir la
-historia de un proyecto ramificado de larga vida.
+Esto le ofrece más contexto cuando esté tratando de seguir el
+historial de un proyecto ramificado de larga vida.
 
 Si está trabajando con repositorios compartidos, puede configurar el gancho
 \hook{pretxnchangegroup} para que cada uno bloquee los cambios con

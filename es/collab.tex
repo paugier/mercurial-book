@@ -13,7 +13,7 @@ Mercurial tiene una poderosa interfaz web que provee bastantes
 capacidades útiles.
 
 Para uso interactivo, la interfaz le permite visualizar uno o varios
-repositorios. Puede ver la historia de un repositorio, examinar cada
+repositorios. Puede ver el historial de un repositorio, examinar cada
 cambio(comentarios y diferencias), y ver los contenidos de cada
 directorio y fichero.
 
@@ -49,7 +49,7 @@ de sólo lectura en el repositorio que está corriendo sobre HTTP usando
 CGI, como en la sección~\ref{sec:collab:cgi}.  Publicar sobre HTTP
 satisface las necesidades de la gente que no tiene permisos de
 publicación y de aquellos que quieren usar navegadores web para
-visualizar la historia del repositorio.
+visualizar el historial del repositorio.
 
 \subsection{Trabajo con muchas ramas}
 
@@ -270,7 +270,7 @@ debería lucir algo \Verb|http://my-laptop.local:8000/|.
 La orden \hgcmd{serve} \emph{no} es un servidor web de propósito
 general. Solamente puede hacer dos cosas:
 \begin{itemize}
-\item Permitir que se pueda visualizar la historia del repositorio que
+\item Permitir que se pueda visualizar el historial del repositorio que
   está sirviendo desde navegadores web.
 \item Hablar el protocolo de conexión de Mercurial para que puedan hacer
   \hgcmd{clone} o \hgcmd{pull} (jalar) cambios de tal repositorio.
@@ -520,7 +520,7 @@ que deben revisarse:
   este síntoma.
 \item El fichero de usuario \sfilename{authorized\_keys} puede tener
   un problema.  Si alguien distinto al usuario es dueño o puede
-  escribir el archivo, el daemonio ssh no confiará o lo leerá.
+  escribir el fichero, el daemonio ssh no confiará o lo leerá.
 \end{itemize}
 
 En un mundo ideal, debería poder ejecutar la siguiente orden
@@ -785,7 +785,7 @@ y reemplaze la cadena \dirname{/path/to/repository} con la ruta
 completa al repositorio que desea servir.
 
 En este punto, cuando trate de recargar la página, deberá visualizar
-una linda vista HTML de la historia de su repositorio. Uff!
+una linda vista HTML de el historial de su repositorio. Uff!
 
 \subsubsection{Configuración de lighttpd}
 
@@ -879,13 +879,13 @@ ejemplo con \dirname{/mi}, \sfilename{hgwebdir.cgi} eliminará solamente
 virtual \dirname{ruta/este/repo} en lugar de \dirname{este/repo}.
 
 El guión \sfilename{hgwebdir.cgi} buscará recursivamente en cada
-directorio listado en la sección \texttt{collections} de su archivo de
+directorio listado en la sección \texttt{collections} de su fichero de
 configuración, pero \texttt{no} hará el recorrido recursivo dentro de
 los repositorios que encuentre.
 
 El mecanismo de \texttt{collections} permite publicar fácilmente
 repositorios de una forma ``hacer y olvidar''.  Solamente requiere
-configurar el guión CGI y el archivo de configuración una vez.
+configurar el guión CGI y el fichero de configuración una vez.
 Después de eso puede publicar y sacar de publicación un repositorio en
 cualquier momento incluyéndolo o excluyéndolo de la jerarquía de
 directorios en la cual le haya indicado a \sfilename{hgwebdir.cgi} que
@@ -906,10 +906,10 @@ En este caso, la ruta virtual (el componente que aparecerá en el URL)
 está en el lado derecho de cada definición, mientras que la ruta al
 repositorio está a la derecha.  Note que no tiene que haber relación
 alguna entre la ruta virtual que elija y el lugar del repositorio en
-su sistema de archivos.
+su sistema de ficheros.
 
 Si lo desea, puede usar los dos mecanismos \texttt{collections} y
-\texttt{paths} simultáneamente en un sólo archivo de configuración.
+\texttt{paths} simultáneamente en un sólo fichero de configuración.
 
 \begin{note}
   Si varios repositorios tienen la misma ruta virtual,
@@ -935,7 +935,7 @@ Las interfaces web de Mercurial(la orden \hgcmd{serve}, y los guiones
 opciones de configuración para establecer. Todas ellas en la sección
 \rcsection{web}.
 \begin{itemize}
-\item[\rcitem{web}{allow\_archive}] Determina cuáles tipos de archivos
+\item[\rcitem{web}{allow\_archive}] Determina cuáles tipos de ficheros
   de descarga soportará Mercurial.  Si habilita esta característica,
   los usuarios de la interfaz web podrán descargar una copia de la
   revisión del repositorio que estén viendo. Para activar la
@@ -989,7 +989,7 @@ opciones de configuración para establecer. Todas ellas en la sección
     style = gitweb
   \end{codesample4}
 \item[\rcitem{web}{templates}] Ruta.  Directorio en el que se buscarán
-  los archivos plantilla.  De forma predeterminada, busca en el
+  los ficheros plantilla.  De forma predeterminada, busca en el
   directorio en el cual fue instalado.
 \end{itemize}
 Si usa \sfilename{hgwebdir.cgi}, puede añadir otras opciones de

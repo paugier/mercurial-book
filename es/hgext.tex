@@ -55,18 +55,18 @@ Dado que obtener el estado de los ficheros es crucial para obtener
 buen desempeño, los autores de Mercurial han optimizado este código en
 la medida de lo posible.  Sin embargo, no puede obviarse el hecho de
 que cuando ejecuta \hgcmd{status}, Mercurial tendrá que hacer por lo
-menos una costosa llamada al sistema por cada archivo administrado
+menos una costosa llamada al sistema por cada fichero administrado
 para determinar si ha cambiado desde la última vez que se consignó.
 Para un repositorio suficientemente grande, puede tardar bastante
 tiempo.
 
 Para mostrar en números la magnitud de este efect, creé un repositorio
-que contenía 150.000 archivos administrador.  Tardó diez segundos para
+que contenía 150.000 ficheros administrador.  Tardó diez segundos para
 ejecutar \hgcmd{status}, a pesar de que \emph{ninguno} de los ficheros
 había sido modificado.
 
 Muchos sistemas operativos modernos contienen una facilidad de
-notificación de archivos.  Si un programa se registra con un servicio
+notificación de ficheros.  Si un programa se registra con un servicio
 apropiado, el sistema operativo le notificará siempre que un fichero
 de interés haya sido creado, modificado o borrado.  En sistemas Linux,
 el componente del núcleo que lo hace se llama \texttt{inotify}.

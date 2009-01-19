@@ -8,7 +8,7 @@ encuentra que hay un problema enraizado en su proyecto.  Mercurial
 tiene unas características poderosas que le ayudarán a isolar las
 fuentes de los problemas, y a dar cuenta de ellas apropiadamente.
 
-\section{Borrar la historia local}
+\section{Borrar el historial local}
 
 \subsection{La consignación accidental}
 
@@ -51,7 +51,7 @@ Como sea, la suerte me acompaña---Encontré mi error antes de publicar
 el conjunto de cambios.  Uso la orden \hgcmd{rollback}, y Mercurial
 hace desaparecer el último conjunto de cambios.
 \interaction{rollback.rollback}
-El conjunto de cambios ya no está en la historia del repositorio, y el
+El conjunto de cambios ya no está en el historial del repositorio, y el
 directorio de trabajo cree que el fichero \filename{a} ha sido
 modificado.  La consignación y el roll back dejaron el directorio de
 trabajo exactamente como estaba antes de la consignación; el conjunto
@@ -88,7 +88,7 @@ de un \hgcmd{pull} a una única transacción y bastará con un
 El valor de \hgcmd{rollback} se anula cuando ha publicado sus cambios
 a otro repositorio.  Un cambio desaparece totalmente al hacer roll back,
 pero \emph{solamente} en el repositorio en el cual aplica
-\hgcmd{rollback}.  Debido a que un roll back elimina la historia,
+\hgcmd{rollback}.  Debido a que un roll back elimina el historial,
 no hay forma de que la desaparición de un cambio se propague entre
 repositorios.
 
@@ -220,7 +220,7 @@ completo automáticamente, y construir bloques que le permitan revertir
 parte de un conjunto de cambios a mano.
 
 Antes de leer esta sección, hay algo para tener en cuenta: la orden
-\hgcmd{backout} deshace cambios \emph{adicionando} a la historia, sin
+\hgcmd{backout} deshace cambios \emph{adicionando} a el historial, sin
 modificar o borrar.  Es la herramienta correcta si está arreglando
 fallos, pero no si está tratando de deshacer algún cambio que tiene
 consecuencias catastróficas.  Para tratar con esos, vea la sección~\ref{sec:undo:aaaiiieee}.
@@ -228,7 +228,7 @@ consecuencias catastróficas.  Para tratar con esos, vea la sección~\ref{sec:un
 \subsection{Retroceder un conjunto de cambios}
 
 La orden \hgcmd{backout} le permite ``deshacer'' los efectos de todo
-un conjunto de cambios de forma automatizada.  Dado que la historia de
+un conjunto de cambios de forma automatizada.  Dado que el historial de
 Mercurial es inmutable, esta orden \emph{no} se deshace del conjunto
 de cambios que usted desea deshacer.  En cambio, crea un nuevo
 conjunto de cambios que \emph{reversa} el conjunto de cambios que
@@ -257,8 +257,8 @@ presente.  La salida de \hgcmd{log} nos da una idea de lo que la orden
 Vea que el nuevo conjunto de cambios que \hgcmd{backout} ha creado es
 un hijo del conjunto de cambios que retrocedimos. Es más sencillo de
 ver en la figura~\ref{fig:undo:backout}, que presenta una vista
-gráfica de la historia de cambios.  Como puede ver, la historia es
-bonita y lineal.
+gráfica de el historial de cambios.  Como puede ver, el historial es
+bonito y lineal.
 
 \begin{figure}[htb]
   \centering
@@ -281,7 +281,7 @@ finalizar el retroceso, verá que el primer y el tercer cambio están
 presentes, pero no el segundo.
 \interaction{backout.non-tip.cat}
 
-Como lo muestra la historia gráfica en la
+Como lo muestra el historial gráfico en la
 figura~\ref{fig:undo:backout-non-tip}, Mercurial realmente consigna
 \emph{dos} cambios en estas situaciones (los nodos encerrados en una
 caja son aquellos que Mercurial consigna automaticamente).  Antes de
@@ -301,7 +301,7 @@ directorio de trabajo, y consigna el resultado de la fusión.
 \end{figure}
 
 El resultado es que usted termina ``donde estaba'', solamente con un
-poco de historia adicional que deshace el efecto de un conjunto de
+poco de historial adicional que deshace el efecto de un conjunto de
 cambios que usted quería evitar.
 
 \subsubsection{Use siempre la opción \hgopt{backout}{--merge}}
@@ -333,8 +333,8 @@ conjunto de cambio que retrocedimos; es por lo tanto una nueva cabeza,
 orden \hgcmd{backout} fue muy explícita diciéndolo.
 \interaction{backout.manual.log}
 
-De nuevo, es más sencillo lo que pasó viendo una gráfica de la
-historia de revisiones, en la figura~\ref{fig:undo:backout-manual}.
+De nuevo, es más sencillo lo que pasó viendo una gráfica del
+historial de revisiones, en la figura~\ref{fig:undo:backout-manual}.
 Esto nos aclara que cuando usamos \hgcmd{backout} para retroceder un
 cambio a algo que no sea la punta, Mercurial añade una nueva cabeza al
 repositorio (el cambio que consignó está encerrado en una caja).
@@ -355,14 +355,14 @@ Ahora tenemos dos conjuntos de cambios aislados.
 Reflexionemos acerca de lo que esperamos ver como contenidos de
 \filename{myfile}.  El primer cambio debería estar presente, porque
 nunca le hicimos retroceso.  El segundo cambio debió desaparecer,
-puesto que es el que retrocedimos.  Dado que la gráfica de la historia
+puesto que es el que retrocedimos.  Dado que la gráfica de el historial
 muestra que el tercer camlio es una cabeza separada, \emph{no}
 esperamos ver el tercer cambio presente en \filename{myfile}.
 \interaction{backout.manual.cat}
 Para que el tercer cambio esté en el fichero, hacemos una fusión usual
 de las dos cabezas.
 \interaction{backout.manual.merge}
-Después de eso, la historia gráfica de nuestro repositorio luce como
+Después de eso, el historial gráfica de nuestro repositorio luce como
 la figura~\ref{fig:undo:backout-manual-merge}.
 
 \begin{figure}[htb]
@@ -411,7 +411,7 @@ cuando se trata con todos los cambios \emph{entre} el cambio que está
 retrocediendo y la punta actual.
 
 Si está retrocediendo un conjunto de cambios que está a unas ~100
-atrás en su historia del proyecto, las posibilidades de que una orden
+atrás en su historial del proyecto, las posibilidades de que una orden
 \command{patch} sea capaz de ser aplicada a un diff reverso,
 claramente no son altas, porque los cambios que intervienen podrían
 ``no coincidir con el contexto'' que \command{patch} usa  para
@@ -442,13 +442,13 @@ Antes de discutir las opciones que tiene si consignó cambio del tipo
 colocarse una bolsa de papel desechable en su cabeza), permítame
 discutir primero unas aproximaciones que probablemente no funcionen.
 
-Dado que Mercurial trata de forma acumulativa la historia---cada
-cambio se coloca encima de todos los cambios que leo
-preceden---usualmente usted no puede hacer que unos cambios desastros
+Dado que Mercurial trata de forma acumulativa al historial---cada
+cambio se coloca encima de todos los cambios que le
+preceden---usualmente usted no puede hacer que unos cambios desastrosos
 desaparezcan. La única excepción es cuando usted ha acabado de
 consignar un cambio y este no ha sido publicado o jalado en otro
 repositorio. Ahí es cuando puede usar la orden \hgcmd{rollback} con
-seguridad, Como detallé en la sección~\ref{sec:undo:rollback}.
+seguridad, como detallé en la sección~\ref{sec:undo:rollback}.
 
 Después de que usted haya publicado un cambio en otro repositorio, usted
 \emph{podría} usar la orden \hgcmd{rollback} para hacer que en su copia
@@ -466,7 +466,7 @@ y podría propagarse más tarde.
 
 Si ha consignado uno o más cambios \emph{después} del cambio que desea
 desaparecer, sus opciones son aún más reducidas. Mercurial no provee
-una forma de ``cabar un hueco'' en la historia, dejando los conjuntos
+una forma de ``cabar un hueco'' en el historial, dejando los conjuntos
 de cambios intactos.
 
 %Dejamos de traducir lo que viene a continuación, porque será
@@ -561,20 +561,20 @@ introdujo en un de los últimos 500 conjuntos de cambios y limitara la
 búsqueda a ellos, estaría tomabdi más de 40 horas para encontrar al
 conjunto de cambios culpable.
 
-La orden \hgcmd{bisect} usa su conocimiento de la ``forma'' de la
-historia de revisiones de su proyecto para hacer una búsqueda
+La orden \hgcmd{bisect} usa su conocimiento de la ``forma'' del
+historial de revisiones de su proyecto para hacer una búsqueda
 proporcional al \emph{logaritmo} del número de conjunto de cambios a
-revisar( el tipo de búsqueda que realiza se llama búsqueda
+revisar (el tipo de búsqueda que realiza se llama búsqueda
 binaria). Con esta aproximación, el buscar entre 10.000 conjuntos de
-cambios tomará menos de 3 horas, incluso a diez minutos por prueba(La
+cambios tomará menos de 3 horas, incluso a diez minutos por prueba (La
 búsqueda requerirá cerca de 14 pruebas). Al limitar la búsqueda a la
 última centena de conjuntos de cambios, tomará a lo sumo una
-hora(Apenas unas 7 pruebas).
+hora (Apenas unas 7 pruebas).
 
 La orden \hgcmd{bisect} tiene en cuenta la naturaleza ``ramificada''
-de la historia de revisiones del proyecto con Mercurial, así que no
+de el historial de revisiones del proyecto con Mercurial, así que no
 hay problemas al tratar con ramas, fusiones o cabezas múltiples en un
-repositorio.  Puede evitar ramas enteras de historia con un solo
+repositorio.  Puede evitar ramas enteras de historial con un solo
 sondeo.
 
 \subsection{Uso de la orden \hgcmd{bisect}}
@@ -790,7 +790,7 @@ presenta el fallo todavía no está presente) y aquellos en los cuales
 otro fallo puede enmascararlo(como se discutió anteriormente).
 
 Incluso si termina ``muy atrás'' por miles de conjuntos de cambios o
-meses de historia, solamente estaŕa adicionando unas pruebas contadas
+meses de historial, solamente estaŕa adicionando unas pruebas contadas
 para \hgcmd{bisect}, gracias al comportamiento logarítmico.
 
 %%% Local Variables: 
