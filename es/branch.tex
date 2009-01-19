@@ -53,55 +53,53 @@ su repositorio. Al desplegarse, cada revisión marcada se identifica
 primero con su nombre, después el número de revisión y finalmente con
 un hash único de la revisión.
 \interaction{tag.tags}
-Note que \texttt{tip} aparece en la lista de \hgcmd{tags}.  El tag
-\texttt{tip} es un tag ``flotante'' especial, que identifica siempre
+Note que \texttt{tip} aparece en la lista de \hgcmd{tags}.  la etiqueta
+\texttt{tip} es una etiqueta ``flotante'' especial, que identifica siempre
 la revisión más nueva en el repositorio.
 
 Al desplegar la orden \hgcmd{tags}, las etiquetas se listan en orden
-inverso, por número de revisión. Lo que significa usualmente que los
-tags más recientes se listan antes que los más antiguos. También
-significa que el tag \texttt{tip} siempre aparecerá como primer tag
-listado al desplegar la orden \hgcmd{tags}.
+inverso, por número de revisión. Lo que significa usualmente que las etiquetas más recientes se listan antes que las más antiguas. También
+significa que la etiqueta \texttt{tip} siempre aparecerá como primera
+etiqueta listada al desplegar la orden \hgcmd{tags}.
 
-Cuando ejecuta \hgcmd{log}, se desplegará la revisión que tenga los
-tags asociados a ella, se imprimirán tales tags.
+Cuando ejecuta \hgcmd{log}, se desplegará la revisión que tenga las etiquetas asociados a ella, se imprimirán tales etiquetas.
 \interaction{tag.log}
 
-Siempre que requiera indicar un ~ID de revisión a una Orden de
-Mercurial, aceptará un nombre de tag en su lugar.  Internamente,
-Mercurial traducirá su nombre de tag en el ~ID de revisión
+Siempre que requiera indicar un ~ID de revisión a una orden de
+Mercurial, aceptará un nombre de etiqueta en su lugar.  Internamente,
+Mercurial traducirá su nombre de etiqueta en el ~ID de revisión
 correspondiente, y lo usará.
 \interaction{tag.log.v1.0}
 
-No hay límites en la cantidad de tags por reposirorio, o la cantidad
-de tags que una misma revisión pueda tener. Siendo prácticos, no es
+No hay límites en la cantidad de etiquetas por reposirorio, o la cantidad
+de etiquetas que una misma revisión pueda tener. Siendo prácticos, no es
 muy buena idea tener ``demasiados'' (la cantidad variará de un
 proyecto a otro), debido a que la intención es ayudarle a encontrar
 revisiones. Si tiene demasiados tags, la facilidad para identificar
 revisiones disminuirá rápidamente.
 
 Por ejemplo, si su proyecto tiene etapas(milestones) frecuentes en pocos
-días, es perfectamente razonable asignarle un tag a cada una de
+días, es perfectamente razonable asignarle una etiqueta a cada una de
 ellas. Pero si tiene un sistema de construcción automática de binarios
 que asegura que cada revisión puede generarse limpiamente, estaría
-introduciendo mucho ruido si se usara un tag para cada generación
+introduciendo mucho ruido si se usara una etiqueta para cada generación
 exitosa. Más bien, podría usar tags para generaciones fallidas (en
 caso de que estas sean raras!), o simplemente evitar las etiquetas para
 llevar cuenta de la posibilidad de generación de binarios.
 
 
-Si desea eliminar un tag que no desea, use
+Si desea eliminar una etiqueta que no desea, use
 \hgcmdargs{tag}{--remove}.  
 \interaction{tag.remove}
-También puede modificar un tag en cualquier momento para que
+También puede modificar una etiqueta en cualquier momento para que
 identifique una revisión distinta, basta con aplicar una nueva orden
 \hgcmd{tag}. Deberá usar la opción \hgopt{tag}{-f} para indicarle a
-Mercurial que desea actualizar el tag \emph{en serio}.
+Mercurial que desea actualizar la etiqueta \emph{en serio}.
 \interaction{tag.replace}
 De todas maneras habrá un registro permanente de la antigua identidad
 del tag, pero Mercurial no la usará. Por lo tanto no hay castigo al
-marcar con un tag una revisión incorrecta; lo único que debe hacer es
-mover el tag hacia la revisión correcta tan pronto como localice el
+marcar con una etiqueta una revisión incorrecta; lo único que debe hacer es
+mover la etiqueta hacia la revisión correcta tan pronto como localice el
 error.
 
 Mercurial almacena las etiquetas en un fichero controlado por revisiones en
@@ -118,7 +116,7 @@ Es usual no tener que preocuparse por el fichero \sfilename{.hgtags},
 pero aveces hace su aparición durante una fusión. El formato del
 fichero es sencillo: Consiste de una serie de líneas. Cada línea
 comienza con un hash de Conjunto de Cambios, seguido por un espacio,
-seguido por el nombre de un tag.
+seguido por el nombre de una etiqueta.
 
 Si está resolviendo un conflicto en el fichero \sfilename{.hgtags}
 durante una fusión, hay un detalle para tener en cuenta al modificar
@@ -146,15 +144,15 @@ tendrá historial posterior a la revisión que usted haya
 especificado. Esta forma de interactuar puede sorprender a los
 desprevenidos.
 
-Recuerde que un tag se almacena como una revisión al fichero
-\sfilename{.hgtags}, consecuente con esto, cuando crea un tag, el
+Recuerde que una etiqueta se almacena como una revisión al fichero
+\sfilename{.hgtags}, consecuente con esto, cuando crea una etiqueta, el
 conjunto de cambios en el cual este se almacena necesariamente se
 refiere a un conjunto de cambios anterior. Cuando ejecuta
-\hgcmdargs{clone}{-r foo} para clonar un repositorio hasta el tag
+\hgcmdargs{clone}{-r foo} para clonar un repositorio hasta la etiqueta
 \texttt{foo}, el nuevo clon \emph{no contendrá el historial que creo
-el tag} que usó para clonar el repositorio. El resultado es que tendrá
+la etiqueta} que usó para clonar el repositorio. El resultado es que tendrá
 exactamente el subconjunto correcto del historial del proyecto en el
-nuevo repositorio, pero, \emph{no} el tag que podría haber esperado.
+nuevo repositorio, pero, \emph{no} la etiqueta que podría haber esperado.
 
 \subsection{Cuando las etiquetas permanentes son demasiado}
 
@@ -163,12 +161,12 @@ llevan en el historial del proyecto, todas las personas involucradas
 verán las etiquetas que usted haya creado. El hecho de dar nombres a las
 revisiones tiene usos más allá que simplemente hacer notar que la
 revisión \texttt{4237e45506ee} es realmente \texttt{v2.0.2}.  Si está
-tratando de encontrar un bug sutil, posiblemente desearía colocar un
-tag recordándole algo como ``Ana vio los síntomas con esta revisión''.
+tratando de encontrar un bug sutil, posiblemente desearía colocar una 
+etiqueta recordándole algo como ``Ana vio los síntomas con esta revisión''.
 
 Para estos casos, lo que posiblemente desearía serían tags
-\emph{locales}. Puede crear un tag local con la opción \hgopt{tag}{-l}
-de la orden \hgcmd{tag}.  Esto guardará el tag en un fichero llamado
+\emph{locales}. Puede crear una etiqueta local con la opción \hgopt{tag}{-l}
+de la orden \hgcmd{tag}.  Esto guardará la etiqueta en un fichero llamado
 \sfilename{.hg/localtags}.  A diferencia de \sfilename{.hgtags},
 \sfilename{.hg/localtags} no está controlado por revisiones.
 Cualquier tag que usted cree usando \hgopt{tag}{-l} se mantendrá
@@ -207,7 +205,7 @@ cuadro'' es a través de un repositorio dedicado.  Si cuenta con un
 repositorio compartido existente ---llamémoslo
 \texttt{myproject}---que alcanzó la etapa ``1.0'', puede comenzar a
 prepararse para versiones de mantenimiento futuras a partir de la
-versión~1.0 marcando con un tag en la revisión con la cual preparó la versión~1.0.
+versión~1.0 marcando con una etiqueta en la revisión con la cual preparó la versión~1.0.
 \interaction{branch-repo.tag}
 Ahora puede clonar un repositorio compartido nuevo
 \texttt{myproject-1.0.1} con tal tag.
