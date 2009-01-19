@@ -14,7 +14,7 @@ capacidades útiles.
 
 Para uso interactivo, la interfaz le permite visualizar uno o varios
 repositorios. Puede ver el historial de un repositorio, examinar cada
-cambio(comentarios y diferencias), y ver los contenidos de cada
+cambio (comentarios y diferencias), y ver los contenidos de cada
 directorio y fichero.
 
 Adicionalmente la interfaz provee feeds de RSS de los cambios de los
@@ -365,7 +365,7 @@ entonces un URL ssh que contenga en su ruta a \dirname{bar}
 
 Si desea especificar una ruta relativa a otro directorio de usuario,
 puede usar una ruta que comience con un caracter tildado, seguido del
-nombre del usuario(llamémosle \texttt{otrousuario}, así
+nombre del usuario (llamémosle \texttt{otrousuario}, así
 \begin{codesample2}
   ssh://server/~otrousuario/hg/repo
 \end{codesample2}
@@ -425,7 +425,7 @@ el protocolo ssh para tareas automatizadas en una red segura.)
 No basta con generar un par de llaves.  Se requiere adicionar una llave
 pública al conjunto de llaves autorizadas para todos los usuarios
 remotos que se vayan a autenticar.  Para aquellos servidores que usen
-OpenSSH(la gran mayoría), significará añadir la llave pública a la
+OpenSSH (la gran mayoría), significará añadir la llave pública a la
 lista en el fichero llamado \sfilename{authorized\_keys} en su
 directorio \sdirname{.ssh}.
 
@@ -438,11 +438,11 @@ la ventana en la cual se despliega directamente en el fichero
 \subsection{Uso de un agente de autenticación}
 
 Un agente de autentitcación es un daemonio que almacena frases clave en
-memoria(olvidará las frases clave si sale y vuelve a entrar).  Un cliente
+memoria (olvidará las frases clave si sale y vuelve a entrar).  Un cliente
 ssh notará si está corriendo, y solicitará una frase clave.  Si no hay
 un agente de autenticación corriendo, o el agente no almacena la frase
 clave necesaria, tendrá que teclear su frase clave cada vez que 
-Mercurial intente comunicarse con un servidor para usted(p.e.~cada vez
+Mercurial intente comunicarse con un servidor para usted (p.e.~cada vez
 que jale o publique cambios).
 
 El problema de almacenar frases claves en un agente es que es posible
@@ -496,7 +496,7 @@ servidor, primero asegúrese de que está corriendo.  En muchos sistemas
 estará instalado, pero deshabilitado de forma predeterminada.  Una vez
 que haya hecho este paso tendrá que revisar si el cortafuegos del
 servidor está configurado para recibir conexiones entrantes en el
-puerto en el cual el daemonio de ssh está escuchando(usualmente el~22).
+puerto en el cual el daemonio de ssh está escuchando (usualmente el~22).
 No trate de buscar otras posibilidades exóticas o configuraciones
 erradas haste que haya revisado primero estas dos.
 
@@ -586,7 +586,7 @@ el protocolo puede comprimir datos transparentemente.  Pero el
 comportamiento predeterminado del cliente ssh es \emph{no}
 solicitar compresión.
 
-Sobre cualquier red distinta a una LAN rápida(incluso con una red
+Sobre cualquier red distinta a una LAN rápida (incluso con una red
 inalámbrica), hacer uso de compresión puede mejorar el rendimiento
 de las operaciones de Mercurial que involucren la red.  Por ejemplo,
 sobre WAN, alguien ha medido la compresión reduciendo la cantidad
@@ -604,7 +604,7 @@ Mercurial sobre el protocolo ssh.
 
 Si usa \command{ssh}, puede reconfigurarlo para que siempre use
 compresión cuando se comunique con su servidor.  Para hacerlo,
-edite su fichero \sfilename{.ssh/config}(que puede no existir
+edite su fichero \sfilename{.ssh/config} (que puede no existir
 aún), de la siguiente forma:
 \begin{codesample2}
   Host hg
@@ -760,7 +760,7 @@ Adicione \texttt{ExecCGI} al final de esta lista en caso de que haga
 falta y reinicie su servidor web.
 
 Si resulta que Apache le muestra el texto del script CGI en lugar de
-ejecutarlo, necesitará o bien descomentar(si se encuentra presente) o
+ejecutarlo, necesitará o bien descomentar (si se encuentra presente) o
 adicionar una directiva como la siguiente:
 \begin{codesample2}
   AddHandler cgi-script .cgi
@@ -798,7 +798,7 @@ lo tanto estaba seguro de que mis permisos para directorios y ficheros
 eran correctos y que mi guión \sfilename{hgweb.cgi} también lo era.
 
 Dado que ya Apache estaba en ejecución correctamente, lograr que
-\texttt{lighttpd} sirviera mi repositorio fue rápido(en otras
+\texttt{lighttpd} sirviera mi repositorio fue rápido (en otras
 palabras, si está tratando de usar \texttt{lighttpd}, debe leer la
 sección de Apache).  Primero tuve que editar la sección
 \texttt{mod\_access} para habilitar \texttt{mod\_cgi} y
@@ -930,7 +930,7 @@ de su fichero \hgrc.
 
 \subsection{Opciones de configuración en Web}
 
-Las interfaces web de Mercurial(la orden \hgcmd{serve}, y los guiones
+Las interfaces web de Mercurial (la orden \hgcmd{serve}, y los guiones
 \sfilename{hgweb.cgi} y \sfilename{hgwebdir.cgi}) tienen varias
 opciones de configuración para establecer. Todas ellas en la sección
 \rcsection{web}.
@@ -963,7 +963,7 @@ opciones de configuración para establecer. Todas ellas en la sección
   sobre el repositorio~HTTP.  Si se coloca \texttt{no} o
   \texttt{false}, solamente la porción de los procesos
   ``orientados-a-humanos'' se habilita de la interfaz web.
-\item[\rcitem{web}{contact}] Cadena.  Una cadena en forma libre(pero
+\item[\rcitem{web}{contact}] Cadena.  Una cadena en forma libre (pero
   preferiblemente corta) que identifica a la persona o grupo a cargo
   del repositorio.  Usualmente contiene el nombre y la dirección de
   correo electrónico de una persona o de una lista de correo.  Aveces
@@ -1005,7 +1005,7 @@ ubicadas en el \sfilename{.hg/hgrc} de un repositorio en lugar del
 fichero del usuario o el \hgrc global.
 \begin{itemize}
 \item[\rcitem{web}{description}] Cadena.  Una cadena de forma
-  libre(preferiblemente corta) que describa los contenidos o el
+  libre (preferiblemente corta) que describa los contenidos o el
   propósito del repositorio.
 \item[\rcitem{web}{name}] Cadena.  El nombre para visualizar en la
   interfaz web del repositorio. Sustituye el nombre predeterminado, el
