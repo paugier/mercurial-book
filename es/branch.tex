@@ -1,4 +1,5 @@
-\chapter{Administración de Versiones y desarrollo ramificado}
+%% vim: tw=70 encoding=utf8
+\chapter{Administración de versiones y desarrollo ramificado}
 \label{chap:branch}
 
 Mercurial ofrece varios mecanismos que le permitirán administrar un
@@ -6,10 +7,10 @@ proyecto que avanza en múltiples frentes simultáneamente. Para
 entender estos mecanismos, demos un vistazo a la estructura usual de
 un proyecto de software.
 
-Muchos proyectos de software liberan una versión``mayor'' que contiene
+Muchos proyectos de software liberan una versión ``mayor'' que contiene
 nuevas características substanciales.  En paralelo, pueden liberar
-versiones ``menores''.   Estas usualmente son idénticas a las
-versiones mayores en las cuales están basadas, pero con arreglo de
+versiones ``menores''.   Usualmente éstas son idénticas a las
+versiones mayores en las cuales están basadas, pero con arreglos para
 algunos fallos.
 
 En este capítulo, comenzaremos hablando de cómo mantener registro de
@@ -21,32 +22,33 @@ independizar y administrar tal trabajo.
 \section{Dar un nombre persistente a una revisión}
 
 Cuando se decide a otorgar a una revisión el nombre particular de una
-``versión'', es buena idea grabar la identidad para tal revisión.
-Lo cual permitirá reproducir tal versión en una fecha posterior, o el
-propósito que se considere en ese momento (reproducir un fallo, portar
+``versión'', es buena idea grabar la identidad de tal revisión.
+Esto le permitirá reproducir dicha versión en una fecha posterior,
+para cualquiera que sea el 
+propósito que se tenga en ese momento (reproducir un fallo, portar
 a una nueva plataforma, etc).
 \interaction{tag.init}
 
 Mercurial le permite dar un nombre permanente a cualquier revisión
 usando la orden \hgcmd{tag}.  Sin causa de sorpresa, esos nombres se llaman
-``tags''(etiquetas).
+``tags'' (etiquetas).
 \interaction{tag.tag}
 
-Un tag no es más que un ``nombre simbólico'' para una revisión.  Los
-tags existen únicamente para su conveniencia, dotándolo de una forma
-permanente y sencilla para referirse a una revisión; Mercurial no
-interpreta de ninguna manera los nombres de los tags que usted use.
-Mercurial tampoco impone restricción alguna al nombre de un tag, más
-allá de lo necesario para asegurar que un tag puede parsearse sin
-ambigüedades. El nombre de un tag no puede tener ninguno de los
-caracteres siguientes:
+Una etiqueta no es más que un ``nombre simbólico'' para una revisión.  Las
+etiquetas existen únicamente para su conveniencia, brindándole una forma
+permanente y sencilla de referirse a una revisión; Mercurial no
+interpreta de ninguna manera los nombres de las etiquetas que usted use.
+Mercurial tampoco impone restricción alguna al nombre de una etiqueta, más
+allá de lo necesario para asegurar que una etiqueta pueda procesarse sin
+ambigüedades. El nombre de una etiqueta no puede tener ninguno de los
+siguientes caracteres:
 \begin{itemize}
 \item Dos puntos (ASCII 58, ``\texttt{:}'')
-\item Retroceso (return) (ASCII 13, ``\Verb+\r+'')
+\item Retorno de carro (return) (ASCII 13, ``\Verb+\r+'')
 \item Nueva línea (ASCII 10, ``\Verb+\n+'')
 \end{itemize}
 
-Puede usar la orden \hgcmd{tags} para observar los tags presentes en
+Puede usar la orden \hgcmd{tags} para observar las etiquetas presentes en
 su repositorio. Al desplegarse, cada revisión marcada se identifica
 primero con su nombre, después el número de revisión y finalmente con
 un hash único de la revisión.
@@ -55,7 +57,7 @@ Note que \texttt{tip} aparece en la lista de \hgcmd{tags}.  El tag
 \texttt{tip} es un tag ``flotante'' especial, que identifica siempre
 la revisión más nueva en el repositorio.
 
-Al desplegar la orden \hgcmd{tags}, los tags se listan en orden
+Al desplegar la orden \hgcmd{tags}, las etiquetas se listan en orden
 inverso, por número de revisión. Lo que significa usualmente que los
 tags más recientes se listan antes que los más antiguos. También
 significa que el tag \texttt{tip} siempre aparecerá como primer tag
@@ -84,7 +86,7 @@ ellas. Pero si tiene un sistema de construcción automática de binarios
 que asegura que cada revisión puede generarse limpiamente, estaría
 introduciendo mucho ruido si se usara un tag para cada generación
 exitosa. Más bien, podría usar tags para generaciones fallidas (en
-caso de que estas sean raras!), o simplemente evitar los tags para
+caso de que estas sean raras!), o simplemente evitar las etiquetas para
 llevar cuenta de la posibilidad de generación de binarios.
 
 
@@ -102,15 +104,15 @@ marcar con un tag una revisión incorrecta; lo único que debe hacer es
 mover el tag hacia la revisión correcta tan pronto como localice el
 error.
 
-Mercurial almacena los tags en un archivo controlado por revisiones en
-su repositorio. Si ha creado tags, los encontrará en un archivo
+Mercurial almacena las etiquetas en un archivo controlado por revisiones en
+su repositorio. Si ha creado etiquetas, las encontrará en un archivo
 llamado \sfilename{.hgtags}.  Cuando invoca la orden \hgcmd{tag},
-Mercurial modifica este archivo, y automáticamente hace commit del
+Mercurial modifica este archivo, y automáticamente hace consignación del
 cambio al mismo.  Esto significa que cada vez que ejecuta \hgcmd{tag},
 verá el conjunto de cambios correspondiente en la salida de \hgcmd{log}.
 \interaction{tag.tip}
 
-\subsection{Manejo de conflictos entre tags durante una fusión}
+\subsection{Manejo de conflictos entre etiquetas durante una fusión}
 
 Es usual no tener que preocuparse por el archivo \sfilename{.hgtags},
 pero aveces hace su aparición durante una fusión. El formato del
@@ -121,7 +123,7 @@ seguido por el nombre de un tag.
 Si está resolviendo un conflicto en el archivo \sfilename{.hgtags}
 durante una fusión, hay un detalle para tener en cuenta al modificar
 el archivo \sfilename{.hgtags}:
-cuando Mercurial parsea los tags en el repositorio \emph{nunca}
+cuando Mercurial parsea las etiquetas en el repositorio \emph{nunca}
 lee la copia de trabajo del archivo \sfilename{.hgtags}.  En cambio,
 lee la versión \emph{consignada más reciente} del archivo.
 
@@ -154,11 +156,11 @@ el tag} que usó para clonar el repositorio. El resultado es que tendrá
 exactamente el subconjunto correcto de la historia del proyecto en el
 nuevo repositorio, pero, \emph{no} el tag que podría haber esperado.
 
-\subsection{Cuando los tags permanentes son demasiado}
+\subsection{Cuando las etiquetas permanentes son demasiado}
 
-Dado que los tags de Mercurial están controlados por revisiones y se
+Dado que las etiquetas de Mercurial están controladas por revisiones y se
 llevan en la historia del proyecto, todas las personas involucradas
-verán los tags que usted haya creado. El hecho de dar nombres a las
+verán las etiquetas que usted haya creado. El hecho de dar nombres a las
 revisiones tiene usos más allá que simplemente hacer notar que la
 revisión \texttt{4237e45506ee} es realmente \texttt{v2.0.2}.  Si está
 tratando de encontrar un bug sutil, posiblemente desearía colocar un
