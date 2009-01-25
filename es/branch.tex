@@ -2,7 +2,7 @@
 \chapter{Administración de versiones y desarrollo ramificado}
 \label{chap:branch}
 
-Mercurial ofrece varios mecanismos que le permitirán administrar un
+Mercurial ofrece varios mecanismos que le permiten administrar un
 proyecto que avanza en múltiples frentes simultáneamente. Para
 entender estos mecanismos, demos un vistazo a la estructura usual de
 un proyecto de software.
@@ -62,16 +62,16 @@ inverso, por número de revisión. Lo que significa usualmente que las etiquetas
 significa que la etiqueta \texttt{tip} siempre aparecerá como primera
 etiqueta listada al desplegar la orden \hgcmd{tags}.
 
-Cuando ejecuta \hgcmd{log}, se desplegará la revisión que tenga las etiquetas asociados a ella, se imprimirán tales etiquetas.
+Cuando ejecuta \hgcmd{log}, se desplegará la revisión que tenga las etiquetas asociadas a ella, se imprimirán tales etiquetas.
 \interaction{tag.log}
 
-Siempre que requiera indicar un ~ID de revisión a una orden de
+Siempre que requiera indicar un~ID de revisión a una orden de
 Mercurial, aceptará un nombre de etiqueta en su lugar.  Internamente,
-Mercurial traducirá su nombre de etiqueta en el ~ID de revisión
+Mercurial traducirá su nombre de etiqueta en el~ID de revisión
 correspondiente, y lo usará.
 \interaction{tag.log.v1.0}
 
-No hay límites en la cantidad de etiquetas por reposirorio, o la cantidad
+No hay límites en la cantidad de etiquetas por repositorio, o la cantidad
 de etiquetas que una misma revisión pueda tener. Siendo prácticos, no es
 muy buena idea tener ``demasiados'' (la cantidad variará de un
 proyecto a otro), debido a que la intención es ayudarle a encontrar
@@ -121,13 +121,13 @@ seguido por el nombre de una etiqueta.
 Si está resolviendo un conflicto en el fichero \sfilename{.hgtags}
 durante una fusión, hay un detalle para tener en cuenta al modificar
 el fichero \sfilename{.hgtags}:
-cuando Mercurial parsea las etiquetas en el repositorio \emph{nunca}
+cuando Mercurial procesa las etiquetas en el repositorio \emph{nunca}
 lee la copia de trabajo del fichero \sfilename{.hgtags}.  En cambio,
 lee la versión \emph{consignada más reciente} del fichero.
 
 Una consecuencia desafortunada de este diseño es que usted no puede
 verificar que su fichero \sfilename{.hgtags} fusionado es correcto hasta
-\emph{después} de haber consignado (hecho commit). Así que si se
+\emph{después} de haber consignado un cambio. Así que si se
 encuentra resolviendo un conflicto en \sfilename{.hgtags} durante una
 fusión, asegúrese de ejecutar la orden \hgcmd{tags} después de
 consignar. Si encuentra un error en el fichero \sfilename{.hgtags}, 
@@ -161,7 +161,7 @@ llevan en el historial del proyecto, todas las personas involucradas
 verán las etiquetas que usted haya creado. El hecho de dar nombres a las
 revisiones tiene usos más allá que simplemente hacer notar que la
 revisión \texttt{4237e45506ee} es realmente \texttt{v2.0.2}.  Si está
-tratando de encontrar un bug sutil, posiblemente desearía colocar una 
+tratando de encontrar un fallo sutil, posiblemente desearía colocar una 
 etiqueta recordándole algo como ``Ana vio los síntomas con esta revisión''.
 
 Para estos casos, lo que posiblemente desearía serían tags
@@ -179,7 +179,7 @@ hecho de que un proyecto tiene muchas piezas concurrentes de trabajo
 en desarrollo al mismo tiempo.
 
 Puede haber prisa por una nueva versión ``principal''; Un nueva
-versión con un rreglo de fallo a la última versión; y una versión de
+versión con un arreglo de fallo a la última versión; y una versión de
 ``mantenimiento correctivo'' a una versión antigua que ha entrado en
 modo de mantenimiento.
 
@@ -217,7 +217,7 @@ camino, ellos clonarían el repositorio \texttt{myproject-1.0.1},
 harían sus cambios y los publicarían (con push).
 \interaction{branch-repo.bugfix}
 Mientras tanto, el desarrollo para la siguiente versión mayor puede
-continuar asilada e incólume, en el repositorio \texttt{myproject}.
+continuar aislada e incólume, en el repositorio \texttt{myproject}.
 \interaction{branch-repo.new}
 
 \section{No repita trabajo: fusión entre ramas}
@@ -231,7 +231,7 @@ las que Mercurial puede ayudarle a administrar tales arreglos de fallo
 sin duplicar su trabajo.
 
 En el caso más sencillo, basta con jalar los cambios de la rama de
-mantenimiento a la rama obetivo en su clon local.
+mantenimiento a la rama objetivo en su clon local.
 \interaction{branch-repo.pull}
 A continuación deberá mezclar las cabezas de las dos ramas, y publicar
 de nuevo a la rama principal.
@@ -249,7 +249,7 @@ rama/repositorio.
 
 Si se encuentra más en la categoría ``usuario diestro'' (\emph{y} sus
 colaboradores también), puede considerar otra alternativa para
-administrar las ramas. He mencionador con anterioridad la distinción a
+administrar las ramas. He mencionado con anterioridad la distinción a
 nivel humano entre las ramas estilo ``cuadro pequeño'' y ``gran
 cuadro''.  Mientras que Mercurial trabaja con muchas ramas del estilo
 ``cuadro pequeño'' en el repositorio todo el tiempo (por ejemplo cuando
@@ -294,7 +294,7 @@ historial. Esto sugiere que al ejecutar la orden \hgcmd{branch} no hay
 un efecto permanente; solamente le indica a que nombre de rama usará
 la \emph{próxima} vez que consigne un conjunto de cambios.
 
-Cuando consigna un cambio, Mercurial alamacena el nombre de la rama en
+Cuando consigna un cambio, Mercurial almacena el nombre de la rama en
 la cual consignó.  Una vez que haya cambiado de la rama \texttt{default}
 y haya consignado, verá que el nombre de la nueva rama se mostrará
 cuando use la orden \hgcmd{log}, \hgcmd{tip}, y otras órdenes que
@@ -321,7 +321,7 @@ recordará la rama en la cual está su directorio de trabajo cuando
 invoque una orden como \hgcmd{update} o \hgcmdargs{pull}{-u}.  Se
 actualizará su directorio de trabajo actual al tip de esta rama, sin
 importar cuál sea el tip ``a lo largo del repositorio''.  Para
-actualiar a una revisión que está en una rama con distinto nombre,
+actualizar a una revisión que está en una rama con distinto nombre,
 puede necesitar la opción \hgopt{update}{-C} de \hgcmd{update}.
 
 Este comportamiento puede ser sutil, veámoslo en acción.  Primero,
@@ -348,13 +348,13 @@ cabeza.
 \section{Nombres de ramas y fusiones}
 
 Posiblemente ha notado que las fusiones en Mercurial no son simétricas.
-Supongamos que su repositorio tiene dos cabezas, 17 and 23.  Si yo invoco
+Supongamos que su repositorio tiene dos cabezas, 17 y 23.  Si yo invoco
 \hgcmd{update} a 17 y aplico \hgcmd{merge} a 23, Mercurial almacena 17
 como el primer padre de la fusión, y 23 como el segundo. Mientras que
 si hago \hgcmd{update} a 23 y después aplico \hgcmd{merge} con 17,
 grabará a 23 como el primer padre, y 17 como el segundo.
 
-Esto afecta com elige Mercurial el nombre de la rama cuando hace
+Esto afecta el cómo elige Mercurial el nombre de la rama cuando hace
 fusión.  Después de una fusión Mercurial mantendrá el nombre de la
 rama del primer padre cuando consigne el resultado de una fusión.  Si
 el primer nombre de su padre es \texttt{foo}, y fusiona con
@@ -373,7 +373,7 @@ desde la rama \texttt{foo}, el resultado permanecerá en la rama
 \texttt{bar}.
 \interaction{branch-named.merge}
 
-En un ejemplo más concreo, si yo estoy trabajando en la rama
+En un ejemplo más concreto, si yo estoy trabajando en la rama
 \texttt{bleeding-edge}, y deseo traer los arreglos más recientes de la
 rama \texttt{estable}, Mercurial elegirá el nombre de rama ``correcto''
 (\texttt{bleeding-edge}) cuando yo jale una fusión desde \texttt{estable}.
