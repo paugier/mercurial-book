@@ -14,14 +14,14 @@ versiones mayores en las cuales están basadas, pero con arreglos para
 algunos fallos.
 
 En este capítulo, comenzaremos hablando de cómo mantener registro de
-las etapas del proyecto como las liberaciones de una
+etapas del proyecto como las liberaciones de una
 versión. Continuaremos hablando del flujo de trabajo entre las
-diferentes fases de un proyecto, y como puede ayudar Mercurial a
-independizar y administrar tal trabajo.
+diferentes fases de un proyecto, y cómo puede ayudar Mercurial a
+aislar y administrar tal trabajo.
 
 \section{Dar un nombre persistente a una revisión}
 
-Cuando se decide a otorgar a una revisión el nombre particular de una
+Cuando usted decide otorgar a una revisión el nombre particular de una
 ``versión'', es buena idea grabar la identidad de tal revisión.
 Esto le permitirá reproducir dicha versión en una fecha posterior,
 para cualquiera que sea el 
@@ -48,21 +48,23 @@ siguientes caracteres:
 \item Nueva línea (ASCII 10, ``\Verb+\n+'')
 \end{itemize}
 
-Puede usar la orden \hgcmd{tags} para observar las etiquetas presentes en
+Puede usar la orden \hgcmd{tags} para ver las etiquetas presentes en
 su repositorio. Al desplegarse, cada revisión marcada se identifica
-primero con su nombre, después el número de revisión y finalmente con
+primero con su nombre, después con el número de revisión y finalmente con
 un hash único de la revisión.
 \interaction{tag.tags}
-Note que \texttt{tip} aparece en la lista de \hgcmd{tags}. La etiqueta
+Note que \texttt{tip} aparece en en listado generado por \hgcmd{tags}. La etiqueta
 \texttt{tip} es una etiqueta ``flotante'' especial, que identifica siempre
-la revisión más nueva en el repositorio.
+la revisión más reciente en el repositorio.
 
 Al desplegar la orden \hgcmd{tags}, las etiquetas se listan en orden
-inverso, por número de revisión. Lo que significa usualmente que las etiquetas más recientes se listan antes que las más antiguas. También
+inverso, por número de revisión. Lo que significa usualmente que las
+etiquetas más recientes se listan antes que las más antiguas. También
 significa que la etiqueta \texttt{tip} siempre aparecerá como primera
 etiqueta listada al desplegar la orden \hgcmd{tags}.
 
-Cuando ejecuta \hgcmd{log}, se desplegará la revisión que tenga las etiquetas asociadas a ella, se imprimirán tales etiquetas.
+Cuando usted ejecuta \hgcmd{log}, si se muestra una revisión que tenga 
+etiquetas asociadas a ella, se imprimirán tales etiquetas.
 \interaction{tag.log}
 
 Siempre que requiera indicar un~ID de revisión a una orden de
@@ -73,12 +75,12 @@ correspondiente, y lo usará.
 
 No hay límites en la cantidad de etiquetas por repositorio, o la cantidad
 de etiquetas que una misma revisión pueda tener. Siendo prácticos, no es
-muy buena idea tener ``demasiados'' (la cantidad variará de un
+muy buena idea tener ``demasiadas'' (la cantidad variará de un
 proyecto a otro), debido a que la intención es ayudarle a encontrar
-revisiones. Si tiene demasiados tags, la facilidad para identificar
-revisiones disminuirá rápidamente.
+revisiones. Si tiene demasiadas etiquetas, la facilidad de usarlas
+para identificar revisiones disminuirá rápidamente.
 
-Por ejemplo, si su proyecto tiene etapas (milestones) frecuentes en pocos
+Por ejemplo, si su proyecto tiene etapas (milestones) frecuentes, de pocos
 días, es perfectamente razonable asignarle una etiqueta a cada una de
 ellas. Pero si tiene un sistema de construcción automática de binarios
 que asegura que cada revisión puede generarse limpiamente, estaría
@@ -88,34 +90,34 @@ caso de que estas sean raras!), o simplemente evitar las etiquetas para
 llevar cuenta de la posibilidad de generación de binarios.
 
 
-Si desea eliminar una etiqueta que no desea, use
+Si quiere eliminar una etiqueta que no desea, use
 \hgcmdargs{tag}{--remove}.  
 \interaction{tag.remove}
-También puede modificar una etiqueta en cualquier momento para que
-identifique una revisión distinta, basta con aplicar una nueva orden
+También puede modificar una etiqueta en cualquier momento, para que
+identifique una revisión distinta, simplemente usando una nueva orden
 \hgcmd{tag}. Deberá usar la opción \hgopt{tag}{-f} para indicarle a
-Mercurial que desea actualizar la etiqueta \emph{en serio}.
+Mercurial que \emph{realmente} desea actualizar la etiqueta.
 \interaction{tag.replace}
 De todas maneras habrá un registro permanente de la antigua identidad
-del tag, pero Mercurial no la usará. Por lo tanto no hay castigo al
-marcar con una etiqueta una revisión incorrecta; lo único que debe hacer es
-mover la etiqueta hacia la revisión correcta tan pronto como localice el
-error.
+de la etiqueta, pero Mercurial no la usará. Por lo tanto no hay
+problema al marcar con una etiqueta una revisión incorrecta; lo único
+que debe hacer es mover la etiqueta hacia la revisión correcta tan
+pronto como localice el error.
 
 Mercurial almacena las etiquetas en un fichero controlado por revisiones en
 su repositorio. Si ha creado etiquetas, las encontrará en un fichero
 llamado \sfilename{.hgtags}.  Cuando invoca la orden \hgcmd{tag},
-Mercurial modifica este fichero, y automáticamente hace consignación del
+Mercurial modifica este fichero, y automáticamente hace la consignación del
 cambio al mismo.  Esto significa que cada vez que ejecuta \hgcmd{tag},
-verá el conjunto de cambios correspondiente en la salida de \hgcmd{log}.
+verá un conjunto de cambios correspondiente en la salida de \hgcmd{log}.
 \interaction{tag.tip}
 
 \subsection{Manejo de conflictos entre etiquetas durante una fusión}
 
-Es usual no tener que preocuparse por el fichero \sfilename{.hgtags},
-pero aveces hace su aparición durante una fusión. El formato del
+Usualmente no tendrá que preocuparse por el fichero \sfilename{.hgtags},
+pero a veces hace su aparición durante una fusión. El formato del
 fichero es sencillo: Consiste de una serie de líneas. Cada línea
-comienza con un hash de Conjunto de Cambios, seguido por un espacio,
+comienza con un hash de conjunto de cambios, seguido por un espacio,
 seguido por el nombre de una etiqueta.
 
 Si está resolviendo un conflicto en el fichero \sfilename{.hgtags}
@@ -126,27 +128,27 @@ lee la copia de trabajo del fichero \sfilename{.hgtags}.  En cambio,
 lee la versión \emph{consignada más reciente} del fichero.
 
 Una consecuencia desafortunada de este diseño es que usted no puede
-verificar que su fichero \sfilename{.hgtags} fusionado es correcto hasta
+verificar que su fichero \sfilename{.hgtags} fusionado sea correcto hasta
 \emph{después} de haber consignado un cambio. Así que si se
 encuentra resolviendo un conflicto en \sfilename{.hgtags} durante una
 fusión, asegúrese de ejecutar la orden \hgcmd{tags} después de
 consignar. Si encuentra un error en el fichero \sfilename{.hgtags}, 
-reportará el lugar del error, que podrá arreglar y después
+la orden reportará el lugar del error, que podrá arreglar y después
 consignar. Posteriormente ejecute de nuevo la orden \hgcmd{tags} para
-asegurar que su arreglo fue correctamente aplicado.
+asegurarse de que su arreglo fue aplicado correctamente .
 
-\subsection{Tags y clonado}
+\subsection{Etiquetas y clonado}
 
 Puede haber notado que la orden \hgcmd{clone} tiene la opción
 \hgopt{clone}{-r} que le permite clonar una copia exacta del
 repositorio hasta un conjunto de cambios específico. El nuevo clon no
 tendrá historial posterior a la revisión que usted haya
-especificado. Esta forma de interactuar puede sorprender a los
-desprevenidos.
+especificado. Esto tiene una interacción con etiquetas que puede
+sorprender a los desprevenidos.
 
 Recuerde que una etiqueta se almacena como una revisión al fichero
-\sfilename{.hgtags}, consecuente con esto, cuando crea una etiqueta, el
-conjunto de cambios en el cual este se almacena necesariamente se
+\sfilename{.hgtags}, así que cuando usted crea una etiqueta, el
+conjunto de cambios en el cual ésta se almacena necesariamente se
 refiere a un conjunto de cambios anterior. Cuando ejecuta
 \hgcmdargs{clone}{-r foo} para clonar un repositorio hasta la etiqueta
 \texttt{foo}, el nuevo clon \emph{no contendrá el historial que creo
@@ -164,13 +166,13 @@ revisión \texttt{4237e45506ee} es realmente \texttt{v2.0.2}.  Si está
 tratando de encontrar un fallo sutil, posiblemente desearía colocar una 
 etiqueta recordándole algo como ``Ana vio los síntomas con esta revisión''.
 
-Para estos casos, lo que posiblemente desearía serían tags
+Para estos casos, lo que posiblemente desearía serían etiquetas
 \emph{locales}. Puede crear una etiqueta local con la opción \hgopt{tag}{-l}
 de la orden \hgcmd{tag}.  Esto guardará la etiqueta en un fichero llamado
 \sfilename{.hg/localtags}.  A diferencia de \sfilename{.hgtags},
 \sfilename{.hg/localtags} no está controlado por revisiones.
-Cualquier tag que usted cree usando \hgopt{tag}{-l} se mantendrá
-localmente en el repositorio en el que esté trabajando en ese momento.
+Cualquier etiqueta que usted cree usando \hgopt{tag}{-l} se mantendrá
+localmente al repositorio en el que esté trabajando en ese momento.
 
 \section{El flujo de cambios---El gran cuadro vs. el pequeño}
 
@@ -178,14 +180,14 @@ Retomando lo mencionado en el comienzo de un capítulo, pensemos en el
 hecho de que un proyecto tiene muchas piezas concurrentes de trabajo
 en desarrollo al mismo tiempo.
 
-Puede haber prisa por una nueva versión ``principal''; Un nueva
+Puede haber prisa por una nueva versión ``principal''; una nueva
 versión con un arreglo de fallo a la última versión; y una versión de
 ``mantenimiento correctivo'' a una versión antigua que ha entrado en
 modo de mantenimiento.
 
 Usualmente la gente se refiere a esas direcciones
-concurrentes de desarrollo es como ``ramas''.  Aunque hemos visto que
-en variadas ocasiones Mercurial trata a \emph{toda el historial} como
+concurrentes de desarrollo como ``ramas''.  Sin embargo, ya hemos visto que
+en varias ocasiones Mercurial trata a \emph{todo el historial} como
 una serie de ramas y fusiones.  Realmente lo que tenemos aquí es dos
 ideas que se relacionan periféricamente, pero que en esencia comparten
 un nombre.
@@ -194,7 +196,7 @@ un nombre.
   evolución del proyecto; la gente les da nombres y hablan acerca de
   ellas en sus conversaciones.
 \item ``El cuadro pequeño'' Las ramas son artefactos de las
-  actividades diarias de al desarrollar y fusionar cambios. Exponen la
+  actividades diarias de desarrollar y fusionar cambios. Exponen la
   narrativa de cómo se desarrolló el código.
 \end{itemize}
 
@@ -205,19 +207,19 @@ cuadro'' es a través de un repositorio dedicado.  Si cuenta con un
 repositorio compartido existente ---llamémoslo
 \texttt{myproject}---que alcanzó la etapa ``1.0'', puede comenzar a
 prepararse para versiones de mantenimiento futuras a partir de la
-versión~1.0 marcando con una etiqueta en la revisión con la cual preparó la versión~1.0.
+versión~1.0 marcando con una etiqueta la revisión con la cual preparó la versión~1.0.
 \interaction{branch-repo.tag}
 Ahora puede clonar un repositorio compartido nuevo
-\texttt{myproject-1.0.1} con tal tag.
+\texttt{myproject-1.0.1} con tal etiqueta.
 \interaction{branch-repo.clone}
 
 Posteriormente, si alguien necesita trabajar en la reparación de un
 fallo debería dirigirse a la liberación de versión~1.0.1 que viene en
 camino, ellos clonarían el repositorio \texttt{myproject-1.0.1},
-harían sus cambios y los publicarían (con push).
+harían sus cambios y los empujarían de vuelta.
 \interaction{branch-repo.bugfix}
 Mientras tanto, el desarrollo para la siguiente versión mayor puede
-continuar aislada e incólume, en el repositorio \texttt{myproject}.
+continuar aislado e incólume, en el repositorio \texttt{myproject}.
 \interaction{branch-repo.new}
 
 \section{No repita trabajo: fusión entre ramas}
@@ -233,7 +235,7 @@ sin duplicar su trabajo.
 En el caso más sencillo, basta con jalar los cambios de la rama de
 mantenimiento a la rama objetivo en su clon local.
 \interaction{branch-repo.pull}
-A continuación deberá mezclar las cabezas de las dos ramas, y publicar
+A continuación deberá mezclar las cabezas de las dos ramas, y empujar
 de nuevo a la rama principal.
 \interaction{branch-repo.merge}
 
@@ -241,10 +243,10 @@ de nuevo a la rama principal.
 
 La aproximación correcta en casi todas las oportunidades es aislar las
 ramas en los repositorios.  Es fácil de entender gracias a su
-facilidad; y es difícil cometer errores. Hay una relación uno a uno
+simplicidad; y es difícil cometer errores. Hay una relación uno a uno
 entre las ramas y los directorios con los que está trabajando en su
-sistema. Esto le permite usar emplear herramientas usuales (para los
-nuevos a Mercurial) para trabajar con los ficheros dentro de su
+sistema. Esto le permite usar emplear herramientas usuales (que no son
+conscientes de Mercurial) para trabajar con los ficheros dentro de una
 rama/repositorio.
 
 Si se encuentra más en la categoría ``usuario diestro'' (\emph{y} sus
@@ -268,16 +270,16 @@ que contiene el texto ``\texttt{HG: branch default}'' al final. Le
 está indicando que su consignación ocurrirá en la rama llamada 
 \texttt{default}.
 
-Use la orden \hgcmd{branches} para comenzar a trabajar con ramas
+Use la orden \hgcmd{branches} para empezar a trabajar con ramas
 nombradas. Esta orden mostrará las ramas presentes en su repositorio,
-indicándole en qué conjunto de cambios está cada una.
+indicándole qué conjunto de cambios es la punta de cada una.
 \interaction{branch-named.branches}
-Dado que todavía no ha creado ramas nombradas, la única que verá sería
+Dado que todavía no ha creado ramas nombradas, la única que verá será
 \texttt{default}.
 
 Para hallar cuál es la rama ``actual'', invoque la orden
 \hgcmd{branch}, sin argumento alguno. Le informará en qué rama se
-encuentra el padre del conjunto actual de cambios.
+encuentra el padre del conjunto de cambios actual.
 \interaction{branch-named.branch}
 
 Para crear una nueva rama, invoque la orden \hgcmd{branch} de
@@ -287,7 +289,7 @@ que desea crear.
 
 Después de crear la rama, usted podría desear ver el efecto que tuvo
 la orden \hgcmd{branch}.  ¿Qué reportan las ordenes \hgcmd{status} y
-\hgcmd{tip} commands report?
+\hgcmd{tip}?
 \interaction{branch-named.status}
 Nada cambia en el directorio actual, y no se ha añadido nada al
 historial. Esto sugiere que al ejecutar la orden \hgcmd{branch} no hay
@@ -301,7 +303,7 @@ cuando use la orden \hgcmd{log}, \hgcmd{tip}, y otras órdenes que
 desplieguen la misma clase de información.
 \interaction{branch-named.commit}
 Las órdenes del tipo \hgcmd{log} imprimirán el nombre de la rama de
-cualquier conjunto de cambios que no estén en la rama
+cualquier conjunto de cambios que no esté en la rama
 \texttt{default}. Como resultado, si nunca usa ramas nombradas, nunca
 verá esta información.
 
@@ -319,12 +321,12 @@ regla, solamente una observación.)
 Si tiene más de una rama nombrada en un repositorio, Mercurial
 recordará la rama en la cual está su directorio de trabajo cuando
 invoque una orden como \hgcmd{update} o \hgcmdargs{pull}{-u}.  Se
-actualizará su directorio de trabajo actual al tip de esta rama, sin
-importar cuál sea el tip ``a lo largo del repositorio''.  Para
+actualizará su directorio de trabajo actual a la punta de esta rama, sin
+importar cuál sea la punta ``a lo largo del repositorio''.  Para
 actualizar a una revisión que está en una rama con distinto nombre,
 puede necesitar la opción \hgopt{update}{-C} de \hgcmd{update}.
 
-Este comportamiento puede ser sutil, veámoslo en acción.  Primero,
+Este comportamiento puede ser sutil, así que veámoslo en acción.  Primero,
 recordemos en qué rama estamos trabajando, y qué ramas están en
 nuestro repositorio.
 \interaction{branch-named.parents}
@@ -338,7 +340,7 @@ atrás en nuestro historial de cambios.
 \interaction{branch-named.update-switchy}
 
 Si volvemos a la rama \texttt{foo} e invocamos la orden \hgcmd{update},
-nos mantendrá en \texttt{foo}, sin movernos al tipo de \texttt{bar}.
+nos mantendrá en \texttt{foo}, sin movernos a la punta de \texttt{bar}.
 \interaction{branch-named.update-nothing}
 
 Al consignar un cambio a la rama \texttt{foo} se introducirá una nueva
