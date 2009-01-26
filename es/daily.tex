@@ -4,8 +4,8 @@
 \section{Cómo indicarle a Mercurial qué ficheros seguir}
 
 Mercurial no trabaja con ficheros en su repositorio a menos que usted
-explícitamente se lo indique.  La orden \hgcmd{status} le mostrará
-cuáles ficheros son desconocidos para Mercurial; emplea un
+se lo indique explícitamente.  La orden \hgcmd{status} le mostrará
+cuáles ficheros son desconocidos para Mercurial; se emplea un
 ``\texttt{?}'' para mostrar tales ficheros.
 
 Para indicarle a Mercurial que tenga en cuenta un fichero, emplee la
@@ -30,7 +30,7 @@ A cambio, tomará una instantánea del estado del fichero la próxima vez
 que usted consigne. Continuará haciendo seguimiento a los cambios que
 haga sobre el fichero cada vez que consigne, hasta que usted lo elimine.
 
-\subsection{Nombramiento explicíto e implícito de ficheros}
+\subsection{Nombramiento explícito e implícito de ficheros}
 
 Mercurial tiene un comportamiento útil en el cual si a una orden,
 le pasa el nombre de un directorio, todas las órdenes lo tratarán como
@@ -47,7 +47,7 @@ tales casos que usted sabe lo que está haciendo y no imprime
 información alguna.
 
 Cuando hacemos \emph{implícitos} los nombres de los ficheros dando el
-nombre de un directorio, Mercurial efectua un paso extra al imprimir
+nombre de un directorio, Mercurial efectúa un paso extra al imprimir
 el nombre de cada fichero con el que va a hacer algo.  Esto para
 aclarar lo que está sucediendo, y reducir en lo posible una sorpresa
 silenciosa pero fatal.  Este comportamiento es común a la mayoría de
@@ -116,7 +116,7 @@ Al eliminar un fichero \emph{no} se altera de ninguna manera el
 \emph{historial} del mismo.
 
 Si actualiza su directorio de trabajo a un conjunto de cambios en el
-cual esl fichero que eliminó aún era tenido en cuenta, reaparecerá en
+cual el fichero que eliminó aún era tenido en cuenta, reaparecerá en
 el directorio de trabajo, con los contenidos que este tenía cuando se
 consignó tal conjunto de cambios.  Si usted actualiza el directorio de
 trabajo a un conjunto de cambios posterior en el cual el fichero había
@@ -189,9 +189,9 @@ una copia del primer fichero que creamos.
 Si vemos la salida de la orden \hgcmd{status}, el fichero copiado luce
 como un fichero que se ha añadido normalmente.
 \interaction{daily.copy.status}
-Si usamos la opción \hgopt{status}{-C} de la orden \hgcmd{status},
-imprimirá otra línea: Ela fichero of output: this is the file that our newly-added
-file was copied \emph{from}.
+Pero si usamos la opción \hgopt{status}{-C} de la orden \hgcmd{status},
+imprimirá otra línea: el fichero \emph{desde} el cual fue copiado nuestro
+fichero recién añadido.
 \interaction{daily.copy.status-copy}
 
 Ahora, en el repositorio que clonamos, hagamos un cambio en
@@ -239,7 +239,7 @@ revisiones que propaga los cambios en las copias de esta forma.
 
 Cuando su historial de cambios tiene un registro de la copia y la
 subsecuente fusión, usualmente no es necesario propagar los cambios el
-fichero oficinal a las copias del mismo, y por esta razón Mercurial
+fichero original a las copias del mismo, y por esta razón Mercurial
 propaga únicamente los cambios en las copias hasta este punto y no más
 allá.
 
@@ -263,7 +263,7 @@ consignado primero los cambios, la nueva copia contendrá también las
 modificaciones que haya hecho hasta ese punto. (Este comportamiento me
 parece poco intuitivo, y por tal motivo lo menciono.)
 
-La orden \hgcmd{copy} actua de forma parecida a la orden \command{cp}
+La orden \hgcmd{copy} actúa de forma parecida a la orden \command{cp}
 de Unix (puede usar el alias \hgcmd{cp} si le es más cómodo).  El
 último argumento es el \emph{destino}, y todos los argumentos previos
 son las \emph{fuentes}.  Si solamente indica un fichero como la
@@ -345,7 +345,7 @@ Veo esto como un conflicto porque cada desarrollador ha expresado
 intenciones diferentes acerca de cómo considera debería haberse
 renombrado el fichero.
 
-¿ué cree que debería pasar cuando fusionen su trabajo?
+¿Qué cree que debería pasar cuando fusionen su trabajo?
 El comportamiento de Mercurial es que siempre preserva \emph{ambos}
 nombres cuando fusiona  los conjuntos de cambios que contienen nombres
 divergentes.
@@ -378,7 +378,7 @@ de equivocaciones comunes.
 La orden \hgcmd{revert} le permite deshacer cambios que haya hecho a
 su directorio de trabajo. Por ejemplo, Si aplicó \hgcmd{add} a un
 fichero por accidente, ejecute \hgcmd{revert} con el nombre del
-fichero que añadió, y en tando que el fichero no haya sido tocado de
+fichero que añadió, y en tanto que el fichero no haya sido tocado de
 forma alguna, no será adicionado, ni seguido por Mercurial.  También
 puede usar \hgcmd{revert} para deshacerse de cambios erróneos a un
 fichero.
