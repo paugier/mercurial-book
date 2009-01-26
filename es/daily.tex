@@ -18,22 +18,22 @@ Después de invocar \hgcmd{commit}, los ficheros que haya adicionado
 antes de consignar no se listarán en la salida de \hgcmd{status}.  La
 razón para esto es que \hgcmd{status} solamente le muestra aquellos
 ficheros ``interesantes''---los que usted haya modificado o a aquellos
-sobre los que usted haya indicado a Mercurial hacerles algo---de forma
+sobre los que usted haya indicado a Mercurial hacer algo---de forma
 predeterminada. Si tiene un repositorio que contiene miles de
-ficheros, inusualmente deseará saber cuáles de ellos están siendo
+ficheros, rara vez deseará saber cuáles de ellos están siendo
 seguidos por Mercurial, pero que no han cambiado.  (De todas maneras,
 puede obtener tal información; más adelante hablaremos de ello.)
 
 
 Cuando usted añade un fichero, Mercurial no hace nada con él inmediatamente.
-A cambio, tomará una instantánea del estado del fichero la próxima vez
+En cambio, tomará una instantánea del estado del fichero la próxima vez
 que usted consigne. Continuará haciendo seguimiento a los cambios que
 haga sobre el fichero cada vez que consigne, hasta que usted lo elimine.
 
 \subsection{Nombramiento explícito e implícito de ficheros}
 
 Mercurial tiene un comportamiento útil en el cual si a una orden,
-le pasa el nombre de un directorio, todas las órdenes lo tratarán como
+le pasa el nombre de un directorio, todas las órdenes lo interpretarán como
 ``Deseo operar en cada fichero de este directorio y sus 
 subdirectorios''.
 \interaction{daily.files.add-dir}
@@ -47,13 +47,13 @@ tales casos que usted sabe lo que está haciendo y no imprime
 información alguna.
 
 Cuando hacemos \emph{implícitos} los nombres de los ficheros dando el
-nombre de un directorio, Mercurial efectúa un paso extra al imprimir
+nombre de un directorio, Mercurial da el paso extra de imprimir
 el nombre de cada fichero con el que va a hacer algo.  Esto para
 aclarar lo que está sucediendo, y reducir en lo posible una sorpresa
 silenciosa pero fatal.  Este comportamiento es común a la mayoría de
 órdenes en Mercurial.
 
-\subsection{Nota al margen:Mercurial trata ficheros, no directorios}
+\subsection{Nota al margen: Mercurial trata ficheros, no directorios}
 
 Mercurial no da seguimiento a la información de los directorios.  En
 lugar de eso tiene en cuenta las rutas de los ficheros.  Antes  de
@@ -64,27 +64,28 @@ fichero borrado. Suena como una diferencia trivial, pero tiene una
 consecuencia práctica menor: no es posible representar un directorio
 completamente vacío en Mercurial.
 
-Los directorios vacíos son inusualmente útiles, hay soluciones
-alternativas no intrusivas que puede emplear para obtener el efecto
+Los directorios vacíos rara vez son útiles, y hay soluciones
+alternativas no intrusivas que usted puede emplear para obtener el efecto
 apropiado. Los desarrolladores de Mercurial pensaron que la
 complejidad necesaria para administrar directorios vacíos no valía la
 pena frente al beneficio limitado que esta característica podría traer.
 
 Si necesita un directorio vacío en su repositorio, hay algunas formas
 de lograrlo. Una es crear un directorio, después hacer \hgcmd{add} a
-un fichero ``escondido'' dentro de ese directorio. En sistemas tipo
+un fichero ``oculto'' dentro de ese directorio. En sistemas tipo
 Unix, cualquier fichero cuyo nombre comience con un punto
-(``\texttt{.}'') se trata como escondido por la mayoría de
-herramientas GUI. Esta aproximación se ilustra en la figura~\ref{ex:daily:hidden}.
+(``\texttt{.}'') es tratado como oculto por la mayoría de
+comandos y herramientas GUI. Esta aproximación se ilustra en la figura~\ref{ex:daily:hidden}.
 
 \begin{figure}[ht]
   \interaction{daily.files.hidden}
-  \caption{Simular un directorio vacío con un fichero escondido}
+  \caption{Simular un directorio vacío con un fichero oculto}
   \label{ex:daily:hidden}
 \end{figure}
 
-Otra forma de abordar la necesidad de un fichero vacío es crear
-simplemente uno en sus guiones de construcción antes de ser necesarios.
+Otra forma de abordar la necesidad de un directorio vacío es
+simplemente crear uno en sus guiones de construcción antes de que lo
+necesiten.
 
 \section{Cómo dejar de hacer seguimiento a un fichero}
 
@@ -104,8 +105,8 @@ mismo nombre.
 
 \subsection{Al eliminar un fichero no se afecta su historial}
 
-Es preciso tener en cuenta que al eliminar un fichero se tiene
-dos efectos solamente.
+Es preciso tener en cuenta que eliminar un fichero tiene sólo dos
+efectos.
 \begin{itemize}
 \item Se elimina la versión actual del fichero del directorio de 
 trabajo.
@@ -140,11 +141,12 @@ indicarle a Mercurial que usted deseaba borrar tal fichero.
 
 Por otro lado, si borró un fichero perdido por accidente, puede usar
 \hgcmdargs{revert}{\emph{nombre de fichero}} para recuperar el
-fichero. Reaparecerá sin modificaciones.
+fichero. Reaparecerá, sin modificaciones.
 \interaction{daily.files.recover-missing}
 
 \subsection{Nota al margen: ¿Por qué decirle explícitamente a Mercurial
   que elimine un fichero?}
+  %TODO Im here!!
 
 Es posible que se haya preguntado por qué Mercurial exige que usted le
 indique explícitamente que está borrando un fichero. Al principio del
