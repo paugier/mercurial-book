@@ -85,7 +85,8 @@ días, es perfectamente razonable asignarle una etiqueta a cada una de
 ellas. Pero si tiene un sistema de construcción automática de binarios
 que asegura que cada revisión puede generarse limpiamente, estaría
 introduciendo mucho ruido si se usara una etiqueta para cada generación
-exitosa. Más bien, podría usar tags para generaciones fallidas (en
+exitosa. Más bien, podría usar tags para generaciones fallidas
+(\textexclamdown en
 caso de que estas sean raras!), o simplemente evitar las etiquetas para
 llevar cuenta de la posibilidad de generación de binarios.
 
@@ -107,9 +108,10 @@ pronto como localice el error.
 Mercurial almacena las etiquetas en un fichero controlado por revisiones en
 su repositorio. Si ha creado etiquetas, las encontrará en un fichero
 llamado \sfilename{.hgtags}.  Cuando invoca la orden \hgcmd{tag},
-Mercurial modifica este fichero, y automáticamente hace la consignación del
-cambio al mismo.  Esto significa que cada vez que ejecuta \hgcmd{tag},
-verá un conjunto de cambios correspondiente en la salida de \hgcmd{log}.
+Mercurial modifica este fichero, y hace la consignación del cambio al
+mismo automáticamente.  Esto significa que cada vez que ejecuta
+\hgcmd{tag}, verá un conjunto de cambios correspondiente en la salida
+de \hgcmd{log}.
 \interaction{tag.tip}
 
 \subsection{Manejo de conflictos entre etiquetas durante una fusión}
@@ -123,7 +125,7 @@ seguido por el nombre de una etiqueta.
 Si está resolviendo un conflicto en el fichero \sfilename{.hgtags}
 durante una fusión, hay un detalle para tener en cuenta al modificar
 el fichero \sfilename{.hgtags}:
-cuando Mercurial procesa las etiquetas en el repositorio \emph{nunca}
+cuando Mercurial procesa las etiquetas en el repositorio, \emph{nunca}
 lee la copia de trabajo del fichero \sfilename{.hgtags}.  En cambio,
 lee la versión \emph{consignada más reciente} del fichero.
 
@@ -164,7 +166,7 @@ verán las etiquetas que usted haya creado. El hecho de dar nombres a las
 revisiones tiene usos más allá que simplemente hacer notar que la
 revisión \texttt{4237e45506ee} es realmente \texttt{v2.0.2}.  Si está
 tratando de encontrar un fallo sutil, posiblemente desearía colocar una 
-etiqueta recordándole algo como ``Ana vio los síntomas con esta revisión''.
+etiqueta recordándole algo como ``Ana vio los síntomas en esta revisión''.
 
 Para estos casos, lo que posiblemente desearía serían etiquetas
 \emph{locales}. Puede crear una etiqueta local con la opción \hgopt{tag}{-l}
@@ -356,22 +358,22 @@ como el primer padre de la fusión, y 23 como el segundo. Mientras que
 si hago \hgcmd{update} a 23 y después aplico \hgcmd{merge} con 17,
 grabará a 23 como el primer padre, y 17 como el segundo.
 
-Esto afecta el cómo elige Mercurial el nombre de la rama cuando hace
-fusión.  Después de una fusión Mercurial mantendrá el nombre de la
-rama del primer padre cuando consigne el resultado de una fusión.  Si
+Esto afecta el cómo elige Mercurial el nombre de la rama cuando usted
+hace la fusión.  Después de una fusión, Mercurial mantendrá el nombre de la
+rama del primer padre cuando consigne el resultado de la fusión.  Si
 el primer nombre de su padre es \texttt{foo}, y fusiona con
 \texttt{bar}, el nombre de la rama continuará siendo \texttt{foo}
 después de fusionar.
 
 No es inusual que un repositorio contenga varias cabezas, cada una con
 el mismo nombre de rama.  Digamos que estoy trabajando en la rama
-\texttt{foo}, y usted también.  Consignamos cambios distintos; Yo jalo
+\texttt{foo}, y usted también.  Consignamos cambios distintos; yo jalo
 sus cambios; Ahora tengo dos cabezas, cada una afirmando estar en la
 rama \texttt{foo}.  El resultado de una fusión será una única cabeza
 en la rama \texttt{foo} como usted esperaría.
 
 Pero si estoy trabajando en la rama \texttt{bar}, y fusiono el trabajo
-desde la rama \texttt{foo}, el resultado permanecerá en la rama
+de la rama \texttt{foo}, el resultado permanecerá en la rama
 \texttt{bar}.
 \interaction{branch-named.merge}
 
@@ -383,9 +385,9 @@ rama \texttt{estable}, Mercurial elegirá el nombre de rama ``correcto''
 \section{Normalmente es útil nombrar ramas}
 
 No debería considerar que las ramas nombradas son aplicables
-únicamente en situaciones con muchas ramas de larga-vida cohabitando
+únicamente en situaciones con muchas ramas de larga vida cohabitando
 en un mismo repositorio.  Son muy útiles incluso en los casos de
-una-rama-por-repositorio.
+una rama por repositorio.
 
 En el caso más sencillo, dar un nombre a cada rama ofrece un registro
 permanente acerca de en qué conjunto de cambios se generó la rama.
@@ -395,8 +397,8 @@ historial de un proyecto ramificado de larga vida.
 Si está trabajando con repositorios compartidos, puede configurar el gancho
 \hook{pretxnchangegroup} para que cada uno bloquee los cambios con
 nombres de rama ``incorrectos'' que están por adicionarse.  Este
-provee una defensa sencilla pero efectiva para evitar que la gente
-accidentalmente publique cambios de una rama ``super nueva'' a la rama
+provee una defensa sencilla, pero efectiva, para evitar que la gente
+publique accidentalmente cambios de una rama ``super nueva'' a la rama
 ``estable''.  Tal gancho podría verse de la siguiente forma dentro de
 un repositorio compartido de \hgrc.
 \begin{codesample2}
