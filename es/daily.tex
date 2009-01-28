@@ -146,7 +146,6 @@ fichero. Reaparecerá, sin modificaciones.
 
 \subsection{Nota al margen: ¿Por qué decirle explícitamente a Mercurial
   que elimine un fichero?}
-  %TODO Im here!!
 
 Es posible que se haya preguntado por qué Mercurial exige que usted le
 indique explícitamente que está borrando un fichero. Al principio del
@@ -163,7 +162,7 @@ los ficheros que no tienen seguimiento y marca los ficheros faltantes
 como eliminados.
 \interaction{daily.files.addremove}
 La orden \hgcmd{commit} su puede usar con la opción \hgopt{commit}{-A} 
-que aplica el agregar-eliminar, seguido inmediatamente de una
+que aplica el mismo agregar-eliminar, seguido inmediatamente de una
 consignación.
 \interaction{daily.files.commit-addremove}
 
@@ -172,7 +171,7 @@ consignación.
 Mercurial ofrece la orden \hgcmd{copy} para hacer una nueva copia de
 un fichero.  Cuando se copia un fichero con esta orden, Mercurial
 lleva un registro indicando que el nuevo fichero es una copia del
-fichero original. Trata de forma especial los ficheros copiados cuando
+fichero original. Los ficheros copiados se tratan de forma especial  cuando
 usted hace una fusión con el trabajo de alguien más.
 
 \subsection{Resultados de copiar un fichero durante una fusión}
@@ -181,19 +180,19 @@ Durante una fusión los cambios ``siguen'' una copia.  Para ilustrar
 lo que esto significa, haremos un ejemplo.  Comenzaremos con el mini
 repositorio usual que contiene un solo fichero
 \interaction{daily.copy.init}
-Debemos trabajar algo en paralelo, de forma que tengamos algo para
+Debemos hacer algo de trabajo en paralelo, de forma que tengamos algo para
 fusionar. Aquí clonamos el repositorio.
 \interaction{daily.copy.clone}
-De vuelta en el repositorio, usemos la orden \hgcmd{copy} para hacer
+De vuelta en el repositorio inicial, usemos la orden \hgcmd{copy} para hacer
 una copia del primer fichero que creamos.
 \interaction{daily.copy.copy}
 
 Si vemos la salida de la orden \hgcmd{status}, el fichero copiado luce
-como un fichero que se ha añadido normalmente.
+tal como un fichero que se ha añadido normalmente.
 \interaction{daily.copy.status}
-Pero si usamos la opción \hgopt{status}{-C} de la orden \hgcmd{status},
-imprimirá otra línea: el fichero \emph{desde} el cual fue copiado nuestro
-fichero recién añadido.
+Pero si usamos la opción \hgopt{status}{-C} de la orden
+\hgcmd{status}, se imprimirá otra línea: el fichero \emph{desde} el
+cual fue copiado nuestro fichero recién añadido.
 \interaction{daily.copy.status-copy}
 
 Ahora, en el repositorio que clonamos, hagamos un cambio en
@@ -249,9 +248,10 @@ allá.
 \subsection{Cómo hacer que los cambios \emph{no} sigan a la copia?}
 
 Si por algún motivo usted decide que esta característica de
-propagación automática de cambios en las copias no es para usted, use
-la orden usual de sus sistema para copiar ficheros (En sistemas tipo
-Unix, es \command{cp}), posteriormente use \hgcmd{add} sobre la nueva
+propagación automática de cambios en las copias no es para usted,
+simplemente use
+la orden usual de su sistema para copiar ficheros (en sistemas tipo
+Unix, es \command{cp}), y posteriormente use \hgcmd{add} sobre la nueva
 copia hecha a mano.  Antes de hacerlo, de todas maneras, relea la
 sección~\ref{sec:daily:why-copy}, y tome una decisión asegurándose que
 este comportamiento no es el apropiado para su caso específico.
@@ -259,7 +259,8 @@ este comportamiento no es el apropiado para su caso específico.
 \subsection{Comportamiento de la orden \hgcmd{copy}}
 
 Cuando usa la orden \hgcmd{copy}, Mercurial hace una copia de cada
-fichero fuente del directorio actual. Esto significa que si usted hace
+fichero fuente tal como se encuentra en el directorio actual. Esto
+significa que si usted hace
 modificaciones a un fichero, y le aplica \hgcmd{copy} sin haber
 consignado primero los cambios, la nueva copia contendrá también las
 modificaciones que haya hecho hasta ese punto. (Este comportamiento me
@@ -271,7 +272,7 @@ de Unix (puede usar el alias \hgcmd{cp} si le es más cómodo).  El
 son las \emph{fuentes}.  Si solamente indica un fichero como la
 fuente, y el destino no existe, se crea un fichero nuevo con ese nombre.
 \interaction{daily.copy.simple}
-Si el destino es un directorio, Mercurial copia las fuentes en este.
+Si el destino es un directorio, Mercurial copia las fuentes en éste.
 \interaction{daily.copy.dir-dest}
 La copia de un directorio es recursiva, y preserva la estructura del
 directorio fuente.
@@ -280,7 +281,7 @@ Si tanto la fuente como el destino son directorios, la estructura de
 la fuente se recrea en el directorio destino.
 \interaction{daily.copy.dir-src-dest}
 
-De la misma forma como la orden \hgcmd{rename}, si copia un fichero
+De la misma forma que la orden \hgcmd{rename}, si copia un fichero
 manualmente y desea que Mercurial sepa que ha copiado un fichero,
 basta con aplicar la opción \hgopt{copy}{--after} a la orden 
 \hgcmd{copy}.
@@ -289,19 +290,19 @@ basta con aplicar la opción \hgopt{copy}{--after} a la orden
 \section{Renombrar ficheros}
 
 La necesidad de renombrar un fichero es más común que hacer una copia
-del fichero.  La razón por la cual discutí la orden \hgcmd{copy} antes
+del mismo.  La razón por la cual discutí la orden \hgcmd{copy} antes
 de hablar acerca de cambiar el nombre de los ficheros, es que
 Mercurial trata el renombrar un fichero de la misma forma que una
 copia.  Por lo tanto, saber lo que hace Mercurial cuando usted copia
-un fichero, le indica qué esperar cuando renombra un fichero.
+un fichero le indica qué esperar cuando renombra un fichero.
 
 Cuando usa la orden \hgcmd{rename}, Mercurial hace una copia de cada
 fichero fuente, lo borra y lo marca como fichero eliminado.
 \interaction{daily.rename.rename}
 La orden \hgcmd{status} muestra la nueva copia del fichero como
-añadido y el fichero inicial de la copia, como eliminado.
+añadida y el fichero inicial de la copia, como eliminado.
 \interaction{daily.rename.status}
-De la misma forma como se usa la orden \hgcmd{copy}, debemos usar la
+De la misma forma en que se usa la orden \hgcmd{copy}, debemos usar la
 opción \hgopt{status}{-C} de la orden \hgcmd{status} para verificar
 que el fichero añadido realmente comienza a  ser seguido por Mercurial
 como una copia del fichero original, ahora eliminado.
@@ -315,21 +316,23 @@ Mercurial acerca de un renombramiento inmediato con la opción
 
 \subsection{Renombrar ficheros y fusionar cambios}
 
-Dado que el renombrar de Mercurial se implementa como un
+Dado que el renombrado de Mercurial se implementa como un
 copiar-y-eliminar, la misma propagación de cambios ocurre cuando usted
 fusiona después de renombrar como después de hacer una copia.
 
-Si Yo modifico un fichero y usted lo renombra a un nuevo fichero, y
-posteriormente fusionamos nuestros cambios respectivos, mi
+Si yo modifico un fichero y usted lo renombra a un nuevo fichero, y
+posteriormente fusionamos nuestros respectivos cambios, mi
 modificación al fichero bajo su nombre original se propagará en el
-fichero con el nuevo nombre. (Es lo que se esperaría como ``lo hace,''
-pero, no todos los sistemas de control de revisiones lo logran.)
+fichero con el nuevo nombre. (Es lo que se esperaría que ``simplemente
+funcione,''
+pero, no todos los sistemas de control de revisiones hacen esto.)
 
-El hecho de que los cambios sigan la copia es una característica que
-puede subestimar diciendo ``si, puede ser útil,'' debería ser claro
-que el seguimiento de cambios de un renombramiento es importante
-definitivamente.  Sin esto, sería muy sencillo que los cambios se
-volvieran huérfanos cuando los ficheros se renombran.
+Aunque el hecho de que los cambios sigan la copia es una característica
+respecto a la cual usted puede estar de acuerdo y decir ``si, puede
+ser útil,'' debería ser claro
+que el seguimiento de cambios de un renombramiento es definitivamente
+importante.  Sin esto, sería muy sencillo que los cambios se
+quedaran atrás cuando los ficheros se renombran.
 
 \subsection{Cambios de nombre divergentes y fusión}
 
@@ -345,7 +348,7 @@ Mientras que Roberto lo renombra como \filename{quux}.
 
 Veo esto como un conflicto porque cada desarrollador ha expresado
 intenciones diferentes acerca de cómo considera debería haberse
-renombrado el fichero.
+nombrado el fichero.
 
 ¿Qué cree que debería pasar cuando fusionen su trabajo?
 El comportamiento de Mercurial es que siempre preserva \emph{ambos}
@@ -359,12 +362,12 @@ después de la fusión.
 
 \subsection{Cambios de nombre convergentes y fusión}
 
-Otra clase de conflicto al cambiar el nombre ocurre cuando dos
+Otra clase de conflicto al cambiar el nombre de ficheros ocurre cuando dos
 personas eligen renombrar diferentes ficheros \emph{fuente} al mismo
 \emph{destino}. En este caso Mercurial aplica su maquinaria de fusión
-usual, y le permite a usted guiarlo a una solución adecuada.
+usual, y le permite a usted guiar la situación a una resolución adecuada.
 
-\subsection{Otros casos límites relacionados con renombramientos}
+\subsection{Otros casos límite relacionados con renombramientos}
 
 Mercurial tiene un fallo de mucho tiempo en el cual no es capaz de
 fusionar cuando por un lado hay un fichero con un nombre dado,
@@ -378,7 +381,7 @@ Mercurial tiene unas órdenes poderosas que le ayudarán a recuperarse
 de equivocaciones comunes.
 
 La orden \hgcmd{revert} le permite deshacer cambios que haya hecho a
-su directorio de trabajo. Por ejemplo, Si aplicó \hgcmd{add} a un
+su directorio de trabajo. Por ejemplo, si aplicó \hgcmd{add} a un
 fichero por accidente, ejecute \hgcmd{revert} con el nombre del
 fichero que añadió, y en tanto que el fichero no haya sido tocado de
 forma alguna, no será adicionado, ni seguido por Mercurial.  También
@@ -387,7 +390,7 @@ fichero.
 
 Tenga en cuenta que la orden \hgcmd{revert} se usa para cambios que no
 han sido consignados. Cuando haya consignado un cambio, si decide que
-era un error, puede hacer algo todavía, pero sus opciones pueden ser
+era un error, puede hacer algo todavía, pero sus opciones pueden estar
 más limitadas.
 
 Para obtener información acerca de la orden \hgcmd{revert} y detalles
