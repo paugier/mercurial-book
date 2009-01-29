@@ -17,8 +17,8 @@ fichero cambia de ``\texttt{?}'' a ``\texttt{A}''.
 Después de invocar \hgcmd{commit}, los ficheros que haya adicionado
 antes de consignar no se listarán en la salida de \hgcmd{status}.  La
 razón para esto es que \hgcmd{status} solamente le muestra aquellos
-ficheros ``interesantes''---los que usted haya modificado o a aquellos
-sobre los que usted haya indicado a Mercurial hacer algo---de forma
+ficheros ``interesantes'' ---~los que usted haya modificado o a aquellos
+sobre los que usted haya indicado a Mercurial hacer algo--- de forma
 predeterminada. Si tiene un repositorio que contiene miles de
 ficheros, rara vez deseará saber cuáles de ellos están siendo
 seguidos por Mercurial, pero que no han cambiado.  (De todas maneras,
@@ -47,7 +47,7 @@ tales casos que usted sabe lo que está haciendo y no imprime
 información alguna.
 
 Cuando hacemos \emph{implícitos} los nombres de los ficheros dando el
-nombre de un directorio, Mercurial da el paso extra de imprimir
+nombre de un directorio, Mercurial efectúa el paso extra de imprimir
 el nombre de cada fichero con el que va a hacer algo.  Esto para
 aclarar lo que está sucediendo, y reducir en lo posible una sorpresa
 silenciosa pero fatal.  Este comportamiento es común a la mayoría de
@@ -58,7 +58,7 @@ silenciosa pero fatal.  Este comportamiento es común a la mayoría de
 Mercurial no da seguimiento a la información de los directorios.  En
 lugar de eso tiene en cuenta las rutas de los ficheros.  Antes  de
 crear un fichero, primero crea todos los directorios que hagan falta
-para completar la ruta del fichero. Después de borrar un fichero,
+para completar la ruta del mismo. Después de borrar un fichero,
 borra todos los directorios vacíos que estuvieran en la ruta del
 fichero borrado. Suena como una diferencia trivial, pero tiene una
 consecuencia práctica menor: no es posible representar un directorio
@@ -117,7 +117,7 @@ Al eliminar un fichero \emph{no} se altera de ninguna manera el
 \emph{historial} del mismo.
 
 Si actualiza su directorio de trabajo a un conjunto de cambios en el
-cual el fichero que eliminó aún era tenido en cuenta, reaparecerá en
+cual el fichero que eliminó aún era tenido en cuenta, éste reaparecerá en
 el directorio de trabajo, con los contenidos que este tenía cuando se
 consignó tal conjunto de cambios.  Si usted actualiza el directorio de
 trabajo a un conjunto de cambios posterior en el cual el fichero había
@@ -150,8 +150,8 @@ fichero. Reaparecerá, sin modificaciones.
 Es posible que se haya preguntado por qué Mercurial exige que usted le
 indique explícitamente que está borrando un fichero. Al principio del
 desarrollo de Mercurial, este permitía que usted borrara el fichero
-sin más; Mercurial se daría cuanta de la ausencia del fichero
-automáticamente después de la ejecución de \hgcmd{commit}, y dejaba de
+sin más; Mercurial se daría cuenta de la ausencia del fichero
+automáticamente después de la ejecución de \hgcmd{commit}, y dejaría de
 hacer seguimiento al fichero.  En la práctica, resultaba muy sencillo
 borrar un fichero accidentalmente sin darse cuenta.
 
@@ -161,14 +161,14 @@ Mercurial ofrece una orden combinada, \hgcmd{addremove}, que agrega
 los ficheros que no tienen seguimiento y marca los ficheros faltantes
 como eliminados.
 \interaction{daily.files.addremove}
-La orden \hgcmd{commit} su puede usar con la opción \hgopt{commit}{-A} 
+La orden \hgcmd{commit} se puede usar con la opción \hgopt{commit}{-A} 
 que aplica el mismo agregar-eliminar, seguido inmediatamente de una
 consignación.
 \interaction{daily.files.commit-addremove}
 
 \section{Copiar ficheros}
 
-Mercurial ofrece la orden \hgcmd{copy} para hacer una nueva copia de
+Mercurial ofrece la orden \hgcmd{copy} para hacer una copia nueva de
 un fichero.  Cuando se copia un fichero con esta orden, Mercurial
 lleva un registro indicando que el nuevo fichero es una copia del
 fichero original. Los ficheros copiados se tratan de forma especial  cuando
@@ -211,7 +211,7 @@ hecho localmente en \filename{file} a su copia, \filename{new-file}.
 Este comportamiento de cambios en ficheros que se propagan a las
 copias de los ficheros parecería esotérico, pero en la mayoría de
 casos es absolutamente deseable.
-
+%TODO voy acá
 Es indispensable recordar que esta propagación \emph{solamente} sucede
 cuando fusionamos.  Por lo tanto si sobre un fichero se usa
 \hgcmd{copy}, y se modifica el fichero original durante el curso
