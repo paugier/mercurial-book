@@ -211,7 +211,6 @@ hecho localmente en \filename{file} a su copia, \filename{new-file}.
 Este comportamiento de cambios en ficheros que se propagan a las
 copias de los ficheros parecería esotérico, pero en la mayoría de
 casos es absolutamente deseable.
-%TODO voy acá
 Es indispensable recordar que esta propagación \emph{solamente} sucede
 cuando fusionamos.  Por lo tanto si sobre un fichero se usa
 \hgcmd{copy}, y se modifica el fichero original durante el curso
@@ -341,9 +340,11 @@ desarrolladores comienzan  con un fichero---llamémoslo
 \filename{foo}---en sus repositorios respectivos.
 
 \interaction{rename.divergent.clone}
-Ana renombra el fichero a \filename{bar}.
+%TODO we must either change the example's names, and these names, or
+%use the original names. as of now, we keep the old names
+Anne renombra el fichero a \filename{bar}.
 \interaction{rename.divergent.rename.anne}
-Mientras que Roberto lo renombra como \filename{quux}.
+Mientras que Bob lo renombra como \filename{quux}.
 \interaction{rename.divergent.rename.bob}
 
 Veo esto como un conflicto porque cada desarrollador ha expresado
@@ -354,6 +355,7 @@ nombrado el fichero.
 El comportamiento de Mercurial es que siempre preserva \emph{ambos}
 nombres cuando fusiona  los conjuntos de cambios que contienen nombres
 divergentes.
+%TODO traducir texto interaccion
 \interaction{rename.divergent.merge}
 
 Tenga en cuenta que Mercurial le advierte acerca de nombres
