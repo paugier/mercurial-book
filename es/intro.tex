@@ -1,0 +1,621 @@
+\chapter{Introducción}
+\label{chap:intro}
+
+\section{Acerca del control de revisiones}
+
+El control de revisiones es el proceso de administrar diferentes
+versiones de una pieza de información. En su forma más simple es algo
+que la mayoría de gente hace a mano: cada vez que usted modifica un
+fichero, lo graba con un nuevo nombre que contiene un número, cada uno
+mayor que el anterior.
+
+Administrar manualmente muchas versiones de incluso sólo un fichero es una tarea
+propensa a errores, a pesar de que hace bastante tiempo hay
+herramientas que ayudan en este proceso.  Las primeras herramientas
+para automatizar el control de revisiones fueron pensadas para que un
+usuario administrara un solo fichero.  En las décadas pasadas, el
+alcance de las herramientas de control de revisiones ha ido aumentando
+considerablemente; ahora manejan muchos ficheros y facilitan el
+trabajo en conjunto de varias personas. Las mejores herramientas de
+control de revisiones de la actualidad no tienen problema con miles de
+personas trabajando en proyectos que consisten de cientos de miles de
+ficheros.
+
+\subsection{¿Por qué usar control de revisiones?}
+
+Hay muchas razones por las cuales usted o su equipo desearía usar una
+herramienta automática de control de revisiones para un proyecto.
+\begin{itemize}
+\item Llevar registro del historial y la evolución de su proyecto, para
+  evitar hacer la tarea manualmente. Por cada cambio, tendrá una
+  bitácora de \emph{quién} lo hizo; \emph{por qué} se hizo;
+  \emph{cuándo} se hizo; y de \emph{qué} se trataba el cambio.
+\item Cuando trabaja con más personas, los programas de control de
+  revisiones facilitan la colaboración.  Por ejemplo, cuando varias
+  personas hacen cambios potencialmente incompatibles de forma casi
+  simultánea, el programa le ayudará a identificar y resolver tales
+  conflictos.
+\item Puede ayudarle a recuperarse de equivocaciones. Si aplica un
+  cambio que posteriormente se evidencia como un error, puede
+  revertirlo a una versión previa a uno o muchos ficheros. De hecho,
+  una herramienta \emph{realmente} buena, incluso puede ayudarle
+  efectivamente a darse cuenta exactamente cuándo se introdujo el
+  error (para más detalles ver la sección~\ref{sec:undo:bisect}).
+\item Le ayudará a trabajar simultáneamente, y a manejar las diferencias
+  entre múltiples versiones de su proyecto.
+\end{itemize}
+La mayoría de estas razones son igualmente válidas ---por lo menos en
+teoría--- así esté trabajando en un proyecto solo usted, o con mucha gente.
+
+Algo fundamental acerca de lo práctico de un sistema de control de
+revisiones en estas dos escalas (``un hacker solitario'' y ``un equipo
+gigantesco'') es cómo se comparan los \emph{beneficios} con los
+\emph{costos}.  Una herramienta de control de revisiones que sea
+difícil de entender o usar impondrá un costo alto.
+
+Un proyecto de quinientas personas es muy propenso a colapsar
+solamente con su peso inmediatamente sin una herramienta y un proceso
+de control de versiones. En este caso, el costo de usar control de
+revisiones ni siquiera se tiene en cuenta, puesto que \emph{sin} él,
+el fracaso está casi garantizado.
+
+Por otra parte, un ``arreglo rápido'' de una sola persona, excluiría
+la necesidad de usar una herramienta de control de revisiones, porque
+casi seguramente, el costo de usar una estaría cerca del costo del
+proyecto. ¿No es así?
+
+Mercurial soporta \emph{ambas} escalas de de desarrollo de manera
+única. Puede aprender lo básico en pocos minutos, y dado su bajo
+sobrecosto, puede aplicar el control de revisiones al proyecto más
+pequeño con facilidad. Su simplicidad significa que no tendrá que
+preocuparse por conceptos obtusos o secuencias de órdenes compitiendo
+por espacio mental con lo que sea que \emph{realmente} esté tratando
+de hacer.  Al mismo tiempo, Mercurial tiene alto desempeño y su
+%TODO distribuida? en vez de p2p
+naturaleza peer-to-peer le permite escalar indoloramente para manejar
+grandes proyectos.
+
+Ninguna herramienta de control de revisiones puede salvar un
+proyecto mal administrado, pero la elección de herramientas puede
+hacer una gran diferencia en la fluidez con la cual usted puede
+trabajar en un proyecto.
+
+\subsection{La cantidad de nombres del control de revisiones}
+
+El control de revisiones es un campo amplio, tan amplio que no hay un
+acrónimo o nombre único. A continuación presentamos un listado de
+nombres comunes y acrónimos que se podrían encontrar:
+\begin{itemize}
+\item Control de revisiones (RCS)
+\item Manejo de Configuraciones de Programas (SCM), o administracón de
+  configuraciones
+\item Administración de código fuente
+\item Control de Código Fuente, o Control de Fuentes
+\item Control de Versiones (VCS)
+\end{itemize}
+Algunas personas aducen que estos términos tienen significados
+diversos, pero en la práctica se sobreponen tanto que no hay una
+forma acordada o incluso adecuada de separarlos.
+
+\section{Historia resumida del control de revisiones}
+
+La herramienta de control de revisiones más antigua conocida es SCCS 
+(Sistema de Control de Código), escrito por Marc Rochkind en Bell
+Labs, a comienzos de los setentas (1970s).  SCCS operaba sobre ficheros
+individuales, y requería que cada persona que trabajara en el proyecto
+tuviera acceso a un espacio compartido en un solo sistema.  Solamente
+una persona podía modificar un fichero en un momento dado; el
+arbitramiento del acceso a los ficheros se hacía con candados. Era
+común que la gente pusiera los candados a los ficheros, y que
+posteriormente olvidara quitarlos, impidiendo que otro pudiera
+modificar los ficheros en cuestión sin la intervención del
+administrador.
+
+Walter Tichy desarrolló una alternativa gratuita a SCCS a comienzos
+de los ochentas (1980s); llamó a su programa RCS (Sistema de Control de
+Revisiones).  Al igual que SCCS, RCS requería que los desarrolladores
+trabajaran en un único espacio compartido y colocaran candados a los
+ficheros para evitar que varias personas los modificaran
+simultáneamente.
+
+Después en los ochenta, Dick Grune usó RCS como un bloque de
+construcción para un conjunto de guiones de línea de comando, que
+inicialmente llamó cmt, pero que renombró a CVS (Sistema Concurrente de
+Versiones).  La gran innovación de CVS era que permitía a los
+desarrolladores trabajar simultáneamente de una forma más o menos
+independiente en sus propios espacios de trabajo. Los espacios de
+trabajo personales impedían que los desarrolladores se pisaran las
+mangueras todo el tiempo, situación común con SCCS y RCS.  Cada
+desarrollador tenía una copia de todos los ficheros del proyecto y podía
+modificar sus copias independientemente, Tenían que fusionar sus
+ediciones antes de consignar los cambios al repositorio central.
+
+Brian Berliner tomó los scripts originales de Grune y los reescribió
+en~C, publicando en 1989 el código sobre el cual se ha
+desarrollado la versión moderna de CVS.  CVS adquirió posteriormente 
+la habilidad de operar sobre una conexión de red, dotándolo de una
+arquitectura, cliente/servidor. La arquitectura de CVS es
+centralizada; el historial del proyecto está únicamente en el
+repositorio central.  Los espacios de trabajo de los clientes
+contienen únicamente copias recientes de las versiones de los
+ficheros, y pocos metadatos para indicar dónde está el servidor. CVS
+ha tenido un éxito enorme; Es probablemente el sistema de control de
+revisiones más extendido del planeta.
+
+A comienzos de los noventa~(1990s), Sun MicroSystems desarrollo un
+temprano sistema distribuido de control de revisiones llamado
+TeamWare.
+Un espacio de trabajo TeamWare contiene una copia completa del
+historial del proyecto. TeamWare no tiene la noción de repositorio
+central. (CVS se basaba en RCS para el almacenamiento de su historial;
+TeamWare usaba SCCS.)
+
+A medida que avanzaba la decada de los noventa, se empezó a
+evidenciar los problemas de CVS.  Almacena cambios simultáneos a muchos
+ficheros de forma individual, en lugar de agruparlos como una
+operación única y atómica lógicamente.  No maneja bien su jerarquía de
+ficheros; es fácil desordenar un repositorio al renombrar ficheros
+y directorios. Peor aún, su código fuente es difícil de leer y
+mantener, lo que hizo que su ``umbral de dolor'' para arreglar sus
+problemas arquitecturales fuera algo prohibitivo.
+
+En 2001, Jim Blandy y Karl Fogel, dos desarrolladores que habían
+trabajado en CVS, comenzaron un proyecto para reemplazarlo con una
+herramienta con mejor arquitectura y código más limpio.  El resultado,
+Subversion, no se separó del modelo centralizado cliente/servidor de
+CVS, pero añadió consignaciones atómicas de varios ficheros, mejor
+manejo de espacios de nombres , y otras características que lo hacen
+mejor que CVS. Desde su versión inicial, ha ido creciendo en
+popularidad rápidamente.
+
+Más o menos en forma simultánea Graydon Hoare comenzó a trabajar en un
+ambicioso sistema distribuido de control de versiones que llamó
+Monotone. Mientras que Monotone se enfocaba a evitar algunas fallas de
+diseño de CVS con una arquitectura peer-to-peer, fue mucho más
+allá de las herramientas anteriores (y posteriores) de
+control de revisiones en varios aspectos innovadores. Usa hashes
+criptográficos como identificadores, y tiene una noción integral de 
+``confianza'' para código de diversas fuentes.
+
+Mercurial nació en el 2005.  Algunos de sus aspectos de de diseño
+fueron influenciados por Monotone, pero Mercurial se enfoca en la
+facilidad de uso, gran rendimiento y escalabilidad para proyectos muy
+grandes.
+
+\section{Tendencias en el control de revisiones}
+
+Ha habido una tendencia inconfundible en el desarrollo y uso de las herramientas
+de control de revisiones en las cuatro décadas pasadas, mientras la
+gente se ha hecho familiar con las capacidades de sus herramientas y
+se ha visto restringida por sus limitaciones.
+
+La primera generación comenzó administrando ficheros individuales en
+computadores por persona. A pesar de que tales herramientas
+representaron un avance importante frente al control de revisiones
+manual, su modelo de candados y la dependencia a un sólo computador
+los limitó a equipos de trabajo pequeños y acoplados.
+
+La segunda generación dejó atrás esas limitaciones moviéndose a
+arquitecturas centradas en  redes, y administrando proyectos completos
+a la vez. A medida que los proyectos crecían, nacieron nuevos
+problemas. Con la necesidad de comunicación frecuente con los
+servidores, escalar estas máquinas se convirtió en un problema en
+proyectos realmente grandes. Las redes con poca estabilidad podrían
+impedir que usuarios remotos se conectaran al servidor. A medida que
+los
+proyectos de código abierto comenzaron a ofrecer acceso de sólo lectura
+de forma anónima a cualquiera, la gente sin permiso para consignar
+vio que no podían usar tales herramientas para interactuar en un
+proyecto de forma natural, puesto que no podían guardar sus cambios.
+
+La generación actual de herramientas de control de revisiones es
+peer-to-peer por naturaleza.  Todos estos sistemas han eliminado la
+dependencia de un único servidor central, y han permitido que la
+gente distribuya sus datos de control de revisiones donde realmente se
+necesita. La colaboración a través de Internet ha cambiado las
+limitantes tecnológicas por la cuestión de elección y consenso. Las
+herramientas modernas pueden operar sin conexión indefinidamente y
+autónomamente, necesitando una conexión de red solamente para
+sincronizar los cambios con otro repositorio.
+
+\section{Algunas ventajas del control distribuido de revisiones}
+
+A pesar de que las herramientas para el control distribuido de
+revisiones lleva varios años siendo tan robustas y usables como la
+generación previa de sus contrapartes, algunas personas que usan las
+herramientas más antiguas no se han percatado de sus ventajas.  Hay
+gran cantidad
+de situaciones en las cuales las herramientas distribuidas brillan
+frente a las centralizadas.
+
+Para un desarrollador individual, las herramientas distribuidas casi
+siempre son más rápidas que las centralizadas. Por una razón sencilla:
+Una herramienta centralizada necesita comunicarse por red para las
+operaciones más usuales, debido a que los metadatos se almacenan en
+una sola copia en el servidor central. Una herramienta distribuida
+almacena todos sus metadatos localmente.  Con todo lo demás de la
+misma forma, comunicarse por red tiene un sobrecosto en una
+herramienta centralizada. No subestime el valor de una herramienta de
+respuesta rápida: Usted empleará mucho tiempo interactuando con su
+programa de control de revisiones.
+
+Las herramientas distribuidas son indiferentes a los caprichos de su
+infraestructura de servidores, de nuevo, debido a la replicación de
+metadatos en tantos lugares. Si usa un sistema centralizado y su
+servidor explota, ojalá los medios físicos de su copia de seguridad
+sean confiables, y que su última copia sea reciente y además
+funcione. Con una herramienta distribuida tiene tantas copias de
+seguridad disponibles como computadores de contribuidores.
+
+La confiabilidad de su red afectará las herramientas distribuidas de
+una forma mucho menor que a las herramientas centralizadas. Usted no puede
+siquiera usar una herramienta centralizada sin conexión de red,
+excepto por algunas órdenes muy limitadas. Con herramientas
+distribuidas, si sus conexión cae mientras usted está trabajando,
+podría nisiquiera darse cuenta. Lo único que que no podrá hacer es
+comunicarse  con repositorios en otros computadores, algo que es
+relativamente raro comparado con las operaciones locales. Si tiene
+colaboradores remotos en su equipo, puede ser importante.
+
+\subsection{Ventajas para proyectos de código abierto}
+
+Si descubre un proyecto de código abierto y decide que desea comenzar
+a trabajar en él, y ese proyecto usa una herramienta de control
+distribuido de revisiones, usted es de inmediato un par con la gente que se
+considera el ``alma'' del proyecto.  Si ellos publican sus
+repositorios, usted puede copiar inmediatamente el historial del proyecto,
+hacer cambios y guardar su trabajo, usando las mismas herramientas de
+la misma forma que ellos. En contraste, con una herramienta
+centralizada, usted debe usar el programa en un modo ``sólo lectura'' a
+menos que alguien le otorgue permisos para consignar cambios en el
+repositorio central. Hasta entonces, no podrá almacenar sus cambios y
+sus modificaciones locales correrán el riesgo de dañarse cuando trate
+de actualizar su vista del repositorio.
+
+\subsubsection{Las bifurcaciones (forks) no son un problema}
+
+Se ha mencionado que las herramientas de control distribuido de
+versiones albergan un riesgo a los proyectos de código abierto, puesto
+que se vuelve muy sencillo hacer una ``bifurcación''\ndt{fork.} del
+desarrollo del proyecto.  Una bifurcación sucede cuando hay diferencias
+de opinión o actitud entre grupos de desarrolladores que desemboca en
+la decisión de la imposibilidad de continuar trabajando juntos. Cada
+parte toma una copia más o menos completa del código fuente del
+proyecto y toma su propio rumbo.
+
+En algunas ocasiones los líderes de las bifurcaciones reconcilian sus
+diferencias. Con un sistema centralizado de control de revisiones, el
+proceso \emph{técnico} de reconciliarse es doloroso, y se hace de
+forma muy manual.  Usted tiene que decidir qué historial de revisiones va a
+``ganar'', e injertar los cambios del otro equipo en el árbol de alguna
+manera. Con esto usualmente se pierde algo o todo del historial de la
+revisión de alguna de las partes.
+
+Lo que las herramientas distribuidas hacen con respecto a las
+bifurcaciones, es que las bifurcaciones son la \emph{única} forma de
+desarrollar un proyecto. Cada cambio que usted hace es potencialmente
+un punto de bifurcación. La gran fortaleza de esta aproximación es que
+las herramientas distribuidas de control de revisiones tiene que ser
+bueno al \emph{fusionar} las bifurcaciones, porque las bifurcaciones
+son absolutamente fundamentales: pasan todo el tiempo.
+
+Si todas las porciones de trabajo que todos hacen, todo el tiempo, se
+enmarcan en términos de bifurcaciones y fusiones, entonces a aquello a
+lo que se refiere en el mundo del código abierto a una ``bifurcación''
+se convierte \emph{puramente} en una cuestión social. Lo que hacen las
+herramientas distribuidas es \emph{disminuir} la posibilidad de una
+bifurcación porque:
+\begin{itemize}
+\item Eliminan la distinción social que imponen las herramientas
+  centralizadas: aquélla entre miembros (personas con permiso de
+  consignar) y forasteros (los que no tienen el permiso).
+\item Facilitan la reconciliación después de una bifurcación social,
+  porque todo lo que concierne al programa de control de revisiones es
+  una fusión.
+\end{itemize}
+
+Algunas personas se resisten a las herramientas distribuidas porque
+desean mantener control completo sobre sus proyectos, y creen que las
+herramientas centralizadas les dan tal control. En todo caso, si este
+es su parecer, y usted publica sus repositorios de CVS o Subversion, hay
+muchas herramientas disponibles que pueden obtener el historial
+completo (aunque sea lentamente) y recrearlo en otro sitio que usted no
+controla. Siendo así un control ilusorio, puesto que está impidiendo
+la fluidez de colaboración en lugar de prevenir que alguien se sienta
+impulsado a obtener una copia y hacer una bifurcación con su historial.
+
+\subsection{Ventajas para proyectos comerciales}
+
+Muchos proyectos comerciales tienen grupos de trabajo distribuidos
+alrededor del globo.  Quienes contribuyen y están lejos de un
+repositorio central verán una ejecución más lenta de los comandos y tal
+vez menos confiabilidad. Los sistemas de control de revisión
+comerciales intentan amortiguar estos problemas con adiciones de
+replicación remota que usualmente son muy costosos y complicados de
+administrar. Un sistema distribuido no padece estos problemas. Mejor
+aún, puede colocar varios servidores autorizados, por ejemplo, uno por
+sitio, de tal forma que no haya comunicación redundante entre
+repositorios sobre enlaces de conexión costosos.
+
+Los sistemas de control de revisiones distribuidos tienden a ser poco
+escalables. No es inusual que costosos sistemas centralizados caigan
+ante la carga combinada de unas cuantas docenas de usuarios
+concurrentes. De nuevo, las respuestas típicas de replicación tienden
+a ser costosas y complejas de instalar y administrar. Dado que la
+carga en un servidor central---si es que tiene uno---es muchas veces
+menor con una herramienta distribuida (debido a que los datos están
+replicados en todas partes), un solo servidor económico puede tratar
+las necesidades de equipos mucho más grandes, y la replicación para
+balancear la carga se vuelve cosa de guiones.
+
+Si tiene un empleado en el campo, se beneficiará grandemente de un
+sistema distribuido de control de versiones al resolver problemas en
+el sitio del cliente. La herramienta le permitirá generar
+construcciones a la medida, probar diferentes arreglos de forma
+independiente y buscar de forma eficiente las fuentes de fallos en el
+historial y regresiones en los ambientes de los clientes, todo sin
+necesidad de conectarse al servidor de su compañía.
+
+\section{¿Por qué elegir Mercurial?}
+
+Mercurial cuenta con un conjunto único de propiedades que lo hacen
+una elección particularmente buena como sistema de control de
+revisiones, puesto que:
+\begin{itemize}
+\item Es fácil de aprender y usar.
+\item Es liviano.
+\item Escala de forma excelente.
+\item Es fácil de acondicionar.
+\end{itemize}
+
+Si los sistemas de control de revisiones le son familiares, debería
+estar listo para usar Mercurial en menos de cinco minutos. Si no, sólo va a
+tomar unos pocos minutos más. Las órdenes de Mercurial y su conjunto
+de características son uniformes y consistentes generalmente, y basta
+con que siga unas pocas reglas generales en lugar de un montón de
+excepciones.
+
+En un proyecto pequeño, usted puede comenzar a trabajar con Mercurial en
+pocos momentos. Crear nuevos cambios y ramas, transferir cambios (localmente
+o por la red); y las operaciones relacionadas con el estado y el
+historial son rápidas. Mercurial buscar ser ligero y no incomodar en su
+camino combinando poca sobrecarga cognitiva con operaciones
+asombrosamente rápidas.
+
+La utilidad de Mercurial no se limita a proyectos pequeños: está
+siendo usado por proyectos con centenas de miles de contribuyentes,
+cada uno conteniendo decenas de miles de ficheros y centenas de
+megabytes de código fuente
+
+Si la funcionalidad básica de Mercurial no es suficiente para usted,
+es muy fácil extenderlo. Mercurial se comporta muy bien con tareas de
+scripting y su limpieza interna junto con su implementación en Python
+permiten añadir características fácilmente en forma de extensiones.
+Hay un buen número de extensiones útiles y populares en este momento,
+desde ayudar a identificar fallos hasta mejorar su desempeño.
+
+\section{Comparación de Mercurial con otras herramientas}
+
+Antes de leer, por favor tenga en cuenta que esta sección
+necesariamente refleja mis propias experiencias, intereses y (tengo que
+decirlo) mis preferencias. He usado cada una de las herramientas de
+control de versiones listadas a continuación, y en muchos casos por
+varios años.
+
+
+\subsection{Subversion}
+
+Subversion es una herramienta de control de revisiones muy popular,
+desarrollada para reemplazar a CVS.  Tiene una arquitectura
+centralizada tipo cliente/servidor.
+
+Subversion y Mercurial tienen comandos con nombres similares para hacer
+las mismas operaciones, por lo que si le son familiares en una, será
+sencillo aprender a usar la otra. Ambas herramientas son portables en
+todos los sistemas operativos populares.
+
+Antes de la versión 1.5, Subversion no tenía soporte para fusiones. En
+el momento de la escritura, sus capcidades para llevar cuenta de las
+funciones son nuevas,
+\href{http://svnbook.red-bean.com/nightly/en/svn.branchmerge.advanced.html#svn.branchmerge.advanced.finalword}{complicadas
+  y poco estables\ndt{buggy}}.
+
+Mercurial tiene una ventaja considerable en desempeño sobre
+Subversion en cualquier operación de control de revisiones que yo haya
+medido. He medido sus ventajas con factores desde dos hasta seis veces
+comparando con almacenamiento de ficheros \emph{ra\_local}
+Subversion~1.4.3, el cual es el método de acceso más rápido.  En los
+escenarios más realistas incluyendo almacenamiento con la red de por
+medio, Subversion se encuentra en desventaja aún mayor. Dado que casi
+todas las órdenes de Subversion deben tratar con el servidor y
+Subversion no tiene utilidades de replicación adecuadas, la capacidad
+del servidor y el ancho de banda se convierten en cuellos de botella
+para proyectos modestamente grandes.
+
+Adicionalmente, Subversion tiene un sobrecosto considerable en
+almacenamiento para evitar transacciones por red en algunas
+operaciones,
+tales como encontrar ficheros modificados (\texttt{status}) y desplegar
+información frente a la revisión actual (\texttt{diff}).  Como
+resultado, la copia de trabajo de Subversion termina siendo del mismo
+tamaño o más grande que un repositorio de Mercurial y el directorio de
+trabajo, a pesar de que el repositorio de Mercurial contiene el
+historial completo  del proyecto.
+
+Subversion tiene soporte amplio de otras herramientas. Mercurial por
+ahora está bastante atrás en este aspecto.  Esta diferencia está
+disminuyendo, y algunas de las herramientas GUI\ndt{Interfaz de
+  Usuario Gráfica}, eclipsan sus equivalentes de Subversion. Al igual
+que Mercurial, Subversion tiene un excelente manual de usuario.
+
+Dado que Subversion no almacena el historial de revisiones en el
+cliente, es muy bueno para administrar proyectos que tienen muchos
+ficheros binarios grandes y opacos. Si consigna cincuenta revisiones
+de un fichero de 10MB que no es comprimible, el esapacio en el cliente
+de Subversion se mantendrá constante mientras que el espacio usado por
+cualquier Sistema Distribuido de Control de Revisiones crecerá
+rápidamente en proporción con el número de revisiones, debido a que
+las diferencias entre cada revisión es grande.
+
+Adicionalmente, generalmente es difícil o más bien, imposible mezclar
+diferentes versiones de un fichero binario. La habilidad de Subversion
+para permitirle al usuario poner una cerradura  a un fichero, de modo
+que tenga un permiso exclusivo para consignar cambios, puede ser una
+ventaja significativa en un proyecto donde los ficheros binarios sean
+usados ampliamente.
+
+Mercurial puede importar el historial de revisiones de un repositorio
+de Subversion. También puede exportar el historial de revisiones a un
+repositorio de Subversion.  De esta forma es sencillo ``dar un
+vistazo'' y usar Mercurial y Subversion en paralelo antes de decidirse
+a dar el paso. La conversión del historial es incremental, de modo
+que puede aplicar una conversión inicial, y después conversiones
+pequeñas y adicionales posteriormente para traer nuevos cambios.
+
+\subsection{Git}
+
+Git es una herramienta distribuida de control de revisiones
+desarrollada para administrar el arbol del kernel de Linux.  Al igual
+que Mercurial los principios de su diseño fueron influenciados por 
+Monotone.
+
+Git tiene un conjunto de órdenes muy grande; en la versión~1.5.0
+ofrece~139 órdenes individuales.  Tiene cierta reputación de ser
+difícil de aprender. Comparado con Git, Mercurial tiene un fuerte
+enfoque hacia la facilidad.
+
+En términos de rendimiento, Git es extremadamente rápido. En muchos
+casos, es más rápido que Mercurial, por lo menos en Linux, mientras
+que Mercurial se comporta mejor en otras operaciones.  De todas
+maneras en Windows, el desempeño y el nivel general de soporte que
+ofrece Git, al momento de la escritura, está bastante atrás de
+Mercurial.
+
+Mientras que el repositorio de Mercurial no requiere mantenimiento, el
+repositorio de Git requiere frecuentes ``reempaquetados'' de sus metadatos.
+Sin estos, el desempeño se degrada y el uso de espacio crece rápidamente. Un
+servidor que contenga repositorios de Git que no sean reempacados
+rigurosa y frecuentemente requerirá trabajo intenso de disco durante
+las copias de seguridad, y ha habido situaciones en copias de
+seguridad diaria que toman más de~24 horas como resultado. Un
+repositorio recién reempacado de Git es un poco más pequeño que un
+repositorio de Mercurial, pero un repositorio sin reempacar es varios
+órdenes de magnitud más grande.
+
+El corazón de Git está escrito en C.  Muchas órdenes de Git están
+implementadas como guiones de línea de comandos o de Perl y la calidad de esos
+guiones varía ampliamente. He encontrado muchas situaciones en las
+cuales los guiones no tuvieron en cuenta la presencia de errores que
+podrían haber sido fatales.
+
+Mercurial puede importar el historial de revisiones de un repositorio
+de Git.
+
+\subsection{CVS}
+
+CVS es probablemente la herramienta de control de revisiones más
+ampliamente usada en el planeta.  Debido a su edad y su poca pulcritud
+interna, ha sido ligeramente mantenida en muchos años.
+
+Tiene una arquitectura centralizada cliente/servidor. No agrupa
+cambios relacionados en consignaciones atómicas, pemitiendo que con
+facilidad la gente ``rompa la construcción'': una persona puede
+consignar exitósamente parte del cambio y estar bloqueada por la
+necesidad de una mezcla, forzando a otras personas a ver solamente una
+porción del trabajo que estaban buscando hacer.  Esto afecta también
+la forma como usted trabaja con el historial del proyecto. Si quiere
+ver todas las modificaciones que alguien hizo como parte de una tarea,
+necesitará inspeccionar manualmente las descripciones y las marcas de
+tiempo de cambio de cada fichero involucrado (esto, si usted saber
+cuáles eran tales ficheros).
+
+CVS tiene una noción confusa de etiquetas y ramas que yo no trataría
+incluso de describir.  No soporta renombramiento de ficheros o
+directorios adecuadamente, facilitando el corromper un
+repositorio. Casi no tiene chequeo de consistencia interna, por lo
+tanto es casi imposible identificar por que o cómo se corrompió un
+repositorio. Yo no recomendaría un repositorio de CVS para proyecto
+alguno, ni existente ni nuevo.
+
+Mercurial puede importar el historial de revisiones de CVS.  De todas
+maneras hay ciertas precauciones que aplican; las cuales también son
+necesarias para cualquier herramienta importadora de historial de
+CVS. Debido a la falta de atomicidad de cambios y el no versionamiento
+de la jerarquía del sistema de ficheros, es imposible reconstruir
+completamente el historial de CVS con precisión; hay cierto trabajo de
+conjetura involucrado y los renombramientos tampoco se
+mostrarán. Debido a que gran parte de la administración avanzada de
+CVS tiene que hacerse manualmente y por lo tanto es proclive al error,
+es común que los importadores de CVS encuentren muchos problemas con
+repositorios corruptos (marcas de tiempo totalmente desubicadas y
+ficheros que han permanecido con candados por más de una década son
+dos de los problemas menos interesantes de los que puedo retomar de mi
+experiencia personal).
+
+Mercurial puede importar el historial de revisiones de un repositorio
+CVS.
+
+\subsection{Herramientas comerciales}
+
+Perforce tiene una arquitectura centralizada cliente/servidor sin
+almacenamiento de dato alguno de caché en el lado del cliente. A diferencia de
+las herramientas modernas de control de revisiones, Perforce requiere
+que un usuario ejecute un comando para informar al servidor acerca de
+todo fichero que se vaya a editar.
+
+El rendimiento de Perforce es muy bueno para equipos pequeños, pero se
+degrada rápidamente cuando el número de usuarios va más allá de pocas
+docenas. Instalaciones modestamente grandes de Perforce requiere la
+organización de proxies para soportar la carga que sus usuarios generan.
+
+\subsection{Elegir una herramienta de control de revisiones}
+
+Con la excepción de CVS, toda las herramientas que se han listado
+anteriormente tienen fortalezas únicas que las hacen valiosas de acuerdo al
+tipo de trabajo. No hay una única herramienta de control de revisiones
+que sea la mejor en todas las situaciones.
+
+Por ejemplo, Subversion es una buena elección para trabajar con
+edición frecuente de ficheros binarios, debido a su naturaleza
+centralizada y soporte para poner candados a ficheros.
+
+Personalmente encuentro las propiedades de simplicidad, desempeño, y
+buen soporte de fusiones de Mercurial una combinación llamativa que ha
+dado buenos frutos por varios años.
+
+
+\section{Migrar de otra herramienta hacia Mercurial}
+
+Mercurial viene con una extensión llamada \hgext{convert}, que puede
+importar historiales de revisiones de forma incremental desde varias
+herramientas de control de revisiones. Por ``incremental'', quiero
+decir que puede migrar toda el historial de un proyecto en una primera
+instancia y después volver a ejecutar la migración posteriormente para
+obtener los nuevos cambios que han sucedido después de la migración
+inicial.
+
+A continuación presentamos las herramientas de revisiones que soporta
+el comando \hgext{convert}:
+\begin{itemize}
+\item Subversion
+\item CVS
+\item Git
+\item Darcs
+\end{itemize}
+
+Adicionalmente, \hgext{convert} puede exportar cambios de Mercurial
+hacia Subversion.  Lo que hace posible probar Subversion y Mercurial
+en paralelo antes de lanzarse a un migración total, sin arriesgarse a
+perder trabajo alguno.
+
+El comando \hgxcmd{conver}{convert} es sencillo de usar. Basta con
+apuntarlo hacia la ruta o el URL del repositorio fuente, opcionalmente
+darle el nombre del nombre del repositorio destino y comenzará a hacer
+su trabajo. Después de la conversión inicial, basta con invocar de
+nuevo el comando para importar cambios nuevos.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

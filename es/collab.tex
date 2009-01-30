@@ -1,0 +1,1059 @@
+\chapter{Colaborar con otros}
+\label{cha:collab}
+
+Debido a su naturaleza descentralizada, Mercurial no impone política
+alguna de cómo deben trabajar los grupos de personas. Sin embargo, si
+usted es nuevo al control distribuido de versiones, es bueno tener
+herramientas y ejemplos a la mano al pensar en posibles modelos de
+flujo de trabajo.
+
+\section{La interfaz web de Mercurial}
+
+Mercurial tiene una poderosa interfaz web que provee bastantes
+capacidades útiles.
+
+Para uso interactivo, la interfaz le permite visualizar uno o varios
+repositorios. Puede ver el historial de un repositorio, examinar cada
+cambio (comentarios y diferencias), y ver los contenidos de cada
+directorio y fichero.
+
+Adicionalmente la interfaz provee notificaciones RSS de los cambios de los
+repositorios. Que le permite ``subscribirse''a un repositorio usando
+su herramienta de lectura de notificaciones favorita, y ser notificado
+automáticamente de la actividad en el repositorio tan pronto como
+sucede. Me gusta mucho más este modelo que el estar suscrito a una
+lista de correo a la cual se envían las notificaciones, dado que no
+requiere configuración adicional de parte de quien sea que está
+administrando el repositorio.
+
+La interfaz web también permite clonar repositorios a los usuarios
+remotos, jalar cambios, y (cuando el servidor está configurado para
+permitirlo) publicar cambios en el mismo.  El protocolo de entunelamiento
+de Mercurial comprime datos agresivamente, de forma que trabaja
+eficientemente incluso con conexiones de red con poco ancho de banda.
+
+La forma más sencilla de iniciarse con la interfaz web es usar su
+navegador para visitar un repositorio existente, como por ejemplo el
+repositorio principal de Mercurial \url{http://www.selenic.com/repo/hg?style=gitweb}.
+
+Si está interesado en proveer una interfaz web a sus propios
+repositorios, Mercurial provee dos formas de hacerlo.  La primera es
+usando la orden \hgcmd{serve}, que está enfocada a servir ``de forma
+liviana'' y por intervalos cortos.  Para más detalles de cómo usar
+esta orden vea la sección~\ref{sec:collab:serve} más adelante. Si
+tiene un repositorio que desea hacer permanente, Mercurial tiene
+soporte embebido del \command{ssh} para publicar cambios con seguridad
+al repositorio central, como se documenta en la
+sección~\ref{sec:collab:ssh}.  Es muy usual que se publique una copia
+de sólo lectura en el repositorio que está corriendo sobre HTTP usando
+CGI, como en la sección~\ref{sec:collab:cgi}.  Publicar sobre HTTP
+satisface las necesidades de la gente que no tiene permisos de
+publicación y de aquellos que quieren usar navegadores web para
+visualizar el historial del repositorio.
+
+\subsection{Trabajo con muchas ramas}
+
+Los proyectos de cierta talla tienden naturalmente a progresar de
+forma simultánea en varios frentes. En el caso del software, es común
+que un proyecto tenga versiones periódicas oficiales. Una versión
+puede entrar a ``modo mantenimiento'' por un tiempo después de su
+primera publicación; las versiones de mantenimiento tienden a contener
+solamente arreglos de fallos, pero no nuevas características. En
+paralelo con las versiones de mantenimiento puede haber una o muchas
+versiones futuras pueden estar en desarrollo. La gente usa normalmente
+la palabra ``rama'' para referirse a una de las direcciones
+ligeramente distintas en las cuales procede el desarrollo.
+
+Mercurial está especialmente preparado para administrar un buen número
+de ramas simultáneas pero no idénticas. Cada ``dirección de
+desarrollo'' puede vivir en su propio repositorio central, y puede
+mezclar los cambios de una a otra de acuerdo con las necesidades. Dado
+que los repositorios son independientes, uno del otro, los cambios
+inestables de una rama de desarrollo nunca afectarán una rama estable
+a menos que alguien explícitamente mezcle los cambios.
+
+A continuación un ejemplo de cómo podría hacerse esto en la
+práctica. Digamos que tiene una ``rama principal'' en un servidor
+central.
+\interaction{branching.init}
+Alguien lo clona, hace cambios locales, los prueba, y los publica allí
+mismo.
+
+Una vez que la rama principal alcanza una estado de versión se puede
+usar la orden \hgcmd{tag} para dar un nombre permanente a la revisión.
+\interaction{branching.tag}
+Digamos que en la rama principal ocurre más desarrollo.
+\interaction{branching.main}
+Cuando se usa la etiqueta con que se identificó la versión, la gente
+puede clonar el repositorio en cualquier momento en el futuro
+empleando \hgcmd{update} para obtener una copia del directorio de
+trabajo exacta como cuando se creó la etiqueta de la revisión que se
+consignó.
+\interaction{branching.update}
+
+Adicionalmente, justo después de que la rama principal se etiquete,
+alguien puede clonarla en el servidor a una nueva rama ``estable'',
+también en el servidor.
+\interaction{branching.clone}
+
+Alguien que requiera hacer un cambio en la rama estable puede clonar
+\emph{ese} repositorio, hacer sus cambios, consignar y publicarlos
+posteriormente al inicial.
+\interaction{branching.stable}
+Puesto que los repositorios de Mercurial son independientes, y que
+Mercurial no mueve los cambios de un lado a otro automáticamente, las
+ramas estable y principal están \emph{aisladas} la una de la otra.
+Los cambios que haga en la rama principal no ``se filtran'' a la rama
+estable o vice versa.
+
+Es usual que los arreglos de fallos de la rama estable deban hacerse
+aparecer en la rama principal también.  En lugar de reescribir el
+arreglo del fallo en la rama principal, puede jalar y mezclar los
+cambios de la rama estable a la principal, Mercurial traerá tales
+arreglos por usted.
+\interaction{branching.merge}
+La rama principal contendrá aún los cambios que no están en la
+estable y contendrá además todos los arreglos de fallos de la rama
+estable.  La rama estable permanece incólume a tales cambios.
+
+\subsection{Ramas de Características}
+
+En proyectos grandes, una forma efectiva de administrar los cambios es
+dividir el equipo en grupos más pequeños. Cada grupo tiene una rama
+compartida, clonada de una rama ``principal'' que conforma el proyecto
+completo.   Aquellos que trabajan en ramas individuales típicamente
+están aislados de los desarrollos de otras ramas.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{feature-branches}
+  \caption{Ramas de Características}
+  \label{fig:collab:feature-branches}
+\end{figure}
+
+Cuando una rama particular alcanza un estado deseado, alguien del
+equipo de características jala y fusiona de la rama principal hacia
+la rama de características y publica posteriormente a la rama principal.
+
+\subsection{El tren de publicación}
+
+Algunos proyectos se organizan al estilo``tren'': Una versión se
+planifica para ser liberada cada cierto tiempo, y las características
+que estén listas cuando ha llegado el momento ``tren'', se incorporan.
+
+Este modelo tiene cierta similitud a las ramas de características. La
+diferencia es que cuando una característica pierde el tren, alguien en
+el equipo de características jala y fusiona los cambios que se fueron
+en la versión liberada hacia la rama de característica, y el trabajo
+continúa sobre lo fusionado para que la característica logre estar en
+la próxima versión.
+
+\subsection{El modelo del kernel linux}
+
+El desarrollo del Kernel Linux tiene una estructura jerárquica
+bastante horizontal, rodeada de una nube de caos aparente. Dado que la
+mayoría de desarrolladores usan \command{git}, una herramienta distribuida
+de control de versiones con capacidades similares a Mercurial, resulta
+de utilidad describir la forma en que el trabajo fluye en tal
+ambiente; si le gustan las ideas, la aproximación se traduce bien
+entre Git y Mercurial.
+
+En el centro de la comunidad está Linus Torvalds, el creador de Linux.
+Él publica un único repositorio que es considerado el árbol
+``oficial'' actual por la comunidad completa de
+desarrolladores. Cualquiera puede clonar el árbol de Linus, pero él es
+muy selectivo acerca de los árboles de los cuales jala.
+
+Linus tiene varios ``lugartenientes confiables''.  Como regla, él jala
+todos los cambios que ellos publican, en la mayoría de los casos sin
+siquiera revisarlos.  Algunos de sus lugartenientes generalmente
+aceptan ser los ``mantenedores'', responsables de subsistemas
+específicos dentro del kernel.  Si un hacker cualquiera desea hacer un
+cambio a un subsistema y busca que termine en el árbol de Linus, debe
+encontrar quién es el mantenedor del subsistema y solicitarle que
+tenga en cuenta su cambio.  Si el mantenedor revisa los cambios y está
+de acuerdo en tomarlos, estos pasarán al árbol de Linus de acuerdo a
+lo expuesto.
+
+Cada lugarteniente tiene su forma particular de revisar, aceptar y
+publicar los cambios; y para decidir cuando hacerlos presentes a
+Linus.  Adicionalmente existen varias ramas conocidas que mucha gente
+usa para propósitos distintos. Por ejemplo, pocas personas mantienen
+repositorios ``estables'' de versiones anteriores del kernel, a los
+cuales aplican arreglos de fallos críticos necesarios. Algunos
+mantenedores publican varios árboles: uno para cambios
+experimentales; uno para cambios que van a ofrecer al mantenedor
+principal; y así sucesivamente. Otros publican un solo árbol.
+
+Este modelo tiene dos características notables. La primera es que son
+de ``jalar exclusivamente''.  Usted debe solicitar, convencer o
+incluso rogar a otro desarrollador para que tome sus cambios, porque
+casi no hay árboles en los cuales más de una persona pueda publicar, y
+no hay forma de publicar cambios en un árbol que otra persona controla.
+
+El segundo está basado en reputación y meritocracia.  Si usted es un
+desconocido, Linus probablemente ignorará sus cambios, sin siquiera
+responderle.  Pero un mantenedor de un subsistema probablemente los
+revisara, y los acogerá en caso de que aprueben su criterio de
+aplicabilidad.  A medida que usted ofrezca ``mejores'' cambios a un
+mantenedor, habrá más posibilidad de que se confíe en su juicio y se
+acepten los cambios.   Si usted es reconocido y mantiene una rama
+durante bastante tiempo para algo que Linus no ha aceptado, personas
+con intereses similares pueden jalar sus cambios regularmente para
+estar al día con su trabajo.
+
+La reputación y meritocracia no necesariamente es transversal entre
+``personas'' de diferentes subsistemas.  Si usted es respetado pero es
+un hacker en almacenamiento y trata de arreglar un fallo de redes,
+tal cambio puede recibir un nivel de escrutinio de un mantenedor de
+redes comparable con el que se le haría a un completo extraño.
+
+Personas que vienen de proyectos con un ordenamiento distinto, sienten
+que el proceso comparativamente caótico del Kernel Linux es
+completamente lunático.  Es objeto de los caprichos individuales; la
+gente desecha cambios cuando lo desean; y la fase de desarrollo es
+alucinante. A pesar de eso Linux es una pieza de software exitosa y
+bien reconocida.
+
+\subsection{Solamente jalar frente a colaboración pública}
+
+Una fuente perpetua de discusiones en la comunidad de código abierto
+yace en el modelo de desarrollo en el cual la gente solamente jala
+cambios de otros ``es mejor que'' uno  en el cual muchas personas
+pueden publicar cambios a un repositorio compartido.
+
+Típicamente los partidarios del modelo de publicar usan las herramientas
+que se apegan a este modelo.  Si usted usa una herramienta
+centralizada de control de versiones como Subversion, no hay forma de
+elegir qué modelo va a usar: La herramienta le ofrece publicación
+compartida, y si desea hacer cualquier otra cosa, va a tener que
+aplicar una aproximación artificial (tal como aplicar parches a mano).
+
+Una buena herramienta distribuida de control de versiones, tal como
+Mercurial soportará los dos modelos.   Usted y sus colaboradores
+pueden estructurar cómo trabajarán juntos basados en sus propias
+necesidades y preferencias,  sin depender de las peripecias que la
+herramienta les obligue a hacer.
+
+\subsection{Cuando la colaboración encuentra la administración ramificada}
+
+Una vez que usted y su equipo configurar algunos repositorios
+compartidos y comienzan a propagar cambios entre sus repositorios
+locales y compartidos, comenzará a encarar un reto relacionado, pero
+un poco distinto:  Administrar las direcciones en las cuales su equipo
+puede moverse.   A pesar de que está íntimamente ligado acerca de cómo
+interactúa su equipo, es lo suficientemente denso para ameritar un
+tratamiento en el capítulo~\ref{chap:branch}.
+
+\section{Aspectos técnicos de la colaboración}
+
+Lo que resta del capítulo lo dedicamos a las cuestiones de servir
+datos a sus colaboradores.
+
+\section{Compartir informalmente con \hgcmd{serve}}
+\label{sec:collab:serve}
+
+La orden \hgcmd{serve} de Mercurial satisface de forma espectacular
+las necesidades de un grupo pequeño, acoplado y de corto
+tiempo.  Se constituye en una demostración de cómo se siente usar los
+comandos usando la red.
+
+Ejecute \hgcmd{serve} dentro de un repositorio, y en pocos segundos
+iniciará un servidor HTTP especializado; aceptará conexiones desde
+cualquier cliente y servirá datos de este repositorio mientrs lo
+mantenga funcionando. Todo el que sepa el URL del servidor que ha
+iniciado, y que puede comunicarse con su computador por la red, puede
+usar un navegador web o Mercurial para leer datos del repositorio. Un
+URL para una instancia de \hgcmd{serve} ejecutándose en un portátil
+debería lucir algo \Verb|http://my-laptop.local:8000/|.
+
+La orden \hgcmd{serve} \emph{no} es un servidor web de propósito
+general. Solamente puede hacer dos cosas:
+\begin{itemize}
+\item Permitir que se pueda visualizar el historial del repositorio que
+  está sirviendo desde navegadores web.
+\item Hablar el protocolo de conexión de Mercurial para que puedan hacer
+  \hgcmd{clone} o \hgcmd{pull} (jalar) cambios de tal repositorio.
+\end{itemize}
+En particular, \hgcmd{serve} no permitirá que los usuarios remotos
+puedan \emph{modificar} su repositorio.  Es de tipo solo lectura.
+
+Si está comenzando con Mercurial, no hay nada que le impida usar
+\hgcmd{serve} para servir un repositorio en su propio computador, y
+usar posteriormente órdenes como \hgcmd{clone}, \hgcmd{incoming}, para
+comunicarse con el servidor como si el repositorio estuviera alojado
+remotamente. Lo que además puede ayudarle a adecuarse rápidamente para
+usar comandos en repositorios alojados en la red.
+
+\subsection{Cuestiones adicionales para tener en cuenta}
+
+Dado que permite lectura sin autenticación a todos sus clientes,
+debería usar \hgcmd{serve} exclusivamente en ambientes en los cuáles
+no tenga problema en que otros vean, o en los cuales tenga control
+completo acerca de quien puede acceder a su red y jalar cambios de su
+repositorio.
+
+La orden \hgcmd{serve} no tiene conocimiento acerca de programas
+cortafuegos que puedan estar instalados en su sistema o en su red. No
+puede detectar o controlar sus cortafuegos.  Si otras personas no
+pueden acceder a su instancia \hgcmd{serve}, lo siguiente que debería hacer
+(\emph{después} de asegurarse que tienen el URL correcto) es verificar
+su configuración de cortafuegos.
+
+De forma predeterminada, \hgcmd{serve} escucha conexiones entrantes en
+el puerto~8000.  Si otro proceso está escuchando en tal puerto, usted
+podrá especificar un puerto distinto para escuchar con la opción
+\hgopt{serve}{-p}.
+
+Normalmente, cuando se inicia \hgcmd{serve}, no imprime nada, lo cual
+puede ser desconcertante.  Si desea confirmar que en efecto está
+ejecutándose correctamente, y darse cuenta qué URL debería enviar a
+sus colaboradores, inícielo con la opción \hggopt{-v}.
+
+\section{Uso del protocolo Secure Shell (ssh)}
+\label{sec:collab:ssh}
+
+Usted puede publicar y jalar cambios en la red de forma segura usando
+el protocolo Secure Shell (\texttt{ssh}).  Para usarlo satisfactoriamente,
+tendrá que hacer algo de configuración a nivel de cliente o el
+servidor.
+
+Si no está familiarizado con ssh, es un protocolo de red que le permite
+comunicarse con seguridad con otro computador.  Para usarlo con
+Mercurial, estará estableciendo una o más cuentas de usuario en un
+servidor de forma tal que los usuarios remotos puedan entrar y
+ejecutar órdenes.
+
+(Si ssh le \emph{es} familiar, encontrará probablemente elemental una
+porción del material a continuación.)
+
+\subsection{Cómo leer y escribir URLs de ssh}
+
+Los URLs de ssh tienden a lucir de la siguiente forma:
+\begin{codesample2}
+  ssh://bos@hg.serpentine.com:22/hg/hgbook
+\end{codesample2}
+\begin{enumerate}
+\item La parte ``\texttt{ssh://}'' indica a Mercurial que use el
+  protocolo ssh.
+\item El componente ``\texttt{bos@}'' indica el nombre del usuario que
+  está entrando al servidor.  Puede omitirlo si el usuario remoto
+  coincide con el usuario local.
+\item ``\texttt{hg.serpentine.com}'' es el nombre del servidor al cual
+  se desea entrar.
+\item El ``:22'' identifica el número del puerto en el servidor al cual
+  se conectará.  El predeterminado es el~22, así que solamente
+  necesitará especificar esa porción si \emph{no} está usando el
+  puerto~22.
+\item La última porción del URL es la ruta local al repositorio en el
+  servidor.
+\end{enumerate}
+
+El componente de la ruta del URL para ssh es una fuente de confusión,
+puesto que no hay una forma estándar para que las herramientas puedan
+interpretarlo.  Algunos programas se comportan de manera distinta a
+otros cuando manipulan estas rutas.  No es la situación ideal, pero
+es muy poco probable que vaya a cambiar.  Por favor lea los párrafos
+siguientes cuidadosamente.
+
+Mercurial trata la ruta al repositorio en el servidor como relativo al
+directorio personal del usuario remoto.  Por ejemplo, si el usuario
+\texttt{foo} en el servidor tiene el directorio casa
+\dirname{/home/foo},
+entonces un URL ssh que contenga en su ruta a \dirname{bar}
+\emph{realmente} se refiere al directorio \dirname{/home/foo/bar}.
+
+Si desea especificar una ruta relativa a otro directorio de usuario,
+puede usar una ruta que comience con un caracter tildado, seguido del
+nombre del usuario (llamémosle \texttt{otrousuario}, así
+\begin{codesample2}
+  ssh://server/~otrousuario/hg/repo
+\end{codesample2}
+
+Y si realmente desea especifica una ruta \emph{absoluta} en el
+servidor, comience con el componente de la ruta con dos barras como
+en el siguiente ejemplo:
+\begin{codesample2}
+  ssh://server//absolute/path
+\end{codesample2}
+
+\subsection{Encontrar un cliente ssh para su sistema}
+
+Casi todos los sistemas tipo Unix vienen con OpenSSH preinstalado.  Si
+usted está usando un sistema de estos, ejecute \Verb|which ssh| para
+identificar dónde está instalada la orden \command{ssh} (usualmente
+estará en \dirname{/usr/bin}).  Si por casualidad no está presente,
+vea la documentación de sus sistema para lograr instalarlo.
+
+En Windows, tendrá que escoger primero un cliente adecuado para
+descargarlo.  Hay dos alternativas:
+\begin{itemize}
+\item El excelente paquete PuTTY~\cite{web:putty} de Simon Tatham, que
+  ofrece un suite completo de órdenes de cliente ssh.
+\item Si tiene alta tolerancia al dolor, puede usar el porte de Cygwin
+  para OpenSSH.
+\end{itemize}
+En cualquier caso, tendrá que editar su fichero \hgini\ para indicarle
+a Mercurial dónde encontrar la orden real del cliente.  Por ejemplo, si
+está usando PuTTY, tendrá que usar la orden \command{plink} como un
+cliente de línea de órdenes.
+\begin{codesample2}
+  [ui]
+  ssh = C:/ruta/a/plink.exe -ssh -i "C:/ruta/a/mi/llave/privada"
+\end{codesample2}
+
+\begin{note}
+  La ruta a \command{plink} no debería contener espacios o caracteres
+  en blanco, o Mercurial no podrá encontrarlo correctamente (por lo
+  tanto, probablemente no sería buena idea colocarlo en 
+  \dirname{C:\\Program Files}
+\end{note}
+
+\subsection{Generar un par de llaves}
+
+Para evitar la necesidad de teclear una clave de forma repetitiva cada
+vez que necesita usar el cliente, recomiendo generar un par de llaves.
+En un sistema tipo Unix, la orden \command{ssh-keygen} también se
+comportará bien. En Windows, si está usando PuTTY, la orden
+\command{puttygen} es la que necesitará.
+
+Cuando genera un par de llaves, se aconseja \emph{comedidamente} 
+protegerlas con una frase de clave.  (La única oportunidad en la cual
+usted querría identificarse una única vez, es cuando está usando
+el protocolo ssh para tareas automatizadas en una red segura.)
+
+No basta con generar un par de llaves.  Se requiere adicionar una llave
+pública al conjunto de llaves autorizadas para todos los usuarios
+remotos que se vayan a autenticar.  Para aquellos servidores que usen
+OpenSSH (la gran mayoría), significará añadir la llave pública a la
+lista en el fichero llamado \sfilename{authorized\_keys} en su
+directorio \sdirname{.ssh}.
+
+En sistemas tipo Unix, su llave pública tendrá la extensión
+\filename{.pub}.  Si usa \command{puttygen} en Windows, puede
+guardar la llave pública en un fichero de su elección, o pegarla desde
+la ventana en la cual se despliega directamente en el fichero
+\sfilename{authorized\_keys}.
+
+\subsection{Uso de un agente de autenticación}
+
+Un agente de autenticación es un demonio que almacena frases clave en
+memoria (olvidará las frases clave si sale y vuelve a entrar).  Un cliente
+ssh notará si está corriendo, y solicitará una frase clave.  Si no hay
+un agente de autenticación corriendo, o el agente no almacena la frase
+clave necesaria, tendrá que teclear su frase clave cada vez que 
+Mercurial intente comunicarse con un servidor para usted (p.e.~cada vez
+que jale o publique cambios).
+
+El problema de almacenar frases claves en un agente es que es posible
+para un atacante bien preparado recuperar el texto plano de su frase
+clave, en algunos casos incluso si su sistema sea muy alternante.
+Es su decisión si es un riesgo aceptable.  Lo que si es seguro es que
+evita reteclear.
+
+En sistemas tipo Unix, el agente se llama \command{ssh-agent}, y
+usualmente se ejecuta automáticamente cuando usted entra.  Tendrá que
+usar la orden \command{ssh-add} para añadir frases claves al agente.  En
+Windows, si está usando PuTTY, la orden \command{pageant} actúa como
+el agente.  Añade un icono a su barra del sistema que le permitirá
+almacenar frases clave.
+
+\subsection{Configurar el lado del servidor apropiadamente}
+
+Dado que puede ser dispendioso configurar ssh si usted es nuevo, hay 
+una variedad de cosas que podrían ir mal.  Añada piense primero en
+Mercurial y hay mucho más en qué pensar.  La mayor parte de estos
+problemas potenciales ocurren en el lado del servidor, no en el cliente.
+Las buenas noticias es que una vez tiene una configuración funcional,
+usualmente continuará trabajando indefinidamente.
+
+Antes de intentar que Mercurial hable con un servidor ssh, es mejor
+asegurarse que puede usar la orden normal \command{ssh} o \command{putty}
+para comunicarse con el servidor primero.  Si tiene problemas usando
+estas órdenes directamente, de seguro Mercurial no funcionará.  Pero aún,
+esconderá el problema subyacente.  Cuando desee revisar un problema
+relacionado con ssh y Mercurial, debería asegurarse primero que las
+órdenes de ssh en el lado del cliente funcionan primero, \emph{antes}
+de preocuparse por si existe un problema con Mercurial.
+
+Lo primero para asegurar en el lado del servidor es que puede entrar
+desde otra máquina.  Si no puede entrar con \command{ssh} o 
+\command{putty}, el mensaje de error que obtenga le puede dar pistas
+de qué ha ido mal.  Los problemas más comunes son los siguientes:
+\begin{itemize}
+\item Si obtiene un error de ``conexión rehusada'', es posible que no 
+  haya un demonio SSH corriendo en el servidor o que no pueda accederse
+  a él por configuraciones de cortafuegos.
+\item Si obtiene un error de ``no hay ruta hasta el servidor'', puede
+  tener la dirección del servidor incorrecta o un cortafuegos con
+  bloqueo agresivo que no permitirá su existencia.
+\item Si obtiene un mensaje de ``permiso denegado'', puede que haya
+  tecleado mal el usuario en el servidor, o que haya tecleado
+  incorrectamente la frase clave o la clave del usuario remoto.
+\end{itemize}
+En resumen, si tiene problemas al comunicarse con el demonio ssh del
+servidor, primero asegúrese de que está corriendo.  En muchos sistemas
+estará instalado, pero deshabilitado de forma predeterminada.  Una vez
+que haya hecho este paso tendrá que revisar si el cortafuegos del
+servidor está configurado para recibir conexiones entrantes en el
+puerto en el cual el demonio de ssh está escuchando (usualmente el~22).
+No trate de buscar otras posibilidades exóticas o configuraciones
+erradas hasta que haya revisado primero estas dos.
+
+Si está usando un agente de autenticación en el lado del cliente para
+almacenar las frase claves de sus contraseñas, debería poder entrar al
+servidor sin necesidad de que se le solicite frases claves o
+contraseñas.  Si se le pregunta alguna, a continuación algunas
+posibilidades:
+\begin{itemize}
+\item Puede haber olvidado usar \command{ssh-add} o
+  \command{pageant} para guardar la frase clave.
+\item Puede haber almacenado una frase clave errónea para la llave.
+\end{itemize}
+Si se le solicita la clave del usuario remoto, hay otras posibilidades
+que deben revisarse:
+\begin{itemize}
+\item O bien el directorio del usuario o su directorio \sdirname{.ssh}
+  tiene permisos excesivamente abiertos.  Como resultado el daemonio
+  ssh no creerá o leerá su fichero \sfilename{authorized\_keys}.  
+  Por ejemplo, un directorio casa o \sdirname{.ssh} causará aveces
+  este síntoma.
+\item El fichero de usuario \sfilename{authorized\_keys} puede tener
+  un problema.  Si alguien distinto al usuario es dueño o puede
+  escribir el fichero, el demonio ssh no confiará o lo leerá.
+\end{itemize}
+
+En un mundo ideal, debería poder ejecutar la siguiente orden
+exitosamente, y debería imprimir exactamente una línea de salida,
+la fecha y hora actual.
+\begin{codesample2}
+  ssh miservidor fecha
+\end{codesample2}
+
+Si en su servidor tiene guión que se ejecuta a la entrada e imprime
+letreros o cualquier otra cosa, incluso cuando se ejecutan órdenes no
+interactivas como esta, debería arreglarlo antes de continuar, de
+forma que solamente imprima algo si se ejecuta interactivamente.  De
+otra forma estos letreros al menos llenarán la salida de Mercurial. 
+Incluso podrían causar problemas potenciales cuando se ejecuten
+órdenes de forma remota.  Mercurial intenta detectar e ignorar los
+letreros en sesiones no interactivas de \command{ssh}, pero no es
+a prueba de tontos.  (Si edita sus guiones de entrada en el servidor,
+la forma usual de ver si un guión de línea de comandos se ejecuta en un intérprete
+interactivo, es verificar el código de retorno de la orden
+\Verb|tty -s|.)
+
+Cuando verifique que el venerado ssh funciona en su servidor, el
+paso siguiente es asegurar que Mercurial corre en el servidor.  La
+orden siguiente debería ejecutarse satisfactoriamente:
+\begin{codesample2}
+  ssh miservidor hg version
+\end{codesample2}
+Si ve un mensaje de error en lugar de la salida usual de 
+\hgcmd{version}, será porque no ha instalado Mercurial en
+\dirname{/usr/bin}.  No se preocupe si este es el caso; no necesita
+hacerlo.  Pero debería revisar los posibles problemas presentados a
+continuación:
+\begin{itemize}
+\item Está instalado Mercurial en el servidor?  Se que suena trivial
+  pero es mejor revisar!
+\item Tal vez la ruta de búsqueda de la interfaz de órdenes
+  (normalmente vía la variable de ambiente \envar{PATH}) simplemente
+  está mal configurada.
+\item Puede ser que su variable de ambiente \envar{PATH} soalamente
+  apunte al lugar en el cual está el ejecutable \command{hg} si la
+  sesión de entrada es interactiva.  Puede suceder si establece la
+  ruta en el guión de línea de comandos de entrada incorrecto.  Consulte la
+  documentación de su línea de órdenes.
+\item La variable de ambiente \envar{PYTHONPATH} puede requerir la
+  ruta a los módulos de Mercurial en Python.  Puede que ni siquiera
+  está establecida; podría estar incorrecta; o puede ser que se
+  establezca únicamente cuando hay entradas interactivas.
+\end{itemize}
+
+Si puede ejecutar \hgcmd{version} sobre una conexión ssh,
+felicitaciones!  Ha logrado la interacción entre el cliente y el 
+servidor.  Ahora debería poder acceder a los repositorios de
+Mercurial que tiene el usuario en el servidor.  Si tiene problemas
+con Mercurial y ssh en este punto, intente usar la opción
+\hggopt{--debug} para tener información más clara de lo que está
+sucediendo.
+
+\subsection{Compresión con ssh}
+
+Mercurial no comprime datos cuando usa el protocolo ssh, dado que
+el protocolo puede comprimir datos transparentemente.  Pero el
+comportamiento predeterminado del cliente ssh es \emph{no}
+solicitar compresión.
+
+Sobre cualquier red distinta a una LAN rápida (incluso con una red
+inalámbrica), hacer uso de compresión puede mejorar el rendimiento
+de las operaciones de Mercurial que involucren la red.  Por ejemplo,
+sobre WAN, alguien ha medido la compresión reduciendo la cantidad
+de tiempo requerido para clonar un repositorio particularmente
+grande de~51 minutos a~17 minutos.
+
+Tanto \command{ssh} como \command{plink} aceptan la opción
+\cmdopt{ssh}{-C} que activa la compresión.  Puede editar fácilmente
+su \hgrc\ para habilitar la compresión para todos los usos de
+Mercurial sobre el protocolo ssh.
+\begin{codesample2}
+  [ui]
+  ssh = ssh -C
+\end{codesample2}
+
+Si usa \command{ssh}, puede reconfigurarlo para que siempre use
+compresión cuando se comunique con su servidor.  Para hacerlo,
+edite su fichero \sfilename{.ssh/config} (que puede no existir
+aún), de la siguiente forma:
+\begin{codesample2}
+  Host hg
+    Compression yes
+    HostName hg.ejemplo.com
+\end{codesample2}
+Que define un alias, \texttt{hg}.  Cuando lo usa con la orden
+\command{ssh} o con una URL de Mercurial con protocolo\texttt{ssh},
+logrará que \command{ssh} se conecte a \texttt{hg.ejemplo.com}
+con compresión.  Que le dará un nombre más corto para teclear y
+compresión, los cuales por derecho propio son buenos.
+
+\section{Uso de CGI a través de HTTP}
+\label{sec:collab:cgi}
+
+Dependiendo de qué tan ambicioso sea, configurar la interfaz CGI
+de Mercurial puede tomar desde unos minutos hasta varias horas.
+
+Comenzaremos con el ejemplo más sencillo, y nos dirigiremos hacia
+configuraciones más complejas.  Incluso para el caso más básico
+necesitará leer y modificar su configuración del servidor web.
+
+\begin{note}
+  Configurar un servidor web es una actividad compleja, engorrosa y
+  altamente dependiente del sistema.  De ninguna manera podremos
+  cubrir todos los casos posibles con los cuales pueda encontrarse.
+  Use su discreción y juicio respecto a las secciones siguientes.
+  Esté preparado para cometer muchas equivocaciones, y emplear
+  bastante tiempo leyendo sus bitácoras de error del servidor.
+\end{note}
+
+\subsection{Lista de chequeo de la configuración del servidor web}
+
+Antes de continuar, tómese un tiempo para revisar ciertos aspectos de
+la configuración de su sistema:
+
+\begin{enumerate}
+\item ¿Tiene un servidor web?  Mac OS X viene con Apache, pero otros
+  sistemas pueden no tener un servidor web instalado.
+\item Si tiene un servidor web instalado, ¿Está ejecutándose?  En la
+  mayoría de sistemas, aunque esté presente, puede no estar habilitado
+  de forma predeterminada.
+\item ¿u servidor está configurado para permitir ejecutar programas
+  CGI en el directorio donde planea hacerlo?  Casi todos los
+  servidores de forma predeterminada explícitamente inhiben la
+  habilidad de ejecutar programas CGI.
+\end{enumerate}
+
+Si no tiene un servidor web instalado, y no tiene cierta experiencia
+configurando  Apache, debería considerar usar el servidor web
+\texttt{lighttpd} en lugar de Apache.  Apache tiene una reputación
+bien ganada por su configuración barroca y confusa.
+A pesar de que \texttt{lighttpd} tiene menos características que
+Apache en ciertas áreas, las mismas no son relevantes para servir
+repositorios de Mercurial.  Definitivamente es mucho más sencillo
+comenzar con \texttt{lighttpd} que con Apache.
+
+\subsection{Configuración básica de CGI}
+
+En sistemas tipo Unix es común que los usuarios tengan un subdirectorio
+con un nombre como \dirname{public\_html} en su directorio personal,
+desde el cual pueden servir páginas web.  Un fichero llamado \filename{foo}
+en este directorio será visible en una URL de la forma
+\texttt{http://www.example.com/\~username/foo}.
+
+Para comenzar, encuentre el guión \sfilename{hgweb.cgi} que debería
+estar presente en su instalación de Mercurial.  Si no puede
+encontrarlo rápidamente una copia local en su sistema, puede
+descargarlo del repositorio principal de Mercurial en
+\url{http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi}.
+
+Tendrá que copiar este guión en su directorio \dirname{public\_html},
+y asegurarse que sea ejecutable.
+\begin{codesample2}
+  cp .../hgweb.cgi ~/public_html
+  chmod 755 ~/public_html/hgweb.cgi
+\end{codesample2}
+El argumento \texttt{755} de la orden \command{chmod} es un poco más
+general que hacerlo ejecutable: Asegura que el guión sea ejecutable
+por cualquiera, y que el ``grupo'' y los ``otros'' \emph{no}  tengan
+permiso de escritura.  Si dejara los permisos de escritura abiertos,
+, el subsistema \texttt{suexec} de  Apache probablemente se negaría
+a ejecutar el guión.  De hecho, \texttt{suexec} también insiste en que
+el \emph{directorio} en el cual reside el guión no tenga permiso de
+escritura para otros.
+\begin{codesample2}
+  chmod 755 ~/public_html
+\end{codesample2}
+
+\subsubsection{¿Qué \emph{podría} resultar mal?}
+\label{sec:collab:wtf}
+
+Cuando haya ubicado el CGI en el sitio correspondiente con un navegador
+intente visitar el URL \url{http://myhostname/~myuser/hgweb.cgi},
+\emph{sin} dejarse abatir por un error.  Hay una alta probabilidad de
+que esta primera visita al URL sea fallida, y hay muchas razones posibles
+para este comportamiento.  De hecho, podría toparse con cada uno de los
+errores que describimos a continuación, así que no deje de leerlos
+cuidadosamente.   A continuación presento los problemas que yo tuve en
+un sistema con Fedora~7, con una instalación nueva de Apache, y una
+cuenta de usuario que creé específicamente para desarrollar este
+ejercicio.
+
+Su servidor web puede tener directorios por usuario deshabilitados. Si
+usa Apache, busque el fichero de configuración que contenga la
+directiva \texttt{UserDir}.  Si no está presente en sitio alguno, los
+directorios por usuario están deshabilitados.  Si la hay, pero su
+valor es \texttt{disabled}, los directorios por usuario estarán
+deshabilitados. La directiva \texttt{UserDir} en caso contrario tendrá
+el nombre del subdirectorio bajo el cual Apache mirará en el
+directorio de cada usuario, por ejemplo \dirname{public\_html}.
+
+Los permisos de sus ficheros pueden ser demasiado restrictivos.  El
+servidor web debe poder recorrer su directorio personal y los
+directorios que estén bajo \dirname{public\_html}, además de tener
+permiso para leer aquellos que estén adentro.  A continuación una
+receta rápida para hacer que sus permisos estén acordes con las
+necesidades básicas.
+\begin{codesample2}
+  chmod 755 ~
+  find ~/public_html -type d -print0 | xargs -0r chmod 755
+  find ~/public_html -type f -print0 | xargs -0r chmod 644
+\end{codesample2}
+
+Otra posibilidad con los permisos es que obtenga una ventana
+completamente en blanco cuando trata de cargar el guión. En cuyo
+caso, es posible que los permisos que tiene son \emph{demasiado
+ permisivos}.  El subsistema \texttt{suexec} de Apache no ejecutará un
+guión que tenga permisos de escritura para el grupo o el planeta, por
+ejemplo.
+
+Su servidor web puede estar configurado para evitar la ejecución de
+programas CGI en los directorios de usuario.  A continuación presento
+una configuración predeterminada por usuario en mi sistema Fedora.
+
+\begin{codesample2}
+  <Directory /home/*/public_html>
+      AllowOverride FileInfo AuthConfig Limit
+      Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+      <Limit GET POST OPTIONS>
+          Order allow,deny
+          Allow from all
+      </Limit>
+      <LimitExcept GET POST OPTIONS>
+          Order deny,allow
+          Deny from all
+      </LimitExcept>
+  </Directory>
+\end{codesample2}
+Si encuentra un grupo de instrucciones de \texttt{Directory} similares
+en su configuración de Apache,  la directiva a revisar es \texttt{Options}.
+Adicione \texttt{ExecCGI} al final de esta lista en caso de que haga
+falta y reinicie su servidor web.
+
+Si resulta que Apache le muestra el texto del guión CGI en lugar de
+ejecutarlo, necesitará o bien descomentar (si se encuentra presente) o
+adicionar una directiva como la siguiente:
+\begin{codesample2}
+  AddHandler cgi-script .cgi
+\end{codesample2}
+
+Otra posibilidad es que observe una traza de Python en colores
+informando que no puede importar un módulo relacionado con
+\texttt{mercurial}.  Esto es un gran progreso!  El servidor es capaz
+de ejecutar su guión CGI.  Este error solamente ocurrirá si está
+ejecutando una instalación privada de Mercurial en lugar de una
+instalación para todo el sistema.  Recuerde que el servidor que
+ejecuta el programa CGI no cuenta con variables de ambiente de las
+cuales usted si dispone en una sesión interactiva.  Si este error le
+ocurre, edite su copia de \sfilename{hgweb.cgi} y siga las indicaciones
+dentro del mismo para establecer de forma adecuada su variable de
+ambiente \envar{PYTHONPATH}.
+
+Finalmente, si encuentra \emph{otra} traza a todo color de Python al visitar
+el URL: Esta seguramente se referirá a que no puede encontrar
+\dirname{/path/to/repository}.  Edite su script \sfilename{hgweb.cgi}
+y reemplace la cadena \dirname{/path/to/repository} con la ruta
+completa al repositorio que desea servir.
+
+En este punto, cuando trate de recargar la página, deberá visualizar
+una linda vista HTML del historial de su repositorio. Uff!
+
+\subsubsection{Configuración de lighttpd}
+
+En mi intención de ser exhaustivo, intenté configurar
+\texttt{lighttpd}, un servidor web con creciente aceptación, para
+servir los repositorios de la misma forma como lo describí
+anteriormente con Apache. Después de superar los problemas que mostré
+con Apache, muchos de los cuáles no son específicos del servidor.  Por
+lo tanto estaba seguro de que mis permisos para directorios y ficheros
+eran correctos y que mi guión \sfilename{hgweb.cgi} también lo era.
+
+Dado que ya Apache estaba en ejecución correctamente, lograr que
+\texttt{lighttpd} sirviera mi repositorio fue rápido (en otras
+palabras, si está tratando de usar \texttt{lighttpd}, debe leer la
+sección de Apache).  Primero tuve que editar la sección
+\texttt{mod\_access} para habilitar \texttt{mod\_cgi} y
+\texttt{mod\_userdir}, los cuales estaban inhabilitados en mi
+instalación predeterminada.  Añadí posteriormente unas líneas al final
+del fichero de configuración, para hacer lo propio con los módulos.
+\begin{codesample2}
+  userdir.path = "public_html"
+  cgi.assign = ( ".cgi" => "" )
+\end{codesample2}
+Hecho esto, \texttt{lighttpd} funcionó inmediatamente para
+mí. Configuré \texttt{lighttpd} antes que Apache, tuve casi los mismos
+reparos a nivel de configuración del sistema que con Apache.  De todas
+maneras, considero que \texttt{lighttpd} es bastante más sencillo de
+configurar que Apache, a pesar de haber usado Apache por lo menos por
+una década, y esta fue mi primera experiencia con \texttt{lighttpd}.
+
+\subsection{Compartir varios repositorios con un guión CGI}
+
+El guión \sfilename{hgweb.cgi} permite publicar únicamente un
+repositorio, una restricción frustrante.  Si desea publicar más de uno
+sin complicarse con varias copias del mismo guión, cada una con un
+nombre distinto, resulta mucho mejor usar el guión
+\sfilename{hgwebdir.cgi}.
+
+El procedimiento para configurar \sfilename{hgwebdir.cgi} tiene una
+porción adicional frente al trabajo requerido con
+\sfilename{hgweb.cgi}.  Primero se debe obtener una copia del
+guión. Si no tiene una a mano, puede descargar una copia del ftp
+principal del repositorio de Mercurial en
+\url{http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi}.
+
+Necesitará una copia del guión en su directorio \dirname{public\_html},
+y asegurarse de que sea ejecutable.
+\begin{codesample2}
+  cp .../hgwebdir.cgi ~/public_html
+  chmod 755 ~/public_html ~/public_html/hgwebdir.cgi
+\end{codesample2}
+Con la configuración básica, intente visitar en su navegador
+\url{http://myhostname/~myuser/hgwebdir.cgi}.  Debería mostrar una
+lista vacía de repositorios.  Si obtiene una ventana en blanco o un
+mensaje de error, verifique la lista de problemas potenciales en la 
+sección~\ref{sec:collab:wtf}.
+
+El guión \sfilename{hgwebdir.cgi} se apoya en un fichero externo de
+configuración.  En principio, busca un fichero llamado
+\sfilename{hgweb.config} en el mismo directorio.  Tendrá que crear el
+fichero, y permitir lectura de todo el mundo.  El formato del fichero
+es similar a un fichero ``ini'' de Windows, que puede interpretar el módulo
+\texttt{ConfigParser}~\cite{web:configparser} de Python.
+
+La forma más sencilla de configurar \sfilename{hgwebdir.cgi} es con
+una sección llamada \texttt{collections}.  Esta publicará automáticamente
+\emph{todos} los repositorios en los directorios que usted
+especifique.  La sección debería lucir así:
+\begin{codesample2}
+  [collections]
+  /mi/ruta = /mi/ruta
+\end{codesample2}
+Mercurial lo interpreta buscando el nombre del directorio que esté a la
+\emph{derecha} del símbolo ``\texttt{=}''; encontrando repositorios en
+la jerarquía de directorios; y usando el texto a la \emph{izquierda}
+para eliminar el texto de los nombres que mostrará en la interfaz
+web.  El componente restante de la ruta después de esta eliminación
+usualmente se llama ``ruta virtual''.
+
+Dado el ejemplo de arriba, si tenemos un repositorio cuya ruta local es
+\dirname{/mi/ruta/este/repo}, el guión CGI eliminará la porción inicial
+\dirname{/mi/ruta} del nombre y publicará el repositorio con una ruta
+virtual \dirname{este/repo}.  Si el URL base de nuestro guión CGI es
+\url{http://myhostname/~myuser/hgwebdir.cgi}, el URL completo al
+repositorio será
+\url{http://myhostname/~myuser/hgwebdir.cgi/this/repo}.
+
+Si reemplazamos \dirname{/mi/ruta} en el lado izquierdo de este
+ejemplo con \dirname{/mi}, \sfilename{hgwebdir.cgi} eliminará solamente
+\dirname{/mi} del nombre del repositorio, y nos ofrecerá la ruta
+virtual \dirname{ruta/este/repo} en lugar de \dirname{este/repo}.
+
+El guión \sfilename{hgwebdir.cgi} buscará recursivamente en cada
+directorio listado en la sección \texttt{collections} de su fichero de
+configuración, pero \texttt{no} hará el recorrido recursivo dentro de
+los repositorios que encuentre.
+
+El mecanismo de \texttt{collections} permite publicar fácilmente
+repositorios de una forma ``hacer y olvidar''.  Solamente requiere
+configurar el guión CGI y el fichero de configuración una vez.
+Después de eso puede publicar y sacar de publicación un repositorio en
+cualquier momento incluyéndolo o excluyéndolo de la jerarquía de
+directorios en la cual le haya indicado a \sfilename{hgwebdir.cgi} que
+mirase.
+
+\subsubsection{Especificación explícita de los repositorios a publicar}
+
+Además del mecanismo \texttt{collections}, el guión
+\sfilename{hgwebdir.cgi} le permite publicar una lista específica de
+repositorios.  Para hacerlo, cree una sección \texttt{paths}, con los
+contenidos de la siguiente forma:
+\begin{codesample2}
+  [paths]
+  repo1 = /mi/ruta/a/un/repo
+  repo2 = /ruta/a/otro/repo
+\end{codesample2}
+En este caso, la ruta virtual (el componente que aparecerá en el URL)
+está en el lado derecho de cada definición, mientras que la ruta al
+repositorio está a la derecha.  Note que no tiene que haber relación
+alguna entre la ruta virtual que elija y el lugar del repositorio en
+su sistema de ficheros.
+
+Si lo desea, puede usar los dos mecanismos \texttt{collections} y
+\texttt{paths} simultáneamente en un sólo fichero de configuración.
+
+\begin{note}
+  Si varios repositorios tienen la misma ruta virtual,
+  \sfilename{hgwebdir.cgi} no reportará error.  Pero se comportará
+  impredeciblemente.
+\end{note}
+
+\subsection{Descarga de ficheros fuente}
+
+La interfaz web de Mercurial permite a los usuarios descargar
+un conjunto de cualquier revisión.  Este fichero contendrá una réplica
+del directorio de trabajo en la revisión en cuestión, pero no
+contendrá una copia de los datos del repositorio.
+
+De forma predeterminada esta característica no está habilitada.  Para
+lograrlo adicione un \rcitem{web}{allow\_archive} a la sección \rcsection{web}
+de su fichero \hgrc.
+
+\subsection{Opciones de configuración en Web}
+
+Las interfaces web de Mercurial (la orden \hgcmd{serve}, y los guiones
+\sfilename{hgweb.cgi} y \sfilename{hgwebdir.cgi}) tienen varias
+opciones de configuración para establecer. Todas ellas en la sección
+\rcsection{web}.
+\begin{itemize}
+\item[\rcitem{web}{allow\_archive}] Determina cuáles tipos de ficheros
+  de descarga soportará Mercurial.  Si habilita esta característica,
+  los usuarios de la interfaz web podrán descargar una copia de la
+  revisión del repositorio que estén viendo. Para activar la
+  característica de descarga de fichero, el valor tendrá una secuencia
+  de palabras extraídas de la lista de abajo.
+  \begin{itemize}
+  \item[\texttt{bz2}] Un fichero \command{tar} con el método de
+    compresión \texttt{bzip2}.  Tiene la mejor tasa de compresión,
+    pero usa más tiempo de procesamiento en el servidor.
+  \item[\texttt{gz}] Un fichero \command{tar}, comprimido con
+    \texttt{gzip}.
+  \item[\texttt{zip}] Un fichero \command{zip}, comprimido con LZW.
+    Este formato posee la peor tasa de compresión, pero es muy usado en
+    el mundo Windows.
+  \end{itemize}
+  Si da una lista vacía o no tiene la entrada
+  \rcitem{web}{allow\_archive}, esta característica se deshabilitará.
+  A continuación un ejemplo de cómo habilitar los tres formatos soportados.
+  \begin{codesample4}
+    [web]
+    allow_archive = bz2 gz zip
+  \end{codesample4}
+\item[\rcitem{web}{allowpull}] Booleano.  Determina si la interfaz web
+  permite a los usuarios remotos emplear \hgcmd{pull} y \hgcmd{clone}
+  sobre el repositorio~HTTP.  Si se coloca \texttt{no} o
+  \texttt{false}, solamente la porción de los procesos
+  ``orientados-a-humanos'' se habilita de la interfaz web.
+\item[\rcitem{web}{contact}] Cadena.  Una cadena en forma libre (pero
+  preferiblemente corta) que identifica a la persona o grupo a cargo
+  del repositorio.  Usualmente contiene el nombre y la dirección de
+  correo electrónico de una persona o de una lista de correo.  Aveces
+  tiene sentido colocar esta opción en el fichero \sfilename{.hg/hgrc}
+  del repositorio, pero en otras oportunidades en el \hgrc\ global si
+  todos los repositorios tienen un único mantenedor.
+\item[\rcitem{web}{maxchanges}] Entero.  La cantidad máxima de
+  conjuntos de cambios a mostrar de forma predeterminada en cada página.
+\item[\rcitem{web}{maxfiles}] Entero.  La cantidad máxima
+  predeterminada de ficheros modificados a desplegar en una página.
+\item[\rcitem{web}{stripes}] Entero.  Si la interfaz web despliega
+  ``franjas'' para facilitar la visualización alineada de filas cuando
+  se ve una tabla, este valor controla la cantidad de filas en cada
+  franja.
+\item[\rcitem{web}{style}] Controla la plantilla que Mercurial usa para
+  desplegar la interfaz web.  Mercurial viene con dos plantillas web,
+  llamadas \texttt{default} y \texttt{gitweb} (La primera es
+  visualmente más atractiva).  Puede especificar una plantilla propia;
+  consulte el capítulo~\ref{chap:template}.  A continuación mostramos
+  cómo habilitar el estilo \texttt{gitweb}.
+  \begin{codesample4}
+    [web]
+    style = gitweb
+  \end{codesample4}
+\item[\rcitem{web}{templates}] Ruta.  Directorio en el que se buscarán
+  los ficheros plantilla.  De forma predeterminada, busca en el
+  directorio en el cual fue instalado.
+\end{itemize}
+Si usa \sfilename{hgwebdir.cgi}, puede añadir otras opciones de
+configuración en una sección \section{web} del fichero
+\sfilename{hgweb.config} en lugar del fichero \hgrc\, si lo considera
+más conveniente.  Estas opciones son \rcitem{web}{motd} y
+\rcitem{web}{style}.
+
+\subsubsection{Opciones específicas para repositorios individuales}
+
+Ciertas opciones de configuración de \rcsection{web} deben estar
+ubicadas en el \sfilename{.hg/hgrc} de un repositorio en lugar del
+fichero del usuario o el \hgrc global.
+\begin{itemize}
+\item[\rcitem{web}{description}] Cadena.  Una cadena de forma
+  libre (preferiblemente corta) que describa los contenidos o el
+  propósito del repositorio.
+\item[\rcitem{web}{name}] Cadena.  El nombre para visualizar en la
+  interfaz web del repositorio. Sustituye el nombre predeterminado, el
+  cual es el último componente de la ruta del repositorio.
+\end{itemize}
+
+\subsubsection{Opciones específicas a la orden \hgcmd{serve}}
+
+Algunas opciones en la sección \rcsection{web} de un fichero \hgrc\
+son de uso exclusivo para la orden \hgcmd{serve}.
+\begin{itemize}
+\item[\rcitem{web}{accesslog}] Ruta.  El nombre del fichero en el cual
+  se escribe la bitácora de acceso.  En principio, la orden
+  \hgcmd{serve} escribe esta información a la salida estándar, no a un
+  fichero. Las líneas de la bitácora se escriben en un formato de
+  fichero ``combinado'' estándar, usado por casi todos los servidores
+  web.
+\item[\rcitem{web}{address}] Cadena.  La dirección local en la cual el
+  servidor debe escuchar peticiones entrantes.  En principio, el
+  servidor escucha en todas las direcciones.
+\item[\rcitem{web}{errorlog}] Ruta.  El nombre de un fichero en el
+  cual escribir la bitácora de error.  En principio, la orden
+  \hgcmd{serve} escribe esta información en la salida de error
+  estándar, no a un fichero.
+\item[\rcitem{web}{ipv6}] Booleano.  Si se usa o no el protocolo
+  IPv6. En principio, IPv6 no se usa.
+\item[\rcitem{web}{port}] Entero.  El número del puerto~TCP en el cuál
+  el servidor escuchará.  El puerto predeterminado es el~8000.
+\end{itemize}
+
+\subsubsection{Elegir el fichero \hgrc\ correcto para las
+  configuraciones de \rcsection{web}}
+
+Es importante recordar que un servidor web como Apache o
+\texttt{lighttpd} se ejecutarán bajo el usuario~ID que generalmente no
+es el suyo  Los guiones CGI ejecutados por su servidor, tales como
+\sfilename{hgweb.cgi}, se ejecutarán también con el usuario~ID.
+
+Si añade opciones \rcsection{web} a su fichero personal \hgrc\, Los
+guiones CGI no leerán tal fichero \hgrc\.  Tales configuraciones
+solamente afectarán el comportamiento de la orden \hgcmd{serve} cuando
+usted lo ejecuta.  Para logar que los guiones CGI vean sus
+configuraciones, o bien cree un fichero \hgrc\ en el directorio hogar
+del usuario ID que ejecuta su servidor web, o añada tales
+configuraciones al fichero global \hgrc.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

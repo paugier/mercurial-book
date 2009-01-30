@@ -1,0 +1,9 @@
+digraph undo_non_tip {
+	"primer cambio" -> "segundo cambio";
+	"segundo cambio" -> "tercer cambio";
+	reversar [label="reversar\nsegundo cambio", shape=box];
+	"segundo cambio" -> reversar;
+	merge [label="automatizar\nfusión", shape=box];
+	"tercer cambio" -> fusión;
+	reversar -> fusión;
+}

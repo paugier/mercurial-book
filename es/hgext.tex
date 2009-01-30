@@ -1,0 +1,441 @@
+\chapter{Añadir funcionalidad con extensiones}
+\label{chap:hgext}
+
+A pesar de que el corazón de Mercurial es muy completo desde el punto
+de vista de funcionalidad, carece de características rimbombantes
+deliberadamente.  Esta aproximación de preservar la simplicidad
+mantiene el programa sencillo tanto para mantenedores como para
+usuarios.
+
+Si embargo Mercurial no le cierra las posibilidades a un conjunto
+inflexible de órdenes: usted puede añadir características como
+\emph{extensiones} (aveces llamadas \emph{añadidos}\ndt{plugins}).  Ya
+hemos discutido algunas de estas extensiones en capítulos anteriores:
+\begin{itemize}
+\item La sección~\ref{sec:tour-merge:fetch} cubre la extensión
+  \hgext{fetch}; que combina jalar cambios y fusionarlos con los
+  cambios locales en una sola orden: \hgxcmd{fetch}{fetch}.
+\item En el capítulo~\ref{chap:hook}, cubrimos muchas extensiones que
+  son útiles en funcionalidades relacionadas con ganchos: Los
+  \hgext{acl} añaden listas de control de acceso; \hgext{bugzilla}
+  añade integración con el sistema de seguimiento de fallos Bugzilla; y
+  \hgext{notify} envía notificaciones por correo de nuevos cambios.
+\item La extensión de administración de parches MQ es tan invaluable
+  que amerita dos capítulos y un apéndice por sí misma.
+  El capítulo~\ref{chap:mq} cubre lo básico; el
+  capítulo~\ref{chap:mq-collab} discute temas avanzados; y el
+  apéndice~\ref{chap:mqref} muestra en detalle cada orden.
+\end{itemize}
+
+En este capítulo cubriremos algunas extensiones adicionales
+disponibles para Mercurial, y daremos un vistazo a la maquinaria que
+necesita conocer en caso de que desee escribir una extensión.
+\begin{itemize}
+\item En la sección~\ref{sec:hgext:inotify}, discutiremos la
+  posibilidad de mejorar el desempeño \emph{en gran medida} con la extensión
+  \hgext{inotify}.
+\end{itemize}
+
+\section{Mejorar el desempeño con la extensión \hgext{inotify}}
+\label{sec:hgext:inotify}
+
+¿Desea lograr que las operaciones más comunmente usadas de Mercurial se
+ejecuten centenas de veces más rápido? ¡A leer!
+
+Mercurial tiene gran desempeño bajo circunstancias normales.  Por
+ejemplo, cuando ejecuta la orden \hgcmd{status}, Mercurial tiene que
+revisar casi todos los ficheros y directorios en su repositorio de
+forma que pueda desplegar el estado de los ficheros.  Muchas otras
+órdenes tienen que hacer tal trabajo tras bambalinas;  por ejemplo la
+orden \hgcmd{diff} usa la maquinaria de estado para evitar hacer
+operaciones de comparación costosas en ficheros que obviamente no han
+cambiado.
+
+Dado que obtener el estado de los ficheros es crucial para obtener
+buen desempeño, los autores de Mercurial han optimizado este código en
+la medida de lo posible.  Sin embargo, no puede obviarse el hecho de
+que cuando ejecuta \hgcmd{status}, Mercurial tendrá que hacer por lo
+menos una costosa llamada al sistema por cada fichero administrado
+para determinar si ha cambiado desde la última vez que se consignó.
+Para un repositorio suficientemente grande, puede tardar bastante
+tiempo.
+
+Para mostrar en números la magnitud de este efect, creé un repositorio
+que contenía 150.000 ficheros administrador.  Tardó diez segundos para
+ejecutar \hgcmd{status}, a pesar de que \emph{ninguno} de los ficheros
+había sido modificado.
+
+Muchos sistemas operativos modernos contienen una facilidad de
+notificación de ficheros.  Si un programa se registra con un servicio
+apropiado, el sistema operativo le notificará siempre que un fichero
+de interés haya sido creado, modificado o borrado.  En sistemas Linux,
+el componente del núcleo que lo hace se llama \texttt{inotify}.
+
+La extensión \hgext{inotify} habla con el componente \texttt{inotify}
+del núcleo para optimizar las órdenes de \hgcmd{status}.  La extensión
+tiene dos componentes.  Un daemonio está en el fondo recibiendo
+notificaciones del subsistema \texttt{inotify}.  También escucha
+conexiones de una orden regular de Mercurial.  La extensión modifica
+el comportamiento de Mercurial de tal forma que, en lugar de revisar
+el sistema de ficheros, le pregunta al daemonio.  Dado que el daemonio
+tiene información perfecta acerca del estado del repositorio, puede
+responder instantáneamente con el resultado, evitando la necesidad de
+revisar cada directorio y fichero del repositorio.
+
+Retomando los diez segundos que medí al ejecutar la orden
+\hgcmd{status} de Mercurial sobre un repositorio de 150.000
+ficheros. Con la extensión \hgext{inotify} habilitada, el tiempo se
+disipó a 0.1~seconds, un factor \emph{cien veces} más rápido.
+
+Antes de continuar, tenga en cuenta algunos detalles:
+\begin{itemize}
+\item La extensión \hgext{inotify} es específica de Linux.  Porque se
+  enlaza directamente con el subsistema \texttt{inotify} del núcleo
+  Linux, no funciona en otros sistemas operativos.
+\item Debería funcionar en cualquier distribución Linux a partir de
+  comienzos del 2005.  Las distribuciones más antiguas deben tener un
+  kernel sin \texttt{inotify}, o una versión de \texttt{glibc} que no
+  tiene necesariamente el soporte para la interfaz.
+\item No todos los sistemas de ficheros pueden usarse con la extensión
+  \hgext{inotify}.  Los sistemas de ficheros tales como NFS no lo
+  soportan, por ejemplo, si está corriendo Mercurial en vaios
+  sistemas, montados todos sobre el mismo sistema de ficheros en red.
+  El sistema \texttt{inotify} del kernel no tiene forma de saber
+  acerca de los cambios hechos en otro sistema.  La mayoría de
+  sistemas de ficheros locales (p.e.~ext3, XFS, ReiserFS) deberían
+  funcionar bien.
+\end{itemize}
+
+Hacia mayo de 2007 la extensión \hgext{inotify} no venía de forma
+predeterminada en Mercurial\ndt{Desde el 2008 para kernels 2.6 viene
+  en Mercurial, pero no está activada de forma predeterminada}, y es
+un poco más compleja de activar que otras extensiones.  Pero la mejora
+en el desempeño bien vale la pena!
+
+La extensión venía en dos partes: un conjunto de parches al código
+fuente de Mercurial, y una librería de interfaces de Python hacia el
+subsistema \texttt{inotify}.
+\begin{note}
+  Hay \emph{dos} librerías de enlace de Python hacia \texttt{inotify}.
+  Una de ellas se llama \texttt{pyinotify}, y en algunas
+  distribuciones de Linux se encuentra como \texttt{python-inotify}.
+  Esta es la que \emph{no} necesita, puesto que tiene muchos fallos,
+  y es ineficiente para ser práctica.
+\end{note}
+Para comenzar, es mejor tener una copia de Mercurial funcional
+instalada:
+\begin{note}
+  Si sigue las instrucciones a continuación, estará
+  \emph{reemplazando} y sobreescribiendo cualquier instalación previa
+  de Mercurial que pudiera tener, con el código de Mercurial ``más
+  reciente y peligrosa''.  No diga que no se le advirtio!
+\end{note}
+\begin{enumerate}
+\item Clone el repositorio de interfaz entre Python e
+  \texttt{inotify}. Ármelo e instálelo:
+  \begin{codesample4}
+    hg clone http://hg.kublai.com/python/inotify
+    cd inotify
+    python setup.py build --force
+    sudo python setup.py install --skip-build
+  \end{codesample4}
+\item Clone el repositorio \dirname{crew} de Mercurial.  Clone el
+  repositorio de parches de \hgext{inotify} de forma tal que las colas
+  de Mercurial puedan aplicar los parches sobre el repositorio \dirname{crew}.
+  \begin{codesample4}
+    hg clone http://hg.intevation.org/mercurial/crew
+    hg clone crew inotify
+    hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches
+  \end{codesample4}
+\item Asegúrese de instalar la extensión Colas de Mercurial
+  \hgext{mq} y que estén habilitadas.  Si nunca ha usado MQ, lea la
+  sección~\ref{sec:mq:start} para poder comenzar rápidamente.
+\item Vaya al repositorio de \dirname{inotify} y aplique todos los
+  parches de \hgext{inotify} con la opción \hgxopt{mq}{qpush}{-a} de
+  la orden \hgxcmd{mq}{qpush}.
+  \begin{codesample4}
+    cd inotify
+    hg qpush -a
+  \end{codesample4}
+  Si obtiene un mensaje de error de \hgxcmd{mq}{qpush}, no debería
+  continuar.  Mejor pida ayuda.
+\item Arme e instale la versión parchada de Mercurial.
+  \begin{codesample4}
+    python setup.py build --force
+    sudo python setup.py install --skip-build
+  \end{codesample4}
+\end{enumerate}
+Una vez que haya armado una versión funcional parchada de Mercurial,
+todo lo que necesita es habilitar la extensión \hgext{inotify}
+colocando una entrada en su \hgrc.
+\begin{codesample2}
+  [extensions]
+  inotify =
+\end{codesample2}
+Cuando la extensión \hgext{inotify} esté habilitada, Mercurial
+iniciará transparente y automáticamente el daemonio de estado la
+primera vez que ejecute un comando que requiera estado del
+repositorio.  Ejecuta un daemonio de estado por repositorio.
+
+El daemonio de estado se inicia silenciosamente y se ejecuta en el
+fondo. Si mira a la lista de procesos en ejecución después de
+habilitar la extensión \hgext{inotify} y ejecuta unos pocos comandos
+en diferentes repositorios, verá que hay algunos procesos de
+\texttt{hg} por ahí, esperando actualizaciones del kernel y
+solicitudes de Mercurial.
+
+La primera vez que ejecuta un comando de Mercurial en un repositorio
+cuando tiene la extensión \hgext{inotify} habilitada, correrá casi con
+el mismo desempeño que una orden usual de Mercurial.  Esto es debido a
+que el estado del daemonio necesita aplicar una búsqueda normal sobre
+el estado para poder tener una línea de partida frente a la cual
+aplicar posteriormente actualizaciones del núcleo.  De todas formas,
+\emph{todo} comando posterior que haga cualquier clase de revisión del
+estado debería ser notablemente más rápido en repositorios con incluso
+un tamaño modesto.  Aún mejor, a medida que su repositorio sea más
+grande, mejor desempeño verá.  El daemonio \hgext{inotify} hace
+operaciones de estado de forma casi instantánea en repositorios de
+todos los tamaños!
+
+Si lo desea, puede iniciar manualmente un daemonio de estado con la orden
+\hgxcmd{inotify}{inserve}.  Esto le da un control un poco más fino
+acerca de cómo debería ejecutarse el daemonio.  Esta orden solamente
+estará disponible cuando haya habilitado la extensión \hgext{inotify}.
+
+Cuando esté usando la extensión \hgext{inotify},
+\emph{no debería ver diferencia} en el comportamiento de Mercurial,
+con la única excepción de que los comandos relacionados con el estado
+deberían ejectuarse mucho más rápido que como solían hacerlo.  Debería
+esperar específicamente que las órdenes no deberían ofrecer salidas
+distintas; ni ofrecer resultados diferentes.  Si alguna de estas
+situaciones ocurre, por favor reporte el fallo.
+
+\section{Soporte flexible de diff con la extensión \hgext{extdiff}}
+\label{sec:hgext:extdiff}
+
+La orden predeterminada \hgcmd{diff} de Mercurial despliega diffs en
+texto plano unificadas.
+\interaction{extdiff.diff}
+Si dese emplear una herramienta externa para desplegar las
+modificaciones, querrá usar la extensión \hgext{extdiff}.  Esta le
+permitirá usar por ejemplo una herramienta gráfica de diff.
+
+La extensión \hgext{extdiff} viene con Mercurial, y es fácil
+configurar.  En la sección \rcsection{extensions} de su \hgrc,
+basta con añadir una entrada de una línea para habilitar la extensión.
+\begin{codesample2}
+  [extensions]
+  extdiff =
+\end{codesample2}
+Esto introduce una orden llamada \hgxcmd{extdiff}{extdiff}, que de
+forma predeterminada usa su orden del sistema \command{diff} para
+generar un diff unificado de la misma forma que lo hace el comando
+predeterminado \hgcmd{diff}.
+\interaction{extdiff.extdiff}
+El resultado no será exactamente el mismo que con la orden interna
+\hgcmd{diff}, puesto que la salida de \command{diff} varía de un
+sistema a otro, incluso pasando las mismas opciones.
+
+Como lo indican las líneas``\texttt{making snapshot}'', la orden
+\hgxcmd{extdiff}{extdiff} funciona creando dos instantáneas de su
+árbol de fuentes.  La primera instantánea es la revisión fuente; la
+segunda es la revisión objetivo del directorio de trabajo.  La orden
+\hgxcmd{extdiff}{extdiff} genera estas instantáneas en un directorio
+temporal, pasa el nombre de cada directorio a un visor de diffs
+temporal y borra los directorios temporales.  Por cuestiones de
+eficiencia solamente genera instantáneas de los directorios y ficheros
+que han cambiado entre dos revisiones.
+
+Los nombres de los directorios de instantáneas tienen los mismos
+nombres base de su repositorio.  Si su repositorio tiene por ruta
+\dirname{/quux/bar/foo}, \dirname{foo} será el nombre de cada
+instantánea de directorio.  Cada instantánea de directorio tiene sus
+identificadores de conjuntos de cambios al final del nombre en caso de
+que sea apropiado.  Si una instantánea viene de la revisión
+\texttt{a631aca1083f}, el directorio se llamará
+\dirname{foo.a631aca1083f}.  Una instantánea del directorio de trabajo
+no tendrá el identificador del conjunto de cambios, y por lo tanto
+será solamente \dirname{foo} en este ejemplo.  Para ver cómo luce en
+la práctica, veamos de nuevo el ejemplo \hgxcmd{extdiff}{extdiff}
+antes mencionado.  Tenga en cuenta que los diffs tienen los nombres de
+las instantáneas de directorio dentro de su encabezado.
+
+La orden \hgxcmd{extdiff}{extdiff} acepta dos opciones importantes.
+La opción \hgxopt{extdiff}{extdiff}{-p} le permite elegir un programa
+para ver las diferencias, en lugar de \command{diff}.  Con la opción
+\hgxopt{extdiff}{extdiff}{-o} puede cambiar las opciones que
+\hgxcmd{extdiff}{extdiff} pasa a tal programa (de forma predeterminada
+las opciones son``\texttt{-Npru}'', que tienen sentido únicamente si
+está usando \command{diff}).  En otros aspectos, la orden
+\hgxcmd{extdiff}{extdiff} actúa de forma similar a como lo hace la
+orden \hgcmd{diff} de Mercurial: usted usa los mismos nombres de
+opciones, sintaxis y argumentos para especificar las revisiones y los
+ficheros que quiere, y así sucesivamente.
+
+Por ejemplo, para ejecutar la orden usual del sistema \command{diff},
+para lograr que se generen diferencias de contexto (con la opción
+\cmdopt{diff}{-c}) en lugar de diferencias unificadas, y cinco líneas
+de contexto en lugar de las tres predeterminadas (pasando \texttt{5}
+como argumento a la opción \cmdopt{diff}{-C}).
+\interaction{extdiff.extdiff-ctx}
+
+Es sencillo lanzar unas herramienta usual de diferencias.  Para lanzar
+el visor \command{kdiff3}:
+\begin{codesample2}
+  hg extdiff -p kdiff3 -o ''
+\end{codesample2}
+
+Si su orden para visualizar diferencias no puede tratar con
+directorios, puede usar un poco de scripting para lograrlo.  Un
+ejemplo de un script con la extensión \hgext{mq} junto con la orden
+\command{interdiff} está en la sección~\ref{mq-collab:tips:interdiff}.
+
+\subsection{Definición de alias de comandos}
+
+Acordarse de todas las opciones de las órdenes
+\hgxcmd{extdiff}{extdiff} y el visor de diferencias de su preferencia
+puede ser dispendioso, y por lo tanto la extensión \hgext{extdiff} le
+permite definir \emph{nuevas} órdenes que invocarán su visor de
+diferencias con las opciones exactas.
+
+Basta con editar su fichero \hgrc, y añadir una sección llamada
+\rcsection{extdiff}.  Dentro de esta sección puede definir varias
+órdenes. Mostraremos como añadir la orden \texttt{kdiff3}.  Después de
+definido, puede teclear ``\texttt{hg kdiff3}'' y la extensión a
+\hgext{extdiff} ejecutará la orden \command{kdiff3}.
+\begin{codesample2}
+  [extdiff]
+  cmd.kdiff3 =
+\end{codesample2}
+Si deja vacía la porción derecha de la definición, como en el ejemplo,
+la extensión \hgext{extdiff} usa el nombre de la orden se definirá
+como el nombre del programa externo a ejecutar.  Pero tales nombres no
+tienen por qué ser iguales.  Definimos ahora la orden llamada
+ ``\texttt{hg wibble}'', que ejecuta \command{kdiff3}.
+\begin{codesample2}
+  [extdiff]
+  cmd.wibble = kdiff3
+\end{codesample2}
+
+También puede especificar las opciones predeterminadas con las cuales
+desea invocar el visor de diferencias.  Se usa el prefijo ``\texttt{opts.}'',
+seguido por el nombre de la orden a la cual se aplican las opciones.
+En este ejemplos se define la orden ``\texttt{hg vimdiff}'' que
+ejecuta la extensión \texttt{DirDiff} del editor \command{vim}.
+\begin{codesample2}
+  [extdiff]  
+  cmd.vimdiff = vim
+  opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
+\end{codesample2}
+
+\section{Uso de la extensión \hgext{transplant} para seleccionar}
+\label{sec:hgext:transplant}
+
+Need to have a long chat with Brendan about this.
+
+\section{Enviar cambios vía correo electrónico con la extensión \hgext{patchbomb}}
+\label{sec:hgext:patchbomb}
+
+Varios proyectos tienen la cultura de ``revisión de cambios'', en la
+cual la gente envía sus modificaciones a una lista de correo para que
+otros las lean y comenten antes de consignar la versión final a un
+repositorio compartido.  Algunos proyectos tienen personas que actúan
+como cancerberos; ellos aplican los cambios de otras personas a un
+repositorio para aquellos que no tienen acceso.
+
+Mercurial facilita enviar cambios por correo para revisión o
+aplicación gracias a su extensión \hgext{patchbomb}.  La extensión es
+tan popular porque los cambios se formatean como parches y es usual
+que se envía un conjunto de cambios por cada correo.  Enviar una gran
+cantidad de cambios por correos se llama por tanto ``bombardear'' el
+buzón de entrada del destinatario, de ahí su nombre ``bombardeo de
+parches''.
+
+Como es usual, la configuración básica de la extensión
+\hgext{patchbomb} consta de una o dos líneas en su \hgrc.
+\begin{codesample2}
+  [extensions]
+  patchbomb =
+\end{codesample2}
+Cuando haya habilitado la extensión, dispondrá de una nueva orden,
+llamada \hgxcmd{patchbomb}{email}.
+
+La forma mejor y más segura para invocar la orden
+\hgxcmd{patchbomb}{email} es ejecutarla \emph{siempre} con la opción
+\hgxopt{patchbomb}{email}{-n}; que le mostrará lo que la orden
+\emph{enviaría}, sin enviar nada.  Una vez que haya dado un vistazo a
+los cambios y verificado que está enviando los correctos, puede volver
+a ejecutar la misma orden, sin la opción \hgxopt{patchbomb}{email}{-n}.
+
+La orden \hgxcmd{patchbomb}{email} acepta la misma clase de sintaxis
+de revisiones como cualquier otra orden de Mercurial.  Por ejemplo,
+enviará todas las revisiones entre la 7 y la \texttt{punta}, inclusive.
+\begin{codesample2}
+  hg email -n 7:tip
+\end{codesample2}
+También puede especificar un \emph{repositorio} para comparar.  Si
+indica un repositoro sin revisiones, la orden \hgxcmd{patchbomb}{email}
+enviará todas las revisiones en el repositorio local que no están
+presentes en el repositorio remoto.  Si especifica revisiones
+adicionalmente o el nombre de una rama (la última con la opción
+\hgxopt{patchbomb}{email}{-b}), respetará las revisiones enviadas.
+
+Ejecutar la orden \hgxcmd{patchbomb}{email} sin los nombres de
+aquellas personas a las cuales desea enviar el correo es completamente
+seguro: si lo hace, solicitará tales valores de forma interactiva.
+(Si está usando Linux o un sistema tipo Unix, tendrá capacidades
+estilo--\texttt{readline} aumentadas cuando ingrese tales encabezados,
+lo cual es sumamente útil.)
+
+Cuando envíe una sola revisión, la orden \hgxcmd{patchbomb}{email}
+de forma predeterminada usará la primera línea de descripción del
+conjunto de cambios como el tema del único mensaje que se enviará.
+
+Si envía varias revisiones, la orden \hgxcmd{patchbomb}{email} enviará
+normalmente un mensaje por conjunto de cambios. Colocará como
+prefacio un mensaje introductorio en el cual usted debería describir
+el propósito de la serie de cambios que está enviando.
+
+\subsection{Cambiar el comportamiento de las bombas de parches}
+
+Cada proyecto tiene sus propias convenciones para enviar cambios en un
+correo electrónico; la extensión \hgext{patchbomb} intenta acomodarse
+a diferentes variaciones gracias a las opciones de la línea de órdenes:
+\begin{itemize}
+\item Puede escribir un tema para el mensaje introductorio en la línea
+  de órdenes con la opciń \hgxopt{patchbomb}{email}{-s}.  Toma un
+  argumento: el tema del mensaje a usar.
+\item Para cambiar el correo electrónico del campo del cual se
+  origina, use la opción \hgxopt{patchbomb}{email}{-f}.  Toma un
+  argumento, el correo electrónico a usar.
+\item El comportamiento predeterminado es enviar diferencias
+  unificadas (consulte la sección~\ref{sec:mq:patch} si desea una
+  descripción del formato), una por mensaje.  Puede enviar un conjunto
+  binario\ndt{binary bundle} con la opción \hgxopt{patchbomb}{email}{-b}.
+\item Las diferencias unificadas están precedidas por un encabezado de
+  metadatos.  Puede omitirlo, y enviar diferencias sin adornos con la
+  opción \hgxopt{patchbomb}{email}{--plain}.
+\item Las diferencias usualmente se envían ``en línea'', como parte
+  del cuerpo del mensaje con la descripción del parche.  Que facilita a
+  a la mayor cantidad de lectores citar y responder partes de un diff,
+  dado que algunos clientes de correo solamente citarán la primera
+  parte MIME del cuerpo de un mensaje.  Si prefiere enviar la
+  descripción y el diff en partes separadas del cuerpo, use la opción
+  \hgxopt{patchbomb}{email}{-a}.
+\item En lugar de enviar mensajes de correo puede escribirlos a un
+  fichero con formato-\texttt{mbox}- con la opción
+  \hgxopt{patchbomb}{email}{-m}.  La opción recibe un argumento, el
+  nombre del fichero en el cual escribir.
+\item Si desea añadir un resumen con formato-\command{diffstat} en
+  cada parche, y uno como mensaje introductorio, use la opción
+  \hgxopt{patchbomb}{email}{-d}.  La orden \command{diffstat}
+  despliega una tabla que contiene el nombre de cada fichero parchado,
+  el número de líneas afectadas, y un historgrama mostrando cuánto ha
+  sido modificado cada fichero.  Lo cual ofrece a los lectores una
+  mirada cuantitativa de cuan complejo es el parche.
+\end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

@@ -1,0 +1,55 @@
+\chapter{Instalar Mercurial desde las fuentes}
+\label{chap:srcinstall}
+
+\section{En un sistema tipo Unix}
+\label{sec:srcinstall:unixlike}
+
+Si usa un sistema tipo Unix que tiene una versión suficientemente
+reciente de Python (2.3~o superior) disponible, es fácil instalar
+Mercurial desde las fuentes.
+\begin{enumerate}
+\item Descargue un paquete fuente reciente de
+  \url{http://www.selenic.com/mercurial/download}.
+\item Descomprímalo:
+  \begin{codesample4}
+    gzip -dc mercurial-\emph{version}.tar.gz | tar xf -
+  \end{codesample4}
+\item Vaya al directorio fuente y ejecute el guión de instalación.
+  Esto armará Mercurial y lo instalará en su directorio casa:
+  \begin{codesample4}
+    cd mercurial-\emph{version}
+    python setup.py install --force --home=\$HOME
+  \end{codesample4}
+\end{enumerate}
+Cuando termine la instalación, Mercurial estará en el subdirectorio
+\texttt{bin} de su directorio casa.  No olvide asegurarse de que este
+directorio esté presente en el camino de búsqueda de su intérprete de
+órdenes.
+
+Probablemente necesitará establecer la variable de ambiente
+\envar{PYTHONPATH} de tal forma que los ejecutables de Mercurial
+puedan encontrar el resto de los paquetes de Mercurial.  Por ejemplo,
+en mi portátil, la establecía a \texttt{/home/bos/lib/python}.  La
+ruta exacta que usted use dependerá de como ha sido construído Python
+en su sistema, pero debería ser fácil deducirla.  Si no está seguro,
+mire lo que haya mostrado el script en el paso anterior, y vea dónde
+se instalaron los contenidos del directorio \texttt{mercurial} se
+instalaron.
+
+\section{En Windows}
+
+Armar e instalar Mercurial en Windows requiere una variedad de
+herramientas, cierta suficiencia técnica y paciencia considerable.
+Personalmente, \emph{no le recomiendo} hacerlo si es un ``usuario
+casual''.  A menos que intente hacer hacks a Mercurial, le recomiendo
+que mejor use un paquete binario.
+
+Si está decidido a construir Mercurial desde las fuentes en Windows,
+siga el ``camino difícil'' indicado en el wiki de Mercurial en
+\url{http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall},
+y espere que el proceso sea realmente un trabajo duro.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

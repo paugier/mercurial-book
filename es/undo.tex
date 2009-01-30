@@ -1,0 +1,799 @@
+\chapter{Encontrar y arreglar sus equivocaciones}
+\label{chap:undo}
+
+Errar es humano, pero tratar adecuadamente las consecuencias requiere
+un sistema de control de revisiones de primera categoría.  En este
+capítulo, discutiremos algunas técnicas que puede usar cuando
+encuentra que hay un problema enraizado en su proyecto.  Mercurial
+tiene unas características poderosas que le ayudarán a isolar las
+fuentes de los problemas, y a dar cuenta de ellas apropiadamente.
+
+\section{Borrar el historial local}
+
+\subsection{La consignación accidental}
+
+Tengo el problema ocasional, pero persistente de teclear más rápido de
+lo que pienso, que aveces resulta en consignar un conjunto de cambios
+incompleto o simplemente malo. En mi caso, el conjunto de cambios
+incompleto consiste en que creé un nuevo fichero fuente, pero olvidé
+hacerle \hgcmd{add}.  Un conjunto de cambios``simplemente malo'' no es
+tan común, pero sí resulta muy molesto.
+
+\subsection{Hacer rollback una transacción}
+\label{sec:undo:rollback}
+
+En la sección~\ref{sec:concepts:txn}, mencioné que Mercurial trata
+modificación a un repositorio como una \emph{transacción}.  Cada vez
+que consigna un conjunto de cambios o lo jala de otro repositorio,
+Mercurial recuerda lo que hizo.  Puede deshacer, o hacer \emph{roll back}\ndt{El significado igual que en los
+    ambientes de sistemas manejadores de bases de datos se refiere a
+    la atomicidad e integridad al devolver un conjunto de acciones que
+  permitan dejar el repositorio en un estado consistente previo},
+exactamente una de tales acciones usando la orden \hgcmd{rollback}.
+(Ver en la sección~\ref{sec:undo:rollback-after-push} una anotación
+importante acerca del uso de esta orden.)
+
+A continuación una equivocación que me sucede frecuentemente:
+consignar un cambio en el cual he creado un nuevo fichero, pero he
+olvidado hacerle \hgcmd{add}.
+\interaction{rollback.commit}
+La salida de \hgcmd{status} después de la consignación confirma
+inmediatamente este error.
+\interaction{rollback.status}
+La consignación capturó los cambios en el fichero \filename{a}, pero
+no el nuevo fichero \filename{b}.  Si yo publicara este conjunto de
+cambios a un repositorio compartido con un colega, es bastante
+probable que algo en \filename{a} se refiriera a \filename{b}, el cual
+podría no estar presente cuando jalen mis cambios del repositorio.  Me
+convertiría el sujeto de cierta indignación.
+
+Como sea, la suerte me acompaña---Encontré mi error antes de publicar
+el conjunto de cambios.  Uso la orden \hgcmd{rollback}, y Mercurial
+hace desaparecer el último conjunto de cambios.
+\interaction{rollback.rollback}
+El conjunto de cambios ya no está en el historial del repositorio, y el
+directorio de trabajo cree que el fichero \filename{a} ha sido
+modificado.  La consignación y el roll back dejaron el directorio de
+trabajo exactamente como estaba antes de la consignación; el conjunto
+de cambios ha sido eliminado totlamente. Ahora puedo hacer \hgcmd{add}
+al fichero \filename{b}, y hacer de nuevo la consignación.
+\interaction{rollback.add}
+
+\subsection{Erroneamente jalado}
+
+Mantener ramas de desarrollo separadas de un proyecto en distintos
+repositorios es una práctica común con Mercurial.  Su equipo de
+desarrollo puede tener un repositorio compartido para la versión ``0.9''
+y otra con cambios distintos para la versión ``1.0''.
+
+Con este escenario, puede imaginar las consecuencias si tuviera un
+repositorio local ``0.9'', y jalara accidentalmente los cambios del
+repositorio compartido de la versión ``1.0'' en este.  En el peor de
+los casos, por falta de atención, es posible que publique tales
+cambios en el árbol compartido ``0.9'', confundiendo a todo su equipo
+de trabajo (pero no se preocupe, volveremos a este terrorífico
+escenario posteriormente).  En todo caso, es muy probable que usted se
+de cuenta inmediatamente, dado que Mercurial mostrará el URL de donde
+está jalando, o que vea jalando una sospechosa gran cantidad de
+cambios en el repositorio.
+
+La orden \hgcmd{rollback} excluirá eficientemente los conjuntos de
+cambios que haya acabado de jalar.  Mercurial agrupa todos los cambios
+de un \hgcmd{pull} a una única transacción y bastará con un
+\hgcmd{rollback} para deshacer esta equivocación.
+
+\subsection{Después de publicar, un roll back es futil}
+\label{sec:undo:rollback-after-push}
+
+El valor de \hgcmd{rollback} se anula cuando ha publicado sus cambios
+a otro repositorio.  Un cambio desaparece totalmente al hacer roll back,
+pero \emph{solamente} en el repositorio en el cual aplica
+\hgcmd{rollback}.  Debido a que un roll back elimina el historial,
+no hay forma de que la desaparición de un cambio se propague entre
+repositorios.
+
+Si ha publicado un cambio en otro repositorio---particularmente si es
+un repositorio público---esencialmente está ``en terreno agreste,''
+y tendrá que reparar la equivocación de un modo distinto.  Lo que
+pasará si publica un conjunto de cambios en algún sitio, hacer
+rollback y después volver a jalar del repositorio del cual había
+publicado, es que el conjunto de cambios reaparecerá en su repositorio.
+
+(Si está absolutamente segruro de que el conjunto de cambios al que
+desea hacer rollback es el cambio más reciente del repositorio en el
+cual publicó, \emph{y} sabe que nadie más pudo haber jalado de tal
+repositorio, puede hacer rollback del conjunto de cambios allí, pero
+es mejor no confiar en una solución de este estilo.  Si lo hace, tarde
+o temprano un conjunto de cambios logrará colarse en un repositorio
+que usted no controle directamente (o del cual se ha olvidado), y
+volverá a hostigarle.)
+
+\subsection{Solamente hay un roll back}
+
+Mercurial almacena exactamente una transacción en su bitácora de
+transacciones; tal transacción es la más reciente de las que haya
+ocurrido en el repositorio. Esto significa que solamente puede hacer
+roll back a una transacción. Si espera poder hacer roll back a una
+transacción después al antecesor, observará que no es el
+comportamiento que obtendrá.
+\interaction{rollback.twice}
+Una vez que haya aplicado un rollback en una transacción a un
+repositorio, no podrá volver a hacer rollback hasta que haga una
+consignación o haya jalado.
+
+\section{Revertir un cambio equivocado}
+
+Si modifica un fichero y se da cuenta que no quería realmente cambiar
+tal fichero, y todavía no ha consignado los cambios, la orden
+necesaria es \hgcmd{revert}. Observa el conjunto de cambios padre del
+directorio y restaura los contenidos del fichero al estado de tal
+conjunto de cambios. (Es una forma larga de decirlo, usualmente
+deshace sus modificaciones.)
+
+Ilustremos como actúa la orden \hgcmd{revert} con un ejemplo
+pequeño. Comenzaremos modificando un fichero al cual Mercurial ya está
+siguiendo.
+\interaction{daily.revert.modify}
+Si no queremos ese cambio, podemos aplicar \hgcmd{revert} al fichero.
+\interaction{daily.revert.unmodify}
+La orden \hgcmd{revert} nos brinda un grado adicional de seguridad
+guardando nuestro fichero modificado con la extensión \filename{.orig}.
+\interaction{daily.revert.status}
+
+Este es un resumen de casos en los cuales la orden \hgcmd{revert} es
+de utilidad. Describiremos cada uno de ellos con más detalle en la
+sección siguiente.
+\begin{itemize}
+\item Si usted modifica un fichero, lo restaurará a su estado sin
+  modificación previo.
+\item Si usted hace \hgcmd{add} a un fichero, revertirá el estado de
+  ``adicionado'' del fichero, pero no lo tocará
+\item Si borra un fichero sin decirle a Mercurial, restaurará el
+  fichero con sus contenidos sin modificación.
+\item Si usa la orden \hgcmd{remove} para eliminar un fichero, deshará
+  el estado ``removido'' del fichero, y lo restaurará con sus
+  contenidos sin modificación.
+\end{itemize}
+
+\subsection{Errores al administrar ficheros}
+\label{sec:undo:mgmt}
+
+La orden \hgcmd{revert} es útil para más que ficheros modificados. Le
+permite reversar los resultados de todas las órdenes de administración
+de ficheros que provee Mercurial---\hgcmd{add}, \hgcmd{remove}, y las
+demás.
+
+Si usted hace \hgcmd{add} a un fichero, y no deseaba que Mercurial le
+diera seguimiento, use \hgcmd{revert} para deshacer la adición.  No se
+preocupe; Mercurial no modificará de forma alguna el fichero.
+Solamente lo ``desmarcará''.
+\interaction{daily.revert.add}
+
+De forma similar, Si le solicita a Mercurial hacer \hgcmd{remove} a un
+fichero, puede usar \hgcmd{revert} para restarurarlo a los contenidos
+que tenía la revisión padre del directorio de trabajo.
+\interaction{daily.revert.remove}
+Funciona de la misma manera para un fichero que usted haya eliminado
+manualmente, sin decirle a Mercurial (recuerde que en la terminología
+de Mercurial esta clase de fichero se llama ``faltante'').
+\interaction{daily.revert.missing}
+
+Si usted revierte un \hgcmd{copy}, el fichero a donde se copió
+permanece en su directorio de trabajo, pero sin seguimiento. Dado que
+una copia no afecta el fichero fuente de copiado de ninguna maner,
+Mercurial no hace nada con este.
+\interaction{daily.revert.copy}
+
+\subsubsection{Un caso ligeramente especial:revertir un renombramiento}
+
+Si hace \hgcmd{rename} a un fichero, hay un detalle que debe tener en
+cuenta. Cuando aplica \hgcmd{revert} a un cambio de nombre, no es
+suficiente proveer el nombre del fichero destino, como puede verlo en
+el siguiente ejemplo.
+\interaction{daily.revert.rename}
+Como puede ver en la salida de \hgcmd{status}, el fichero con el nuevo
+nombre no se identifica más como agregado, pero el fichero con el
+nombre-\emph{inicial} se elimna!  Esto es contra-intuitivo (por lo
+menos para mí), pero por lo menos es fácil arreglarlo.
+\interaction{daily.revert.rename-orig}
+Por lo tanto, recuerde, para revertir un \hgcmd{rename}, debe proveer
+\emph{ambos} nombres, la fuente y el destino.
+
+% TODO: the output doesn't look like it will be removed!
+
+(A propósito, si elimina un fichero, y modifica el fichero con el
+nuevo nombre, al revertir ambos componentes del renombramiento, cuando
+Mercurial restaure el fichero que fue eliminado como parte del
+renombramiento, no será modificado.
+Si necesita que las modificaciones en el fichero destino del
+renombramiento se muestren, no olvide copiarlas encima.)
+
+Estos aspectos engorrosos al revertir un renombramiento se constituyen
+discutiblemente en un fallo de Mercurial.
+
+\section{Tratar cambios consignados}
+
+Considere un caso en el que ha consignado el cambio $a$, y otro cambio
+$b$ sobre este; se ha dado cuenta que el cambio $a$ era
+incorrecto. Mercurial le permite ``retroceder'' un conjunto de cambios
+completo automáticamente, y construir bloques que le permitan revertir
+parte de un conjunto de cambios a mano.
+
+Antes de leer esta sección, hay algo para tener en cuenta: la orden
+\hgcmd{backout} deshace cambios \emph{adicionando} al historial, sin
+modificar o borrar.  Es la herramienta correcta si está arreglando
+fallos, pero no si está tratando de deshacer algún cambio que tiene
+consecuencias catastróficas.  Para tratar con esos, vea la sección~\ref{sec:undo:aaaiiieee}.
+
+\subsection{Retroceder un conjunto de cambios}
+
+La orden \hgcmd{backout} le permite ``deshacer'' los efectos de todo
+un conjunto de cambios de forma automatizada.  Dado que el historial de
+Mercurial es inmutable, esta orden \emph{no} se deshace del conjunto
+de cambios que usted desea deshacer.  En cambio, crea un nuevo
+conjunto de cambios que \emph{reversa} el conjunto de cambios que
+usted indique.
+
+La operación de la orden \hgcmd{backout} es un poco intrincada, y lo
+ilustraremos con algunos ejemplos. Primero crearemos un repositorio
+con algunos cambios sencillos.
+\interaction{backout.init}
+
+La orden \hgcmd{backout} toma un ID de conjunto de cambios como su
+argumento; el conjunto de cambios a retroceder. Normalmente
+\hgcmd{backout} le ofrecerá un editor de texto para escribir el
+mensaje de la consignación, para dejar un registro de por qué está
+retrocediendo. En este ejemplo, colocamos un mensaje en la
+consignación usando la opción \hgopt{backout}{-m}.
+
+\subsection{Retroceder el conjunto de cambios punta}
+
+Comenzamos retrocediendo el último conjunto de cambios que consignamos.
+\interaction{backout.simple}
+Puede ver que la segunda línea de \filename{myfile} ya no está
+presente.  La salida de \hgcmd{log} nos da una idea de lo que la orden
+\hgcmd{backout} ha hecho.
+\interaction{backout.simple.log}
+Vea que el nuevo conjunto de cambios que \hgcmd{backout} ha creado es
+un hijo del conjunto de cambios que retrocedimos. Es más sencillo de
+ver en la figura~\ref{fig:undo:backout}, que presenta una vista
+gráfica del historial de cambios.  Como puede ver, el historial es
+bonito y lineal.
+
+\begin{figure}[htb]
+  \centering
+  \grafix{undo-simple}
+  \caption{Retroceso de un cambio con la orden \hgcmd{backout}}
+  \label{fig:undo:backout}
+\end{figure}
+
+\subsection{Retroceso de un cambio que no es la punta}
+
+Si desea retrocede un cambio distinto al último que ha consignado, use
+la opción \hgopt{backout}{--merge} a la orden \hgcmd{backout}.
+\interaction{backout.non-tip.clone}
+Que resulta en un retroceso de un conjunto de cambios ``en un sólo
+tiro'', una operación que resulta normalmente rápida y sencilla.
+\interaction{backout.non-tip.backout}
+
+Si ve los contenidos del fichero \filename{myfile} después de
+finalizar el retroceso, verá que el primer y el tercer cambio están
+presentes, pero no el segundo.
+\interaction{backout.non-tip.cat}
+
+Como lo muestra el historial gráfico en la
+figura~\ref{fig:undo:backout-non-tip}, Mercurial realmente consigna
+\emph{dos} cambios en estas situaciones (los nodos encerrados en una
+caja son aquellos que Mercurial consigna automaticamente).  Antes de
+que Mercurial comience el proceso de retroceso, primero recuerda cuál
+es el padre del directorio de trabajo.  Posteriormente hace un
+retroceso al conjunto de cambios objetivo y lo consigna como un
+conjunto de cambios. Finalmente, fusiona con el padre anterior del
+directorio de trabajo, y consigna el resultado de la fusión.
+
+% TODO: to me it looks like mercurial doesn't commit the second merge automatically!
+
+\begin{figure}[htb]
+  \centering
+  \grafix{undo-non-tip}
+  \caption{Retroceso automatizado de un cambio a algo que no es la punta con la orden \hgcmd{backout}}
+  \label{fig:undo:backout-non-tip}
+\end{figure}
+
+El resultado es que usted termina ``donde estaba'', solamente con un
+poco de historial adicional que deshace el efecto de un conjunto de
+cambios que usted quería evitar.
+
+\subsubsection{Use siempre la opción \hgopt{backout}{--merge}}
+
+De hecho, dado que la opción \hgopt{backout}{--merge} siempre hara lo
+``correcto'' esté o no retrocediendo el conjunto de cambios punta
+(p.e.~no tratará de fusionar si está retrocediendo la punta, dado que
+no es necesario), usted debería usar \emph{siempre} esta opción cuando
+ejecuta la orden \hgcmd{backout}.
+
+\subsection{Más control sobre el proceso de retroceso}
+
+A pesar de que recomiendo usar siempre la opción 
+\hgopt{backout}{--merge} cuando está retrocediendo un cambio, la orden
+\hgcmd{backout} le permite decidir cómo mezclar un retroceso de un
+conjunto de cambios.  Es muy extraño que usted necestite tomar control
+del proceso de retroceso de forma manual, pero puede ser útil entender
+lo que la orden \hgcmd{backout} está haciendo automáticamente para
+usted. Para ilustrarlo, clonemos nuestro primer repositorio, pero
+omitamos el retroceso que contiene.
+
+\interaction{backout.manual.clone}
+Como en el ejemplo anterior, consignaremos un tercer cambio, después
+haremos retroceso de su padre, y veremos qué pasa.
+\interaction{backout.manual.backout} 
+Nuestro nuevo conjunto de cambios es de nuevo un descendiente del
+conjunto de cambio que retrocedimos; es por lo tanto una nueva cabeza,
+\emph{no} un descendiente del conjunto de cambios que era la punta. La
+orden \hgcmd{backout} fue muy explícita diciéndolo.
+\interaction{backout.manual.log}
+
+De nuevo, es más sencillo lo que pasó viendo una gráfica del
+historial de revisiones, en la figura~\ref{fig:undo:backout-manual}.
+Esto nos aclara que cuando usamos \hgcmd{backout} para retroceder un
+cambio a algo que no sea la punta, Mercurial añade una nueva cabeza al
+repositorio (el cambio que consignó está encerrado en una caja).
+
+\begin{figure}[htb]
+  \centering
+  \grafix{undo-manual}
+  \caption{Retroceso usando la orden \hgcmd{backout}}
+  \label{fig:undo:backout-manual}
+\end{figure}
+
+Después de que la orden \hgcmd{backout} ha terminado, deja un nuevo
+conjunto de cambios de ``retroceso'' como el padre del directorio de trabajo.
+\interaction{backout.manual.parents}
+Ahora tenemos dos conjuntos de cambios aislados.
+\interaction{backout.manual.heads}
+
+Reflexionemos acerca de lo que esperamos ver como contenidos de
+\filename{myfile}.  El primer cambio debería estar presente, porque
+nunca le hicimos retroceso.  El segundo cambio debió desaparecer,
+puesto que es el que retrocedimos.  Dado que la gráfica del historial
+muestra que el tercer camlio es una cabeza separada, \emph{no}
+esperamos ver el tercer cambio presente en \filename{myfile}.
+\interaction{backout.manual.cat}
+Para que el tercer cambio esté en el fichero, hacemos una fusión usual
+de las dos cabezas.
+\interaction{backout.manual.merge}
+Después de eso, el historial gráfica de nuestro repositorio luce como
+la figura~\ref{fig:undo:backout-manual-merge}.
+
+\begin{figure}[htb]
+  \centering
+  \grafix{undo-manual-merge}
+  \caption{Fusión manual de un retroceso}
+  \label{fig:undo:backout-manual-merge}
+\end{figure}
+
+\subsection{Por qué \hgcmd{backout} hace lo que hace}
+
+Esta es una descripción corta de cómo trabaja la orden \hgcmd{backout}.
+\begin{enumerate}
+\item Se asegura de que el directorio de trabajo es ``limpio'', esto
+  es, que la salida de \hgcmd{status} debería ser vacía.
+\item Recuerda el padre actual del directorio de trabajo. A este
+  conjunto de cambio lo llamaremos \texttt{orig}
+\item Hace el equivalente de un \hgcmd{update} para sincronizar el
+  directorio de trabajo con el conjunto de cambios que usted quiere
+  retroceder. Lo llamaremos \texttt{backout}
+\item Encuentra el padre del conjunto de cambios. Lo llamaremos
+  \texttt{parent}.
+\item Para cada fichero del conjunto de cambios que el
+  \texttt{retroceso} afecte, hará el equivalente a
+  \hgcmdargs{revert}{-r parent} sobre ese fichero, para restaurarlo a
+  los contenidos que tenía antes de que el conjunto de cambios fuera
+  consignado.
+\item Se consigna el resultado como un nuevo conjunto de cambios y
+  tiene a  \texttt{backout} como su padre.
+\item Si especifica \hgopt{backout}{--merge} en la línea de comandos,
+  se fusiona con \texttt{orig}, y se consigna el resultado de la
+  fusión.
+\end{enumerate}
+
+Una vía alternativa de implementar la orden \hgcmd{backout} sería usar
+\hgcmd{export} sobre el conjunto de cambios a retroceder como un diff
+y después usar laa opción \cmdopt{patch}{--reverse} de la orden
+\command{patch} para reversar el efecto del cambio sin molestar el
+directorio de trabajo.  Suena mucho más simple, pero no funcionaría
+bien ni de cerca.
+
+La razón por la cual \hgcmd{backout} hace una actualización, una
+consignación, una fusión y otra consignación es para dar a la
+maquinaria de fusión la mayor oportunidad de hacer un buen trabajo
+cuando se trata con todos los cambios \emph{entre} el cambio que está
+retrocediendo y la punta actual.
+
+Si está retrocediendo un conjunto de cambios que está a unas ~100
+atrás en su historial del proyecto, las posibilidades de que una orden
+\command{patch} sea capaz de ser aplicada a un diff reverso,
+claramente no son altas, porque los cambios que intervienen podrían
+``no coincidir con el contexto'' que \command{patch} usa  para
+determinar si puede aplicar un parche (si esto suena como cháchara,
+vea una discusión de la orden \command{patch} en \ref{sec:mq:patch}).
+Adicionalmente, la maquinaria de fusión de Mercurial manejará ficheros
+y directorios renombrados, cambios de permisos, y modificaciones a
+ficheros binarios, nada de lo cual la orden \command{patch} puede manejar.
+
+\section{Cambios que nunca debieron ocurrir}
+\label{sec:undo:aaaiiieee}
+
+En la mayoría de los casos, la orden \hgcmd{backout} es exactamente lo
+que necesita para deshacer los efectos de un cambio.  Deja un registro
+permanente y exacto de lo que usted hizo, cuando se consignó el
+conjunto de cambios original y cuando se hizo la limpieza.
+
+En ocasiones particulares, puede haber consignado un cambio que no
+debería estar de ninguna forma en el repositorio.  Por ejemplo, sería
+muy inusual, y considerado como una equivocación, consignar los
+ficheros objeto junto con el código fuente. Los ficheros objeto no
+tienen valor intrínseco y son \emph{grandes}, por lo tanto aumentan el
+tamaño del repositorio y la cantidad de tiempo que se emplea al clonar
+o jalar cambios.
+
+Antes de discutir las opciones que tiene si consignó cambio del tipo 
+``bolsa de papel deschable'' (el tipo que es tan malo que le gustaría
+colocarse una bolsa de papel desechable en su cabeza), permítame
+discutir primero unas aproximaciones que probablemente no funcionen.
+
+Dado que Mercurial trata de forma acumulativa al historial---cada
+cambio se coloca encima de todos los cambios que le
+preceden---usualmente usted no puede hacer que unos cambios desastrosos
+desaparezcan. La única excepción es cuando usted ha acabado de
+consignar un cambio y este no ha sido publicado o jalado en otro
+repositorio. Ahí es cuando puede usar la orden \hgcmd{rollback} con
+seguridad, como detallé en la sección~\ref{sec:undo:rollback}.
+
+Después de que usted haya publicado un cambio en otro repositorio, usted
+\emph{podría} usar la orden \hgcmd{rollback} para hacer que en su copia
+local desaparezca el cambio, pero no tendrá las consecuencias que
+desea. El cambio estará presente en un repositorio remoto, y
+reaparecerá en su repositorio local la próxima vez que jale
+
+Si una situación como esta se presenta, y usted sabe en qué
+repositorios su mal cambio se ha propagado, puede \emph{intentar}
+deshacerse del conjunto de cambios de \emph{todos} los repositorios en
+los que se pueda encontrar.  Esta por supuesto, no es una solución
+satisfactoria: si usted deja de hacerlo en un solo repositorio,
+mientras esté eliminándolo, el cambio todavía estará ``allí afuera'',
+y podría propagarse más tarde.
+
+Si ha consignado uno o más cambios \emph{después} del cambio que desea
+desaparecer, sus opciones son aún más reducidas. Mercurial no provee
+una forma de ``cabar un hueco'' en el historial, dejando los conjuntos
+de cambios intactos.
+
+%Dejamos de traducir lo que viene a continuación, porque será
+%modificado por upstream...
+
+XXX This needs filling out.  The \texttt{hg-replay} script in the
+\texttt{examples} directory works, but doesn't handle merge
+changesets.  Kind of an important omission.
+
+\subsection{Cómo protegerse de cambios que han ``escapado''}
+
+Si ha consignado cambios a su repositorio local y estos han sido
+publicados o jalados en cualquier otro sitio, no es necesariamente un
+desastre. Puede protegerse de antemano de ciertas clases de conjuntos
+de cambios malos. Esto es particularmente sencillo si su equipo de
+trabajo jala cambios de un repositorio central.
+
+Al configurar algunos ganchos en el repositorio central para validar
+conjuntos de cambios (ver capítulo~\ref{chap:hook}), puede prevenir la
+publicación automáticamente de cierta clase de cambios malos.  Con tal
+configuración, cierta clase de conjuntos de cambios malos tenderán
+naturalmente a``morir'' debido a que no pueden propagarse al
+repositorio central.  Esto sucederá sin necesidad de intervención
+explícita.
+
+Por ejemplo, un gancho de cambios de entrada que verifique que un
+conjunto de cambios compila, puede prevenir que la gente ``rompa 
+la compilación'' inadvertidamente.
+
+\section{Al encuentro de la fuente de un fallo}
+\label{sec:undo:bisect}
+
+Aunque es muy bueno poder retroceder el conjunto de cambios que
+originó un fallo, se requiere que usted sepa cual conjunto de cambios
+retroceder.  Mercurial brinda una orden invaluable, llamada
+\hgcmd{bisect}, que ayuda a automatizar este proceso y a alcanzarlo
+muy eficientemente.
+
+La idea tras la orden \hgcmd{bisect} es que el conjunto de cambios que
+ha introducido un cambio de comportamiento pueda identificarse con una
+prueba binaria sencilla. No tiene que saber qué pieza de código
+introdujo el cambio, pero si requiere que sepa cómo probar la
+existencia de un fallo. La orden \hgcmd{bisect} usa su prueba para
+dirigir su búsqueda del conjunto de cambios que introdujo el código
+causante del fallo.
+
+A continuación un conjunto de escenarios que puede ayudarle a entender
+cómo puede aplicar esta orden.
+\begin{itemize}
+\item La versión más reciente de su programa tiene un fallo que usted
+  recuerda no estaba hace unas semanas, pero no sabe cuándo fue
+  introducido. En este caso, su prueba binaria busca la presencia de
+  tal fallo.
+\item Usted arregló un fallo en un apurto, y es hora de dar por
+  cerrado el caso en la base de datos de fallos de su equipo de
+  trabajo.   La base de datos de fallos requiere el ID del conjunto de
+  cambios que permita dar por cerrado el caso, pero usted no recuerda
+  qué conjunto de cambios arregló tal fallo.  De nuevo la prueba
+  binaria revisa la presencia del fallo.
+\item Su programa funciona correctamente, pero  core ~15\% más lento
+  que la última vez que lo midió. Usted desea saber qué conjunto de
+  cambios introdujo esta disminución de desempeño.  En este caso su
+  prueba binaria mide el desempeño de su programa, para ver dónde es
+  ``rápido'' y dónde es ``lento''.
+\item Los tamaños de los componentes del proyecto que usted lleva se
+  expandieron recientemente, y sospecha que algo cambio en la forma en
+  que se construye su proyecto.
+\end{itemize}
+
+Para estos ejemplos debería ser claro que la orden \hgcmd{bisect}
+es útil no solamente para encontrar la fuente de los fallos. Puede
+usarla para encontrar cualquier ``propiedad emergente'' de un
+repositorio (Cualquier cosa que usted no pueda encontrar con una
+búsqueda de texto sencilla sobre los ficheros en el árbol) para la
+cual pueda escribir una prueba binaria.
+
+A continuación introduciremos algo terminología, para aclarar qué
+partes del proceso de búsqueda son su responsabilidad y cuáles de
+Mercurial.  Una \emph{prueba} es algo que \emph{usted} ejecuta cuando
+\hgcmd{bisect} elige un conjunto de cambios.  Un \emph{sondeo} es lo que
+\hgcmd{bisect} ejecuta para decidir si una revisión es buena.  Finalmente,
+usaremos la palabra ``biseccionar', en frases como ``buscar con la
+orden \hgcmd{bisect}''.
+
+Una forma sencilla de automatizar el proceso de búsqueda sería probar
+cada conjunto de cambios.  Lo cual escala muy poco. Si le tomó diez
+minutos hacer pruebas sobre un conjunto de cambios y tiene 10.000
+conjuntos de cambios en su repositorio, esta aproximación exhaustiva
+tomaría en promedio~35 \emph{días} para encontrar el conjunto de
+cambios que introdujo el fallo. Incluso si supiera que el fallo se
+introdujo en un de los últimos 500 conjuntos de cambios y limitara la
+búsqueda a ellos, estaría tomabdi más de 40 horas para encontrar al
+conjunto de cambios culpable.
+
+La orden \hgcmd{bisect} usa su conocimiento de la ``forma'' del
+historial de revisiones de su proyecto para hacer una búsqueda
+proporcional al \emph{logaritmo} del número de conjunto de cambios a
+revisar (el tipo de búsqueda que realiza se llama búsqueda
+binaria). Con esta aproximación, el buscar entre 10.000 conjuntos de
+cambios tomará menos de 3 horas, incluso a diez minutos por prueba (La
+búsqueda requerirá cerca de 14 pruebas). Al limitar la búsqueda a la
+última centena de conjuntos de cambios, tomará a lo sumo una
+hora (Apenas unas 7 pruebas).
+
+La orden \hgcmd{bisect} tiene en cuenta la naturaleza ``ramificada''
+del historial de revisiones del proyecto con Mercurial, así que no
+hay problemas al tratar con ramas, fusiones o cabezas múltiples en un
+repositorio.  Puede evitar ramas enteras de historial con un solo
+sondeo.
+
+\subsection{Uso de la orden \hgcmd{bisect}}
+
+A continuación un ejemplo de \hgcmd{bisect} en acción.
+
+\begin{note}
+  En las versiones 0.9.5 y anteriores de Mercurial, \hgcmd{bisect} no
+  era una orden incluída en la distribución principal: se ofrecía como
+  una extensión de Mercurial. Esta sección describe la orden embebida
+  y no la extensión anterior.
+\end{note}
+
+Creamos un repostorio para probar el comando \hgcmd{bisect} de forma
+aislada
+\interaction{bisect.init}
+Simularemos de forma sencilla un proyecto con un fallo: haremos
+cambios triviales en un ciclo, e indicaremos que un cambio específico
+sea el ``fallo''.  Este ciclo crea 35 conjuntos de cambios, cada uno
+añade un único fichero al repositorio. Representaremos nuestro ``fallo''
+con un fichero que contiene el texto ``tengo un gub''.
+\interaction{bisect.commits}
+
+A continuación observaremos cómo usar la orden \hgcmd{bisect}. Podemos
+usar el mecanismo de ayuda embebida que trae Mercurial.
+\interaction{bisect.help}
+
+La orden \hgcmd{bisect} trabaja en etapas, de la siguiente forma:
+\begin{enumerate}
+\item Usted ejecuta una prueba binaria.
+  \begin{itemize}
+  \item Si la prueba es exitosa, usted se lo indicará a \hgcmd{bisect}
+    ejecutando la orden \hgcmdargs{bisect}{good}.
+  \item Si falla, ejecutará la orden \hgcmdargs{bisect}{--bad}.
+  \end{itemize}
+\item La orden usa su información para decidir qué conjuntos de
+  cambios deben probarse a continuación.
+\item Actualiza el directorio de trabajo a tal conjunto de cambios y
+  el proceso se lleva a cabo de nuevo.
+\end{enumerate}
+El proceso termina cuando \hgcmd{bisect} identifica un único conjunto
+de cambios que marca el punto donde se encontró la transición de
+``exitoso'' a ``fallido''.
+
+Para comenzar la búsqueda, es indispensable ejecutar la orden
+\hgcmdargs{bisect}{--reset}.
+\interaction{bisect.search.init}
+
+En nuestro caso, la prueba binaria es sencilla: revisamos si el
+fichero en el repositorio contiene la cadena ``tengo un gub''.  Si la
+tiene, este conjunto de cambios contiene aquel que ``causó el fallo''.
+Por convención, un conjunto de cambios que tiene la propiedad que
+estamos buscando es ``malo'', mientras que el otro que no la tiene es
+``bueno''.
+
+En la mayoría de casos, la revisión del directorio actual (usualmente
+la punta) exhibe el problema introducido por el cambio con el fallo,
+por lo tanto la marcaremos como ``mala''.
+\interaction{bisect.search.bad-init}
+
+Nuestra próxima tarea es nominar al conjunto de cambios que sabemos
+\emph{no} tiene el fallo; la orden \hgcmd{bisect} ``acotará'' su
+búsqueda entre el primer par de conjuntos de cambios buenos y malos.
+En nuestro caso, sabemos que la revisión~10 no tenía el fallo.  (Más
+adelante diré un poco más acerca de la elección del conjunto de
+cambios ``bueno''.)
+\interaction{bisect.search.good-init}
+
+Note que esta orden mostró algo.
+\begin{itemize}
+\item Nos dijo cuántos conjuntos de cambios debe considerar antes de
+  que pueda identifica aquel que introdujo el fallo, y cuántas pruebas
+  se requerirán.
+\item Actualizó el directorio de trabajo al siguiente conjunto de
+  cambios, y nos dijo qué conjunto de cambios está evaluando.
+\end{itemize}
+
+Ahora ejecutamos nuestra prueba en el directorio de trabajo. Usamos la
+orden \command{grep} para ver si nuestro fichero ``malo'' está
+presente en el directorio de trabajo.  Si lo está, esta revisión es
+mala; si no esta revisión es buena.
+\interaction{bisect.search.step1}
+
+Esta prueba luce como candidata perfecta para automatizarse, por lo
+tanto la convertimos en una función de interfaz de comandos.
+\interaction{bisect.search.mytest}
+Ahora podemos ejecutar un paso entero de pruebas con un solo comando,
+\texttt{mytest}.
+\interaction{bisect.search.step2}
+Unas invocaciones más de nuestra prueba, y hemos terminado.
+\interaction{bisect.search.rest}
+
+Aunque teníamos unos~40 conjuntos de cambios en los cuales buscar, la
+orden \hgcmd{bisect} nos permitió encontrar el conjunto de cambios que
+introdujo el ``fallo'' con sólo cinco pruebas.  Porque el número de
+pruebas que la orden \hgcmd{bisect} ejecuta crece logarítmicamente con
+la cantidad de conjuntos de cambios a buscar, la ventaja que esto
+tiene frente a la  búsqueda por``fuerza bruta'' crece con cada
+conjunto de cambios que usted adicione.
+
+\subsection{Limpieza después de la búsqueda}
+
+Cuando haya terminado de usar la orden \hgcmd{bisect} en un
+repositorio, puede usar la orden \hgcmdargs{bisect}{reset} para
+deshacerse de la información que se estaba usando para lograr la
+búsqueda. Lar orden no usa mucho espacio, así que no hay problema si
+olvida ejecutar la orden.  En todo caso, \hgcmd{bisect} no le
+permitirá comenzar una nueva búsqueda sobre el repositorio hasta que
+no aplique \hgcmdargs{bisect}{reset}.
+\interaction{bisect.search.reset}
+
+\section{Consejos para encontrar fallos efectivamente}
+
+\subsection{Dar una entrada consistente}
+
+La orden \hgcmd{bisect} requiere que usted ofrezca un reporte correcto
+del resultado de cada prueba que aplique.  Si usted le dice que una
+prueba falla cuando en realidad era acertada, \emph{podría} detectar
+la inconsistencia. Si puede identificar una inconsistencia en sus
+reportes, le dirá que un conjunto de cambios particular es a la vez
+bueno y malo.  Aunque puede no hacerlo; estaría tratando de reportar
+un conjunto de cambios como el responsable de un fallo aunque no lo
+sea.
+
+\subsection{Automatizar tanto como se pueda}
+
+Cuando comencé a usar la orden \hgcmd{bisect}, intenté ejecutar
+algunas veces las pruebas a mano desde la línea de comandos. Es una
+aproximación a la cual no esta acostumbrado. Después de algunos
+intentos, me di cuenta que estaba cometiendo tantas equivocaciones que
+tenía que comenzar de nuevo con mis búsquedas varias veces antes de
+llegar a los resultados deseados.
+
+Mi problema inicial al dirigir a la orden \hgcmd{bisect} manualmente
+ocurrieron incluso con búsquedas en repositorios pequeños; si el
+problema que está buscando es más sutil, o el número de pruebas que
+\hgcmd{bisect} debe aplicar, la posibilidad de errar es mucho más
+alta. Una vez que comencé a automatizar mis pruebas, obtuve mejores
+resultados.
+
+La clave para las pruebas automatizadas se puede resumir en:
+\begin{itemize}
+\item pruebe siempre buscando el mismo síntoma y
+\item ofrezca siempre datos consistentes a la orden \hgcmd{bisect}.
+\end{itemize}
+En mi tutorial de ejemplo anterior, la orden \command{grep} busca el
+síntoma, y la construcción \texttt{if} toma el resultado de esta
+prueba y verifica que siempre alimentamos con los mismos datos a la
+orden \hgcmd{bisect}. La función \texttt{mytest} los une de una forma
+reproducible, logrando que cada prueba sea uniforme y consistente.
+
+\subsection{Verificar los resultados}
+
+Dado que la salida de la búsqueda de \hgcmd{bisect} es tan buena como
+los datos ofrecidos por usted, no confíe en esto como si fuera la
+verdad absoluta. Una forma sencilla de asegurarse es ejecutar
+manualmente su prueba a cada uno de los siguientes conjuntos de
+cambios:
+\begin{itemize}
+\item El conjunto de cambios que se reportó como la primera versión
+  erronea. Su prueba debería dar un reporte de fallo.
+\item El conjunto de cambios padre (cada padre, si es una fusión).
+  Su prueba debería reportar este(os) conjunto(s) de cambios como
+  bueno(s).
+\item Un hijo del conjunto de cambios. Su prueba debería reportar al
+  conjunto de cambios hijo como malo.
+\end{itemize}
+
+\subsection{Tener en cuenta la interferencia entre fallos}
+
+Es posible que su búsqueda de un fallo pueda viciarse por la presencia
+de otro. Por ejemplo, digamos que su programa se revienta en la
+revisión 100, y que funcionó correctamente en la revisión 50.  Sin su
+conocimiento, alguien introdujo un fallo con consecuencias grandes en
+la revisión 60, y lo arregló en la revisión 80. Sus resultados
+estarían distorcionados de una o muchas formas.
+
+Es posible que este fallo ``enmascare'' completamente al suyo, y que
+podría haberse revelado antes de que su propio fallo haya tenido
+oportunidad de manifestarse. Si no puede saltar el otro fallo (por
+ejemplo, este evita que su proyecto se arme o compile), y de esta
+forma no se pueda revisar si su fallo esté presente en un conjunto
+particular de cambios, la orden \hgcmd{bisect} no podrá ayudarle
+directamente. En cambio, puede marcar este conjunto de cambios como
+al ejecutar \hgcmdargs{bisect}{--skip}.
+
+Un problema distinto podría surgir si su prueba de la presencia de un
+fallo no es suficientemente específica. Si usted busca ``mi programa
+se revienta'', entonces tanto su fallo como el otro fallo sin relación
+que terminan presentando síntomas distintos, podría terminar
+confundiendo a \hgcmd{bisect}.
+
+Otra situación en la cual sería de mucha utilidad emplear a
+\hgcmdargs{bisect}{--skip} surge cuando usted no puede probar una
+revisión porque su proyecto estaba en una situación de rompimiento y
+por lo tanto en un estado en el cual era imposible hacer la prueba en
+esa revisión, tal vez porque alguien consignó un cambio que hacía
+imposible la construcción del proyecto.
+
+\subsection{Acotar la búsqueda perezosamente}
+
+Elegir los primeros ``buenos'' y ``malos'' conjuntos de cambios que
+marcarán los límites de su búsqueda en general es sencillo, pero vale
+la pena discutirlo.  Desde la perspectiva de \hgcmd{bisect}, el
+conjunto de cambios ``más nuevo'' por convención es el ``malo'', y el
+otro conjunto de cambios es el ``bueno''.
+
+Si no recuerda cuál podría ser el cambio ``bueno'', para informar a
+\hgcmd{bisect}, podría hacer pruebas aleatorias en el peor de los
+casos. Pero recuerde eliminar aquellos conjuntos de cambios que
+podrían no exhibir el fallo (tal vez porque la característica donde se
+presenta el fallo todavía no está presente) y aquellos en los cuales
+otro fallo puede enmascararlo (como se discutió anteriormente).
+
+Incluso si termina ``muy atrás'' por miles de conjuntos de cambios o
+meses de historial, solamente estaŕa adicionando unas pruebas contadas
+para \hgcmd{bisect}, gracias al comportamiento logarítmico.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

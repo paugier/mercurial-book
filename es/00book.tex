@@ -1,0 +1,81 @@
+% The use of oneside here is a temporary hack; \marginpar entries
+% don't show up on odd pages of PDF output without it.  Sigh.
+\documentclass[oneside]{book}
+\usepackage[spanish]{babel}
+\usepackage{enumerate}
+\usepackage{fullpage}
+\usepackage{makeidx}
+\usepackage{ifpdf}
+\usepackage{graphicx}
+\usepackage{pslatex}
+\usepackage{fancyvrb}
+\usepackage[utf8]{inputenc} %accents in spanish
+% leave hyperref until last
+\ifpdf
+\usepackage[colorlinks=true,bookmarks=true,pdftitle={Distributed
+  revision control with Mercurial},pdfsubject={Revision
+  control},pdfkeywords={Mercurial, Revision control, Distributed
+  revision control},pdfauthor={Bryan O'Sullivan}]{hyperref}
+\fi
+
+\include{99defs}
+
+\title{Control Distribuido de Revisiones con Mercurial} \author{Bryan
+  O'Sullivan}
+\date{Copyright \copyright\ 2006, 2007 Bryan O'Sullivan.\\
+  Este material puede distribuirse únicamente bajo los términos y
+  condiciones establecidos en la versión 1.0 de la Licencia de Publicación
+  Abierta (OPL). Refiérase por favor al apéndice~\ref{cha:opl} para encontrar el
+  texto de la licencia.\\
+  Este libro fue preparado a partir de
+  \href{http://mercurial.intuxication.org/hg/mercurial_book_es}{rev~\input{build_id}}
+  usando Mercurial \href{http://www.selenic.com/hg/}{rev~\input{hg_id}}.}
+
+\makeindex
+
+\begin{document}
+\spanishdeactivate{<>"~}
+\maketitle
+
+\addcontentsline{toc}{chapter}{Índice general}
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+%\listoftables
+
+\pagenumbering{arabic}
+
+\include{preface}
+\include{intro}
+\include{tour-basic}
+\include{tour-merge}
+\include{concepts}
+\include{daily}
+\include{collab}
+\include{filenames}
+\include{branch}
+\include{undo}
+\include{hook}
+\include{template}
+\include{mq}
+\include{mq-collab}
+\include{hgext}
+
+\appendix
+\include{cmdref}
+\include{mq-ref}
+\include{srcinstall}
+\include{license}
+\addcontentsline{toc}{chapter}{Bibliografía}
+\bibliographystyle{alpha}
+\bibliography{99book}
+
+\addcontentsline{toc}{chapter}{Índice alfabético}
+\printindex
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

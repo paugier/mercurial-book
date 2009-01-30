@@ -1,0 +1,378 @@
+\chapter{Referencia de las Colas de Mercurial}
+\label{chap:mqref}
+
+\section{Referencia de órdenes MQ}
+\label{sec:mqref:cmdref}
+
+Si desea dar un vistazo a las órdenes que ofrece MQ, use la orden
+\hgcmdargs{help}{mq}.
+
+\subsection{\hgxcmd{mq}{qapplied}---imprimir los parches aplicados}
+
+La orden \hgxcmd{mq}{qapplied} imprime la pila actual de parches
+aplicados.  Los parches se imprimen en orden de antigüedad, primero
+los más antiguos y después los más recientes, por lo tanto el último
+parche de la lista es el que está en el ``tope''.
+
+\subsection{\hgxcmd{mq}{qcommit}---consignar cambios en la cola del repositorio}
+
+La orden \hgxcmd{mq}{qcommit} consigna cualquier cambio sobresaliente
+en el repositorio \sdirname{.hg/patches}.  Esta orden solamente
+funciona si el directorio \sdirname{.hg/patches} es un repositorio,
+p.e.~usted creó el directorio con
+\hgcmdargs{qinit}{\hgxopt{mq}{qinit}{-c}} o ejecutó
+\hgcmd{init} en el directorio después de correr \hgxcmd{mq}{qinit}.
+
+Esta orden es un atajo para \hgcmdargs{commit}{--cwd .hg/patches}.
+
+\subsection{\hgxcmd{mq}{qdelete}---eliminar un parche del fichero
+  \sfilename{series}}
+
+La orden \hgxcmd{mq}{qdelete} elimina la entrada del fichero
+\sfilename{series} para el parche en el directorio
+\sdirname{.hg/patches}.  No sca el parche si ha sido aplicado.  De
+forma predeterminada no borra el fichero del parche; use la opción
+\hgxopt{mq}{qdel}{-f} para hacerlo.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qdel}{-f}] Elimina el fichero del parche.
+\end{itemize}
+
+\subsection{\hgxcmd{mq}{qdiff}---imprimir la diferencia del último
+  parche aplicado}
+
+La orden \hgxcmd{mq}{qdiff} imprime un diff del parche más
+recientemente aplicado.  Es equivalente a \hgcmdargs{diff}{-r-2:-1}.
+
+\subsection{\hgxcmd{mq}{qfold}---fusionar (``integrar'') varios parches en
+  uno solo}
+
+La orden \hgxcmd{mq}{qfold} fusiona muchos parches en el último parche
+aplicado, de tal forma que el último parche aplicado es la unión de
+todos los cambios de los parches en cuestión.
+
+Los parches a fusionar no deben haber sido aplicados;
+\hgxcmd{mq}{qfold} saldrá indicando un error si alguno ha sido
+aplicado.  El orden en el cual los parches se pliegan es
+significativo; \hgcmdargs{qfold}{a b} significa ``aplique el parche
+más reciente, seguido de \texttt{a}, y seguido de \texttt{b}''.
+
+Los comentarios de los parches integrados se colocan al final de los
+comentarios del parche destino, con cada bloque de comentarios
+separado con tres asteriscos (``\texttt{*}'').  Se usa la opción
+\hgxopt{mq}{qfold}{-e} para editar el mensaje de consignación para el
+conjunto de cambios/parches después de completarse el pliegue.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qfold}{-e}] Edita el mensaje de consignación y la
+  descripción del parche del parche que se ha integrado.
+\item[\hgxopt{mq}{qfold}{-l}] Usa los contenidos del fichero dado como
+  el nuevo mensaje de consignación y descripción del parche para el
+  parche a integrar.
+\item[\hgxopt{mq}{qfold}{-m}] Usa el texto dado como el mensaje de
+  consignación y descripción del parche para el parche integrado.
+\end{itemize}
+
+\subsection{\hgxcmd{mq}{qheader}---desplegar el encabezado/descripción
+  de un parche}
+
+La orden \hgxcmd{mq}{qheader} imprime el encabezado o descripción de
+un parche.  De forma predeterminada, imprime el encabezado del último
+parche aplicado. Si se da un argumento, imprime el encabezado del
+parche referenciado.
+
+\subsection{\hgxcmd{mq}{qimport}---importar el parche de un tercero en
+  la cola}
+
+La orden \hgxcmd{mq}{qimport} añade una entrada de un parche externo
+al fichero \sfilename{series} y copia el parche en el directorio
+\sdirname{.hg/patches}.  Añade la entrada inmediatamente después del
+último parche aplicado, pero no introduce el parche.
+
+Si el directorio \sdirname{.hg/patches} es un repositorio, 
+\hgxcmd{mq}{qimport} automáticamente hace un \hgcmd{add} del parche
+importado.
+
+\subsection{\hgxcmd{mq}{qinit}---preparar un repositorio para trabajar
+  con MQ}
+
+La orden \hgxcmd{mq}{qinit} prepara un repositorio para trabajar con
+MQ.  Crea un directorio llamado \sdirname{.hg/patches}.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qinit}{-c}] Crea \sdirname{.hg/patches} como un
+  repositorio por sí mismo.  También crea un fichero
+  \sfilename{.hgignore} que ignorará el fichero \sfilename{status}.
+\end{itemize}
+
+Cuando el directorio \sdirname{.hg/patches} es un repositorio, las órdenes
+\hgxcmd{mq}{qimport} y \hgxcmd{mq}{qnew} hacen \hgcmd{add}
+automáticamente a los parches nuevos.
+
+\subsection{\hgxcmd{mq}{qnew}---crear un parche nuevo}
+
+La orden \hgxcmd{mq}{qnew} crea un parche nuevo.  Exige un argumento,
+el nombre que se usará para tal parche.  El parche recién creado está
+vacío inicialmente.   Se añade al fichero \sfilename{series} después
+del último parche aplicado, y se introduce en el tope de ese parche.
+
+Si \hgxcmd{mq}{qnew} encuentra ficheros modificados en el directorio
+de trabajo, rehusará crear un parche nuevo a meos que se emplee
+\hgxopt{mq}{qnew}{-f} la opción (ver más adelante).  Este
+comportamiento le permite hacer \hgxcmd{mq}{qrefresh} al último parche
+aplicado antes de aplicar un parche nuevo encima de este.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qnew}{-f}] Crea un parche nuevo si los contenidos
+  del directorio actual han sido modificados.  Cualquier modificación
+  significativa se añade al parche recientemente creado,  de tal forma
+  que al finalizar la orden, el directorio de trabajo no lucirá
+  modificado.
+\item[\hgxopt{mq}{qnew}{-m}] Usa el texto dado como el mensaje de
+  consignación.  Este texto se almacenará al principio del fichero del
+  parche, antes de los datos del parche.
+\end{itemize}
+
+\subsection{\hgxcmd{mq}{qnext}---imprimir el nombre del próximo parche}
+
+La orden \hgxcmd{mq}{qnext} imprime el nombre del siguiente parche en
+el fichero \sfilename{series} a continuación del último parche
+aplicado.  Este parche sería el próximo parche a aplicar si se
+ejecutara la orden \hgxcmd{mq}{qpush}.
+
+\subsection{\hgxcmd{mq}{qpop}---sustraer parches de la pila}
+
+La orden \hgxcmd{mq}{qpop} elimina los parches aplicados del tope de
+la pila de parches aplicados.  De forma predeterminada solamente
+remueve un parche.
+
+Esta orden elimina los conjuntos de cambios que representan los
+parches sustraídos del repositorio, y actualiza el directorio de
+trabajo para deshacer los efectos de los parches.
+
+Esta orden toma un argumento opcional, que usa como el nombre o el
+índice del parche que desea sustraer.  Si se da el nombre, sustraerá
+los parches hasta que el parche nombrado sea el último parche
+aplicado.  Si se da un número, \hgxcmd{mq}{qpop} lo trata como un
+índice dentro del fichero \sfilename{series},  contando desde
+cero (no cuenta las líneas vacías o aquellas que sean únicamente
+comentarios).  Sustrae los parches hasta que el parche identificado
+por el índice sea el último parche aplicado.
+
+La orden \hgxcmd{mq}{qpop} no lee o escribe parches en el fichero
+\sfilename{series}.  \hgxcmd{mq}{qpop} se constituye por tanto en una
+forma segura de sustraer un parche del fichero \sfilename{series} o un
+parche que ha eliminado o renombrado completamente.  En los dos
+últimos casos, use el nombre del parche tal como lo hizo cuando lo
+aplicó.
+
+De forma predeterminada, la orden \hgxcmd{mq}{qpop} no sustraerá
+parche alguno si el directorio de trabajo ha sido modificado.  Puede
+modificar este comportamiento con la opción \hgxopt{mq}{qpop}{-f}, que
+revierte todas las modificaciones del directorio de trabajo.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qpop}{-a}] Sustrae todos los parches aplicados.
+  Restaura el repositorio al estado antes de haber aplicado parche alguno.
+\item[\hgxopt{mq}{qpop}{-f}] Revertir forzadamente cualquier
+  modificación del directorio de trabajo cuando se hace sustracciones.
+\item[\hgxopt{mq}{qpop}{-n}] Sustraer un parche de la cola dado un nombre.
+\end{itemize}
+
+La orden \hgxcmd{mq}{qpop} elimina una línea del final del fichero
+\sfilename{status} por cada parche que se sustrae.
+
+\subsection{\hgxcmd{mq}{qprev}---imprimir el nombre del parche anterior}
+
+La orden \hgxcmd{mq}{qprev} imprime el nombre del parche en el fichero
+\sfilename{series} que está antes del último parche aplicado.   Este
+se volverá el último parche aplicado si ejecuta \hgxcmd{mq}{qpop}.
+
+\subsection{\hgxcmd{mq}{qpush}---introducir parches a la pila}
+\label{sec:mqref:cmd:qpush}
+
+La orden \hgxcmd{mq}{qpush} añade parches a la pila.  De forma
+predeterminada añade solamente un parche.
+
+Esta orden crea un conjunto de cambios que representa cada parche
+aplicado y actualiza el directorio de trabajo aplicando los efectos de
+los parches.
+
+Los datos predeterminados cuando se crea un conjunto de cambios
+corresponde a:
+\begin{itemize}
+\item La fecha de consignación y zona horaria corresponden a la hora
+  actual de la zona.  Dado que tales datos se usan para computar la
+  identidad de un conjunto de cambios, significa que si hace
+  \hgxcmd{mq}{qpop} a un parche y \hgxcmd{mq}{qpush} de nuevo, el
+  conjunto de cambios que introduzca tendrá una identidad distinta a
+  la del conjunto de cambios que sustrajo.
+\item El autor es el mismo que el predeterminado usado por la orden
+  \hgcmd{commit}.
+\item El mensaje de consignación es cualquier texto del fichero del
+  parche que viene antes del primer encabezado del diff.  Si no hay
+  tal texto, un mensaje predeterminado se sua para identificar el
+  nombre del parche.
+\end{itemize}
+Su un parche contiene un encabezado de parche de Mercurial (XXX add
+link), la información en el encabezado del parche tiene precedencia
+sobre el predeterminado.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qpush}{-a}] Introduce todos los parches que no han
+  sido aplicados del fichero \sfilename{series} hasta que no haya nada
+  más para introducir.
+\item[\hgxopt{mq}{qpush}{-l}] Añade el nombre del parche al final del
+  mensaje de consignación
+\item[\hgxopt{mq}{qpush}{-m}] Si un parche no se aplica limpiamente,
+  usa la entrada para un parche en otra cola almacenada para computar
+  los parámetros en una fusión de tres, y aplica una fusión de tres
+  fuentes usando la maquinaria usual de Mercurial.  Usa la resolución
+  de la fusión como el contenido del parche nuevo.
+\item[\hgxopt{mq}{qpush}{-n}] Usa la cola mencionada si se está
+  fusionando en la introducción.
+\end{itemize}
+
+La orden \hgxcmd{mq}{qpush} lee, pero no modifica el fichero
+\sfilename{series}.  Añade al final del fichero \hgcmd{status} una
+línea por cada parche que se introduce.
+
+\subsection{\hgxcmd{mq}{qrefresh}---actualiza el último parche aplicado}
+
+La orden \hgxcmd{mq}{qrefresh} actualiza el último parche aplicado.
+Modifica el parche, elimina el último conjunto de cambios que
+representó el parche, y crea un nuevo conjunto de cambios para
+representar el parche modificado.
+
+La orden \hgxcmd{mq}{qrefresh} busca las siguientes modificaciones:
+\begin{itemize}
+\item Los cambios al mensaje de consignación, p.e.~el texto antes del
+  primer encabezado de diff en el fichero del parche, se replejan en
+  el nuevo conjunto de cambios que representa el parche.
+\item Las modificaciones a los ficheros a los que se les da
+  seguimiento en el directorio de trabajo se añade al parche.
+\item Los cambios a los ficheros a los que se les da seguimiento con
+  \hgcmd{add}, \hgcmd{copy}, \hgcmd{remove}, o \hgcmd{rename}.  Se
+  añaden al parche los ficheros añadidos, copiados y renombrados,
+  mientras que los ficheros eliminados y las fuentes renombradas se
+  eliminan.
+\end{itemize}
+
+Incluso si \hgxcmd{mq}{qrefresh} no detecta cambios, de todas maneras
+recrea el conjunto de cambios que representa el cambio.  Esto causa
+que la identidad del conjunto de cambios difiera del conjunto de
+cambios previo que identificó al parche.
+
+Opciones:
+\begin{itemize}
+\item[\hgxopt{mq}{qrefresh}{-e}] Modificar la descripción de la
+  consignación y el parche con el editor de texto preferido.
+\item[\hgxopt{mq}{qrefresh}{-m}] Modificar el mensaje de consignación
+  y la descripción del parche con el texto dado.
+\item[\hgxopt{mq}{qrefresh}{-l}] Modificar el mensaje de consignación
+  y la descripción del parche con el texto del fichero dado.
+\end{itemize}
+
+\subsection{\hgxcmd{mq}{qrename}---renombrar un parche}
+
+La orden \hgxcmd{mq}{qrename} renombra un parche y cambia la entrada
+del parche en el fichero \sfilename{series}.
+
+Con un argumento sencillo, \hgxcmd{mq}{qrename} renombra el último
+parche aplicado.  Con dos argumentos, renombra el primer argumento con
+el segundo.
+
+\subsection{\hgxcmd{mq}{qrestore}---restaurar el estado almacenado de
+  la cola}
+
+XXX No idea what this does.
+
+\subsection{\hgxcmd{mq}{qsave}---almacena el estado actual de la cola}
+
+XXX Likewise.
+
+\subsection{\hgxcmd{mq}{qseries}---imprime la serie completa de parches}
+
+La orden \hgxcmd{mq}{qseries} imprime la serie completa de parches del
+fichero \sfilename{series}.  Imprime solamente los nombres de los
+parches sin las líneas en blanco o comentarios.  Imprime primero el
+primero y de último, el último aplicado.
+
+\subsection{\hgxcmd{mq}{qtop}---imprime el nombre del parche actual}
+
+\hgxcmd{mq}{qtop} imprime el nombre del último parche aplicado.
+
+\subsection{\hgxcmd{mq}{qunapplied}---imprimir los parches que aún no
+  se han aplicado}
+
+La orden \hgxcmd{mq}{qunapplied} imprime los nombres de los parches
+del fichero \sfilename{series} que todavía no han sido aplicados.  Los
+imprime de acuerdo al orden en el cual serían introducidos.
+
+\subsection{\hgcmd{strip}---remover una revisión y sus descendientes}
+
+La orden \hgcmd{strip} remueve una revisión, y todos sus descendientes
+del repositorio.  Deshace los efectos de las revisiones removidas del
+repositorio, y actualiza el directorio de trabajo hasta el primer
+padre de la revisión removida.
+
+La orden \hgcmd{strip} almacena una copia de segurida de los conjuntos
+de cambios en un agrupamiento, de forma tal que puedan ser reaplicados
+en caso de que se hayan removido por equivocación.
+
+Opciones:
+\begin{itemize}
+\item[\hgopt{strip}{-b}] Almacenar conjuntos de cambios no
+  relacionados que se han mezclado con los conjuntos de cambios que
+  están en franjas con el agrupamiento de copia de seguridad.
+\item[\hgopt{strip}{-f}] Si una rama tiene varias ramas principales
+  remueve todos los frentes. XXX This should be renamed, y usa
+  \texttt{-f} para desagrupar revisiones cuando hay cambios pendientes.
+\item[\hgopt{strip}{-n}] No almacene la copia de seguridad agrupada.
+\end{itemize}
+
+\section{Referencia de ficheros de MQ}
+
+\subsection{El fichero \sfilename{series}}
+
+El fichero \sfilename{series} contiene una lista de los nombres de
+todos los parches que MQ puede aplicar.  Se representa como una lista
+de nombres, uno por línea.  Se ignora el espacio en blanco al
+principio y al final.
+
+Las líneas pueden contener comentario.  Un comentario comienza con el
+caracter ``\texttt{\#}'', y va hasta el final de la línea.  Se ignoran
+las líneas vacías y las que solamente contengan comentarios.
+
+En algún momento podría editar el fichero \sfilename{series} a mano,
+por tal motivo se admiten comentarios y líneas en blanco como se
+menciono anteriormente.  Por ejemplo, puede poner en comentario un
+parche temporalmente y \hgxcmd{mq}{qpush} omitirá tal parche cuando
+los aplique.  También puede cambiar el orden en el cual se aplican los
+parches, reordenando las entradas en el fichero \sfilename{series}.
+
+También es posible colocar el fichero \sfilename{series} bajo control
+de revisiones;  también es favorable colocar todos los parches que refiera
+bajo control de revisiones.  Si crea un directorio de parches con la
+opción \hgxopt{mq}{qinit}{-c} de \hgxcmd{mq}{qinit}, esto se hará
+automáticamente.
+
+\subsection{El fichero \sfilename{status}}
+
+El fichero \sfilename{status} contiene los nombres y los hashes de los
+conjuntos de cambios de todos los parches que MQ ha aplicado.  A
+diferencia del fichero \sfilename{series}, este NO ha sido diseñado
+para ser editado.  No debería colocar este fichero bajo el control de
+revisiones o modificarlo de forma alguna.  MQ lo usa estrictamente
+para administración interna.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

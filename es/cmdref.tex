@@ -1,0 +1,186 @@
+\chapter{Referencia de Órdenes}
+\label{cmdref}
+
+\cmdref{add}{Añade ficheros en la próxima consignación}
+\optref{add}{I}{include}
+\optref{add}{X}{exclude}
+\optref{add}{n}{dry-run}
+
+\cmdref{diff}{imprime los cambios en el historial o el directorio actual}
+
+Mostrar las diferencias entre revisiones para ficheros especificados o
+directorios, con el formato unificado diff.  Si desea ver una
+descripción del formato unificado diff, ver la sección~\ref{sec:mq:patch}.
+
+De forma predeterminada, esta orden no imprime las diferencias para
+los ficheros binarios que Mercurial esté siguiendo.  Para controlar
+este comportamiento, vea las opciones \hgopt{diff}{-a} y
+\hgopt{diff}{--git}.
+
+\subsection{Options}
+
+\loptref{diff}{nodates}
+
+Omite la fecha y hora cuando se muestran los encabezados de las
+diferencias.
+
+\optref{diff}{B}{ignore-blank-lines}
+
+No imprime los cambios que solamente insertan o eliminan líneas en
+blanco.  Una línea que contiene espacios en blanco no se considera
+como una línea en blanco.
+
+\optref{diff}{I}{include}
+
+Incluye ficheros y directorios cuyos nombres coinciden con los
+patrones elegidos.
+
+\optref{diff}{X}{exclude}
+
+Excluye los ficheros y directorios cuyos nombres coinciden con los
+patrones elegidos.
+
+\optref{diff}{a}{text}
+
+Si no especifica esta opción, \hgcmd{diff} no mostrará las diferencias
+de los ficheros que detecte como binarios.  Al especificar \hgopt{diff}{-a}
+se forza a \hgcmd{diff} a tratar los ficheros como texto, y generar
+diferencias para todos.
+
+Esta opción es útil para los ficherso que son ``texto en mayor
+medida'' pero que tienen caracteres NUL.  Si lo usa en ficheros que
+contienen muchos datos binarios, la salida será incomprensible.
+
+\optref{diff}{b}{ignore-space-change}
+
+No imprime si el único cambio que en la línea es la cantidad de
+espacio en blanco.
+
+\optref{diff}{g}{git}
+
+Mostrar diferencias compatibles con \command{git}.  XXX reference a format
+description.
+
+\optref{diff}{p}{show-function}
+
+Mostrar el nombre de la función que contiene el código en una porción
+del encabzado usando una heurística simple.  Esta funcionalidad se
+habilita de forma predeterminada, así que la opción \hgopt{diff}{-p}
+no tiene efectos a menos que cambie el valor de
+\rcitem{diff}{showfunc} en la configuración, como en el ejemplo
+siguiente.
+\interaction{cmdref.diff-p}
+
+\optref{diff}{r}{rev}
+
+Especifique una o más revisiones para comparar.  La orden \hgcmd{diff}
+acepta hasta dos opciones \hgopt{diff}{-r} para especificar las
+revisiones a comparar.
+
+\begin{enumerate}
+\setcounter{enumi}{0}
+\item Despliega las diferencias entre la revisión padre y del directorio
+  de trabajo.
+\item Despliega las diferencias entre el conjunto de cambios
+  especificados y el directorio de trabajo.
+\item Despliega las diferencias entre dos conjuntos de cambios
+  especificados.
+\end{enumerate}
+
+Puede especificar dos revisiones usando o bien sea las opciones
+\hgopt{diff}{-r} o la notación de rango.  Por ejemplo, las dos
+especificaciones de revisiones a continuación son equivalentes:
+\begin{codesample2}
+  hg diff -r 10 -r 20
+  hg diff -r10:20
+\end{codesample2}
+
+Cuando especifica dos revisiones, esto tiene significado para
+Mercurial.  Esto significa que \hgcmdargs{diff}{-r10:20} producirá un
+diff que transformará los ficheros desde los contenidos en la revisión
+10 a los contenidos de la revisión 20, mientras que
+\hgcmdargs{diff}{-r20:10} significa lo opuesto:  el diff que
+transformaría los contenidos de los ficheros de la revisión 20 a los
+contenidos de la revisión 10.  No puede invertir el orden de esta
+forma si está haciendo un diff frente al directorio de trabajo.
+
+\optref{diff}{w}{ignore-all-space}
+
+\cmdref{version}{imprime la información de versión y derechos de reproducción}
+
+Esta orden despliega la versión de Mercurial que está usando, y su
+nota de derechos de reproducción.  Hay cuatro clases de cadenas de
+versión posibles:
+\begin{itemize}
+\item La cadena ``\texttt{unknown}''. Esta versión de Mercurial no fue
+  construida en un repositorio de Mercurial, y no puede determinar su
+  propia versión.
+\item Una cadena numérica corta, tal como ``\texttt{1.1}''. Esta es
+  una construcción de una versión de Mercurial que se identifica con
+  una etiqueta específica en el repositorio en el cual fue
+  armada (Esto no significa necesariamente que está ejecutando una
+  versión oficial; alguien pudo haber añadido tal etiqueta a cualquier
+  versión del repositorio en el cual armaron Mercurial).
+\item Una cadena hexadecimal, tal como ``\texttt{875489e31abe}''.
+  Esta es una construcción de una revisión dada de Mercurial.
+\item Una cadena hexadecimal seguida por una fecha, tal como
+  ``\texttt{875489e31abe+20070205}''.  Esta construcción de la
+  revisión de Mercurial fue la construcción de un repositorio que tuvo
+  cambios locales que no han sido consignados.
+\end{itemize}
+
+\subsection{Consejos y trucos}
+
+\subsubsection{¿Por qué difieren los resultados de \hgcmd{diff} y
+  \hgcmd{status}?}
+\label{cmdref:diff-vs-status}
+
+Cuando ejecuta la orden \hgcmd{status}, verá una lista de ficheros
+para los cuales Mercurial almacenará cambios la próxima vez que
+consigne.  Si ejecuta la orden \hgcmd{diff}, verá que imprime
+diferencias solamente para un \emph{subconjunto} de los ficheros que
+\hgcmd{status} liste.  Hay dos posibles razones para este comportamiento:
+
+La primera es que \hgcmd{status} imprime cierta clase de
+modificaciones que \hgcmd{diff} no despliega normalmente.  La orden
+\hgcmd{diff} usualmente despliega diferencias unificadas, las cuales
+no tienen la habilidad de representar algunos cambios que Mercurial
+puede seguir.  Lo más notable es que las diferencias tradicionales no
+pueden representar un cambio acerca de la ejecutabilidad de un
+fichero, pero Mercurial sí almacena esta información.
+
+Si usa la opción \hgopt{diff}{--git} de \hgcmd{diff}, mostrará
+diferencias compatibles con \command{git} que \emph{pueden} desplegar
+esta información adicional.
+
+La segunda razón posible para que \hgcmd{diff} esté imprimiendo
+diferencias para un subconjunto de ficheros de lo que muestra
+\hgcmd{status} es que si usted le invoca sin argumento alguno,
+\hgcmd{diff} imprime diferencias frente al primer padre del directorio
+de trabajo.  Si ha ejecutado \hgcmd{merge} para fusionar dos conjuntos
+de cambios, pero no ha consignado aún los resultados de la fusión,  su
+directorio de trabajo tiene dos padres (use \hgcmd{parents} para
+verlos).  Mientras que \hgcmd{status} imprime modificaciones relativas
+a \emph{ambos} padres después de una fusión que no se ha consignado,
+\hgcmd{diff} opera aún relativo solamente al primer padre.  Puede
+lograr que imprima las diferencias relativas al segundo padre
+especificando tal padre con la opción \hgopt{diff}{-r}.  No hay forma
+de hacer que imprima las diferencias relativas a los dos padres.
+
+\subsubsection{Generar diferencias seguras en binarios}
+
+Si usa la opción \hgopt{diff}{-a} para forzar que Mercurial imprima
+las diferencias de los ficheros que so o bien ``casi completamente
+texto'' o contienen muchos datos binarios, tales diferencias no pueden
+aplicarse subsecuentemente a la orden \hgcmd{import} de Mercurial o a
+la orden \command{patch} del sistema.
+
+Si desea generar una diferencia de un fichero binario que es seguro
+para usarlo como entrada a la orden \hgcmd{import}, use la opción
+\hgcmd{diff}{--git} cuando genere el parche.  La orden \command{patch}
+del sistema no puede tratar con parches binarios.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

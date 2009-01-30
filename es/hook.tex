@@ -1,0 +1,1568 @@
+\chapter{Manejo de eventos en repositorios mediante ganchos}
+\label{chap:hook}
+
+Mercurial ofrece un poderoso mecanismo para permitirle a usted
+automatizar la ejecución de acciones en respuesta a eventos que
+ocurran en un repositorio. En algunos casos, usted puede controlar
+incluso la respuesta de Mercurial a dichos eventos.
+
+Mercurial usa el término \emph{gancho} para identificar estas
+acciones. Los ganchos son conocidos como ``disparadores'' en algunos
+sistemas de control de revisiones, pero los dos nombres se refieren al
+mismo concepto.
+
+\section{Vistazo general de ganchos en Mercurial}
+
+A continuación se encuentra una breve lista de los ganchos que
+Mercurial soporta. Volveremos a cada uno de estos ganchos con más
+detalle después, en la sección~\ref{sec:hook:ref}.
+
+\begin{itemize}
+\item[\small\hook{changegroup}] Es ejecutado luego de que un grupo de
+    conjuntos de cambios ha sido traído al repositorio desde algún
+    otro sitio.
+\item[\small\hook{commit}] Es ejecutado después de la creación de
+    un conjunto de cambios en el repositorio local.
+\item[\small\hook{incoming}] Es ejecutado una vez por cada conjunto de
+    cambios traído al repositorio desde otra ubicación. Note la
+    diferencia respecto al gancho \hook{changegroup}, que es ejecutado
+    una vez por cada \emph{grupo} de conjuntos de cambios que se
+    traiga.
+\item[\small\hook{outgoing}] Es ejecutado luego de que un grupo de
+    conjuntos de cambios ha sido transmitido desde el repositorio.
+\item[\small\hook{prechangegroup}] Es ejecutado antes de iniciar la
+    recepción de un grupo de conjuntos de cambios en el repositorio.
+\item[\small\hook{precommit}] De control. Es ejecutado antes de
+    iniciar una consignación.
+\item[\small\hook{preoutgoing}] De control. Es ejecutado antes de
+    iniciar la transmisión de un grupo de conjuntos de cambios desde
+    el repositorio.
+\item[\small\hook{pretag}] De control. Es ejecutado antes de crear una
+    etiqueta.
+\item[\small\hook{pretxnchangegroup}] De control. Es ejecutado después
+    de haber recibido un grupo de conjuntos de cambios en el
+    repositorio local, pero antes de que la transacción se complete y
+    los cambios sean permanentes dentro del repositorio.
+\item[\small\hook{pretxncommit}] De control. Es ejecutado luego de la
+    creación de un conjunto de cambios en el repositorio local, pero
+    antes de que la transacción que hace permanente el cambio sea
+    completada.
+\item[\small\hook{preupdate}] De control. Es ejecutado antes de
+    iniciar una actualización o fusión en el directorio de trabajo.
+\item[\small\hook{tag}] Es ejecutado después de la creación de una
+    etiqueta.
+\item[\small\hook{update}] Es ejecutado después de que termina una
+    actualización o una fusión.
+\end{itemize}
+Cada uno de los ganchos cuya descripción empieza con la frase
+``de control'' tiene la facultad de determinar si una actividad puede
+continuar. Si el gancho se ejecuta con éxito, la actividad puede
+continuar; si falla, o bien la actividad no es permitida, o se
+deshacen los cambios que se puedan haber llevado a cabo, dependiendo
+del gancho involucrado.
+
+\section{Ganchos y seguridad}
+
+\subsection{Los ganchos se ejecutan con sus privilegios de usuario}
+
+Cuando usted ejecuta un comando de Mercurial en un repositorio, y el
+comando causa la ejecución de un gancho, dicho gancho se ejecuta en
+\emph{su} sistema, en \emph{su} cuenta de usuario, con \emph{sus}
+privilegios. Ya que los ganchos son elementos arbitrarios de código
+ejecutable, usted debería tratarlos con un nivel adecuado de
+desconfianza. No instale un gancho a menos en que confíe en quien lo
+creó y en lo que el gancho hace.
+
+En algunos casos, usted puede estar expuesto a ganchos que usted no
+%TODO acá introduzco algo de texto por mi cuenta, por claridad
+instaló. Si usted usa Mercurial en un sistema extraño, tenga en cuenta
+que Mercurial ejecutará los ganchos definidos en el fichero \hgrc.
+
+Si está trabajando con un repositorio propiedad de otro usuario,
+Mercurial podrá ejecutar los ganchos definidos en el repositorio de
+dicho usuario, pero los ejecutará como ``usted''. Por ejemplo, si
+usted jala (\hgcmd{pull}) desde ese repositorio, y el
+\sfilename{.hg/hgrc} define un gancho saliente (\hook{outgoing}),
+dicho gancho se ejecuta bajo su cuenta de usuario, aun cuando usted no
+es el propietario del repositorio.
+
+\begin{note}
+  Esto sólo aplica si usted está jalando desde un repositorio en un
+  sistema de ficheros local o de red. Si está jalando a través de http
+  o ssh, cualquier gancho saliente (\hook{outgoing}) se ejecutará bajo
+  la cuenta que está ejecutando el proceso servidor, en el servidor.
+\end{note}
+
+XXX Para ver qué ganchos han sido definidos en un repositorio, use el
+comando \hgcmdargs{config}{hooks}. Si usted está trabajando en un
+repositorio, pero comunicándose con otro que no le pertenece
+(por ejemplo, usando \hgcmd{pull} o \hgcmd{incoming}), recuerde que
+los ganchos que debe considerar son los del otro repositorio, no los
+del suyo.
+
+\subsection{Los ganchos no se propagan}
+
+En Mercurial, no se hace control de revisiones de los ganchos, y no se
+propagan cuando usted clona, o jala de, un repositorio. El motivo para
+esto es simple: un gancho es código ejecutable arbitrario. Se ejecuta
+bajo su identidad, con su nivel de privilegios, en su máquina.
+
+Sería extremadamente descuidado de parte de cualquier sistema
+distribuido de control de revisiones el implementar control de
+revisiones para ganchos, ya que esto ofrecería maneras fácilmente
+%TODO subvertir
+aprovechables de subvertir las cuentas de los usuarios del sistema de
+control de revisiones.
+
+Ya que Mercurial no propaga los ganchos, si usted está colaborando con
+otras personas en un proyecto común, no debería asumir que ellos están
+usando los mismos ganchos para Mercurial que usted usa, o que los de
+ellos están configurado correctamente. Usted debería documentar los
+ganchos que usted espera que la gente use.
+
+En una intranet corporativa, esto es algo más fácil de manejar, ya que
+usted puede, por ejemplo, proveer una instalación ``estándar'' de
+Mercurial en un sistema de ficheros NFS, y usar un fichero \hgrc\
+global para definir los ganchos que verán todos los usuarios. Sin
+embargo, este enfoque tiene sus límites; vea más abajo.
+
+\subsection{Es posible hacer caso omiso de los ganchos}
+
+Mercurial le permite hacer caso omiso de la deficinión de un gancho,
+a través de la redefinición del mismo. Usted puede deshabilitar el
+gancho fijando su valor como una cadena vacía, o cambiar su
+comportamiento como desee.
+
+Si usted instala un fichero \hgrc\ a nivel de sistema o sitio completo
+que define algunos ganchos, debe entender que sus usuarios pueden
+deshabilitar o hacer caso omiso de los mismos.
+
+\subsection{Asegurarse de que ganchos críticos sean ejecutados}
+
+Algunas veces usted puede querer hacer respetar una política, y no
+permitir que los demás sean capaces de evitarla. Por ejemplo, usted
+puede tener como requerimiento que cada conjunto de cambios debe pasar
+un riguroso conjunto de pruebas. Definir este requerimientos a través
+de un gancho en un fichero \hgrc\ global no servirá con usuarios
+remotos en computadoras portátiles, y por supuesto que los usuarios
+locales pueden evitar esto a voluntad haciendo caso omiso del gancho.
+
+En vez de eso, usted puede definir las políticas para usar Mercurial
+de tal forma que se espere que los usuarios propaguen los cambios a
+través de un servidor ``canónico'' bien conocido que usted ha
+asegurado y configurado apropiadamente.
+
+Una manera de hacer esto es a través de una combinación de ingeniería
+social y tecnología. Cree una cuenta de acceso restringido; los
+usuarios pueden empujar cambios a través de la red a los repositorios
+administrados por esta cuenta, pero no podrán ingresar a dicha cuenta
+para ejecutar órdenes en el intérprete de comandos. En este escenario,
+un usuario puede enviar un conjunto de cambios que contenga la
+porquería que él desee.
+
+Cuando alguien empuja un conjunto de cambios al servidor del que todos
+jalan, el servidor probará el conjunto de cambios antes de aceptarlo
+como permanente, y lo rechazará si no logra pasar el conjunto de
+pruebas. Si la gente sólo jala cambios desde este servidor de filtro,
+servirá para asegurarse de que todos los cambios que la gente jala han
+sido examinados automáticamente
+
+\section{Precauciones con ganchos \texttt{pretxn} en un repositorio de
+acceso compartido}
+
+Si usted desea usar ganchos para llevar a cabo automáticamente algún
+trabajo en un repositorio al que varias personas tienen acceso
+compartido, debe tener cuidado con la forma de hacerlo.
+
+Mercurial sólo bloquea un repositorio cuando está escribiendo al
+mismo, y sólo las partes de Mercurial que escriben al repositorio le
+prestan atención a los bloqueos. Los bloqueos de escritura son
+necesarios para evitar que múltiples escritores simultáneos
+interfieran entre sí, corrompiendo el repositorio.
+
+Ya que Mercurial tiene cuidado con el orden en que lee y escribe
+datos, no necesita adquirir un bloqueo cuando desea leer datos del
+repositorio. Las partes de Mercurial que leen del repositorio nunca le
+prestan atención a los bloqueos. Este esquema de lectura libre de
+bloqueos incremententa en gran medida el desempeño y la concurrencia.
+
+Sin embargo, para tener un gran desempeño es necesario hacer
+sacrificios, uno de los cuales tiene el potencial de causarle
+problemas a menos de que usted esté consciente de él. Describirlo
+requiere algo de detalle respecto a cómo Mercurial añade conjuntos de
+cambios al repositorio y cómo lee esos cambios de vuelta.
+
+Cuando Mercurial \emph{escribe} metadatos, los escribe directamente en
+el fichero de destino. Primero escribe los datos del fichero, luego
+los datos del manifiesto (que contienen punteros a los nuevos datos
+del fichero), luego datos de la bitácora de cambios (que contienen
+punteros a los nuevos datos del manifiesto). Antes de la primera
+escritura a cada fichero, se guarda un registro de dónde estaba el
+final de fichero en su registro de transacciones. Si la transacción
+debe ser deshecha, Mercurial simplemente trunca cada fichero de vuelta
+al tamaño que tenía antes de que empezara la transacción.
+
+Cuando Mercurial \emph{lee} metadatos, lee la bitácora de cambios
+primero, y luego todo lo demás. Como un lector sólo accederá a las
+partes del manifiesto o de los metadatos de fichero que él puede ver
+en la bitácora de cambios, nunca puede ver datos parcialmente
+escritos.
+
+Algunos ganchos de control (\hook{pretxncommit} y
+\hook{pretxnchangegroup}) se ejecutan cuando una transacción está casi
+completa. Todos los metadatos han sido escritos, pero Mercurial aún
+puede deshacer la transacción y hacer que los datos recién escritos
+desaparezcan.
+
+Si alguno de estos ganchos permanece en ejecución por mucho tiempo,
+abre una ventana de tiempo en la que un lector puede ver los metadatos
+de conjuntos de cambios que aún no son permanentes y que no debería
+considerarse que estén ``realmante ahí''. Entre más tiempo tome la
+ejecución del gancho, más tiempo estará abierta esta ventana.
+
+\subsection{Ilustración del problema}
+
+En principio, un buen uso del gancho \hook{pretxnchangegroup} sería
+ensamblar y probar automáticamente todos los cambios entrantes antes
+de que sean aceptados en un repositorio central. Esto le permitiría a
+usted garantizar que nadie pueda empujar cambios que ``rompan el
+ensamblaje''. Pero si un cliente puede jalar cambios mientras están
+siendo probados, la utilidad de esta prueba es nula; alguien confiado
+puede jalar cambios sin probar, lo que potencialmente podría romper su
+proceso de ensamblaje.
+
+La respuesta técnica más segura frente a este retos es montar dicho
+repositorio ``guardián'' como \emph{unidireccional}. Permita que
+reciba cambios desde el exterior, pero no permita que nadie jale
+cambios de él (use el gancho \hook{preoutgoing} para bloquear esto).
+Configure un gancho \hook{changegroup} para que si el ensamblaje o
+prueba tiene éxito, el gancho empuje los nuevos cambios a otro
+repositorio del que la gente \emph{pueda} jalar.
+
+En la práctica, montar un cuello de botella centralizado como éste a
+menudo no es una buena idea, y la visibilidad de las transacciones no
+tiene nada que ver con el problema. A medida que el tamaño de un
+proyecto---y el tiempo que toma ensamblarlo y probarlo---crece, usted
+se acerca rápidamente a un límite con este enfoque ``pruebe antes de
+comprar'', en el que tiene más conjuntos de cambios a probar que
+tiempo para ocuparse de ellos. El resultado inevitable es frustración
+para todos los que estén involucrados.
+
+Una aproximación que permite manejar mejor el crecimiento es hacer que
+la gente ensamble y pruebe antes de empujar, y ejecutar el ensamble y
+pruebas automáticas centralmente \emph{después} de empujar, para
+asegurarse de que todo esté bien. La ventaja de este enfoque es que no
+impone un límite a la rata en la que un repositorio puede aceptar
+cambios.
+
+\section{Tutorial corto de uso de ganchos}
+\label{sec:hook:simple}
+
+Escribir un gancho para Mercurial es fácil. Empecemos con un gancho
+que se ejecute cuando usted termine un \hgcmd{commit}, y simplemente
+muestre el hash del conjunto de cambios que usted acaba de crear. El
+gancho se llamará \hook{commit}.
+
+\begin{figure}[ht]
+  \interaction{hook.simple.init}
+  \caption{Un gancho simple que se ejecuta al hacer la consignación de
+  un conjunto de cambios}
+  \label{ex:hook:init}
+\end{figure}
+
+Todos los ganchos siguen el patrón del ejemplo~\ref{ex:hook:init}.
+Usted puede añadir una entrada a la sección \rcsection{hooks} de su
+fichero \hgrc.  A la izquierda está el nombre del evento respecto al
+cual dispararse; a la derecha está la acción a llevar a cabo. Como
+puede ver, es posible ejecutar cualquier orden de la línea de comandos
+en un gancho. Mercurial le pasa información extra al gancho usando
+variables de entorno (busque \envar{HG\_NODE} en el ejemplo).
+
+\subsection{Llevar a cabo varias acciones por evento}
+
+A menudo, usted querrá definir más de un gancho para un tipo de evento
+particular, como se muestra en el ejemplo~\ref{ex:hook:ext}. 
+Mercurial le permite hacer esto añadiendo una \emph{extensión} al
+final del nombre de un gancho. Usted extiende el nombre del gancho
+%TODO Yuk, no me gusta ese "parada completa"
+poniendo el nombre del gancho, seguido por una parada completa (el
+caracter ``\texttt{.}''), seguido de algo más de texto de su elección.
+Por ejemplo, Mercurial ejecutará tanto \texttt{commit.foo} como
+\texttt{commit.bar} cuando ocurra el evento \texttt{commit}.
+
+\begin{figure}[ht]
+  \interaction{hook.simple.ext}
+  \caption{Definición de un segundo gancho \hook{commit}}
+  \label{ex:hook:ext}
+\end{figure}
+
+Para dar un orden bien definido de ejecución cuando hay múltiples
+ganchos definidos para un evento, Mercurial ordena los ganchos de
+acuerdo a su extensión, y los ejecuta en dicho orden. En el ejemplo de
+arribam \texttt{commit.bar} se ejecutará antes que
+\texttt{commit.foo}, y \texttt{commit} se ejecutará antes de ambos.
+
+Es una buena idea usar una extensión descriptiva cuando usted define
+un gancho. Esto le ayudará a recordar para qué se usa el gancho. Si el
+gancho falla, usted recibirá un mensaje de error que contiene el
+nombre y la extensión del gancho, así que usar una extensión
+descriptiva le dará una pista inmediata de porqué el gancho falló (vea
+un ejemplo en la sección~\ref{sec:hook:perm}).
+
+\subsection{Controlar cuándo puede llevarse a cabo una actividad}
+\label{sec:hook:perm}
+
+En los ejemplos anteriores, usamos el gancho \hook{commit}, que es
+ejecutado después de que se ha completado una consignación. Este es
+uno de los varios ganchos que Mercurial ejecuta luego de que una
+actividad termina. Tales ganchos no tienen forma de influenciar la
+actividad como tal.
+
+Mercurial define un número de eventos que ocurren antes de que una
+actividad empiece; o luego de que empiece, pero antes de que termine.
+Los ganchos que se disparan con estos eventos tienen la capacidad
+adicional de elegir si la actividad puede continuar, o si su ejecución
+es abortada.
+
+El gancho \hook{pretxncommit} se ejecuta justo antes de que una
+consignación se ejecute. En otras palabras, los metadatos que
+representan el conjunto de cambios han sido escritos al disco, pero no
+se ha terminado la transacción. El gancho \hook{pretxncommit} tiene la
+capacidad de decidir si una transacción se completa, o debe
+deshacerse.
+
+Si el gancho \hook{pretxncommit} termina con un código de salida de
+cero, se permite que la transacción se complete; la consignación
+termina; y el gancho \hook{commit} es ejecutado. Si el gancho
+\hook{pretxncommit} termina con un código de salida diferente de cero,
+la transacción es revertida; los metadatos representando el conjunto
+de cambios son borrados; y el gancho \hook{commit} no es ejecutado.
+
+\begin{figure}[ht]
+  \interaction{hook.simple.pretxncommit}
+  \caption{Uso del gancho \hook{pretxncommit} para controlar consignaciones}
+  \label{ex:hook:pretxncommit}
+\end{figure}
+
+El gancho en el ejemplo~\ref{ex:hook:pretxncommit} revisa si el
+mensaje de consignación contiene el ID de algún fallo. Si lo contiene,
+la consignación puede continuar. Si no, la consignación es cancelada.
+
+\section{Escribir sus propios ganchos}
+
+Cuando usted escriba un gancho, puede encontrar útil el ejecutar
+Mercurial o bien pasándole la opción \hggopt{-v}, o con el valor de
+configuración \rcitem{ui}{verbose} fijado en ``true'' (verdadero).
+Cuando lo haga, Mercurial imprimirá un mensaje antes de llamar cada
+gancho.
+
+\subsection{Escoger cómo debe ejecutarse su gancho}
+\label{sec:hook:lang}
+
+Usted puede escribir un gancho que funcione como un programa normal
+---típicamente un guión de línea de comandos---o como una función de
+Python que se ejecuta dentro del proceso Mercurial.
+
+Escribir un gancho como un programa externo tiene la ventaja de que no
+requiere ningún conocimiento del funcionamiento interno de Mercurial.
+Usted puede ejecutar comandos Mercurial normales para obtener la
+informción extra que pueda necesitar. La contraparte de esto es que
+los ganchos externos son más lentos que los ganchos internos
+ejecutados dentro del proceso.
+
+Un gancho Python interno tiene acceso completo a la API de Mercurial,
+y no se ``externaliza'' a otro proceso, así que es inherentemente más
+rápido que un gancho externo. Adicionalmente es más fácil obtener la
+mayoría de la información que un gancho requiere a través de llamadas
+directas a la API de Mercurial que hacerlo ejecutando comandos
+Mercurial.
+
+Si se siente a gusto con Python, o requiere un alto desempeño,
+escribir sus ganchos en Python puede ser una buena elección. Sin
+embargo, cuando usted tiene un gancho bastante directo por escribir y
+no le importa el desempeño (el caso de la mayoría de los ganchos), es
+perfectamente admisible un guión de línea de comandos.
+
+\subsection{Parámetros para ganchos}
+\label{sec:hook:param}
+
+Mercurial llama cada gancho con un conjunto de paŕametros bien
+definidos. En Python, un parámetro se pasa como argumento de palabra
+clave a su función de gancho. Para un programa externo, los parámetros
+son pasados como variables de entornos.
+
+Sin importar si su gancho está escrito en Python o como guión de línea
+de comandos, los nombres y valores de los parámetros específicos de
+los ganchos serán los mismos. Un parámetro booleano será representado
+como un valor booleano en Python, pero como el número 1 (para
+``verdadero'') o 0 (para falso) en una variable de entorno para un
+gancho externo. Si un parámetro se llama \texttt{foo}, el argumento de
+palabra clave para un gancho en Python también se llamará
+\texttt{foo}, mientras que la variable de entorno para un gancho
+externo se llamará \texttt{HG\_FOO}.
+
+\subsection{Valores de retorno de ganchos y control de actividades}
+
+Un gancho que se ejecuta exitosamente debe terminar con un código de
+salida de cero, si es externo, o retornar el valor booleano
+``falso'', si es interno. Un fallo se indica con un código de salida
+diferente de cero desde un gancho externo, o un valor de retorno
+booleano ``verdadero''. Si un gancho interno genera una excepción, se
+considera que el gancho ha fallado.
+
+Para los ganchos que controlan si una actividad puede continuar o no,
+cero/falso quiere decir ``permitir'', mientras que
+% TODO me suena mejor "no permitir" que "denegar"
+no-cero/verdadero/excepción quiere decir ``no permitir''.
+
+\subsection{Escribir un gancho externo}
+
+Cuando usted define un gancho externo en su fichero \hgrc\ y el mismo
+es ejecutado, dicha definición pasa a su intérprete de comandos, que
+hace la interpretación correspondiente. Esto significa que usted puede
+usar elementos normales del intérprete en el cuerpo del gancho.
+
+Un gancho ejecutable siempre es ejecutado con su directorio actual
+fijado al directorio raíz del repositorio.
+
+Cada parámetro para el gancho es pasado como una variable de entorno;
+el nombre está en mayúsculas, y tiene como prefijo la cadena
+``\texttt{HG\_}''.
+
+Con la excepción de los parámetros para los ganchos, Mercurial no
+define o modifica ninguna variable de entorno al ejecutar un gancho.
+Es útil recordar esto al escribir un gancho global que podría ser
+ejecutado por varios usuarios con distintas variables de entorno
+fijadas. En situaciones con múltiples usuarios, usted no debería
+asumir la existencia de ninguna variable de entorno, ni que sus
+valores sean los mismos que tenían cuando usted probó el gancho en su
+ambiente de trabajo.
+
+\subsection{Indicar a Mercurial que use un gancho interno}
+
+La sintaxis para definir un gancho interno en el fichero \hgrc\ es
+ligeramente diferente de la usada para un gancho externo. El valor del
+gancho debe comenzar con el texto ``\texttt{python:}'', y continuar
+con el nombre completamente cualificado de un objeto invocable que se
+usará como el valor del gancho.
+
+El módulo en que vive un gancho es importado automáticamente cuando se
+ejecuta un gancho. Siempre que usted tenga el nombre del módulo y la
+variable de entorno \envar{PYTHONPATH} ajustada adecuadamente, todo
+debería funcionar sin problemas.
+
+El siguiente fragmento de ejemplo de un fichero \hgrc\ ilustra la
+sintaxis y significado de los conceptos que acabamos de describir.
+\begin{codesample2}
+  [hooks]
+  commit.example = python:mymodule.submodule.myhook
+\end{codesample2}
+Cuando Mercurial ejecuta el gancho \texttt{commit.example}, importa 
+\texttt{mymodule.submodule}, busca el objeto invocable llamado
+\texttt{myhook}, y lo invoca (llama).
+
+\subsection{Escribir un gancho interno}
+
+El gancho interno más sencillo no hace nada, pero ilustra la
+estructura básica de la API\ndt{\emph{Application Progamming
+Interface}, Interfaz para Programación de Aplicaciones} para ganchos:
+\begin{codesample2}
+  def myhook(ui, repo, **kwargs):
+      pass
+\end{codesample2}
+El primer argumento para un gancho Python siempre es un objeto
+\pymodclass{mercurial.ui}{ui}.  El segundo es un objeto repositorio;
+de momento, siempre es una instancia de 
+\pymodclass{mercurial.localrepo}{localrepository}.  Después de estos
+dos argumentos están los argumentos de palabra clave. Los argumentos
+que se pasen dependerán del tipo de gancho que se esté llamando, pero
+un gancho siempre puede ignorar los argumentos que no le interesen,
+relegándolos a un diccionario de argumentos por palabras clave, como se
+hizo arriba con \texttt{**kwargs}.
+
+\section{Ejemplos de ganchos}
+
+\subsection{Escribir mensajes de consignación significativos}
+
+Es difícil de imaginar un mensaje de consignación útil y al mismo
+tiempo muy corto. El simple gancho \hook{pretxncommit} de la
+figura~\ref{ex:hook:msglen.go} evitará que usted consigne un conjunto
+de cambios con un mensaje de menos de 10 bytes de longitud.
+
+\begin{figure}[ht]
+  \interaction{hook.msglen.go}
+  \caption{Un gancho que prohíbe mensajes de consignación demasiado
+  cortos}
+  \label{ex:hook:msglen.go}
+\end{figure}
+
+\subsection{Comprobar espacios en blanco finales}
+
+Un uso interesante para ganchos relacionados con consignaciones es
+ayudarle a escribir código más limpio. Un ejemplo simple de
+%TODO dictum => regla
+``código más limpio'' es la regla de que un cambio no debe añadir
+líneas de texto que contengan ``espacios en blanco finales''. El
+espacio en blanco final es una serie de caracteres de espacio y
+tabulación que se encuentran al final de una línea de texto. En la
+mayoría de los casos, el espacio en blanco final es innecesario, ruido
+invisible, pero ocasionalmente es problemático, y la gente en general
+prefiere deshacerse de él.
+
+Usted puede usar cualquiera de los ganchos \hook{precommit} o
+\hook{pretxncommit} para revisar si tiene el problema de los espacios
+en blanco finales. Si usa el gancho \hook{precommit}, el gancho no
+sabrá qué ficheros se están consignando, por lo que se tendrá que
+revisar cada fichero modificado en el repositorio para ver si tiene
+espacios en blanco finales. Si usted sólo quiere consignar un cambio
+al fichero \filename{foo}, y el fichero \filename{bar} contiene
+espacios en blanco finales, hacer la revisión en el gancho
+\hook{precommit} evitará que usted haga la consignación de
+\filename{foo} debido al problem en \filename{bar}.  Este no parece el
+enfoque adeucado.
+
+Si usted escogiera el gancho \hook{pretxncommit}, la revisión no
+ocurriría sino hasta justo antes de que la transacción para la
+consignación se complete. Esto le permitirá comprobar por posibles
+problemas sólo en los ficheros que serán consignados. Sin embargo, si
+usted ingresó el mensaje de consignación de manera interactiva y el
+%TODO roll-back
+gancho falla, la transacción será deshecha; usted tendrá que
+reingresar el mensaje de consignación luego de que corrija el problema
+con los espacios en blanco finales y ejecute \hgcmd{commit} de nuevo.
+
+\begin{figure}[ht]
+  \interaction{hook.ws.simple}
+  \caption{Un gancho simple que revisa si hay espacios en blanco
+  finales}
+  \label{ex:hook:ws.simple}
+\end{figure}
+
+La figura~\ref{ex:hook:ws.simple} presenta un gancho
+\hook{pretxncommit} simple que comprueba la existencia de espacios en
+blanco finales. Este gancho es corto, pero no brinda mucha ayuda.
+Termina con un código de salida de error si un cambio añade una línea
+con espacio en blanco final a cualquier fichero, pero no muestra
+ninguna información que pueda ser útil para identificar el fichero o
+la línea de texto origen del problema. También tiene la agradable
+propiedad de no prestar atención a las líneas que no sufrieron
+modificaciones; sólo las líneas que introducen nuevos espacios en
+blanco finales causan problemas.
+
+\begin{figure}[ht]
+  \interaction{hook.ws.better}
+  \caption{Un mejor gancho para espacios en blanco finales}
+  \label{ex:hook:ws.better}
+\end{figure}
+
+El ejemplo de la figura~\ref{ex:hook:ws.better} es mucho más complejo,
+pero también más útil. El gancho procesa un diff unificado para
+revisar si alguna línea añade espacios en blanco finales, e imprime el
+nombre del fichero y el número de línea de cada ocurrencia. Aún mejor,
+si el cambio añade espacios en blanco finales, este gancho guarda el
+mensaje de consignación e imprime el nombre del fichero en el que el
+mensaje fue guardado, antes de terminar e indicarle a Mercurial que
+deshaga la transacción, para que uste pueda usar
+\hgcmdargs{commit}{\hgopt{commit}{-l}~\emph{nombre\_fichero}} para
+reutilizar el mensaje de consignación guardado anteriormente, una vez
+usted haya corregido el problema.
+
+Como anotación final, note en la figura~\ref{ex:hook:ws.better} el
+%TODO on-site => in-situ ?
+uso de la característica de edición \emph{in-situ} de \command{perl}
+para eliminar los espacios en blanco finales en un fichero. Esto es
+lo suficientemente conciso y poderoso para que lo presente aquí.
+% TODO corregí el backslash, y comprobé por mi cuenta un archivo
+% aparte, y el comando hace lo que debe hacer. Favor copiar del pdf el
+% comando perl y comprobar con un archivo con espacios en blanco
+% finales, y si todo está bien (que debería), borrar esta nota
+\begin{codesample2}
+    perl -pi -e 's,\textbackslash{}s+\$,,' nombre\_fichero
+\end{codesample2}
+
+\section{Ganchos adicionales}
+
+Mercurial se instala con varios ganchos adicionales. Usted puede
+encontrarlos en el directorio \dirname{hgext} del árbol de ficheros
+fuente de Mercurial. Si usted está usando un paquete binario de
+Mercurial, los ganchos estarán ubicados en el directorio
+\dirname{hgext} en donde su instalador de paquetes haya puesto a
+Mercurial.
+
+\subsection{\hgext{acl}---control de acceso a partes de un repositorio}
+
+La extensión \hgext{acl} le permite controlar a qué usuarios remotos
+les está permitido empujar conjuntos de cambios a un servidor en red.
+Usted puede proteger cualquier porción de un repositorio (incluyendo
+el repositorio completo), de tal manera que un usuario remoto
+específico pueda empujar cambios que no afecten la porción protegida.
+
+Esta extensión implementa control de acceso basado en la identidad del
+usuario que empuja los conjuntos de cambios, \emph{no} en la identidad
+de quien hizo la consignación de los mismos. Usar este gancho tiene
+sentido sólo si se tiene un servidor adecuadamente asegurado que
+autentique a los usuarios remotos, y si usted desea segurarse de que
+sólo se le permita a ciertos usuarios empujar cambios a dicho
+servidor.
+
+\subsubsection{Configuración del gancho \hook{acl}}
+
+Para administrar los conjuntos de cambios entrantes, se debe usar el
+gancho \hgext{acl} como un gancho de tipo \hook{pretxnchangegroup}.
+Esto le permite ver qué ficheros son modificados por cada conjunto de
+%TODO rollback => "deshacer el efecto"
+cambios entrante, y deshacer el efecto de un grupo de conjuntos de
+cambios si alguno de ellos modifica algún fichero ``prohibido''.
+Ejemplo:
+\begin{codesample2}
+  [hooks]
+  pretxnchangegroup.acl = python:hgext.acl.hook
+\end{codesample2}
+
+La extensión \hgext{acl} es configurada mediante tres secciones.
+
+La sección \rcsection{acl} sólo tiene una entrada,
+\rcitem{acl}{sources}\ndt{Fuentes.}, que lista las fuentes de los
+conjuntos de cambios entrantes a las que el gancho debe prestar
+atención. Usualmente usted no necesita configurar esta sección.
+\begin{itemize}
+  \item[\rcitem{acl}{serve}] Controlar conjuntos de
+    cambios entrantes que están llegando desde un repositorio a
+    través de http o ssh. Este es el valor por defecto de
+  \rcitem{acl}{sources}, y usualmente es el único valor de
+  configuración que necesitará para este ítem.
+\item[\rcitem{acl}{pull}] Controlar conjuntos de cambios entrantes que
+  lleguen vía un pull (jalado) desde un repositorio local.
+\item[\rcitem{acl}{push}] Controlar conjuntos de cambios entrantes que
+  lleguen vía un push (empuje) desde un repositorio local.
+\item[\rcitem{acl}{bundle}] Controlar conjuntos de cambios entrantes
+    %TODO bundle
+  que lleguen desde otro repositorio a través de un paquete.
+\end{itemize}
+
+La sección \rcsection{acl.allow} controla los usuarios a los que les
+está permitido añadir conjuntos de cambios al repositorio. Si esta
+sección no está presente, se le permite acceso a todos los usuarios
+excepto  a los que se les haya negado explícitamente el acceso. Si
+esta sección no está presente, se niega el acceso a todos los usuarios
+excepto a todos a los que se les haya permitido de manera explícita
+(así que una sección vacía implica que se niega el acceso a todos los
+usuarios).
+
+La sección \rcsection{acl.deny} determina a qué usuarios no se les
+permite añadir conjuntos de cambios al repositorio. Si esta sección no
+está presente o está vacía, no se niega el acceso a ningún usuario.
+
+La sintaxis para los ficheros \rcsection{acl.allow} y
+\rcsection{acl.deny} es idéntica. A la izquierda de cada entrada se
+encuentra un patrón glob que asocia ficheros o directorios, respecto a
+la raíz del repositorio; a la derecha, un nombre usuario.
+
+En el siguiente ejemplo, el usuario \texttt{escritordoc} sólo puede
+empujar cambios al directorio \dirname{docs} del repositorio, mientras
+que \texttt{practicante} puede enviar cambios a cualquier fichero o
+directorio excepto \dirname{fuentes/sensitivo}.
+\begin{codesample2}
+  [acl.allow]
+  docs/** = escritordoc
+
+  [acl.deny]
+  fuentes/sensitivo/** = practicante
+\end{codesample2}
+
+\subsubsection{Pruebas y resolución de problemas}
+
+Si usted desea probar el gancho \hgext{acl}, ejecútelo habilitando la
+opción de salida de depuración habilitada. Ya que usted probablemente
+lo estará ejecutando en un servidor donde no es conveniente (o incluso
+posible) pasar la opción \hggopt{--debug}, no olvide que usted puede
+habilitar la salida de depuración en su \hgrc:
+\begin{codesample2}
+  [ui]
+  debug = true
+\end{codesample2}
+Con esto habilitado, el gancho \hgext{acl} imprimirá suficiente
+información para permitirle saber porqué está permitiendo o denegando
+la operación de empujar a usuarios específicos.
+
+\subsection{\hgext{bugzilla}---integración con Bugzilla}
+
+La extensión \hgext{bugzilla} añade un comentario a un fallo Bugzilla
+siempre que encuentre una referencia al ID de dicho fallo en un
+mensaje de consignación. Usted puede instalar este gancho en un
+servidor compartido, para que cada vez que un usuario remoto empuje
+cambios al servidor, el gancho sea ejecutado.
+
+Se añade un comentario al fallo que se ve así (usted puede configurar
+los contenidos del comentario---vea más abajo):
+%TODO traducir?
+\begin{codesample2}
+  Changeset aad8b264143a, made by Joe User <joe.user@domain.com> in
+  the frobnitz repository, refers to this bug.
+
+  For complete details, see
+  http://hg.domain.com/frobnitz?cmd=changeset;node=aad8b264143a
+
+  Changeset description:
+        Fix bug 10483 by guarding against some NULL pointers
+\end{codesample2}
+El valor de este gancho se encuentra en que automatiza el proceso de
+actualizar un fallo cuando un conjunto de cambios se refiera a él. Si
+usted configura este gancho adecuadamente, hará fácil para la gente
+navegar directamente desde un fallo Bugzilla a un conjunto de cambios
+que se refiere a ese fallo.
+
+Usted puede usar el código de este gancho como un punto de partida
+para otras recetas de integración con Bugzilla aún más exóticas. Acá
+hay algunas posibilidades:
+\begin{itemize}
+\item Requerir que cada conjunto de cambios tenga un ID de fallo en su
+  mensaje de consignación. En este caso, usted querrá configurar el
+  gancho como uno de tipo \hook{pretxncommit}.  Esto le permitirá al
+  gancho rechazar cambios que no contiene IDs de fallos.
+\item Permitir a los conjuntos de cambios entrantes modificar
+  automáticamente el \emph{estado} de un fallo, así como simplemente
+  añadir un comentario. Por ejemplo, el gancho podría reconocer la
+  cadena ``corregido fallo 31337'' como la señal de que debería
+  actualizar el estado del fallo 31337 a ``requiere pruebas''.
+\end{itemize}
+
+\subsubsection{Configuración del gancho \hook{bugzilla}}
+\label{sec:hook:bugzilla:config}
+
+Usted debería configurar este gancho en el \hgrc\ de su servidor como
+un gancho \hook{incoming}\ndt{Entrante.}, por ejemplo como sigue:
+\begin{codesample2}
+  [hooks]
+  incoming.bugzilla = python:hgext.bugzilla.hook
+\end{codesample2}
+
+Debido a la naturaleza especializada de este gancho, y porque Bugzilla
+no fue escrito con este tipo de integración en mente, configurar este
+% TODO involved => complejo ? no intarwebs here :(
+gancho es un proceso algo complejo.
+
+Antes de empezar, usted debe instalar la interfaz de Python para MySQL
+en los sistemas en los que se vaya a ejecutar el gancho. Si no está
+disponible como paquete binario para su sistema, usted puede descargar
+el paquete desde~\cite{web:mysql-python}.
+
+La información para configurar este gancho se ubica en la sección 
+\rcsection{bugzilla} de su \hgrc.
+\begin{itemize}
+\item[\rcitem{bugzilla}{version}] La versión de Bugzilla instalada en
+  el servidor. El esquema de base de datos que Bugzilla usa cambia
+  ocasionalmente, así que este gancho debe saber exactamente qué
+  esquema usar. A la fecha, la única versión soportada es la
+  \texttt{2.16}.
+\item[\rcitem{bugzilla}{host}] El nombre de máquina (\emph{hostname})
+  del servidor MySQL que almacena sus datos Bugzilla. La base de datos
+  debe ser configurada para permitir conexiones desde las máquinas en
+  las que usted ejecute el gancho \hook{bugzilla}.
+\item[\rcitem{bugzilla}{user}] El nombre de usuario que se usará para
+  conectarse al servidor MySQL. La base de datos debe ser configurada
+  para permitir a dicho usuario conectarse desde cualquiera de las
+  máquinas en las que se ejecute el gancho \hook{bugzilla}.  Este
+  usuario debe tener acceso y poder modificar las tablas de Bugzilla.
+  El valor por defecto para este ítem es \texttt{bugs}, que es el
+  nombre estándar del usuario para Bugzilla en una base de datos
+  MySQL.
+\item[\rcitem{bugzilla}{password}] La contraseña MySQL para el usuario
+  configurado anteriormente. Ésta es almacenada como texto plano, así
+  que usted deberá asegurarse de que los usuarios no autorizados no
+  puedan leer el fichero \hgrc\ en donde usted guarda esta
+  información.
+\item[\rcitem{bugzilla}{db}] El nombre de la base de datos Bugzilla en
+  el servidor MySQL. El nombre por defecto para este ítem es
+  \texttt{bugs}, que es el nombre estándar de la base de datos MySQL
+  en donde Bugzilla almacena sus datos.
+\item[\rcitem{bugzilla}{notify}] Si usted desea que Bugzilla envíe un
+    %TODO suBscriptores?
+  correo de notificación a los suscriptores después de que el gancho
+  haya añadido un comentario a un fallo, necesitará que este gancho
+  ejecute un comando siempre que actualice la base de datos. El
+  comando que se ejecute depende de en dónde haya sido instalado
+  Bugzilla, pero típicamente se verá así, si usted ha instalado
+  Bugzilla en \dirname{/var/www/html/bugzilla}:
+  \begin{codesample4}
+    cd /var/www/html/bugzilla && ./processmail %s nobody@nowhere.com
+  \end{codesample4}
+  El programa \texttt{processmail} de Bugzilla espera recibir un ID de
+  fallo (el gancho reemplaza ``\texttt{\%s}'' por el ID del fallo) y
+  una dirección de correo. También espera poder escribir a ciertos
+  ficheros en el directorio en que se ejecuta. Si Bugzilla y éste
+  gancho no están instalados en la misma máquina, usted deberá
+  encontrar una manera de ejecutar \texttt{processmail} en el servidor
+  donde está instalado Bugzilla.
+\end{itemize}
+
+\subsubsection{Asociar nombres de consignadores a nombres de usuario
+Bugzilla}
+
+Por defecto, el gancho \hgext{bugzilla} trata de usar la dirección de
+correo electrónico de la persona que hizo la consignación del conjunto
+de cambios como el nombre de usuario Bugzilla con el cual debe
+actualizar el fallo. Si esto no se ajusta a sus necesidades, es
+posible asociar direcciones de correo a nombres de usuario Bugzilla
+usando una sección \rcsection{usermap}.
+
+Cada ítem en la sección \rcsection{usermap} contiene una dirección de
+correo electrónico a la izquierda, y un nombre de usuario Bugzilla a
+la derecha.
+\begin{codesample2}
+  [usermap]
+  jane.user@example.com = jane
+\end{codesample2}
+Usted puede mantener los datos de \rcsection{usermap} en un fichero
+\hgrc, o decirle al gancho \hgext{bugzilla} que lea la información
+desde un fichero \filename{usermap} externo.  En este caso, usted
+puede almacenar los datos de \filename{usermap} en (por ejemplo) un
+repositorio modificable por los usuarios. Esto hace posible para sus
+usuarios mantener sus propias entradas \rcitem{bugzilla}{usermap}.  El
+fichero \hgrc\ principal se vería así:
+\begin{codesample2}
+  # fichero hgrc normal se refiere a un fichero usermap externo
+  [bugzilla]
+  usermap = /home/hg/repos/userdata/bugzilla-usermap.conf
+\end{codesample2}
+Mientras que el fichero \filename{usermap} al que se hace referencia
+se vería así:
+\begin{codesample2}
+  # bugzilla-usermap.conf - dentro de un repositorio hg
+  [usermap]
+  stephanie@example.com = steph
+\end{codesample2}
+
+\subsubsection{Configurar el texto que se añade a un fallo}
+
+Usted puede configurar el texto que este gancho añade como comentario;
+usted los especifica como una plantilla Mercurial. Varias entradas
+\hgrc\ (aún en la sección \rcsection{bugzilla}) controlan este
+comportamiento.
+\begin{itemize}
+\item[\texttt{strip}] La cantidad de elementos iniciales de ruta a
+  remover de un nombre de ruta del repositorio para construir una ruta
+  parcial para una URL. Por ejemplo, si los repositorios en su
+  servidor se ubican en \dirname{/home/hg/repos}, y usted tiene un
+  repositorio cuya ruta es \dirname{/home/hg/repos/app/tests},
+  entonces fijar \texttt{strip} a \texttt{4} resultará en una ruta
+  parcial de \dirname{app/tests}.  El gancho hará disponible esta ruta
+  parcial cuando expanda una plantilla, como \texttt{webroot}.
+\item[\texttt{template}] El texto de la plantilla a usar. En adición a
+  las variables usuales relacionadas con conjuntos de cambios, esta
+  plantilla puede usar \texttt{hgweb} (el valor del ítem de
+  configuración \texttt{hgweb} de arriba) y \texttt{webroot} (la ruta
+  construida usando \texttt{strip} arriba).
+\end{itemize}
+
+Adicionalmente, usted puede añadir un ítem \rcitem{web}{baseurl} a la
+sección \rcsection{web} de su \hgrc.  El gancho \hgext{bugzilla}
+publicará esto cuando expanda una plantilla, como la cadena base a
+usar cuando se construya una URL que le permita a los usuarios navegar
+desde un comentario de Bugzilla a la vista de un conjunto de cambios.
+Ejemplo:
+\begin{codesample2}
+  [web]
+  baseurl = http://hg.domain.com/
+\end{codesample2}
+
+A continuación se presenta un ejemplo completo de configuración para
+el gancho \hgext{bugzilla}.
+%TODO traducir?
+\begin{codesample2}
+  [bugzilla]
+  host = bugzilla.example.com
+  password = mypassword
+  version = 2.16
+  # server-side repos live in /home/hg/repos, so strip 4 leading
+  # separators
+  strip = 4
+  hgweb = http://hg.example.com/
+  usermap = /home/hg/repos/notify/bugzilla.conf
+  template = Changeset \{node|short\}, made by \{author\} in the \{webroot\}
+    repo, refers to this bug.\\nFor complete details, see 
+    \{hgweb\}\{webroot\}?cmd=changeset;node=\{node|short\}\\nChangeset
+    description:\\n\\t\{desc|tabindent\}
+\end{codesample2}
+
+\subsubsection{Pruebas y resolución de problemas}
+
+Los problemas más comunes que aparecen en la configuración del gancho
+\hgext{bugzilla} suelen estar relacionados con la ejecución del guión
+de Bugzilla \filename{processmail} y la asociación de nombres de
+consignadores a nombres de usuario.
+
+Recuerde que en la sección~\ref{sec:hook:bugzilla:config} arriba el
+usuario que ejecuta el proceso Mercurial en el servidor es también 
+el usuario que ejecutará el guión \filename{processmail}. El guión
+\filename{processmail} algunas veces hace que Bugzilla escriba en
+ficheros en su directorio de configuración, y los ficheros de
+configuración de Bugzilla usualmente son propiedad del usuario bajo el
+cual se ejecuta el servidor web.
+
+Usted puede hacer que \filename{processmail} sea ejecutado con la
+identidad del usuario adecuado usando el comando \command{sudo}. A
+continuación se presenta una entrada de ejemplo para un fichero
+\filename{sudoers}.
+\begin{codesample2}
+  hg_user = (httpd_user) NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s
+\end{codesample2}
+Esto permite que el usuario \texttt{hg\_user} ejecute el programa
+\filename{processmail-wrapper} con la identidad del usuario
+\texttt{httpd\_user}.
+
+Esta indirección a través de un guión envoltorio es necesaria, porque
+\filename{processmail} espera que al ser ejecutado su directorio
+actual sea aquel en el cual se instaló Bugzilla; usted no puede
+especificar ese tipo de condición en un fichero \filename{sudoers}.
+Los contenidos del giuón envoltorio son simples:
+\begin{codesample2}
+  #!/bin/sh
+  cd `dirname $0` && ./processmail "$1" nobody@example.com
+\end{codesample2}
+No parece importar qué dirección de correo se le pase a
+\filename{processmail}.
+
+Si su \rcsection{usermap} no es configurada correctamente, los
+usuarios verán un mensaje de error del gancho \hgext{bugzilla} cuando
+empujen cambios al servidor. El mensaje de error se verá así:
+\begin{codesample2}
+  cannot find bugzilla user id for john.q.public@example.com
+\end{codesample2}
+Lo que esto quiere decir es que la dirección del consignador,
+\texttt{john.q.public@example.com}, no es un nombre de usuario
+Bugzilla válido, ni tiene una entrada en su \rcsection{usermap} que lo
+asocie con un nombre de usuario válido Bugzilla.
+
+\subsection{\hgext{notify}---enviar notificaciones de correo
+electrónico}
+
+%TODO feeds => notificaciones: lo más fácil es mirar en wikipedia
+Aunque el servidor web embebido de Mercurial provee notificaciones de
+cambios en cada repositorio, muchas personas prefieren recibir las
+notificaciones de cambios vía correo electrónico. El gancho
+\hgext{notify}\ndt{Notificación.} le permite a usted enviar
+notificaciones a un conjunto de direcciones de correo cuando lleguen
+conjuntos de cambios en los que los subscriptores estén interesados.
+
+De la misma forma que con el gancho \hgext{bugzilla}, el gancho
+\hgext{notify} está orientado a plantillas, así que usted puede
+personalizar los contenidos del mensaje de notificación que se envía.
+
+Por defecto, el gancho \hgext{notify} incluye un diff de cada conjunto
+%TODO que se envía? revisar, pienso que es ``que se recibe''
+de cambios que se envía; usted puede limitar el tamaño del diff, o
+desactivar completamente esta característica. Es útil para permitir a
+los subscriptores revisar los cambios inmediatamente, en vez de tener
+que hacer clic para visitar una URL.
+
+\subsubsection{Configuración del gancho \hgext{notify}}
+
+Usted puede configurar el gancho \hgext{notify} para enviar un mensaje
+de correo por conjunto de cambios entrante, o uno por grupo entrante
+de conjuntos de cambios (todos los que llegaron en un único empuje o
+jalado).
+\begin{codesample2}
+  [hooks]
+  # enviar un correo por grupo de cambios
+  changegroup.notify = python:hgext.notify.hook
+  # enviar un correo por cambio
+  incoming.notify = python:hgext.notify.hook
+\end{codesample2}
+
+La información para configurar este gancho se ubica en la sección
+\rcsection{notify} de un fichero \hgrc.
+\begin{itemize}
+\item[\rcitem{notify}{test}] Por defecto, este gancho no envía correos
+  en absoluto; en vez de eso, imprime el mensaje que se
+  \emph{enviaría}. Fije este ítem en \texttt{false} para permitir el
+  envío de correos. El motivo por el que el envío de correos está
+  desactivado es que hacen falta varios intentos para configurar esta
+  extensión exactamente como usted desea, y sería maleducado enviar a
+  los subscriptores una cantidad de notificaciones ``rotas'' mientras
+  usted depura su configuración.
+\item[\rcitem{notify}{config}] La ruta a un fichero de configuración
+  que contiene información de subscripción. Esto se mantiene separado
+  del \hgrc\ principal para que usted pueda mantenerlo en un
+  repositorio. La gente puede clonar ese repositorio, actualizar sus
+  subscripciones, y empujar los cambios de vuelta a su servidor.
+\item[\rcitem{notify}{strip}] La cantidad de caracteres iniciales de
+  separación de ruta a remover de la ruta del repositorio, al decidir
+  si un repositorio tiene subscriptores. Por ejemplo, si los
+  repositorios en su servidor están en \dirname{/home/hg/repos}, y
+  \hgext{notify} está trabajando con un repositorio llamado
+  \dirname{/home/hg/repos/shared/test}, fijar \rcitem{notify}{strip} a
+  \texttt{4} hará que \hgext{notify} elimine las partes iniciales de
+  la ruta hasta \dirname{shared/test}, y asociará los subscriptores
+  frente a dicha ruta.
+\item[\rcitem{notify}{template}] El texto de plantilla a usar cuando
+  se envíen mensajes. Especifica los contenidos de la cabecera del
+  mensaje y el cuerpo del mismo.
+\item[\rcitem{notify}{maxdiff}] El número máximo de líneas de datos de
+  diff a añadir al final de un mensaje. Si la longitud de un diff es
+  mayor a eso, se trunca. Por defecto, está fijado en 300. Fije esto a 
+  \texttt{0} para omitir los diffs en los correos de notificación.
+\item[\rcitem{notify}{sources}] Una lista de fuentes de conjuntos de
+  cambios a considerar. Esto le permite a usted indicar a
+  \hgext{notify} para que sólo envíe correos acerca de cambios que
+  usuarios remotos hayan empujado al repositorio vía un servidor, por
+  ejemplo.  Vea la sección~\ref{sec:hook:sources} para las fuentes que
+  usted puede especificar aquí.
+\end{itemize}
+
+Si usted fija el ítem \rcitem{web}{baseurl} en la sección
+\rcsection{web}, usted lo puede usar en una plantilla; estará
+disponible como \texttt{webroot}.
+
+A continuación se presenta un ejemplo completo de configuración para
+el gancho \hgext{notify}.
+\begin{codesample2}
+  [notify]
+  # enviar correo
+  test = false
+  # datos de subscriptores están en el repositorio notify
+  config = /home/hg/repos/notify/notify.conf
+  # repos están en /home/hg/repos on server, así que elimine 4
+  # caracteres"/"
+  strip = 4
+  template = X-Hg-Repo: \{webroot\}
+    Subject: \{webroot\}: \{desc|firstline|strip\}
+    From: \{author\}
+
+    changeset \{node|short\} in \{root\}
+    details: \{baseurl\}\{webroot\}?cmd=changeset;node=\{node|short\}
+    description:
+      \{desc|tabindent|strip\}
+
+  [web]
+  baseurl = http://hg.example.com/
+\end{codesample2}
+
+Esto producirá un mensaje que se verá como el siguiente:
+\begin{codesample2}
+  X-Hg-Repo: tests/slave
+  Subject: tests/slave: Handle error case when slave has no buffers
+  Date: Wed,  2 Aug 2006 15:25:46 -0700 (PDT)
+
+  changeset 3cba9bfe74b5 in /home/hg/repos/tests/slave
+  details: http://hg.example.com/tests/slave?cmd=changeset;node=3cba9bfe74b5
+  description:
+          Handle error case when slave has no buffers
+  diffs (54 lines):
+
+  diff -r 9d95df7cf2ad -r 3cba9bfe74b5 include/tests.h
+  --- a/include/tests.h      Wed Aug 02 15:19:52 2006 -0700
+  +++ b/include/tests.h      Wed Aug 02 15:25:26 2006 -0700
+  @@ -212,6 +212,15 @@ static __inline__ void test_headers(void *h)
+  [...snip...]
+\end{codesample2}
+
+\subsubsection{Pruebas y resolución de problemas}
+
+No olvide que por defecto, la extensión \hgext{notify} \emph{no
+enviará ningún correo electrónico} hasta que usted la configure
+explícitamente para hacerlo, fijando el valor de \rcitem{notify}{test}
+a \texttt{false}.  Hasta que usted haga eso, simplemente se imprimirá
+el mensaje que se \emph{enviaría}.
+
+\section{Información para escritores de ganchos}
+\label{sec:hook:ref}
+
+\subsection{Ejecución de ganchos internos}
+
+Un gancho interno es llamado con argumentos de la siguiente forma:
+\begin{codesample2}
+  def myhook(ui, repo, **kwargs):
+      pass
+\end{codesample2}
+El parámetro \texttt{ui} es un objeto \pymodclass{mercurial.ui}{ui}.
+El parámetro \texttt{repo} es un objeto
+\pymodclass{mercurial.localrepo}{localrepository}. Los nombres y
+valores de los parámetros en \texttt{**kwargs} dependen del gancho que
+se invoque, con las siguientes características en común:
+\begin{itemize}
+\item Si hay un parámetro llamado \texttt{node} o
+  \texttt{parent\emph{N}}, contendrá un ID hexadecimal de un conjunto
+  de cambios. La cadena vacía es usada para representar un
+  ``ID de conjunto de cambios nulo'' en vez de una cadena de ceros.
+\item Si hay un parámetro llamado \texttt{url}, contendrá la URL de un
+  repositorio remoto, si puede ser determinada.
+\item Los parámetros booleanos son representados como objetos
+    \texttt{bool} de Python.
+\end{itemize}
+
+Un gancho interno es ejecutado sin cambiar el directorio de trabajo
+del proceso (a diferencia de los ganchos externos, que son ejecutados
+desde la raíz del repositorio). El gancho no debe cambiar el
+directorio de trabajo del proceso, porque esto haría que falle
+cualquier llamada que se haga a la API de Mercurial.
+
+Si un gancho retorna el valor booleano ``false''\ndt{Falso.}, se
+considera que éste tuvo éxito. Si retorna
+``true''\ndt{Verdadero.} o genera una excepción, se considera que
+ha fallado. Una manera útil de pensar en esta convención de llamado es
+``dígame si usted falló''.
+
+Note que los IDs de conjuntos de cambios son pasados a los ganchos de
+Python como cadenas hexadecimales, no como los hashes binarios que la
+API de Mercurial usa normalmente. Para convertir un hash de
+hexadecimal a binario, use la función \pymodfunc{mercurial.node}{bin}.
+
+\subsection{Ejecución de ganchos externos}
+
+Un gancho externo es pasado al intérprete de comandos del usuario bajo
+el cual se ejecuta Mercurial. Las características del intérprete, como
+sustitución de variables y redirección de comandos, están disponibles.
+El gancho es ejecutado desde el directorio raíz del repositorio
+(a diferencia de los ganchos internos, que se ejecutan desde el mismo
+directorio en que Mercurial fue ejecutado).
+
+Los parámetros para el gancho se pasan como variables de entorno. El
+nombre de cada variable de entorno se pasa a mayúsculas y se le añade
+el prefijo ``\texttt{HG\_}''.  Por ejemplo, si el nombre de un
+parámetro es ``\texttt{node}'', el nombre de la variable de entorno
+que almacena el parámetro se llamará ``\texttt{HG\_NODE}''.
+
+Un parámetro booleano se representa con la cadena ``\texttt{1}'' para
+``true'', ``\texttt{0}'' para ``false''.  Si una variable se llama
+\envar{HG\_NODE}, \envar{HG\_PARENT1} o \envar{HG\_PARENT2},  
+contendrá un ID de conjunto de cambios representado como una cadena
+hexadecimal. La cadena vacía es usada para representar un ``ID de
+conjunto de cambios nulo'' en vez de una cadena de ceros. Si una
+variable de entorno se llama \envar{HG\_URL}, contendrá la URL de un
+repositorio remoto, si puede ser determinada.
+
+Si un gancho termina con un código de salida de cero, se considera que
+tuvo éxito. Si termina con un código de salida diferente de cero, se
+considera que falló.
+
+\subsection{Averiguar de dónde vienen los conjuntos de cambios}
+%TODO los trae la cigüeña. De París. Y quedan debajo de una col.
+
+Un gancho que involucra la transferencia de conjuntos de cambios entre
+un repositorio local y otro puede ser capaz de averiguar información
+acerca de ``el otro lado''. Mercurial sabe \emph{cómo} son
+transferidos los conjuntos de cambios, y en muchos casos también desde
+o hacia donde están siendo transferidos.
+
+\subsubsection{Fuentes de conjuntos de cambios}
+\label{sec:hook:sources}
+
+Mercurial le indicará a un gancho cuáles son, o fueron, los medios
+usados para transferir los conjuntos de cambios entre repositorios.
+Esta información es provista por Mercurial en un parámetro Python
+llamado \texttt{source}\ndt{Fuente.}, o una variable de entorno
+llamada \envar{HG\_SOURCE}.
+
+\begin{itemize}
+\item[\texttt{serve}] Los conjuntos de cambios son transferidos desde
+  o hacia un repositorio remoto a través de http o ssh.
+\item[\texttt{pull}] Los conjuntos de cambios son transferidos vía una
+  operación de jalado de un repositorio a otro.
+\item[\texttt{push}] Los conjuntos de cambios son transferidos vía un
+  empuje de un repositorio a otro.
+\item[\texttt{bundle}] Los conjuntos de cambios son transferidos desde
+    %TODO bundle
+  o hacia un paquete.
+\end{itemize}
+
+\subsubsection{A dónde van los cambios---URLs de repositorios remotos}
+\label{sec:hook:url}
+%TODO al cielo? no, ésos son los perros
+
+Cuando es posible, Mercurial le indicará a los ganchos la ubicación de
+``el otro lado'' de una actividad que transfiera datos de conjuntos de
+cambios entre repositorios. Esto es provisto por Mercurial en un
+parámetro Python llamado \texttt{url}, o en una variable de entorno
+llamada \envar{HG\_URL}.
+
+No siempre esta información está disponible. Si un gancho es invocado
+un repositorio que es servido a través de http o ssh, Mercurial no
+puede averiguar dónde está el repositorio remoto, pero puede saber
+desde dónde se conecta el cliente. En esos casos, la URL tendrá una de
+las siguientes formas:
+\begin{itemize}
+\item \texttt{remote:ssh:\emph{ip-address}}---cliente ssh remoto, en
+  la dirección IP dada.
+\item \texttt{remote:http:\emph{ip-address}}---cliente remoto http, en
+  la dirección IP dada. Si el cliente está usando SSL, tendrá la forma
+  \texttt{remote:https:\emph{ip-address}}.
+\item Vacío---no se pudo descubrir información acerca del cliente
+  remoto.
+\end{itemize}
+
+\section{Referencia de ganchos}
+
+\subsection{\hook{changegroup}---luego de añadir conjuntos de cambios
+remotos}
+\label{sec:hook:changegroup}
+
+Este gancho es ejecutado luego de que un grupo de conjuntos de cambios
+preexistentes ha sido añadido al repositorio, por ejemplo vía un
+\hgcmd{pull} o \hgcmd{unbundle}.  Este gancho es ejecutado una vez por
+cada operación que añade uno o más conjuntos de cambios. Este gancho
+se diferencia del gancho \hook{incoming}, que es ejecutado una vez por
+cada conjunto de cambios, sin importar si los cambios llegan en grupo.
+
+Algunos usos posibles para este gancho includen el probar o ensamblar
+los conjuntos de cambios añadidos, actualizar una base de datos de
+fallos, o notificar a subscriptores de que el repositorio contiene
+nuevos cambios.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del primer conjunto
+  de cambios que fue añadido en el grupo. Todos los conjuntos de
+  cambios entre éste y la punta
+  %TODO mirar qué hacer con el índice
+  \index{tags!\texttt{tip}}(\texttt{tip}), inclusive, fueron añadidos
+  %TODO unbundle
+  por un único jalado (\hgcmd{pull}), empuje (\hgcmd{push}) o \hgcmd{unbundle}.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
+\end{itemize}
+
+Veta también: \hook{incoming} (sección~\ref{sec:hook:incoming}),
+\hook{prechangegroup} (sección~\ref{sec:hook:prechangegroup}),
+\hook{pretxnchangegroup} (sección~\ref{sec:hook:pretxnchangegroup})
+
+\subsection{\hook{commit}---luego de la creación de un nuevo conjunto
+de cambios}
+\label{sec:hook:commit}
+
+Este gancho es ejecutado luego de la creación de un nuevo conjunto de
+cambios.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID de conjunto
+  de cambios del conjunto de cambios que acabó de ser consignado.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del primer padre del conjunto de cambios que
+  acaba de ser consignado.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del segundo padre del conjunto de cambios que
+  acaba de ser consignado.
+\end{itemize}
+
+Vea también: \hook{precommit} (sección~\ref{sec:hook:precommit}),
+\hook{pretxncommit} (sección~\ref{sec:hook:pretxncommit})
+
+\subsection{\hook{incoming}---luego de que un conjunto de cambios
+remoto es añadido}
+\label{sec:hook:incoming}
+
+Este gancho es ejecutado luego de que un conjunto de cambios
+preexistente ha sido añadido al repositorio, por ejemplo, vía un
+\hgcmd{push}.  Si un grupo de conjuntos de cambios fue añadido en una
+sola operación, este gancho es ejecutado una vez por cada conjunto de
+cambios añadido.
+
+Usted puede usar este gancho para los mismos fines que el gancho
+\hook{changegroup} (sección~\ref{sec:hook:changegroup}); simplemente
+algunas veces es más conveniente ejecutar un gancho una vez por cada
+grupo de conjuntos de cambios, mientras que otras es más útil correrlo
+por cada conjunto de cambios.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del conjunto
+  de cambios recién añadido.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
+\end{itemize}
+
+Vea también: \hook{changegroup} (sección~\ref{sec:hook:changegroup})
+\hook{prechangegroup} (sección~\ref{sec:hook:prechangegroup}),
+\hook{pretxnchangegroup} (sección~\ref{sec:hook:pretxnchangegroup})
+
+\subsection{\hook{outgoing}---luego de la propagación de los conjuntos
+de cambios}
+\label{sec:hook:outgoing}
+
+Este gancho es ejecutado luego de que un grupo de conjuntos de cambios
+ha sido propagado fuera de éste repositorio, por ejemplo por un
+comando \hgcmd{push} o \hgcmd{bundle}.
+
+Un uso posible para este gancho es notificar a los administradores que
+los cambios han sido jalados.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del primer conjunto
+  de cambios del grupo que fue enviado.
+\item[\texttt{source}] Una cadena. La fuente de la operación (vea la
+  sección~\ref{sec:hook:sources}).  Si un cliente remoto jaló cambios
+  de este repositorio, \texttt{source} será \texttt{serve}.  Si el
+  cliente que obtuvo los cambios desde este repositorio era local,
+  \texttt{source} será \texttt{bundle}, \texttt{pull}, o
+  \texttt{push}, dependiendo de la operación que llevó a cabo el
+  cliente.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
+\end{itemize}
+
+Vea también: \hook{preoutgoing} (sección~\ref{sec:hook:preoutgoing})
+
+\subsection{\hook{prechangegroup}---antes de empezar la adición de
+conjuntos de cambios remotos}
+\label{sec:hook:prechangegroup}
+
+Este gancho de control es ejecutado antes de que Mercurial empiece a
+añadir un grupo de conjuntos de cambios de otro repositorio.
+
+Este gancho no tiene ninguna información acerca de los conjuntos de
+cambios que van a ser añadidos, porque es ejecutado antes de que se
+permita que empiece la transmisión de dichos conjuntos de cambios. Si
+este gancho falla, los conjuntos de cambios no serán transmitidos.
+
+Un uso para este gancho es prevenir que se añadan cambios externos a un
+repositorio. Por ejemplo, usted podría usarlo para ``congelar''
+temporal o permanentemente una rama ubicada en un servidor para que
+los usuarios no puedan empujar cambios a ella, y permitiendo al mismo
+tiempo modificaciones al repositorio por parte de un administrador
+local.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
+\end{itemize}
+
+Vea también: \hook{changegroup} (sección~\ref{sec:hook:changegroup}),
+\hook{incoming} (sección~\ref{sec:hook:incoming}), ,
+\hook{pretxnchangegroup} (sección~\ref{sec:hook:pretxnchangegroup})
+
+\subsection{\hook{precommit}---antes de iniciar la consignación de un
+conjunto de cambios}
+\label{sec:hook:precommit}
+
+Este gancho es ejecutado antes de que Mercurial inicie la consignación
+de un nuevo conjunto de cambios. Es ejecutado antes de que Mercurial
+tenga cualquier de los metadatos para la consignación, como los
+ficheros a ser consignados, el mensaje de consignación, o la fecha de
+consignación.
+
+Un uso para este gancho es deshabilitar la capacidad de consignar
+nuevos conjuntos de cambios, pero permitiendo conjuntos de cambios
+entrantes. Otro es ejecutar un proceso de ensamble/compilación o
+prueba, y permitir la consignación sólo si el ensamble/compilación o
+prueba tiene éxito.
+
+Parámetros para este gancho:
+\begin{itemize}
+  \item[\texttt{parent1}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del primer padre del directorio de trabajo.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del segundo padre del directorio de trabajo.
+\end{itemize}
+Si la consignación continúa, los padres del directorio de trabajo se
+convertirán en los padres del nuevo conjunto de cambios.
+
+Vea también: \hook{commit} (sección~\ref{sec:hook:commit}),
+\hook{pretxncommit} (sección~\ref{sec:hook:pretxncommit})
+
+\subsection{\hook{preoutgoing}---antes de empezar la propagación de
+conjuntos de cambios}
+\label{sec:hook:preoutgoing}
+
+Este gancho es ejecutado antes de que Mercurial conozca las
+identidades de los conjuntos de cambios que deben ser transmitidos.
+
+Un uso para este gancho es evitar que los cambios sean transmitidos a
+otro repositorio.
+
+Parámetros para este gancho:
+\begin{itemize}
+  \item[\texttt{source}] Una cadena. La fuente la operación que está
+    tratando de obtener cambios de éste repositorio (vea
+    la sección~\ref{sec:hook:sources}).  Revise la documentación para
+    el parámetro \texttt{source} del gancho \hook{outgoing}, en la
+    sección~\ref{sec:hook:outgoing}, para ver los posibles valores de
+    este parámetro.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+    es conocida. Vea la sección~\ref{sec:hook:url} para más información.
+\end{itemize}
+
+Vea también: \hook{outgoing} (sección~\ref{sec:hook:outgoing})
+
+\subsection{\hook{pretag}---antes de etiquetar un conjunto de cambios}
+\label{sec:hook:pretag}
+
+Este gancho de control es ejecutado antes de la creación de una
+etiqueta. Si el gancho termina exitosamente, la creación de la
+etiqueta continúa. Si el gancho falla, no se crea la etiqueta.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{local}] Un booleano. Indica si la etiqueta es local a
+  ésta instancia del repositorio (p.e.~almacenado en
+  \sfilename{.hg/localtags}) o administrado por Mercurial (almacenado
+  en \sfilename{.hgtags}).
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del conjunto
+  de cambios a etiquetar.
+\item[\texttt{tag}] Una cadena. El nombre de la etiqueta por crear.
+\end{itemize}
+
+Si la etiqueta que se va a crear se encuentra bajo control de
+revisiones, los ganchos \hook{precommit} y \hook{pretxncommit}
+(secciones~\ref{sec:hook:commit} y~\ref{sec:hook:pretxncommit})
+también serán ejecutados.
+
+Vea también: \hook{tag} (sección~\ref{sec:hook:tag})
+
+\subsection{\hook{pretxnchangegroup}---antes de completar la adición
+de conjuntos de cambios remotos}
+\label{sec:hook:pretxnchangegroup}
+
+Este gancho de control es ejecutado antes de una transacción---la que
+maneja la adición de un grupo de conjuntos de cambios nuevos desde
+fuera del repositorio---se complete.  Si el gancho tiene éxito, la
+transacción se completa, y todos los conjuntos de cambios se vuelven
+permanentes dentro de este repositorio. Si el gancho falla, la
+transacción es deshecha, y los datos para los conjuntos de cambios son
+eliminados.
+
+Este gancho puede acceder a los metadatos asociados con los conjuntos
+de cambios casi añadidos, pero no debe hacer nada permanente con estos
+datos. Tampoco debe modificar el directorio de trabajo.
+
+Mientras este gancho está corriendo, si otro proceso Mercurial accesa
+el repositorio, podrá ver los conjuntos de cambios casi añadidos como
+si fueran permanentes. Esto puede llevar a condiciones de carrera si
+usted no toma precauciones para evitarlas.
+
+Este gancho puede ser usado para examinar automáticamente un grupo de
+conjuntos de cambios. Si el gancho falla, todos los conjuntos de
+cambios son ``rechazados'' cuando la transacción se deshace.
+
+Parámetros para este gancho:
+\begin{itemize}
+  \item[\texttt{node}] Un ID de conjunto de cambios. El ID del primer
+  conjunto de cambios que fue añadido en el grupo. Todos los
+  conjuntos de cambios entre éste y el
+  \index{tags!\texttt{tip}}\texttt{tip}, inclusive, fueron añadidos
+  por un único \hgcmd{pull}, \hgcmd{push} o \hgcmd{unbundle}.
+\item[\texttt{source}] Una cadena. La fuente de estos cambios. Vea la
+  sección~\ref{sec:hook:sources} para más detalles.
+\item[\texttt{url}] Una URL. La ubicación del repositorio remoto, si
+  es conocida. Vea la sección~\ref{sec:hook:url} para más información.
+\end{itemize}
+
+Vea también: \hook{changegroup} (sección~\ref{sec:hook:changegroup}),
+\hook{incoming} (sección~\ref{sec:hook:incoming}),
+\hook{prechangegroup} (sección~\ref{sec:hook:prechangegroup})
+
+\subsection{\hook{pretxncommit}---antes de completar la consignación
+de un nuevo conjunto de cambios}
+\label{sec:hook:pretxncommit}
+
+Este gancho de control es ejecutado antes de que una transacción---que
+maneja una nueva consignación---se complete. Si el gancho tiene éxito,
+la transacción se completa y el conjunto de cambios se hace permanente
+dentro de éste repositorio. Si el gancho falla, la transacción es
+deshecha, y los datos de consignación son borrados.
+
+Este gancho tiene acceso a los metadatos asociados con el
+prácticamente nuevo conjunto de cambios, pero no debería hacer nada
+permanente con estos datos. Tampoco debe modificar el directorio de
+trabajo.
+
+Mientras este gancho está corriendo, si otro proceso Mercurial accesa
+éste repositorio, podrá ver el prácticamente nuevo conjunto de cambios
+como si fuera permanente. Esto puede llevar a condiciones de carrera si
+usted no toma precauciones para evitarlas.
+
+Parámetros para este gancho:
+\begin{itemize}
+  \item[\texttt{node}] Un ID de conjunto de cambios. El ID del
+    conjunto de cambios recién consignado.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del primer padre del conjunto de cambios que
+  acaba de ser consignado.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. El ID de
+  conjunto de cambios del segundo padre del conjunto de cambios que
+  acaba de ser consignado.
+\end{itemize}
+
+Vea también: \hook{precommit} (sección~\ref{sec:hook:precommit})
+
+\subsection{\hook{preupdate}---antes de actualizar o fusionar el
+directorio de trabajo}
+\label{sec:hook:preupdate}
+
+Este gancho de control es ejecutado antes de actualizar o fusionar el
+directorio de trabajo. Es ejecutado sólo si las revisiones usuales de
+Mercurial antes de las actualizaciones determinan que la actualización
+o fusión pueden proceder. Si el gancho termina exitosamente, la
+actualización o fusión pueden proceder.; si falla, la actualización o
+fusión no empiezan.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID del
+  padre al que el directorio de trabajo será actualizado. Si se está
+  fusionando el directorio de trabajo, no cambiará este padre.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. Sólo está
+  definido si se está fusionando el directorio de trabajo. El ID de la
+  revisión con la cual está siendo fusionado el directorio de trabajo.
+\end{itemize}
+
+Vea también: \hook{update} (sección~\ref{sec:hook:update})
+
+\subsection{\hook{tag}---luego de etiquetar un conjunto de cambios}
+\label{sec:hook:tag}
+
+Este gancho es ejecutado luego de la creación de una etiqueta.
+
+Parámetros para este gancho:
+\begin{itemize}
+\item[\texttt{local}] Un booleano. Indica si la etiqueta es local a
+  ésta instancia del repositorio (p.e.~almacenado en
+  \sfilename{.hg/localtags}) o administrado por Mercurial (almacenado
+  en \sfilename{.hgtags}).
+\item[\texttt{node}] Un ID de conjunto de cambios. El ID del
+  conjunto de cambios que fue etiquetado.
+\item[\texttt{tag}] Una cadena. El nombre de la etiqueta que fue
+  creada.
+\end{itemize}
+
+Si la etiqueta creada está bajo control de revisiones, el gancho
+\hook{commit} (sección~\ref{sec:hook:commit}) es ejecutado antes de
+este gancho.
+
+Vea también: \hook{pretag} (sección~\ref{sec:hook:pretag})
+
+\subsection{\hook{update}---luego de actualizar o fusionar el
+directorio de trabajo}
+\label{sec:hook:update}
+
+Este gancho es ejecutado después de una actualización o fusión en el
+directorio de trabajo. Ya que una fusión puede fallar (si el comando
+externo \command{hgmerge} no puede resolver los conflictos en un
+fichero), este gancho indica si la actualización o fusión fueron
+completados adecuadamente.
+
+\begin{itemize}
+\item[\texttt{error}] Un booleano. Indica si la actualización o fusión
+  fue completada exitosamente.
+\item[\texttt{parent1}] Un ID de conjunto de cambios. El ID del padre
+  al cual fue actualizado el directorio de trabajo. Si se fusionó el
+  directorio de trabajo, no se habrá cambiado este padre.
+\item[\texttt{parent2}] Un ID de conjunto de cambios. Sólo está
+  definido si se fusionó el directorio de trabajo. El ID de la
+  revisión con la que fue fusionado el directorio de trabajo.
+\end{itemize}
+
+Vea también: \hook{preupdate} (sección~\ref{sec:hook:preupdate})
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

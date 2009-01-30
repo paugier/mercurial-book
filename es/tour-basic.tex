@@ -1,0 +1,690 @@
+\chapter{Una gira de Mercurial: lo básico}
+\label{chap:tour-basic}
+
+\section{Instalar Mercurial en su sistema}
+\label{sec:tour:install}
+Hay paquetes binarios precompilados de Mercurial disponibles para cada
+sistema operativo popular. Esto hace fácil empezar a usar Mercurial
+en su computador inmediatamente.
+
+\subsection{Linux}
+
+Dado que cada distribución de Linux tiene sus propias herramientas de
+manejo de paquetes, políticas, y ritmos de desarrollo, es difícil dar
+un conjunto exhaustivo de instrucciones sobre cómo instalar el paquete
+de Mercurial. La versión de Mercurial que usted tenga a disposición
+puede variar dependiendo de qué tan activa sea la persona que mantiene
+el paquete para su distribución.
+
+Para mantener las cosas simples, me enfocaré en instalar Mercurial
+desde la línea de comandos en las distribuciones de Linux más
+populares. La mayoría de estas distribuciones proveen administradores
+de paquetes gráficos que le permitirán instalar Mercurial con un solo
+clic; el nombre de paquete a buscar es \texttt{mercurial}.
+
+\begin{itemize}
+\item[Debian]
+  \begin{codesample4}
+    apt-get install mercurial
+  \end{codesample4}
+
+\item[Fedora Core]
+  \begin{codesample4}
+    yum install mercurial
+  \end{codesample4}
+
+\item[Gentoo]
+  \begin{codesample4}
+    emerge mercurial
+  \end{codesample4}
+
+\item[OpenSUSE]
+  \begin{codesample4}
+    yum install mercurial
+  \end{codesample4}
+
+\item[Ubuntu] El paquete de Mercurial de Ubuntu está basado en el de
+    Debian. Para instalarlo, ejecute el siguiente comando.
+  \begin{codesample4}
+    apt-get install mercurial
+  \end{codesample4}
+  El paquete de Mercurial para Ubuntu tiende a atrasarse con respecto
+  a la versión de Debian por un margen de tiempo considerable
+  (al momento de escribir esto, 7 meses), lo que en algunos casos
+  significará que usted puede encontrarse con problemas que ya habrán
+  sido resueltos en el paquete de Debian.
+\end{itemize}
+
+\subsection{Solaris}
+
+SunFreeWare, en \url{http://www.sunfreeware.com}, es una buena fuente
+para un gran número de paquetes compilados para Solaris para las
+arquitecturas Intel y Sparc de 32 y 64 bits, incluyendo versiones
+actuales de Mercurial.
+
+\subsection{Mac OS X}
+
+Lee Cantey publica un instalador de Mercurial para Mac OS~X en 
+\url{http://mercurial.berkwood.com}.  Este paquete funciona en tanto
+en Macs basados en Intel como basados en PowerPC. Antes de que pueda
+usarlo, usted debe instalar una versión compatible de Universal
+MacPython~\cite{web:macpython}. Esto es fácil de hacer; simplemente
+siga las instrucciones del sitio de Lee.
+
+También es posible instalar Mercurial usando Fink o MacPorts, dos
+administradores de paquetes gratuitos y populares para Mac OS X. Si
+usted tiene Fink, use \command{sudo apt-get install mercurial-py25}.
+Si usa MacPorts, \command{sudo port install mercurial}.
+
+\subsection{Windows}
+
+Lee Cantey publica un instalador de Mercurial para Windows en
+\url{http://mercurial.berkwood.com}. Este paquete no tiene
+% TODO traducción de it just works. Agreed?
+dependencias externas; ``simplemente funciona''.
+
+\begin{note}
+    La versión de Windows de Mercurial no convierte automáticamente
+    los fines de línea entre estilos Windows y Unix. Si usted desea
+    compartir trabajo con usuarios de Unix, deberá hacer un trabajo
+    adicional de configuración. XXX Terminar esto.
+\end{note}
+
+\section{Arrancando}
+
+Para empezar, usaremos el comando \hgcmd{version} para revisar si
+Mercurial está instalado adecuadamente. La información de la versión
+que es impresa no es tan importante; lo que nos importa es si imprime
+algo en absoluto.
+
+\interaction{tour.version}
+
+% TODO builtin-> integrado?
+\subsection{Ayuda integrada}
+
+Mercurial provee un sistema de ayuda integrada. Esto es invaluable
+para ésas ocasiones en la que usted está atorado tratando de recordar
+cómo ejecutar un comando. Si está completamente atorado, simplemente
+ejecute \hgcmd{help}; esto imprimirá una breve lista de comandos,
+junto con una descripción de qué hace cada uno. Si usted solicita
+ayuda sobre un comando específico (como abajo), se imprime información
+más detallada.
+\interaction{tour.help}
+Para un nivel más impresionante de detalle (que usted no va a
+necesitar usualmente) ejecute \hgcmdargs{help}{\hggopt{-v}}. La opción
+\hggopt{-v} es la abreviación para \hggopt{--verbose}, y le indica a
+Mercurial que imprima más información de lo que haría usualmente.
+
+\section{Trabajar con un repositorio}
+
+En Mercurial, todo sucede dentro de un \emph{repositorio}. El
+repositorio para un proyecto contiene todos los ficheros que
+``pertenecen a'' ése proyecto, junto con un registro histórico de los
+ficheros de ese proyecto.
+
+No hay nada particularmente mágico acerca de un repositorio; es
+simplemente un árbol de directorios en su sistema de ficheros que
+Mercurial trata como especial. Usted puede renombrar o borrar un
+repositorio en el momento que lo desee, usando bien sea la línea de
+comandos o su explorador de ficheros.
+
+\subsection{Hacer una copia local de un repositorio}
+
+\emph{Copiar} un repositorio es sólo ligeramente especial. Aunque
+usted podría usar un programa normal de copia de ficheros para hacer
+una copia del repositorio, es mejor usar el comando integrado que
+Mercurial ofrece. Este comando se llama \hgcmd{clone}\ndt{Del término
+``clonar'' en inglés.}, porque crea una copia idéntica de un
+repositorio existente.
+\interaction{tour.clone}
+Si nuestro clonado tiene éxito, deberíamos tener un directorio local
+llamado \dirname{hello}. Este directorio contendrá algunos ficheros.
+\interaction{tour.ls}
+Estos ficheros tienen el mismo contenido e historial en nuestro
+repositorio y en el repositorio que clonamos.
+
+Cada repositorio Mercurial está completo, es autocontenido e
+independiente. Contiene su propia copia de los ficheros y el historial
+de un proyecto. Un repositorio clonado recuerda la ubicación de la que
+fue clonado, pero no se comunica con ese repositorio, ni con ningún
+otro, a menos que usted le indique que lo haga.
+
+Lo que esto significa por ahora es que somos libres de experimentar
+con nuestro repositorio, con la tranquilidad de saber que es una
+% TODO figure out what to say instead of sandbox
+``caja de arena'' privada que no afectará a nadie más.
+
+\subsection{Qué hay en un repositorio?}
+
+Cuando miramos en detalle dentro de un repositorio, podemos ver que
+contiene un directorio llamado \dirname{.hg}. Aquí es donde Mercurial
+mantiene todos los metadatos del repositorio.
+\interaction{tour.ls-a}
+
+Los contenidos del directorio \dirname{.hg} y sus subdirectorios son
+exclusivos de Mercurial. Usted es libre de hacer lo que desee con
+cualquier otro fichero o directorio en el repositorio.
+
+Para introducir algo de terminología, el directorio \dirname{.hg} es
+el repositorio ``real'', y todos los ficheros y directorios que
+coexisten con él están en el \emph{directorio de trabajo}. Una forma
+sencilla de recordar esta distinción es que el \emph{repositorio}
+contiene el \emph{historial} de su proyecto, mientras que el
+\emph{directorio de trabajo} contiene una \emph{instantánea} de su
+proyecto en un punto particular del historial.
+
+\section{Vistazo rápido al historial}
+
+Una de las primeras cosas que se desea hacer con un repositorio nuevo,
+poco conocido, es conocer su historial. El comando \hgcmd{log} nos
+permite ver el mismo.
+\interaction{tour.log}
+Por defecto este programa imprime un párrafo breve por cada cambio al
+proyecto que haya sido grabado. Dentro de la terminología de
+Mercurial, cada uno de estos eventos es llamado \emph{conjunto de
+cambios}, porque pueden contener un registro de cambios a varios
+ficheros.
+
+Los campos de la salida de \hgcmd{log} son los siguientes.
+\begin{itemize}
+    \item[\texttt{changeset}]\hspace{-0.5em}\ndt{Conjunto de cambios.} Este campo
+        tiene un número, seguido por un
+        % TODO digo mejor seguido por un dos puntos ? string =>
+        % cadena?
+        \texttt{:}, seguido por una cadena hexadecimal. Ambos son
+        \emph{identificadores} para el conjunto de cambios. Hay dos
+        identificadores porque el número es más corto y más fácil de
+        recordar que la cadena hexadecimal.
+        
+\item[\texttt{user}]\hspace{-0.5em}\ndt{Usuario.} La identidad de la
+    persona que creó el conjunto de cambios. Este es un campo en el
+    que se puede almacenar cualquier valor, pero en la mayoría de los
+    casos contiene el nombre de una persona y su dirección de correo
+    electrónico.
+    
+\item[\texttt{date}]\hspace{-0.5em}\ndt{Fecha.} La fecha y hora en la
+    que el conjunto de cambios fue creado, y la zona horaria en la que
+    fue creado. (La fecha y hora son locales a dicha zona horaria;
+    ambos muestran la fecha y hora para la persona que creó el
+    conjunto de cambios).
+    
+\item[\texttt{summary}]\hspace{-0.5em}\ndt{Sumario.} 
+    La primera línea del texto que usó la persona que creó el conjunto
+    de cambios para describir el mismo.
+\end{itemize}
+El texto impreso por \hgcmd{log} es sólo un sumario; omite una gran
+cantidad de detalles.
+
+La figura~\ref{fig:tour-basic:history} es una representación
+gráfica del historial del repositorio \dirname{hello}, para hacer más
+fácil ver en qué dirección está ``fluyendo'' el historial. Volveremos
+a esto varias veces en este capítulo y en los siguientes.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-history}
+  \caption{Historial gráfico del repositorio \dirname{hello}}
+  \label{fig:tour-basic:history}
+\end{figure}
+
+\subsection{Conjuntos de cambios, revisiones, y comunicándose con
+otras personas}
+
+%TODO sloppy => desordenado ?  TODO hablar del inglés? o de español?
+Ya que el inglés es un lenguaje notablemente desordenado, y el área de
+ciencias de la computación tiene una notable historia de confusión de
+% TODO insertar ? al revés. no sé cómo en un teclado de estos.
+términos (porqué usar sólo un término cuando cuatro pueden servir?),
+el control de revisiones tiene una variedad de frases y palabras que
+tienen el mismo significado. Si usted habla acerca del historial de
+Mercurial con alguien, encontrará que la expresión ``conjunto de
+cambios'' es abreviada a menudo como ``cambio'' o (por escrito)
+``cset''\ndt{Abreviatura para la expresión ``changeset'' en inglés.},
+y algunas veces un se hace referencia a un conjunto de cambios como
+una ``revisión'' o ``rev''\ndt{De nuevo, como abreviación para el
+término en inglés para ``revisión'' (``revision'').}.
+
+Si bien no es relevante qué \emph{palabra} use usted para referirse al
+concepto ``conjunto de cambios'', el \emph{identificador} que usted
+use para referise a ``un \emph{conjunto de cambios} particular'' es
+muy importante. Recuerde que el campo \texttt{changeset} en la salida
+de \hgcmd{log} identifica un conjunto de cambios usando tanto un
+número como una cadena hexadecimal.
+
+\begin{itemize}
+    \item El número de revisión \emph{sólo es válido dentro del
+        repositorio}.
+    \item Por otro lado, la cadena hexadecimal es el
+        \emph{identificador permanente e inmutable} que siempre
+        identificará ése conjunto de cambios en \emph{todas} las
+        copias del repositorio.
+\end{itemize}
+La diferencia es importante. Si usted le envía a alguien un correo
+electrónico hablando acerca de la ``revisión~33'', hay una
+probabilidad alta de que la revisión~33 de esa persona \emph{no sea la
+misma suya}. Esto sucede porque el número de revisión depende del
+orden en que llegan los cambios al repositorio, y no hay ninguna
+garantía de que los mismos cambios llegarán en el mismo orden en
+diferentes repositorios. Tres cambios dados $a,b,c$ pueden aparecer en
+un repositorio como $0,1,2$, mientras que en otro aparecen como
+$1,0,2$.
+
+Mercurial usa los números de revisión simplemente como una abreviación
+conveniente. Si usted necesita hablar con alguien acerca de un
+conjunto de cambios, o llevar el registro de un conjunto de cambios
+por alguna otra razón (por ejemplo, en un reporte de fallo), use el
+identificador hexadecimal.
+
+\subsection{Ver revisiones específicas}
+
+Para reducir la salida de \hgcmd{log} a una sola revisión, use la  
+opción \hgopt{log}{-r} (o \hgopt{log}{--rev}).  Puede usar un número
+de revisión o un identificador hexadecimal de conjunto de cambios, y
+puede pasar tantas revisiones como desee.
+
+\interaction{tour.log-r}
+
+Si desea ver el historial de varias revisiones sin tener que mencionar
+cada una de ellas, puede usar la \emph{notación de rango}; esto le
+permite expresar el concepto ``quiero ver todas las revisiones entre
+$a$ y $b$, inclusive''.
+\interaction{tour.log.range}
+Mercurial también respeta el orden en que usted especifica las
+revisiones, así que \hgcmdargs{log}{-r 2:4} muestra $2,3,4$ mientras
+que \hgcmdargs{log}{-r 4:2} muestra $4,3,2$.
+
+\subsection{Información más detallada}
+Aunque la información presentada por \hgcmd{log} es útil si usted sabe
+de antemano qué está buscando, puede que necesite ver una descripción
+completa del cambio, o una lista de los ficheros que cambiaron, si
+está tratando de averiguar si un conjunto de cambios dado es el que
+usted está buscando. La opción \hggopt{-v} (or \hggopt{--verbose}) del
+comando \hgcmd{log} le da este nivel extra de detalle.
+\interaction{tour.log-v}
+
+Si desea ver tanto la descripción como el contenido de un cambio,
+añada la opción \hgopt{log}{-p} (o \hgopt{log}{--patch}). Esto muestra
+% TODO qué hacemos con diff unificado? convervarlo, por ser la
+% acepción usual?
+el contenido de un cambio como un \emph{diff unificado} (si usted
+nunca ha visto un diff unificado antes, vea la
+sección~\ref{sec:mq:patch} para un vistazo global).
+\interaction{tour.log-vp}
+
+\section{Todo acerca de las opciones para comandos}
+
+Tomemos un breve descanso de la tarea de explorar los comandos de
+Mercurial para hablar de un patrón en la manera en que trabajan; será
+útil tener esto en mente a medida que avanza nuestra gira.
+
+Mercurial tiene un enfoque directo y consistente en el manejo de las
+opciones que usted le puede pasar a los comandos. Se siguen las
+convenciones para opciones que son comunes en sistemas Linux y Unix
+modernos.
+\begin{itemize}
+\item Cada opción tiene un nombre largo. Por ejemplo, el comando
+    \hgcmd{log} acepta la opción \hgopt{log}{--rev}, como ya hemos
+    visto.
+\item Muchas opciones tienen también un nombre corto. En vez de
+    \hgopt{log}{--rev}, podemos usar \hgopt{log}{-r}.  (El motivo para
+    que algunas opciones no tengan nombres cortos es que dichas
+    opciones se usan rara vez.)
+\item Las opciones largas empiezan con dos guiones (p.ej.~\hgopt{log}{--rev}),
+    mientras que las opciones cortas empiezan con uno (e.g.~\hgopt{log}{-r}).
+\item El nombre  y uso de las opciones es consistente en todos los
+    comandos. Por ejemplo, cada comando que le permite pasar un ID de
+    conjunto de cambios o un número de revisión acepta tanto la opción
+    \hgopt{log}{-r} como la \hgopt{log}{--rev}.
+\end{itemize}
+En los ejemplos en este libro, uso las opciones cortas en vez de las
+largas. Esto sólo muestra mis preferencias, así que no le dé
+significado especial a eso.
+
+Muchos de los comandos que generan salida de algún tipo mostrarán más
+salida cuando se les pase la opción \hggopt{-v} (o
+\hggopt{--verbose}\ndt{Prolijo.}), y menos cuando se les pase la opción \hggopt{-q}
+(o \hggopt{--quiet}\ndt{Silencioso.}).
+
+\section{Hacer y repasar cambios}
+
+Ahora que tenemos una comprensión adecuada sobre cómo revisar el
+historial en Mercurial, hagamos algunos cambios y veamos cómo
+examinarlos.
+
+Lo primero que haremos será aislar nuestro experimento en un
+repositorio propio. Usaremos el comando \hgcmd{clone}, pero no hace
+falta clonar una copia del repositorio remoto. Como ya contamos con
+una copia local del mismo, podemos clonar esa. Esto es mucho más
+rápido que clonar a través de la red, y en la mayoría de los casos
+clonar un repositorio local usa menos espacio en disco también.
+\interaction{tour.reclone}
+A manera de recomendación, es considerado buena práctica mantener una
+copia ``prístina'' de un repositorio remoto a mano, del cual usted
+puede hacer clones temporales para crear cajas de arena para cada
+tarea en la que desee trabajar. Esto le permite trabajar en múltiples
+tareas en paralelo, teniendo cada una de ellas aislada de las otras
+hasta que estén completas y usted esté listo para integrar los cambios
+de vuelta. Como los clones locales son tan baratos, clonar y destruir
+repositorios no consume demasiados recursos, lo que facilita hacerlo
+en cualquier momento.
+
+En nuestro repositorio \dirname{my-hello}, hay un fichero
+\filename{hello.c} que contiene el clásico programa ``hello,
+world''\ndt{Hola, mundo.}. Usaremos el clásico y venerado comando
+\command{sed} para editar este fichero y hacer que imprima una segunda
+línea de salida. (Estoy usando el comando \command{sed} para hacer
+esto sólo porque es fácil escribir un ejemplo automatizado con él.
+Dado que usted no tiene esta restricción, probablemente no querrá usar
+\command{sed}; use su editor de texto preferido para hacer lo mismo).
+\interaction{tour.sed}
+
+El comando \hgcmd{status} de Mercurial nos dice lo que Mercurial sabe
+acerca de los ficheros en el repositorio.
+\interaction{tour.status}
+El comando \hgcmd{status} no imprime nada para algunos ficheros, sólo
+una línea empezando con ``\texttt{M}'' para el fichero
+\filename{hello.c}. A menos que usted lo indique explícitamente,
+\hgcmd{status} no imprimirá nada respecto a los ficheros que no han
+sido modificados.
+
+La ``\texttt{M}'' indica que Mercurial se dio cuenta de que nosotros
+modificamos \filename{hello.c}.  No tuvimos que \emph{decirle} a
+Mercurial que íbamos a modificar ese fichero antes de hacerlo, o que
+lo modificamos una vez terminamos de hacerlo; él fue capaz de darse
+cuenta de esto por sí mismo.
+
+Es algo útil saber que hemos modificado el fichero \filename{hello.c},
+pero preferiríamos saber exactamente \emph{qué} cambios hicimos.
+Para averiguar esto, usamos el comando \hgcmd{diff}.
+\interaction{tour.diff}
+
+\section{Grabar cambios en un nuevo conjunto de cambios}
+
+Podemos modificar, compilar y probar nuestros cambios, y usar
+\hgcmd{status} y \hgcmd{diff} para revisar los mismos, hasta que
+estemos satisfechos con los resultados y lleguemos a un momento en el
+que sea natural que querramos guardar nuestro trabajo en un nuevo
+conjunto de cambios.
+
+El comando \hgcmd{commit} nos permite crear un nuevo conjunto de
+cambios. Nos referiremos usualmente a esto como ``hacer una consigna''
+o consignar.
+
+\subsection{Definir un nombre de usuario}
+
+Cuando usted trata de ejecutar \hgcmd{commit}\ndt{Hacer una
+consignación} por primera vez, no está garantizado que lo logre.
+Mercurial registra su nombre y dirección en cada cambio que usted
+consigna, para que más adelante otros puedan saber quién es el
+responsable de cada cambio. Mercurial trata de encontrar un nombre de
+% TODO consigna o consignación?
+usuario adecuado con el cual registrar la consignación. Se intenta con
+cada uno de los siguientes métodos, en el orden presentado.
+\begin{enumerate}
+\item Si usted pasa la opción \hgopt{commit}{-u} al comando \hgcmd{commit}
+  en la línea de comandos, seguido de un nombre de usuario, se le da a
+  esto la máxima precedencia.
+\item A continuación se revisa si usted ha definido la variable de
+    entorno \envar{HGUSER}.
+\item Si usted crea un fichero en su directorio personal llamado
+  \sfilename{.hgrc}, con una entrada \rcitem{ui}{username}, se usa
+  luego. Para revisar cómo debe verse este fichero, refiérase a la
+  sección~\ref{sec:tour-basic:username} más abajo.
+\item Si usted ha definido la variable de entorno \envar{EMAIL}, será
+    usada a continuación.
+\item Mercurial le pedirá a su sistema buscar su nombre de usuario
+    % TODO host => máquina
+    local, y el nombre de máquina, y construirá un nombre de usuario a
+    partir de estos componentes. Ya que esto generalmente termina
+    generando un nombre de usuario no muy útil, se imprimirá una
+    advertencia si es necesario hacerlo.
+\end{enumerate}
+Si todos estos procedimientos fallan, Mercurial fallará, e imprimirá
+un mensaje de error. En este caso, no le permitirá hacer la
+consignación hasta que usted defina un nombre de usuario.
+
+Trate de ver la variable de entorno \envar{HGUSER} y la opción
+\hgopt{commit}{-u} del comando \hgcmd{commit} como formas de
+\emph{hacer caso omiso} de la selección de nombre de usuario que
+Mercurial hace normalmente.  Para uso normal, la manera más simple y
+sencilla de definir un nombre de usuario para usted es crear un
+fichero \sfilename{.hgrc}; los detalles se encuentran más adelante.
+
+\subsubsection{Crear el fichero de configuración de Mercurial}
+\label{sec:tour-basic:username}
+
+Para definir un nombre de usuario, use su editor de texto favorito
+para crear un fichero llamado \sfilename{.hgrc} en su directorio
+personal. Mercurial usará este fichero para obtener las
+configuraciones personalizadas que usted haya hecho. El contenido
+inicial de su fichero \sfilename{.hgrc} debería verse así.
+\begin{codesample2}
+  # Este es un fichero de configuración de Mercurial.
+  [ui]
+  username = Primernombre Apellido <correo.electronico@dominio.net>
+\end{codesample2}
+La línea ``\texttt{[ui]}'' define una \emph{section} del fichero de
+configuración, así que usted puede leer la línea ``\texttt{username =
+...}'' como ``defina el valor del elemento \texttt{username} en la
+sección \texttt{ui}''.
+Una sección continua hasta que empieza otra nueva, o se llega al final
+del fichero. Mercurial ignora las líneas vacías y considera cualquier
+texto desde el caracter ``\texttt{\#}'' hasta el final de la línea
+como un comentario.
+
+\subsubsection{Escoger un nombre de usuario}
+
+Usted puede usar el texto que desee como el valor del campo de
+configuración \texttt{username}, ya que esta información será leída
+por otras personas, e interpretada por Mercurial. La convención que
+sigue la mayoría de la gente es usar su nombre y dirección de correo,
+como en el ejemplo anterior.
+
+\begin{note}
+    % TODO web
+    El servidor web integrado de Mercurial ofusca las direcciones de
+    correo, para dificultar la tarea de las herramientas de
+    recolección de direcciones de correo que usan los
+    spammers\ndt{Personas que envían correo no solicitado, también
+    conocido como correo basura}. Esto reduce la probabilidad de que
+    usted empiece a recibir más correo basura si publica un
+    repositorio en la red.
+\end{note}
+
+\subsection{Escribir un mensaje de consignación}
+
+Cuando consignamos un cambio, Mercurial nos ubica dentro de un editor
+de texto, para ingresar un mensaje que describa las modificaciones que
+hemos introducido en este conjunto de cambios. Esto es conocido como
+un \emph{mensaje de consignación}. Será un registro de lo que hicimos
+y porqué lo hicimos, y será impreso por \hgcmd{log} una vez hayamos
+hecho la consignación.
+\interaction{tour.commit}
+
+El editor en que \hgcmd{commit} nos ubica contendrá una línea vacía,
+seguida de varias líneas que empiezan con la cadena ``\texttt{HG:}''.
+\begin{codesample2}
+  \emph{línea vacía}
+  HG: changed hello.c
+\end{codesample2}
+Mercurial ignora las líneas que empiezan con ``\texttt{HG:}''; sólo
+las usa para indicarnos para cuáles ficheros está registrando los
+cambios. Modificar o borrar estas líneas no tiene ningún efecto.
+
+\subsection{Escribir un buen mensaje de consignación}
+
+Ya que por defecto \hgcmd{log} sólo muestra la primera línea de un
+mensaje de consignación, lo mejor es escribir un mensaje cuya primera
+línea tenga significado por sí misma. A continuación se encuentra un
+ejemplo de un mensaje de consignación que \emph{no} sigue esta
+pauta, y debido a ello tiene un sumario que no es legible.
+\begin{codesample2}
+  changeset:   73:584af0e231be
+  user:        Persona Censurada <persona.censurada@ejemplo.org>
+  date:        Tue Sep 26 21:37:07 2006 -0700
+  summary:     se incluye buildmeister/commondefs.   Añade un módulo
+\end{codesample2}
+
+Con respecto al resto del contenido del mensaje de consignación, no
+hay reglas estrictas-y-rápidas. Mercurial no interpreta ni le da
+importancia a los contenidos del mensaje de consignación, aunque es
+posible que su proyecto tenga políticas que definan una manera
+particular de escribirlo.
+
+Mi preferencia personal es usar mensajes de consignación cortos pero
+informativos, que me digan algo que no puedo inferir con una mirada
+rápida a la salida de \hgcmdargs{log}{--patch}.
+
+\subsection{Cancelar una consignación}
+
+Si usted decide que no desea hacer la consignación mientras está
+editando el mensaje de la misma, simplemente cierre su editor sin
+guardar los cambios al fichero que está editando. Esto hará que no
+pase nada ni en el repositorio ni en el directorio de trabajo.
+
+Si ejecutamos el comando \hgcmd{commit} sin ningún argumento, se
+registran todos los cambios que hemos hecho, como lo indican
+\hgcmd{status} y \hgcmd{diff}.
+
+\subsection{Admirar nuestro trabajo}
+
+Una vez hemos terminado la consignación, podemos usar el comando
+\hgcmd{tip}\ndt{Punta.} para mostrar el conjunto de cambios que acabamos de crear.
+La salida de este comando es idéntica a la de \hgcmd{log}, pero sólo
+muestra la revisión más reciente en el repositorio.
+\interaction{tour.tip}
+Nos referimos a la revisión más reciente en el repositorio como la
+revisión de punta, o simplemente la punta.
+
+\section{Compartir cambios}
+
+Anteriormente mencionamos que los repositorios en Mercurial están auto
+contenidos. Esto quiere decir que el conjunto de cambios que acabamos
+de crear sólo existe en nuestro repositorio \dirname{my-hello}. Veamos
+unas cuantas formas de propagar este cambio a otros repositorios.
+
+\subsection{Jalar cambios desde otro repositorio}
+\label{sec:tour:pull}
+
+Para empezar, clonemos nuestro repositorio \dirname{hello} original,
+el cual no contiene el cambio que acabamos de consignar. Llamaremos a
+este repositorio temporal \dirname{hello-pull}.
+\interaction{tour.clone-pull}
+
+Usaremos el comando \hgcmd{pull} para traer los cambios de
+\dirname{my-hello} y ponerlos en \dirname{hello-pull}.  Sin embargo,
+traer cambios desconocidos y aplicarlos en un repositorio es una
+perspectiva que asusta al menos un poco.  Mercurial cuenta con el
+comando \hgcmd{incoming}\ndt{Entrante, o cambios entrantes.} para
+decirnos qué cambios \emph{jalaría} el comando \hgcmd{pull} al
+repositorio, sin jalarlos.
+\interaction{tour.incoming}
+(Por supuesto, alguien podría enviar más conjuntos de cambios al
+repositorio en el tiempo que pasa entre la ejecución de
+\hgcmd{incoming} y la ejecución de \hgcmd{pull} para jalar los
+cambios, así que es posible que terminemos jalando cambios que no
+esperábamos.)
+
+Traer cambios al repositorio simplemente es cuestión de ejecutar el
+comando \hgcmd{pull}, indicándole de qué repositorio debe jalarlos.
+\interaction{tour.pull}
+Como puede verse por las salidas antes-y-después de \hgcmd{tip}, hemos
+jalado exitosamente los cambios en nuestro repositorio. Aún falta un
+paso para que podamos ver estos cambios en nuestro directorio de
+trabajo.
+
+\subsection{Actualizar el directorio de trabajo}
+
+Hasta ahora hemos pasado por alto la relación entre un repositorio y
+su directorio de trabajo. El comando \hgcmd{pull} que ejecutamos en la
+sección~\ref{sec:tour:pull} trajo los cambios al repositorio, pero si
+revisamos, no hay rastro de esos cambios en el directorio de trabajo.
+Esto pasa porque \hgcmd{pull} (por defecto) no modifica el directorio de
+trabajo. En vez de eso, usamos el comando
+\hgcmd{update}\ndt{Actualizar.} para hacerlo.
+\interaction{tour.update}
+
+Puede parecer algo raro que \hgcmd{pull} no actualice el directorio de
+trabajo automáticamente. De hecho, hay una buena razón para esto:
+usted puede usar \hgcmd{update} para actualizar el directorio de
+trabajo al estado en que se encontraba en \emph{cualquier revisión}
+del historial del repositorio. Si usted hubiera actualizado el
+directorio de trabajo a una revisión anterior---digamos, para buscar
+el origen de un fallo---y hubiera corrido un \hgcmd{pull} que hubiera
+actualizado el directorio de trabajo automáticamente a la nueva
+revisión, puede que no estuviera particularmente contento.
+
+Sin embargo, como jalar-y-actualizar es una secuencia de operaciones
+muy común, Mercurial le permite combinarlas al pasar la opción
+\hgopt{pull}{-u}
+a \hgcmd{pull}.
+\begin{codesample2}
+  hg pull -u
+\end{codesample2}
+Si mira de vuelta la salida de \hgcmd{pull} en la
+sección~\ref{sec:tour:pull} cuando lo ejecutamos sin la opción \hgopt{pull}{-u},
+verá que el comando imprimió un amable recordatorio de que tenemos que
+encargarnos explícitamente de actualizar el directorio de trabajo:
+\begin{codesample2}
+  (run 'hg update' to get a working copy)
+\end{codesample2}
+
+Para averiguar en qué revisión se encuentra el directorio de trabajo,
+use el comando \hgcmd{parents}.
+\interaction{tour.parents}
+Si mira de nuevo la figura~\ref{fig:tour-basic:history}, verá flechas
+conectando cada conjunto de cambios. En cada caso, el nodo del que la flecha
+\emph{sale} es un padre, y el nodo al que la flecha \emph{llega} es 
+su hijo. El directorio de trabajo tiene un padre exactamente de la
+misma manera; ése es el conjunto de cambios que contiene actualmente
+el directorio de trabajo.
+
+Para actualizar el conjunto de trabajo a una revisión particular, pase
+un número de revisión o un ID de conjunto de cambios al comando
+\hgcmd{update}.
+\interaction{tour.older}
+Si no indica explícitamente una revisión, \hgcmd{update} actualizará
+hasta la revisión de punta, como se vio en la segunda llamada a
+\hgcmd{update} en el ejemplo anterior.
+
+\subsection{Empujar cambios a otro repositorio}
+
+Mercurial nos permite empujar cambios a otro repositorio, desde el
+% TODO cambié "visitando" por "usando"
+repositorio que estemos usando actualmente. De la misma forma que en
+el ejemplo de \hgcmd{pull} arriba, crearemos un repositorio temporal
+para empujar allí nuestros cambios.
+\interaction{tour.clone-push}
+El comando \hgcmd{outgoing}\ndt{Saliente. Cambios salientes.} nos dice
+qué cambios serían empujados en el otro repositorio.
+\interaction{tour.outgoing}
+Y el comando \hgcmd{push} se encarga de empujar dichos cambios.
+\interaction{tour.push}
+Al igual que \hgcmd{pull}, el comando \hgcmd{push} no actualiza el
+directorio de trabajo del repositorio en el que estamos empujando los
+cambios.  (A diferencia de \hgcmd{pull}, \hgcmd{push} no ofrece la
+opción \texttt{-u} para actualizar el directorio de trabajo del otro
+repositorio.)
+
+% TODO poner interrogante de apertura
+Qué pasa si tratamos de jalar o empujar cambios y el repositorio
+receptor ya tiene esos cambios? Nada emocionante.
+\interaction{tour.push.nothing}
+
+\subsection{Compartir cambios a través de una red}
+
+Los comandos que hemos presentando en las pocas secciones anteriores
+no están limitados a trabajar con repositorios locales. Cada uno de
+ellos funciona exactamente de la misma manera a través de una conexión
+% TODO poner ndt para URL
+de red. Simplemente pase una URL en vez de una ruta local.
+\interaction{tour.outgoing.net}
+En este ejemplo, podemos ver qué cambios empujaríamos al repositorio
+remoto, aunque, de manera entendible, el repositorio remoto está
+configurado para no permitir a usuarios anónimos empujar cambios a él.
+\interaction{tour.push.net}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

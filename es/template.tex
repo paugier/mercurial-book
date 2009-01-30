@@ -1,0 +1,497 @@
+\chapter{Personalizar los mensajes de Mercurial}
+\label{chap:template}
+
+Mercurial provee un poderoso mecanismo que permite controlar como
+despliega la información.  El mecanismo se basa en plantillas.  Puede
+usar plantillas para generar salida específica para una orden
+particular o para especificar la visualización completa de la interfaz
+web embebida.
+
+\section{Usar estilos que vienen con Mercurial}
+\label{sec:style}
+
+Hay ciertos estilos listos que vienen con Mercurial.  Un estilo es
+simplemente una plantilla predeterminada que alguien escribió e
+instaló en un sitio en el cual Mercurial puede encontrarla.
+
+Antes de dar un vistazo a los estilos que trae Mercurial, revisemos su
+salida usual.
+
+\interaction{template.simple.normal}
+
+Es en cierta medida informativa, pero ocupa mucho espacio---cinco
+líneas de salida por cada conjunto de cambios.  El estilo
+\texttt{compact} lo reduce a tres líneas, presentadas de forma
+suscinta.
+
+\interaction{template.simple.compact}
+
+El estilo de la \texttt{bitácora de cambios} vislumbra el poder
+expresivo del sistema de plantillas de Mercurial.  Este estilo busca
+seguir los estándares de bitácora de cambios del proyecto
+GNU\cite{web:changelog}.
+
+\interaction{template.simple.changelog}
+
+No es una sorpresa que el estilo predeterminado de Mercurial se llame
+\texttt{default}\ndt{predeterminado}.
+
+\subsection{Especificar un estilo predeterminado}
+
+Puede modificar el estilo de presentación que Mercurial usará para
+toda orden vía el fichero \hgrc\, indicando el estilo que prefiere
+usar.
+
+\begin{codesample2}
+  [ui]
+  style = compact
+\end{codesample2}
+
+Si escribe un estilo, puede usarlo bien sea proveyendo la ruta a su
+fichero de estilo o copiando su fichero de estilo a un lugar en el
+cual Mercurial pueda encontrarlo (típicamente el subdirectorio
+\texttt{templates} de su directorio de instalación de Mercurial).
+
+\section{Órdenes que soportan estilos y plantillas}
+
+Todas las órdenes de Mercurial``relacionadas con \texttt{log}'' le
+permiten usar estilos y plantillas: \hgcmd{incoming}, \hgcmd{log},
+\hgcmd{outgoing} y \hgcmd{tip}.
+
+Al momento de la escritura del manual estas son las únicas órdenes que
+soportan estilos y plantillas.  Dado que son las órdenes más
+importantes que necesitan personalización, no ha habido muchas
+solicitudes desde la comunidad de usuarios de Mercurial para añadir
+soporte de plantillas y estilos a otras órdenes.
+
+\section{Cuestiones básicas de plantillas}
+
+Una plantilla de Mercurial es sencillamente una pieza de texto.
+Cierta porción nunca cambia, otras partes se \emph{expanden}, o
+reemplazan con texto nuevo cuando es necesario.
+
+Antes de continuar, veamos de nuevo un ejemplo sencillo de la salida
+usual de Mercurial:
+
+\interaction{template.simple.normal}
+
+Ahora, ejecutemos la misma orden, pero usemos una plantilla para
+modificar su salida:
+
+\interaction{template.simple.simplest}
+
+El ejemplo anterior ilustra la plantilla más sencilla posible;  es
+solamente una porción estática de código que se imprime una vez por
+cada conjunto de cambios.  La opción \hgopt{log}{--template} de la
+orden \hgcmd{log} indica a Mercurial usar el texto dado como la
+plantilla cuando se imprime cada conjunto de cambios.
+
+Observe que la cadena de plantilla anterior termina con el texto
+``\Verb+\n+''.  Es una \emph{secuencia de control}, que le indica a
+Mercurial imprimira una nueva línea al final de cada objeto de la
+plantilla.  Si omite esta nueva línea, Mercurial colocará cada pieza
+de salida seguida.  Si desea más detalles acerca de secuencias de
+control, vea la sección~\ref{sec:template:escape}.
+
+Una plantilla que imprime una cadena fija de texto siempre no es muy
+útil; intentemos algo un poco más complejo.
+
+\interaction{template.simple.simplesub}
+
+Como puede ver, la cadena ``\Verb+{desc}+'' en la plantilla ha sido
+reemplazada en la salida con la descricipción de cada conjunto de
+cambios.  Cada vez que Mercurial encuentra texto encerrado entre
+corchetes (``\texttt{\{}'' y ``\texttt{\}}''), intentará reemplazar los
+corchetes y el texto con la expansión de lo que sea está adentro.
+Para imprimir un corchete de forma literal, debe escaparlo, como se
+describe en la sección~\ref{sec:template:escape}.
+
+\section{Palabras claves más comunes en las plantillas}
+\label{sec:template:keyword}
+
+Puede empezar a escribir plantillas sencillas rápidamente con las
+palabras claves descritas a continuación:
+
+\begin{itemize}
+\item[\tplkword{author}] Cadena.  El autor NO modificado del conjunto
+  de cambios.
+\item[\tplkword{branches}] Cadena.  El nombre de la rama en la cual se
+  consignó el conjunto de cambios.  Será vacía si el nombre de la rama es
+  \texttt{default}.
+\item[\tplkword{date}] Información de fecha.  La fecha en la cual se
+  consignó el conjunto de cambios.  \emph{No} es legible por un
+  humano, debe pasarla por un firltro que la desplegará
+  apropiadamente.  En la sección~\ref{sec:template:filter} hay más
+  detalles acerca de filtros.  La fecha se expresa como un par de
+  números.  El primer número corresponde a una marca de tiempo UNIX
+  UTC (segundos desde el primero de enero de 1970); la segunda es el
+  corrimiento horario de la zona horaria del UTC en la cual se encontraba
+  quien hizo la consignación, en segundos.
+\item[\tplkword{desc}] Cadena.  La descripción en texto del conjunto
+  de cambios.
+\item[\tplkword{files}] Lista de cadenas.  Todos los ficheros
+  modificados, adicionados o eliminados por este conjunto de cambios.
+\item[\tplkword{file\_adds}] Lista de cadenas.  Ficheros adicionados
+  por este conjunto de cambios.
+\item[\tplkword{file\_dels}] Lista de cadenas.  Ficheros eliminados
+  por este conjunto de cambios.
+\item[\tplkword{node}] Cadena.  El hash de identificación de este
+  conjunto de cambios como una cadena hexadecimal de 40 caracteres.
+\item[\tplkword{parents}] Lista de cadenas.  Los ancestros del
+  conjunto de cambios.
+\item[\tplkword{rev}] Entero.  El número de revisión del repositorio
+  local.
+\item[\tplkword{tags}] Lista de cadenas.  Todas las etiquetas
+  asociadas al conjunto de cambios.
+\end{itemize}
+
+Unos experimentos sencillos nos mostrarán qué esperar cuando usamos
+estas palabras claves; puede ver los resultados en la
+figura~\ref{fig:template:keywords}.
+
+\begin{figure}
+  \interaction{template.simple.keywords}
+  \caption{Template keywords in use}
+  \label{fig:template:keywords}
+\end{figure}
+
+Como mencionamos anteriormente, la palabra clave de fecha no produce
+salida legible por un humano, debemos tratarla de forma especial.
+Esto involucra usar un \emph{filtro}, acerca de lo cual hay más en la
+sección~\ref{sec:template:filter}.
+
+\interaction{template.simple.datekeyword}
+
+\section{Secuencias de Control}
+\label{sec:template:escape}
+
+El motor de plantillas de Mercurial reconoce las secuencias de control
+más comunmente usadas dentro de las cadenas.  Cuando ve un backslash
+(``\Verb+\+''), ve el caracter siguiente y sustituye los dos
+caracteres con un reemplazo sencillo, como se describe a continuación:
+
+\begin{itemize}
+\item[\Verb+\textbackslash\textbackslash+] Backslash, ``\Verb+\+'',
+  ASCII~134.
+\item[\Verb+\textbackslash n+] Nueva línea, ASCII~12.
+\item[\Verb+\textbackslash r+] Cambio de línea, ASCII~15.
+\item[\Verb+\textbackslash t+] Tab, ASCII~11.
+\item[\Verb+\textbackslash v+] Tab Vertical, ASCII~13.
+\item[\Verb+\textbackslash \{+] Corchete abierto, ``\Verb+{+'', ASCII~173.
+\item[\Verb+\textbackslash \}+] Corchete cerrado, ``\Verb+}+'', ASCII~175.
+\end{itemize}
+
+Como se indicó arriba, si desea que la expansión en una plantilla
+contenga un caracter literal ``\Verb+\+'', ``\Verb+{+'', o
+  ``\Verb+{+'', debe escaparlo.
+
+\section{Uso de filtros con palabras claves}
+\label{sec:template:filter}
+
+Algunos de los resultados de la expansión de la plantilla no son
+fáciles de usar de inmediato.  Mercurial le permite especificar una
+cadena de \emph{filtros} opcionales para modificar el resultado de
+expandir una palabra clave.  Ya ha visto el filtro usual
+\tplkwfilt{date}{isodate} en acción con anterioridad para hacer
+legible la fecha.
+
+A continuación hay una lista de los filtros de Mercurial más
+comunmente usados.  Ciertos filtros pueden aplicarse a cualquier
+texto, otros pueden usarse únicamente en circunstancias específicas.
+El nombre de cada filtro está seguido de la indicación de dónde puede
+ser usado y una descripción de su efecto.
+
+\begin{itemize}
+\item[\tplfilter{addbreaks}] Cualquier texto. Añade una etiqueta XHTML
+  ``\Verb+<br/>+'' antes del final de cada línea excepto en la final.
+  Por ejemplo, ``\Verb+foo\nbar+'' se convierte en ``\Verb+foo<br/>\nbar+''.
+\item[\tplkwfilt{date}{age}] palabra clave \tplkword{date}.  Muestra
+  la edad de la fecha, relativa al tiempo actual. Ofrece una cadena como
+  ``\Verb+10 minutes+''.
+\item[\tplfilter{basename}] Cualquier texto, pero de utilidad sobre
+  todo en palabras claves relativas a \tplkword{ficheros}.  Trata el
+  texto como una ruta, retornando el nombre base.  Por ejemplo,
+  ``\Verb+foo/bar/baz+'', se convierte en ``\Verb+baz+''.
+\item[\tplkwfilt{date}{date}] \tplkword{date} palabra clave.  Mostrar
+  la fecha en un formato similar a la orden \tplkword{date} de 
+  in a similar format to the Unix, pero con la zona horaria incluída.
+  Una cadena como ``\Verb+Mon Sep 04 15:13:13 2006 -0700+''.
+\item[\tplkwfilt{author}{domain}] Cualquier texto, pero de mayor
+  utilidad para la palabra clave \tplkword{author}.  Encuentra la
+  primera cadena que luce como una dirección de correo electrónico, y
+  extrae solamente el componente del dominio.  Por ejemplo, de 
+  ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' se extrae
+  ``\Verb+serpentine.com+''.
+\item[\tplkwfilt{author}{email}] Cualquier texto, pero de mayor
+  utilidad para la palabra clave \tplkword{author}.  Extrae la primera
+  cadena que luce como una dirección de correo. Por ejemplo, de
+  ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' extrae 
+  ``\Verb+bos@serpentine.com+''.
+\item[\tplfilter{escape}] Cualquier texto.  Reemplaza los caracteres
+  especiales de XML/XHTML: ``\Verb+&+'', ``\Verb+<+'' y ``\Verb+>+''
+  con las entidades XML.
+\item[\tplfilter{fill68}] Cualquier texto. Lograr que el texto ocupe
+  las primeras 68 columnas.  Es útil emplearlo antes de pasar el texto
+  por el filtro \tplfilter{tabindent}, y queremos que aún quepa en una
+  ventana de fuente fija y 80 columnas.
+\item[\tplfilter{fill76}] Cualquier texto.  Lograr que el texto quepa
+  en 76 columnas.
+\item[\tplfilter{firstline}] Cualquier texto.  Mostrar la primera
+  línea de texto sin saltos de línea.
+\item[\tplkwfilt{date}{hgdate}] \tplkword{date} palabra clave.
+  Mostrar la fecha como un par de números legibles.  Muestra una
+  cadena como ``\Verb+1157407993 25200+''.
+\item[\tplkwfilt{date}{isodate}] \tplkword{date} palabra clave.
+  Mostrar la fecha como una cadena de texto en el formato.  Muestra
+  una cadena como ``\Verb+2006-09-04 15:13:13 -0700+''.
+\item[\tplfilter{obfuscate}] Cualquier texto, pero de mayor utilidad
+  para la palabra clave \tplkword{author}.  Muestra el campo de texto
+  como una secuencia de entidades XML.  Esto ayuda a eliminar ciertos
+  robots estúpidos de adquisición de correo.
+\item[\tplkwfilt{author}{person}] Cualquier texto, útil sobre todo
+  para la palabra clave \tplkword{author}.  Muestra el texto que hay
+  antes de la dirección de correo electrónico.  Por ejemplo,
+  ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' mostraría
+  ``\Verb+Bryan O'Sullivan+''.
+\item[\tplkwfilt{date}{rfc822date}] \tplkword{date} palabra clave.
+  Muestra una fecha con el mismo formato que se usa en los encabezados
+  de correo.  Mostraría una cadena como
+ ``\Verb+Mon, 04 Sep 2006 15:13:13 -0700+''.
+\item[\tplkwfilt{node}{short}] Hash del conjunto de cambios.  Muestra
+  la forma corta de un hash de conjunto de cambios, 
+  of a changeset hash, p.e.~una cadena hexadecimal de 12 bytes.
+\item[\tplkwfilt{date}{shortdate}] \tplkword{date} palabra clave.
+  Mostrar año, mes y día de una fecha.  Muestrauna cadena como
+  ``\Verb+2006-09-04+''.
+\item[\tplfilter{strip}] Cualquier texto.  Elimina todos los espacios
+  en blanco al principio y al final de la cadena.
+\item[\tplfilter{tabindent}] Cualquier texto.  Muestra el texto con
+  todas las líneas excepto la primera que comience con el caracter tab.
+\item[\tplfilter{urlescape}] Cualquier texto.  Escapa todos los
+  caracteres que se consideren como ``especiales'' por los parsers de
+  URL.  Por ejemplo, \Verb+foo bar+ se convierte en \Verb+foo%20bar+.
+\item[\tplkwfilt{author}{user}] Cualquier texto, útil sobre todo para
+  la palabra clave \tplkword{author}.  Retorna el ``usuario'' de una
+  dirección de correo.  Por ejemplo, 
+  ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' se convierte en 
+  ``\Verb+bos+''.
+\end{itemize}
+
+\begin{figure}
+  \interaction{template.simple.manyfilters}
+  \caption{Filtros de plantilla en acción}
+  \label{fig:template:filters}
+\end{figure}
+
+\begin{note}
+  Si trata de aplicar un filtro a una porción de datos que no puede
+  procesarse, Mercurial fallará e imprimirá una excepción de Python.
+  Por ejemplo, el tratar de usar la salida de la palabra clave
+  \tplkword{desc} con el filtro \tplkwfilt{date}{isodate} no resultará
+  algo útil.
+\end{note}
+
+\subsection{Combinar filtros}
+
+Combinar filtros es para generar una salida en la forma como usted lo
+desea es muy sencillo.  La cadena de filtros siguientes arman una
+descripción, después aseguran que cabe limpiamente en 68 columnas, y
+las indenta con 8~caracteres (por lo menos en sistemas tipo Unix, en
+los que el tab por convención se extiende en 8~caracteres).
+
+\interaction{template.simple.combine}
+
+Observe el uso de ``\Verb+\t+'' (un caracter tab) en la plantilla para
+forzar que la primera línea se indente; esto es necesario para lograr
+que la primera línea luzca indentada;  es necesario debido a que
+\tplkword{tabindent} indenta todas las líneas \emph{excepto} la primera.
+
+Tenga en cuenta que el orden de los filtros importa.  El primer filtro
+se aplica primero al resultado de la palabra clave; el segundo al
+resultado de la aplicación del primer filtro y así sucesivamente.  Por
+ejemplo, usar \Verb+fill68|tabindent+ es muy distinto al resultado de
+usar \Verb+tabindent|fill68+.
+
+
+\section{De plantillas a estilos}
+
+Una plantilla provee una forma rápida y sencilla para dar formato a
+una salida.  Las plantillas pueden volvers verbosas, y es útil poder
+darle un nombre a una plantilla.  Un fichero de estilo es una
+plantilla con un nombre, almacenado en un fichero.
+
+Más aún, al usar un fichero de estilo se dispara el poder del motor de
+plantillas en un nivel imposible de alcanzar usando las opción
+\hgopt{log}{--template} desde la línea de órdenes.
+
+
+\subsection{Los ficheros de estilo más sencillos}
+
+Nuestro fichero sencillo de estilo contiene una sola línea:
+
+\interaction{template.simple.rev}
+
+Se le indica a Mercurial, ``si está imprimiendo un conjunto de
+cambios, use el texto de la derecha como la plantilla''.
+
+\subsection{Sintaxis de ficheros de estilo}
+
+Las reglas de sintaxis para un fichero de estilo son sencillas:
+
+\begin{itemize}
+\item El fichero se procesa línea por línea.
+
+\item Se ignoran el espacio en blanco circundante.
+
+\item Se omiten las líneas en blanco.
+
+\item Si una línea comienza con los caracteres ``\texttt{\#}'' o
+  ``\texttt{;}'', la línea completa se trata como un comentario, y se
+  omite como si fuera vacía.
+
+\item Una línea comienza con una palabra clave.  Esta debe comenzar
+  con una caracter alfabético o una raya al piso, y puede contener
+  subsecuentemente cualquier caracter alfanumérico o una raya al
+  piso.  (En notación de expresiones regulares debe coincidir con
+  \Verb+[A-Za-z_][A-Za-z0-9_]*+.)
+
+\item El próximo elemento debe ser un caracter ``\texttt{=}'', que
+  puede estar precedido o seguido por una cantidad arbitraria de
+  espacio.
+
+\item Si el resto de la línea comienza y termina con caracteres
+  encerrados entre caracteres de comillas (bien sea sencillas o
+  dobles),  se trata como cuerpo de la plantilla.
+
+\item Si el resto de la línea \emph{no} comienza con una comilla, se
+  trata como el nombre de un fichero; los contenidos de este fichero
+  se leerán y se usarán como cuerpo de la plantilla.
+\end{itemize}
+
+\section{Ejemplos de ficheros de estilos}
+
+Para ilustrar la creación de un fichero de estilo, construiremos
+algunos ejemplos.  En lugar de ofrecer un fichero completo de estilo y
+analizarlo, replicaremos el proceso usual de desarrollo de un fichero
+de estilo comenzando con algo muy sencillo, y avanzando por una serie
+de ejemplos sucesivos más completos.
+
+\subsection{Identificar equivocaciones en ficheros de estilo}
+
+Si Mercurial encuentra un problema en un fichero de estilo en el cual
+usted está trabajando, imprime un mensaje de error suscinto, cuando
+usted identifique lo que significa, resulta muy útil.
+
+\interaction{template.svnstyle.syntax.input}
+
+Tenga en cuenta que \filename{broken.style} trata de definir la
+palabra clave \texttt{changeset}, pero omite dar un contenido para esta.
+Cuando se le indica a Mercurial que use este fichero de estilo, se
+queja inmediatamente.
+
+\interaction{template.svnstyle.syntax.error}
+
+Este mensaje de error luce intimidante, pero no es muy difícil de
+seguir:
+
+\begin{itemize}
+\item El primer componente es la forma como Mercurial dice ``me rindo''.
+  \begin{codesample4}
+    \textbf{abort:} broken.style:1: parse error
+  \end{codesample4}
+
+\item A continuación viene el nombre del fichero que contiene el error.
+  \begin{codesample4}
+    abort: \textbf{broken.style}:1: parse error
+  \end{codesample4}
+
+\item Siguendo el nombre del fichero viene el número de línea en la
+  que se encontró el error.
+  \begin{codesample4}
+    abort: broken.style:\textbf{1}: parse error
+  \end{codesample4}
+
+\item Finalmente, la descripción de lo que falló.
+  \begin{codesample4}
+    abort: broken.style:1: \textbf{parse error}
+  \end{codesample4}
+  La descripción del problema no siempre es clara (como en este caso),
+  pero aunque sea críptica, casi siempre es trivial la inspección
+  visual de la línea en el fichero de estilo y encontrar lo que está
+  mal.
+\end{itemize}
+
+\subsection{Identificar de forma única un repositorio}
+
+Si desea identificar un repositorio de Mercurial ``de forma única''
+con una cadena corta como identificador, puede usar la primera
+revisión en el repositorio.
+\interaction{template.svnstyle.id} 
+No es garantía de unicidad, pero no es útill en ciertos casos:
+many cases.
+\begin{itemize}
+\item No funcionará en un repositorio completamente vacío, porque un
+  repositorio así no tiene una revisión~zero.
+\item Tampoco funcionará en caso (muy raro) cuando el repositorio sea
+  una fusión de dos repositorios independientes y tiene los dos
+  directorios por ahí.
+\end{itemize}
+Hay ciertos casos en los cuales podría colocar el identificador:
+\begin{itemize}
+\item Como una llave en la tabla de una base de datos que administra
+  repositorios en un servidor.
+\item Como una parte del par \{\emph{ID~repositorio}, \emph{ID~revisión}\}.
+  Almacene esta información de forma independiente cuando ejecute
+  construcciones automatizadas u otras actividades, de forma que pueda
+  ``reconstruir'' posteriormente en caso de ser necesario.
+\end{itemize}
+
+\subsection{Mostrando salida parecida a Subversion}
+
+Intentemos emular la salida usual que usa otro sistema de control de
+revisiones,  Subversion.
+\interaction{template.svnstyle.short}
+
+Dado que la salida de Subversion es sencilla, es fácil copiar y pegar
+una porción de su salida en un fichero, y reemplazar el texto
+producido previamente por Subversion con valores base que quisiéramos
+ver expandidos.
+\interaction{template.svnstyle.template}
+
+Esta plantilla difiere en algunos detalles de la salida producida por
+Subversion:
+\begin{itemize}
+\item Subversion imprime una fecha ``legible'' (el ``\texttt{Wed, 27 Sep
+    2006}'' en el ejemplo de salida anterior) en paréntesis.  El motor
+  de plantillas de Mercurial no ofrece una forma sencilla de desplegar
+  una fecha en este formato sin imprimir también la hora y la zona horaria.
+\item Emulamos las líneas de ``separación'' de subversion con caracteres
+  ``\texttt{-}'' en una línea.  Usamos la palabra clave
+  \tplkword{header} del motor de plantillas para imprimir una línea de
+  separación como la primera línea de salida (ver más abajo), para
+  lograr una salida similara a la de Subversion.
+\item La salida de subversion incluye un conteo en el encabezado del
+  número de líneas en el mensaje de consinación.  No podemos
+  replicarlo en Mercurial; el motor de plantilla no ofrece en la
+  actualidad un filtro que cuente la cantidad de objetos que se le
+  pasen.
+\end{itemize}
+No me tomó más de un minuto o dos de trabajo para reemplazar texto
+literal de un ejemplo de salida de la salida de Subversion con ciertas
+palabras claves y filtros para ofrecer la plantilla anterior.  El
+fichero de estilo se refiere sencillamente a la plantilla.
+\interaction{template.svnstyle.style}
+
+Podríamos haber incluído el texto del fichero plantilla directamente
+en el fichero de estilo encerrando entre comillas y reemplazando las
+nuevas líneas con secuencias ``\verb!\n!'', pero haría muy difícil de
+leer el fichero de estilos.  La facilidad para leer es importante
+cuando está decidiendo si un texto pertenece a un fichero de estilo o
+a un fichero de plantilla incluído en el estilo.  Si el fichero de
+estilo luce muy grande o complicado, si inserta una pieza de texto
+literal, mejor colóquelo en una plantilla.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

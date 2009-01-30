@@ -1,7 +1,11 @@
 #!/bin/bash
 
+if  hg -v | head -1 | grep -e "version 0.*"
+then
+#On mercurial 1.0 and later bisect is a builtin
 echo '[extensions]' >> $HGRC
 echo 'hbisect =' >> $HGRC
+fi
 
 # XXX There's some kind of horrible nondeterminism in the execution of
 # bisect at the moment.  Ugh.

@@ -1,0 +1,146 @@
+% Bug ID.
+\newcommand{\bug}[1]{\index{Base de datos de fallos de Mercurial
+    !\href{http://www.selenic.com/mercurial/bts/issue#1}{fallo
+      ~#1}}\href{http://www.selenic.com/mercurial/bts/issue#1}{Fallo de
+      Mercurial No.~#1}}
+
+% File name in the user's home directory.
+\newcommand{\tildefile}[1]{\texttt{\~{}/#1}}
+
+% File name.
+\newcommand{\filename}[1]{\texttt{#1}}
+
+% Directory name.
+\newcommand{\dirname}[1]{\texttt{#1}}
+
+% File name, with index entry.
+% The ``s'' prefix comes from ``special''.
+\newcommand{\sfilename}[1]{\index{\texttt{#1}, fichero}\texttt{#1}}
+
+% Directory name, with index entry.
+\newcommand{\sdirname}[1]{\index{\texttt{#1}, directorio}\texttt{#1}}
+
+% Mercurial extension.
+\newcommand{\hgext}[1]{\index{\texttt{#1}, extensi\'on}\texttt{#1}}
+
+% Command provided by a Mercurial extension.
+\newcommand{\hgxcmd}[2]{\index{\texttt{#2}, comando (extensi\'on
+\texttt{#1})}\index{\texttt{#1}, extensi\'on!comando \texttt{#2}}``\texttt{hg #2}''}
+
+% Mercurial command.
+\newcommand{\hgcmd}[1]{\index{\texttt{#1}, comando}``\texttt{hg #1}''}
+
+% Mercurial command, with arguments.
+\newcommand{\hgcmdargs}[2]{\index{\texttt{#1}, comando}``\texttt{hg #1 #2}''}
+
+\newcommand{\tplkword}[1]{\index{\texttt{#1}, palabra clave de
+plantilla}\index{palabras clave de plantilla!\texttt{#1}}\texttt{#1}}
+
+\newcommand{\tplkwfilt}[2]{\index{\texttt{#1}, palabra clave de plantilla!filtro
+\texttt{#2}}\index{filtros de plantilla!\texttt{#2}}\index{\texttt{#2}, filtro
+de plantilla}\texttt{#2}}
+
+\newcommand{\tplfilter}[1]{\index{filtros de
+plantilla!\texttt{#1}}\index{\texttt{#1}, filtro de plantilla}\texttt{#1}}
+
+% Shell/system command.
+\newcommand{\command}[1]{\index{\texttt{#1}, comando de sistema}\texttt{#1}}
+
+% Shell/system command, with arguments.
+\newcommand{\cmdargs}[2]{\index{\texttt{#1} comando de sistema}``\texttt{#1 #2}''}
+
+% Mercurial command option.
+\newcommand{\hgopt}[2]{\index{\texttt{#1}, comando!opción \texttt{#2}}\texttt{#2}}
+
+% Mercurial command option, provided by an extension command.
+\newcommand{\hgxopt}[3]{\index{\texttt{#2}, comando (extensión
+\texttt{#1})!opción \texttt{#3}}\index{\texttt{#1}, extensión!comando
+\texttt{#2}!opción\texttt{#3}}\texttt{#3}}
+
+% Mercurial global option.
+\newcommand{\hggopt}[1]{\index{opciones globales!opción \texttt{#1}}\texttt{#1}}
+
+% Shell/system command option.
+\newcommand{\cmdopt}[2]{\index{\texttt{#1}, comando!opción \texttt{#2}}\texttt{#2}}
+
+% Command option.
+\newcommand{\option}[1]{\texttt{#1}}
+
+% Software package.
+\newcommand{\package}[1]{\index{\texttt{#1}, paquete}\texttt{#1}}
+
+% Section name from a hgrc file.
+\newcommand{\rcsection}[1]{\index{\texttt{hgrc}, fichero!sección \texttt{#1}}\texttt{[#1]}}
+
+% Named item in a hgrc file section.
+\newcommand{\rcitem}[2]{\index{\texttt{hgrc}, fichero!sección
+\texttt{#1}!entrada \texttt{#2}}\texttt{#2}}
+
+% hgrc file.
+\newcommand{\hgrc}{\index{fichero de configuración!\texttt{hgrc}
+    (Linux/Unix)}\index{\texttt{hgrc}, fichero de configuración}\texttt{hgrc}}
+
+% Mercurial.ini file.
+\newcommand{\hgini}{\index{fichero de configuración!\texttt{Mercurial.ini}
+    (Windows)}\index{\texttt{Mercurial.ini}, fichero de configuración}\texttt{Mercurial.ini}}
+
+% Hook name.
+\newcommand{\hook}[1]{\index{\texttt{#1}, gancho}\index{ganchos!\texttt{#1}}\texttt{#1}}
+
+% Environment variable.
+\newcommand{\envar}[1]{\index{\texttt{#1}, variable de entorno}\index{variables
+de entorno!\texttt{#1}}\texttt{#1}}
+
+% Python module.
+\newcommand{\pymod}[1]{\index{\texttt{#1}, módulo}\texttt{#1}}
+
+% Python class in a module.
+\newcommand{\pymodclass}[2]{\index{\texttt{#1}, módulo!clase \texttt{#2}}\texttt{#1.#2}}
+
+% Python function in a module.
+\newcommand{\pymodfunc}[2]{\index{\texttt{#1}, módulo!función \texttt{#2}}\texttt{#1.#2}}
+
+% Note: blah blah.
+\newsavebox{\notebox}
+\newenvironment{note}%
+  {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Nota:}\space}%
+  {\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
+\newenvironment{caution}%
+  {\begin{lrbox}{\notebox}\begin{minipage}{0.7\textwidth}\textbf{Precaución:}\space}%
+  {\end{minipage}\end{lrbox}\fbox{\usebox{\notebox}}}
+
+% Code sample, eating 4 characters of leading space.
+\DefineVerbatimEnvironment{codesample4}{Verbatim}{frame=single,gobble=4,numbers=left,commandchars=\\\{\}}
+
+% Code sample, eating 2 characters of leading space.
+\DefineVerbatimEnvironment{codesample2}{Verbatim}{frame=single,gobble=2,numbers=left,commandchars=\\\{\}}
+
+% Interaction from the examples directory.
+\newcommand{\interaction}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{examples/#1.lxo}}
+% Example code from the examples directory.
+\newcommand{\excode}[1]{\VerbatimInput[frame=single,numbers=left,commandchars=\\\{\}]{../examples/#1}}
+
+% Graphics inclusion.
+\ifpdf
+  \newcommand{\grafix}[2][]{\includegraphics[#1]{#2}}
+\else
+  \newcommand{\grafix}[1]{\includegraphics{#1.png}}
+\fi
+
+% Reference entry for a command.
+\newcommand{\cmdref}[2]{\section{\hgcmd{#1}---#2}\label{cmdref:#1}\index{\texttt{#1}, comando}}
+
+% Reference entry for a command option with long and short forms.
+\newcommand{\optref}[3]{\subsubsection{\hgopt{#1}{--#3}, también \hgopt{#1}{-#2}}}
+
+% Reference entry for a command option with only long form.
+\newcommand{\loptref}[2]{\subsubsection{opción \hgopt{#1}{--#2}}}
+
+% command to generate a footnote to be used as a translator's note
+\newcommand{\ndt}[1]{\footnote{\textbf{N. del T.} #1}}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

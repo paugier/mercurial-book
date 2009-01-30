@@ -1,0 +1,428 @@
+\chapter{Usos avanzados de las Colas de Mercurial}
+\label{chap:mq-collab}
+
+Auunque es fácil aprender los usos más directos de las Colas de
+Mercurial, tener algo de disciplina junto con algunas de las
+capacidadees menos usadas de MQ hace posible trabajar en entornos de
+desarrollo complejos.
+
+En este capítulo, usaré como ejemplo una técnica que he usado para
+administrar el desarrollo de un controlador de dispositivo Infiniband
+para el kernel de Linux. El controlador en cuestión es grande
+(al menos en lo que se refiere a controladores), con 25,000 líneas de
+código esparcidas en 35 ficheros fuente. Es mantenido por un equipo
+pequeño de desarrolladores. 
+
+Aunque mucho del material en este capítulo es específico de Linux, los
+mismos principios aplican a cualquier base de código de la que usted
+no sea el propietario principal, y sobre la que usted necesita hacer
+un montón de desarrollo.
+
+\section{El problema de múltiples objetivos}
+
+El kernel de Linux cambia con rapidez, y nunca ha sido estable
+internamente; los desarrolladores hacen cambios drásticos entre
+%TODO no encontré una traducción adecuada para "release". Por eso el
+%cambio
+versiones frecuentemente. Esto significa que una versión del
+controlador que funciona bien con una versión particular del kernel ni
+siquiera \emph{compilará} correctamente contra, típicamente, cualquier
+otra versión.
+
+Para mantener un controlador, debemos tener en cuenta una buena
+cantidad de versiones de Linux en mente.
+\begin{itemize}
+\item Un objetivo es el árbol de desarrollo principal del kernel de
+  Linux. En este caso el mantenimiento del código es compartido
+  parcialmente por otros desarrolladores en la comunidad del kernel, 
+  %TODO drive-by. 
+  quienes hacen modificaciones ``de-afán'' al controlador a medida que 
+  desarrollan y refinan subsistemas en el kernel.
+  %TODO backport
+\item También mantenemos algunos ``backports'' para versiones antiguas
+  del kernel de Linux, para dar soporte a las necesidades de los
+  clientes que están corriendo versiones antiguas de Linux que no
+  incorporan nuestros controladores. (Hacer el \emph{backport} de un
+  pedazo de código es modificarlo para que trabaje en una versión
+  de su entorno objetivo anterior a aquella para la cual fue escrito.)
+\item Finalmente, nosotros liberamos nuestro software de acuerdo a un
+  cronograma que no necesariamente está alineado con el que usan los
+  distribuidores de Linux y los desarrolladores del kernel, así que
+  podemos entregar nuevas características a los clientes sin forzarlos
+  a actualizar kernels completos o distribuciones.
+\end{itemize}
+
+\subsection{Aproximaciones tentadoras que no funcionan adecuadamente}
+
+Hay dos maneras estándar de mantener una porción de software que debe
+funcionar en muchos entornos diferentes.
+
+La primera es mantener varias ramas, cada una pensada para un único
+entorno. El problema de esta aproximación es que usted debe tener una
+disciplina férrea con el flujo de cambios entre repositorios. Una
+nueva característica o un arreglo de fallo deben empezar su vida en un
+repositorio ``prístino'', y luego propagarse a cada repositorio de
+backport. Los cambios para backports están más limitados respecto a
+las ramas a las que deberían propagarse; un cambio para backport que
+es aplicado a una rama en la que no corresponde probablemente hará que
+el controlador no compile.
+
+La segunda es mantener un único árbol de código fuente lleno de
+declaraciones que activen o desactiven secciones de código dependiendo
+del entorno objetivo. Ya que estos ``ifdefs'' no están permitidos en
+el árbol del kernel de Linux, debe seguirse algún proceso manual o
+automático para eliminarlos y producir un árbol limpio. Una base de
+código mantenida de esta manera se convierte rápidamente en un nido de
+ratas de bloques condicionales que son difíciles de entender y
+mantener.
+
+%TODO canónica?
+Ninguno de estos enfoques es adecuado para situaciones en las que
+usted no es ``dueño'' de la copia canónica de un árbol de fuentes. En
+el caso de un controlador de Linux que es distribuido con el kernel
+estándar, el árbol de Linux contiene la copia del código que será
+considerada por el mundo como la canónica. La versión oficial de
+``mi'' controlador puede ser modificada por gente que no conozco, sin
+que yo siquiera me entere de ello hasta después de que los cambios
+aparecen en el árbol de Linus.
+
+Estos enfoques tienen la debilidad adicional de dificultar la
+%TODO upstream. no no es río arriba
+generación de parches bien formados para enviarlos a la versión
+oficial.
+
+En principio, las Colas de Mercurial parecen ser un buen candidato
+para administrar un escenario de desarrollo como el de arriba. Aunque
+este es de hecho el caso, MQ tiene unas cuantas características
+adicionales que hacen el trabajo más agradable.
+
+\section{Aplicar parches condicionalmente mediante guardias}
+
+Tal vez la mejor manera de conservar la cordura con tantos entornos
+objetivo es poder escoger parches específicos para aplicar para cada
+situación. MQ provee una característica llamada ``guardias''
+(que se origina del comando \texttt{guards} de Quilt) que hace
+precisamente ésto. Para empezar, creemos un repositorio sencillo para
+experimentar.
+\interaction{mq.guards.init}
+Esto nos brinda un pequeño repositorio que contiene dos parches que no
+tienen ninguna dependencia respecto al otro, porque tocan ficheros
+diferentes.
+
+La idea detrás de la aplicación condicional es que usted puede
+``etiquetar'' un parche con un \emph{guardia}, que simplemente es una
+cadena de texto de su elección, y luego decirle a MQ que seleccione
+guardias específicos para usar cuando aplique parches. MQ entonces
+aplicará, u omitirá, un parche vigilado, dependiendo de los guardias
+que usted haya seleccionado.
+
+Un parche puede tener una cantidad arbitraria de guardias; cada uno es
+\emph{positivo} (``aplique el parche si este guardia es
+seleccionado'') o \emph{negativo} (``omita este parche si este guardia
+es seleccionado''). Un parche sin guardias siempre es aplicado.
+
+\section{Controlar los guardias de un parche}
+
+%TODO tal vez no decir determinar, sino definir?
+El comando \hgxcmd{mq}{qguard} le permite determinar qué guardias
+deben aplicarse a un parche, o mostrar los guardias que están en
+efecto. Sin ningún argumento, el comando muestra los guardias del
+parche actual de la parte más alta de la pila.
+\interaction{mq.guards.qguard}
+Para poner un guardia positivo en un parche, prefije el nombre del
+guardia con un ``\texttt{+}''.
+\interaction{mq.guards.qguard.pos}
+Para poner un guardia negativo en un parche, prefije el nombre del
+guardia con un ``\texttt{-}''.
+\interaction{mq.guards.qguard.neg}
+
+\begin{note}
+  El comando \hgxcmd{mq}{qguard} \emph{pone} los guardias en un
+  parche; no los \emph{modifica}. Esto significa que si usted ejecuta
+  \hgcmdargs{qguard}{+a +b} sobre un parche, y luego
+  \hgcmdargs{qguard}{+c} en el mismo parche, el único guardia sobre el
+  parche después del comando será \texttt{+c}.
+\end{note}
+
+Mercurial almacena los guardias en el fichero \sfilename{series}; la
+forma en que son almacenados es fácil tanto de entender como de editar
+a mano. (En otras palabras, usted no tiene que usar el comando
+\hgxcmd{mq}{qguard} si no lo desea; está bien simplemente editar el
+fichero \sfilename{series})
+\interaction{mq.guards.series}
+
+\section{Selecccionar los guardias a usar}
+
+%TODO tal vez no decir determinar, sino definir?
+El comando \hgxcmd{mq}{qselect} determina qué guardias están activos
+en cualquier momento. El efecto de esto es determinar qué parches
+aplicará MQ la próxima vez que usted ejecute \hgxcmd{mq}{qpush}.  No
+tiene ningún otro efecto; en particular, no hace nada a los parches
+que ya han sido aplicados.
+
+Sin argumentos, el comando \hgxcmd{mq}{qselect} lista los guardias en
+efecto actualmente, uno por cada línea de salida. Cada argumento es
+tratado como el nombre de un guardia a aplicar.
+\interaction{mq.guards.qselect.foo}
+Si está interesado, los guardias seleccionados actualmente están
+almacenados en el fichero \sfilename{guards}.
+\interaction{mq.guards.qselect.cat}
+Podemos ver el efecto que tienen los guardias seleccionados cuando
+ejecutamos \hgxcmd{mq}{qpush}.
+\interaction{mq.guards.qselect.qpush}
+
+Un guardia no puede empezar con un  caracter ``\texttt{+}'' o
+``\texttt{-}''. El nombre del guardia no debe contener espacios en
+blanco, pero muchos otros caracteres son aceptables. Si usted trata de
+usar un guardia con un nombre inválido, MQ se quejará:
+\interaction{mq.guards.qselect.error} 
+Cambiar los guardias seleccionados cambia los parches que son
+aplicados.
+\interaction{mq.guards.qselect.quux} 
+Usted puede ver en el ejemplo de abajo que los guardias negativos
+tienen precedencia sobre los guardias positivos.
+\interaction{mq.guards.qselect.foobar}
+
+\section{Reglas de MQ para aplicar parches}
+
+Las reglas que MQ usa para decidir si debe aplicar un parche son las
+siguientes.
+\begin{itemize}
+\item Un parche sin guardias es aplicado siempre.
+\item Si el parche tiene algún guardia negativo que corresponda con
+  cualquiera de los guardias seleccionados, se salta el parche.
+\item Si el parche tiene algún guardia positivo que corresponda con
+  cualquiera de los guardias seleccionados, se aplica el parche.
+\item Si el parche tiene guardias positivos o negativos, pero ninguno
+  corresponde con cualquiera de los guardias seleccionados, se salta
+  el parche.
+\end{itemize}
+
+\section{Podar el entorno de trabajo}
+
+En el trabajo del controlador de dispositivo que mencioné
+anteriormente, yo no aplico los parches a un árbol normal del kernel
+de Linux. En cambio, uso un repositorio que sólo contiene una
+instantánea de los ficheros fuente y de cabecera que son relevantes
+para el desarrollo de Infiniband. Este repositorio tiene un~1\% del
+tamaño del repositorio del kernel, por lo que es más fácil trabajar
+con él.
+
+Luego escojo una versión ``base'' sobre la cual son aplicados los
+parches. Es una instantánea del árbol del kernel de Linux en una
+revisión de mi elección. Cuando tomo la instantánea, almaceno el ID de
+conjunto de cambios en el mensaje de consignación. Ya que la
+instantánea preserva la ``forma'' y el contenido de las partes
+relevantes del árbol del kernel, puedo aplicar mis parches sobre mi
+pequeño repositorio o sobre un árbol normal del kernel.
+
+Normalmente, el árbol base sobre el que se aplican los parches debería
+ser una instantánea de un árbol de desarrollo muy reciente. Esto
+facilita mucho el desarrollo de parches que puedan ser enviados al
+árbol oficial con pocas o ninguna modificación.
+
+\section{Dividir el fichero \sfilename{series}}
+
+Yo categorizo los parches en el fichero \sfilename{series} en una
+serie de grupos lógicos. Cada sección de parches similares empieza con
+un bloque de comentarios que describen el propósito de los parches que
+le siguen.
+
+La secuencia de grupos de parches que mantengo se muestra a
+continuación. El orden de los grupos es importante; explicaré porqué
+luego de que presente los grupos.
+\begin{itemize}
+\item El grupo ``aceptado''. Son parches que el equipo de desarrollo
+  ha enviado al mantenedor del subsistema Infiniband, y que él ha
+  aceptado, pero que no están presentes en la instantánea en la cual
+  está basada el repositorio pequeño. Estos son parches de
+  ``sólo lectura'', presentes únicamente para transformar el árbol en
+  un estado similar al del repositorio del mantenedor oficial.
+\item El grupo ``revisar''. Parches que yo he enviado, pero sobre los
+  que que el mantenedor oficial ha solicitado modificaciones antes de
+  aceptarlos.
+\item El grupo ``pendiente''. Parches que no he enviado al mantenedor
+  oficial, pero que ya están terminados. Estos parches serán de
+  ``sólo lectura'' por un buen tiempo. Si el mantenedor oficial los
+  acepta cuando los envíe, los moveré al final del grupo ``aceptado''.
+  Si él solicita que modificaciones en alguno de ellos, los moveré al
+  principio del grupo ``revisar''.
+\item El grupo ``en proceso''. Parches que están siendo activamente
+  desarrollados, y no deberían ser enviados a ninguna parte aún.
+\item El grupo ``backport''. Parches que adaptan el árbol de fuentes a
+    versiones antiguas del árbol del kernel.
+\item El grupo ``no enviar''. Parches que por alguna razón nunca deben
+  ser enviados al mantenedor oficial del kernel. Por ejemplo, alguno
+  de esos parches podría cambiar las cadenas de identificación
+  embebidas del controlador para hacer más fácil la distinción, en
+  pruebas de campo, entre una versión del controlador de
+  salida-del-árbol  y una versión entregada por un vendedor de alguna
+  distribución.
+\end{itemize}
+
+Ahora volvemos a las razones para ordenar los grupos de parches en
+esta manera. Quisiéramos que los parches del fondo de la pila sean tan
+estables como sea posible, para no tener que revisar parches más
+arriba debido a cambios de contexto. Poner los parches que nunca
+cambiarán en el primer lugar del fichero \sfilename{series} sirve a
+este propósito.
+
+También desearíamos que los parches que sabemos que debemos modificar
+sean aplicados sobre un árbol de fuentes que se parezca al oficial
+tanto como sea posible. Es por esto que mantenemos los parches
+aceptados disponibles por una buena cantidad de tiempo.
+
+Los parches ``backport'' y ``no enviar'' flotan al final del fichero
+\sfilename{series}. Los parches de backport deben ser aplicados encima
+de todos los otros parches, y los parches ``no enviar'' pueden
+perfectamente quedarse fuera del camino.
+
+\section{Mantener la serie de parches}
+
+En mi trabajo, uso varios guardias para controlar qué parches deben
+ser aplicados.
+
+\begin{itemize}
+\item Los parches ``aceptados'' son vigilados con
+  \texttt{accepted}. Yo habilito este guardia la mayoría de las veces.
+  Cuando aplico los parches sobre un árbol donde los parches ya están
+  %TODO no será ``desactivar este guardia''? si sí, corregir versión
+  %en inglés también
+  presentes, puedo desactivar este parche, y los parches que lo siguen
+  se aplicarán sin problemas.
+\item Los parches que están ``terminados'', pero no han sido enviados,
+  no tienen guardias. Si estoy aplicando la pila de parches a una
+  copia del árbol oficial, no necesito habilitar ningún guardia para
+  obtener un árbol de fuentes razonablemente seguro.
+\item Los parches que necesitan revisión antes de ser reenviados
+  tienen el guardia \texttt{rework}.
+\item Para aquellos parches que aún están bajo desarrollo, uso
+  \texttt{devel}.
+\item Un parche de backport puede tener varios guardias, uno para cada
+  versión del kernel a la que aplica. Por ejemplo, un parche que hace
+  backport de un segmento de código a~2.6.9 tendrá un guardia~\texttt{2.6.9}.
+\end{itemize}
+La variedad de guardias me brinda una flexibilidad considerable para
+determinar qué tipo de árbol de fuentes acabaré por obtener. En la
+mayoría de las situaciones, la selección de guardias apropiados es
+automatizada durante el proceso de compilación, pero puedo ajustar
+manualmente los guardias a usar para circunstancias poco comunes.
+
+\subsection{El arte de escribir parches de backport}
+
+Al usar MQ, escribir un parche de backport es un proceso simple. Todo
+lo que dicho parche debe hacer es modificar una sección de código que
+usa una característica del kernel que no está presente en la versión
+anterior del kernel, para que el controlador siga funcionando
+correctamente en esa versión anterior.
+
+Una meta útil al escribir un buen parche de backport es hacer parecer
+que el código hubiera sido escrito para la versión vieja del kernel
+que usted tiene como objetivo. Entre menos intrusivo el parche, más
+fácil será entenderlo y mantenerlo. Si usted está escribiendo una
+colección de parches de backport para evitar el efecto de ``nido de
+ratas'' de tener muchos \texttt{\#ifdef}s (secciones de código fuente
+que sólo son usados condicionalmente) en su código, no introduzca
+\texttt{\#ifdef}s dependientes de versiones específicas en los
+parches. En vez de eso, escriba varios parches, cada uno de ellos
+haciendo cambios incondicionales, y controle su aplicación usando
+guardias.
+
+Hay dos razones para ubicar los parches de backport en un grupo
+diferente, aparte de los parches ``regulares'' cuyos efectos son
+modificados por ellos. La primera es que mezclar los dos hace más
+difícil usar herramientas como la extensión \hgext{patchbomb} para
+automatizar el proceso de enviar los parches a un mantenedor oficial.
+La segunda es que un parche de backport puede perturbar el contexto en
+el que se aplica un parche regular subsecuente, haciendo imposible
+aplicar el parche normal limpiamente \emph{sin} que el parche de
+backport sea aplicado antes.
+
+\section{Consejos útiles para hacer desarrollo con MQ}
+
+\subsection{Organizar parches en directorios}
+
+Si está trabajando en un proyecto grande con MQ, no es difícil
+acumular un gran número de parches. Por ejemplo, tengo un repositorio
+de parches que contiene más de 250 parches.
+
+Si usted puede agrupar estos parches en categorías lógicas separadas,
+usted puede almacenarlos en diferentes directorios si lo desea; MQ no
+tiene problemas manejando nombres de parches que contienen separadores
+de ruta.
+
+\subsection{Ver el historial de un parche}
+\label{mq-collab:tips:interdiff}
+
+Si usted está desarrollando un conjunto de parches en un período de
+tiempo grande, es una buena idea mantenerlos en un repositorio, como
+se discutió en la sección~\ref{sec:mq:repo}.  Si lo hace, notará
+rápidamente que usar el comando \hgcmd{diff} para mirar el historial
+del repositorio no es viable. Esto es debido en parte a que usted está
+mirando la segunda derivada del código real (el diff de un diff), pero
+también porque MQ añade ruido al proceso al modificar las marcas de
+tiempo y los nombres de directorio cuando actualiza un parche.
+
+Sin embargo, usted puede usar la extensión \hgext{extdiff}, que es
+provisto junto con Mercurial, para convertir un diff de dos versiones
+de un parche en algo legible. Para hacer esto, usted necesitará un
+paquete de un tercero llamado
+\package{patchutils}~\cite{web:patchutils}.  Éste paquete provee un
+comando llamado \command{interdiff}, que muestra las diferencias entre
+dos diffs como un diff. Al usarlo en dos versiones del mismo diff,
+genera un diff que representa el diff de la primera a la segunda
+versión.
+
+Usted puede habilitar la extensión \hgext{extdiff} de la manera usual,
+añadiendo una línea a la sección \rcsection{extensions} de su \hgrc.
+\begin{codesample2}
+  [extensions]
+  extdiff =
+\end{codesample2}
+El comando  \command{interdiff} espera recibir los nombres de dos
+ficheros, pero la extensión \hgext{extdiff} le pasa un par de
+directorios al programa que ejecuta, cada uno de los cuales puede
+contener una cantidad arbitraria de ficheros. Por esto necesitamos un
+programa pequeño que ejecute \command{interdiff} en cada par de
+ficheros de estos dos directorios. Este programa está disponible como
+\sfilename{hg-interdiff} en el directorio \dirname{examples} del
+repositorio de código fuente que acompaña a este libro.
+\excode{hg-interdiff}
+
+Con el programa \sfilename{hg-interdiff} en la ruta de búsqueda de su
+intérprete de comandos, puede ejecutarlo como sigue, desde dentro de
+un directorio de parches MQ:
+\begin{codesample2}
+  hg extdiff -p hg-interdiff -r A:B my-change.patch
+\end{codesample2}
+Ya que usted seguramente querrá usar este comando tan largo a menudo,
+puede hacer que \hgext{hgext} lo haga disponible como un comando
+normal de Mercurial, editando de nuevo su \hgrc.
+\begin{codesample2}
+  [extdiff]
+  cmd.interdiff = hg-interdiff
+\end{codesample2}
+Esto le indica a \hgext{hgext} que ponga a disposición un comando
+\texttt{interdiff}, con lo que usted puede abreviar la invocación
+anterior de \hgxcmd{extdiff}{extdiff} a algo un poco más manejable.
+\begin{codesample2}
+  hg interdiff -r A:B my-change.patch
+\end{codesample2}
+
+\begin{note}
+    %TODO revisar redacción
+  El comando \command{interdiff} trabaja bien sólo si los ficheros
+  contra los cuales son generadas las versiones de un parche se
+  mantienen iguales. Si usted crea un parche, modifica los ficheros
+  subyacentes, y luego regenera el parche, \command{interdiff} podría
+  no producir ningún resultado útil.
+\end{note}
+
+La extensión \hgext{extdiff} es útil para más que solamente mejorar la
+presentación de los parches~MQ. Para leer más acerca de esto, vaya a
+la sección~\ref{sec:hgext:extdiff}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

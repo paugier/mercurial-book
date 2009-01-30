@@ -1,0 +1,344 @@
+\chapter{Nombres de ficheros y asociación de patrones}
+\label{chap:names}
+
+Mercurial provee mecanismos que le permiten trabajar con nombres de
+ficheros en una manera consistente y expresiva.
+
+\section{Nombrado de ficheros simple}
+
+% TODO traducción literal de "under the hood". revisar
+Mercurial usa un mecanismo unificado ``bajo el capó'' para manejar
+nombres de ficheros. Cada comando se comporta de manera uniforme con
+respecto a los nombres de fichero. La manera en que los comandos
+operan con nombres de fichero es la siguiente.
+
+Si usted especifica explícitamente nombres reales de ficheros en la
+línea de comandos, Mercurial opera únicamente sobre dichos ficheros,
+como usted esperaría.
+\interaction{filenames.files}
+
+Cuando usted provee el nombre de un directorio, Mercurial interpreta
+eso como ``opere en cada fichero en este directorio y sus
+subdirectorios''. Mercurial va por todos los ficheros y subdirectorios
+de un directorio en orden alfabético. Cuando encuentra un
+subdirectorio, lo recorrerá antes de continuar con el directorio
+actual.
+\interaction{filenames.dirs}
+
+\section{Ejecución de comandos sin ningún nombre de fichero}
+
+Los comandos de Mercurial que trabajan con nombres de fichero tienen
+comportamientos por defecto adecuados cuando son utilizados sin pasar
+ningún patrón o nombre de fichero. El tipo de comportamiento depende
+de lo que haga el comando. Aquí presento unas cuantas reglas generales
+que usted puede usar para que es lo que probablemente hará un comando
+si usted no le pasa ningún nombre de fichero con el cual trabajar.
+\begin{itemize}
+\item Muchos comandos operarán sobre el directorio de trabajo
+    completo. Por ejemplo, esto es lo que hace el comando
+    \hgcmd{add},
+\item Si el comando tiene efectos difíciles o incluso imposibles de
+    revertir, se le obligará a usted a proveer explícitamente al menos
+    % TODO revisar ese "lo proteje a usted"
+    un nombre o patrón (ver más abajo). Esto lo proteje a usted de,
+    por ejemplo, borrar ficheros accidentalmente al ejecutar
+    \hgcmd{remove} sin ningún argumento.
+\end{itemize}
+
+
+Es fácil evitar este comportamiento por defecto, si no es el adecuado
+para usted. Si un comando opera normalmente en todo el directorio de
+trabajo, usted puede llamarlo para que trabaje sólo en el directorio
+actual y sus subdirectorio pasándole el nombre ``\dirname{.}''.
+\interaction{filenames.wdir-subdir}
+
+Siguiendo la misma línea, algunos comandos normalmente imprimen las
+rutas de ficheros con respecto a la raíz del repositorio, aún si usted
+los llama dentro de un subdirectorio. Dichos comandos imprimirán las
+rutas de los ficheros respecto al directorio en que usted se encuentra
+si se les pasan nombres explícitos. Vamos a ejecutar el comando
+\hgcmd{status} desde un subdirectorio, y a hacer que opere en el
+directorio de trabajo completo, a la vez que todas las rutas de
+ficheros se imprimen respecto a nuestro subdirectorio, pasándole la
+salida del comando \hgcmd{root}.
+\interaction{filenames.wdir-relname}
+
+\section{Reportar que está pasando}
+
+El ejemplo con el comando \hgcmd{add} en la sección anterior ilustra
+algo más que es útil acerca de los comandos de Mercurial. Si un
+comando opera en un fichero que usted no pasó explícitamente en la
+línea de comandos, usualmente se imprimirá el nombre del fichero, para
+que usted no sea sorprendido por lo que sucede.
+
+Esto es el principio de \emph{mínima sorpresa}. Si usted se ha
+referido explícitamente a un fichero en la línea de comandos, no tiene
+mucho sentido repetir esto de vuelta a usted. Si Mercurial está
+actuando en un fichero \emph{implícitamente}, porque usted no pasó
+nombres, ni directorios, ni patrones (ver más abajo), lo más seguro es
+decirle a usted qué se está haciendo.
+
+Usted puede silenciar a los comandos que se comportan de esta manera
+usando la opción \hggopt{-q}.  También puede hacer que impriman el
+nombre de cada fichero, aún aquellos que usted indicó explícitamente,
+usando la opción \hggopt{-v}.
+
+\section{Uso de patrones para identificar ficheros}
+
+Además de trabajar con nombres de ficheros y directorios, Mercurial le
+permite usar \emph{patrones} para identificar ficheros. El manejo de
+patrones de Mercurial es expresivo.
+
+En sistemas tipo Unix (Linux, MacOS, etc.), el trabajo de asociar
+patrones con nombres de ficheros recae sobre el intérprete de comandos.
+En estos sistemas, usted debe indicarle explícitamente a Mercurial que
+el nombre que se le pasa es un patrón. En Windows, el intérprete no
+expande los patrones, así que Mercurial identificará automáticamente
+los nombres que son patrones, y hará la expansión necesaria.
+
+Para pasar un patrón en vez de un nombre normal en la línea de
+comandos, el mecanismo es simple:
+\begin{codesample2}
+  syntax:patternbody
+\end{codesample2}
+Un patrón es identificado por una cadena de texto corta que indica qué
+tipo de patrón es, seguido por un dos puntos, seguido por el patrón en
+sí.
+
+Mercurial soporta dos tipos de sintaxis para patrones. La que se usa
+con más frecuencia  se denomina \texttt{glob}\ndt{Grupo, colección,
+aglomeración.}; es el mismo tipo de asociación de patrones usado por
+el intérprete de Unix, y también debería ser familiar para los
+usuarios de la línea de comandos de Windows.
+
+Cuando Mercurial hace asociación automática de patrones en Windows,
+usa la sintaxis \texttt{glob}.  Por esto, usted puede omitir el
+prefijo ``\texttt{glob:}'' en Windows, pero también es seguro usarlo.
+
+La sintaxis \texttt{re}\ndt{Expresiones regulares.} es más poderosa;
+le permite especificar patrones usando expresiones regulares, también
+conocidas como regexps.
+
+A propósito, en los ejemplos siguientes, por favor note que yo tengo
+el cuidado de rodear todos mis patrones con comillas sencillas, para
+que no sean expandidos por el intérprete antes de que Mercurial pueda
+verlos.
+
+\subsection{Patrones \texttt{glob} estilo intérprete}
+
+Este es un vistazo general de los tipos de patrones que usted puede
+usar cuando está usando asociación con patrone glob.
+
+La secuencia ``\texttt{*}'' se asocia con cualquier cadena, dentro de
+un único directorio.
+\interaction{filenames.glob.star}
+
+La secuencia ``\texttt{**}'' se asocia con cualquier cadena, y cruza los
+% TODO token
+límites de los directorios. No es una elemento estándar de los tokens
+de glob de Unix, pero es aceptado por varios intérpretes Unix
+populares, y es muy útil.
+\interaction{filenames.glob.starstar}
+
+La secuencia ``\texttt{?}'' se asocia con cualquier caracter sencillo.
+\interaction{filenames.glob.question}
+
+El caracter ``\texttt{[}'' marca el inicio de una \emph{clase de
+caracteres}.  Ella se asocia con cualquier caracter sencillo dentro de
+la clase. La clase se finaliza con un caracter ``\texttt{]}''. Una
+clase puede contener múltiples \emph{rango}s de la forma
+``\texttt{a-f}'', que en este caso es una abreviación para
+``\texttt{abcdef}''.
+\interaction{filenames.glob.range}
+Si el primer caracter en aparecer después de ``\texttt{[}'' en la
+clase de caracteres es un ``\texttt{!}'', se \emph{niega} la clase,
+haciendo que se asocie con cualquier caracter sencillo que no se
+encuentre en la clase.
+
+Un ``\texttt{\{}'' marca el inicio de un grupo de subpatrones, en
+donde todo el grupo es asociado si cualquier subpatrón en el grupo
+puede ser asociado. El caracter ``\texttt{,}'' separa los subpatrones,
+y el ``\texttt{\}}'' finaliza el grupo.
+\interaction{filenames.glob.group}
+
+\subsubsection{Cuidado!}
+
+No olvide que si usted desea asocia un patrón con cualquier
+directorio, no debería usar el elemento para asociar con cualquier
+cadena ``\texttt{*}'', ya que éste sólo generará asociaciones dentro
+de un solo directorio. En vez de eso, use el caracter para asociar con
+cualquier cadena ``\texttt{**}''. Este pequeño ejemplo ilustra la
+diferencia entre los dos.
+\interaction{filenames.glob.star-starstar}
+
+\subsection{Asociación con patrones de expresiones regulares \texttt{re}}
+
+Mercurial acepta la misma sintaxis para expresiones regulares del
+lenguaje de programación Python (internamente se usa el motor de
+expresiones regulares de Python). Esta sintaxis está basada en la
+misma del lenguaje Perl, que es el dialecto más popular en uso
+(por ejemplo, también se usa en Java).
+
+No discutiré el dialecto de expresiones regulares de Mercurial en
+detalle aquí, ya que las mismas no son usadas frecuentemente. Las
+expresiones regulares al estilo Perl se encuentran documentadas
+exhaustivamente en una multitud de sitios web, y en muchos libros.
+En vez de eso, me enfocaré en unas cuantas cosas que usted debería
+conocer si tiene la necesidad de usar expresiones regulares en
+Mercurial.
+
+Una expresión regular es comparada contra un nombre de fichero
+completo, relativo a la raíz del repositorio. En otras palabras, aún
+si usted se encuentra en un subdirectorio \dirname{foo}, si desea
+asociar ficheros en este directorio, su patrón debe empezar con
+``\texttt{foo/}''.
+
+Un detalle a tener en cuenta es que, si le son familiares las
+expresiones regulares al estilo Perl, las de Mercurial están
+\emph{enraízadas}. Esto es, que la asociación de una expresión se hace
+desde el inicio de la cadena; no se buscan coincidencias dentro de la
+cadena. Para buscar coincidencias en cualquier sitio dentro de una
+cadena, empiece su patrón con un ``\texttt{.*}''.
+
+\section{Filtrado de ficheros}
+
+Mercurial no sólo le provee una variedad de formas para especificar
+ficheros; le permite limitar aún más dichos ficheros mediante el uso
+de \emph{filtros}. Los comandos que operan con nombres de fichero
+aceptan dos opciones de filtrado.
+\begin{itemize}
+\item \hggopt{-I}, o \hggopt{--include}, le permite especificar un
+    patrón con el que deben coincidir los ficheros para ser
+    procesados.
+\item \hggopt{-X}, o \hggopt{--exclude}, le brinda una manera de 
+  \emph{evitar} procesar ficheros, si coinciden con este patrón.
+\end{itemize}
+Usted puede pasar múltiples veces las opciones \hggopt{-I} y
+\hggopt{-X} en la línea de comandos, e intercalarlos como desee.
+Por defecto, Mercurial interpreta los patrones que usted pase usando
+la sintaxis glob (pero usted puede usar expresiones regulares si lo
+necesita).
+
+El filtro \hggopt{-I} puede verse como un ``procese todos los ficheros
+que coincidan con este filtro''.
+\interaction{filenames.filter.include}
+El filtro \hggopt{-X} puede verse como ``procese únicamente los
+ficheros que no coincidan con este patrón''.
+\interaction{filenames.filter.exclude}
+
+\section{Ignorar ficheros y directorios no deseados}
+
+XXX.
+
+\section{Sensibilidad a mayúsculas}
+\label{sec:names:case}
+
+Si usted está trabajando en un ambiente de desarrollo mixto que
+contiene tanto sistemas Linux (u otro Unix) y sistemas Mac o Windows,
+debería tener en mente el hecho de que ellos tratan 
+%TODO FIXME seguir desde aqui, no tengo idea de como traducir case
+%sensitivity
+case (``N'' versus ``n'') of file names in incompatible ways.  This is
+not very likely to affect you, and it's easy to deal with if it does,
+but it could surprise you if you don't know about it.
+
+Operating systems and filesystems differ in the way they handle the
+\emph{case} of characters in file and directory names.  There are
+three common ways to handle case in names.
+\begin{itemize}
+\item Completely case insensitive.  Uppercase and lowercase versions
+  of a letter are treated as identical, both when creating a file and
+  during subsequent accesses.  This is common on older DOS-based
+  systems.
+\item Case preserving, but insensitive.  When a file or directory is
+  created, the case of its name is stored, and can be retrieved and
+  displayed by the operating system.  When an existing file is being
+  looked up, its case is ignored.  This is the standard arrangement on
+  Windows and MacOS.  The names \filename{foo} and \filename{FoO}
+  identify the same file.  This treatment of uppercase and lowercase
+  letters as interchangeable is also referred to as \emph{case
+    folding}.
+\item Case sensitive.  The case of a name is significant at all times.
+  The names \filename{foo} and {FoO} identify different files.  This
+  is the way Linux and Unix systems normally work.
+\end{itemize}
+
+On Unix-like systems, it is possible to have any or all of the above
+ways of handling case in action at once.  For example, if you use a
+USB thumb drive formatted with a FAT32 filesystem on a Linux system,
+Linux will handle names on that filesystem in a case preserving, but
+insensitive, way.
+
+\subsection{Almacenamiento portable y seguro de repositorios}
+
+El mecanismo de almacenamiento de los repositorios en Mercurial es
+\emph{robusto frente a sensibilidad/insensibilidad a mayúsculas}. Los nombres de
+fichero son traducidos para que puedan ser almacenados de manera
+segura tanto en sistemas sensibles como insensibles a mayúsculas. Esto
+significa que usted puede usar herramientas normales de copia de
+ficheros para transferir un repositorio Mercurial a, por ejemplo, una
+memoria USB, y trasladar de manera segura la memoria y el repositorio
+de ida y vuelta entre un Mac, un PC ejecutando Windows, y un sistema
+Linux
+
+\subsection{Detección de conflictos de mayúsculas/minúsculas}
+
+Al operar en el directorio de trabajo, Mercurial respeta la política
+de nombrado del sistema de ficheros en que se encuentre el directorio
+de trabajo. Si el sistema de ficheros conserva las diferencias entre
+mayúsculas, pero no es sensible a ellas, Mercurial tratará los nombres
+que sólo difieren en mayúsculas como uno solo y el mismo.
+
+Un aspecto importante de este enfoque es que es posible consignar un
+conjunto de cambios en un sistema de ficheros sensible a mayúsculas
+(típicamente Linux o Unix) que terminará causando problemas para
+usuarios en sistemas insensibles a mayúsculas (usualmente en Windows o
+MacOS). Si un usuario de Linux consigna cambios a dos ficheros, uno de
+ellos llamado \filename{myfile.c} y el otro llamado \filename{MyFile.C},
+ambos serán almacenados correctamente en el repositorio. Y serán
+representados correctamente como ficheros separados, en los
+directorios de trabajo de otros usuarios de Linux.
+
+Si un usuario de Windows o Mac jalan este cambio, no tendrán problemas
+inicialmente, porque el mecanismo de almacenamiento de Mercurial es
+seguro frente a sensibilidad/insensibilidad a mayúsculas. Sin embargo,
+una vez que ellos traten de actualizar (\hgcmd{update}) el directorio
+de trabajo con ese conjunto de cambios, o hagan fusión (\hgcmd{merge})
+con ese conjunto de cambios, Mercurial verá el conflicto entre los dos
+nombres de fichero que el sistema de ficheros trataría como el mismo,
+e impedirá que ocurra la actualización o fusión.
+
+\subsection{Arreglar un conflicto de mayúsculas/minúsculas}
+
+Si usted está usando Windows o Mac en un entorno mixto donde algunos
+de sus colaboradores están usando Linux o Unix, y Mercurial reporta un
+conflicto de mayúsculas/minúsculas cuando usted trata de actualizar
+(\hgcmd{update}) o fusionar (\hgcmd{merge}), el procedimiento para
+arreglar el problema es simple.
+
+Sólo busque un sistema Linux o Unix cercano, clone el repositorio
+problema allí, y use el comando \hgcmd{rename} de Mercurial para
+cambiar los nombres de cualquiera de los ficheros o directorios
+problemáticos para que no causen más conflictos. Consigne este cambio,
+y jálelo (\hgcmd{pull}) o empújelo (\hgcmd{push}) a su sistema Windows
+o MacOS, y actualícelo (\hgcmd{update}) a la revisión con los nombres
+que ya no generan conflictos.
+
+El conjunto de cambios con los nombres con conflictos de
+mayúsculas/minúsculas permanecerá en el historial de su proyecto, y
+usted no podrá actualizar (\hgcmd{update}) su directorio de trabajo a
+dicho conjunto de cambios en un sistema Windows o MacOS, pero puede
+continuar el desarrollo sin impedimentos.
+
+\begin{note}
+  Antes de la versión~0.9.3, Mercurial no usaba un mecanismos seguro
+  frente a sensibilidad/insensibilidad a mayúsculas o minúsculas, y no
+  detectaba los conflictos con nombres de ficheros. Si usted está
+  usando una versión más antigua de Mercurial en Windows o MacOS, le
+  recomiendo enérgicamente que se actualice.
+\end{note}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

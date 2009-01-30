@@ -1,0 +1,404 @@
+\chapter{Mercurial día a día}
+\label{chap:daily}
+
+\section{Cómo indicarle a Mercurial qué ficheros seguir}
+
+Mercurial no trabaja con ficheros en su repositorio a menos que usted
+se lo indique explícitamente.  La orden \hgcmd{status} le mostrará
+cuáles ficheros son desconocidos para Mercurial; se emplea un
+``\texttt{?}'' para mostrar tales ficheros.
+
+Para indicarle a Mercurial que tenga en cuenta un fichero, emplee la
+orden \hgcmd{add}. Una vez que haya adicionado el fichero, la línea
+referente al fichero al aplicar la orden \hgcmd{status} para tal
+fichero cambia de ``\texttt{?}'' a ``\texttt{A}''.
+\interaction{daily.files.add}
+
+Después de invocar \hgcmd{commit}, los ficheros que haya adicionado
+antes de consignar no se listarán en la salida de \hgcmd{status}.  La
+razón para esto es que \hgcmd{status} solamente le muestra aquellos
+ficheros ``interesantes'' ---~los que usted haya modificado o a aquellos
+sobre los que usted haya indicado a Mercurial hacer algo--- de forma
+predeterminada. Si tiene un repositorio que contiene miles de
+ficheros, rara vez deseará saber cuáles de ellos están siendo
+seguidos por Mercurial, pero que no han cambiado.  (De todas maneras,
+puede obtener tal información; más adelante hablaremos de ello.)
+
+
+Cuando usted añade un fichero, Mercurial no hace nada con él inmediatamente.
+En cambio, tomará una instantánea del estado del fichero la próxima vez
+que usted consigne. Continuará haciendo seguimiento a los cambios que
+haga sobre el fichero cada vez que consigne, hasta que usted lo elimine.
+
+\subsection{Nombramiento explícito e implícito de ficheros}
+
+Mercurial tiene un comportamiento útil en el cual si a una orden,
+le pasa el nombre de un directorio, todas las órdenes lo interpretarán como
+``Deseo operar en cada fichero de este directorio y sus 
+subdirectorios''.
+\interaction{daily.files.add-dir}
+Tenga en cuenta que en este ejemplo Mercurial imprimió los nombres de
+los ficheros que se adicionaron, mientras que no lo hizo en el ejemplo
+anterior cuando adicionamos el fichero con nombre \filename{a}.
+
+En el último caso hicimos explícito el nombre del fichero que
+deseábamos adicionar en la línea de órdenes, y Mercurial asume en
+tales casos que usted sabe lo que está haciendo y no imprime
+información alguna.
+
+Cuando hacemos \emph{implícitos} los nombres de los ficheros dando el
+nombre de un directorio, Mercurial efectúa el paso extra de imprimir
+el nombre de cada fichero con el que va a hacer algo.  Esto para
+aclarar lo que está sucediendo, y reducir en lo posible una sorpresa
+silenciosa pero fatal.  Este comportamiento es común a la mayoría de
+órdenes en Mercurial.
+
+\subsection{Nota al margen: Mercurial trata ficheros, no directorios}
+
+Mercurial no da seguimiento a la información de los directorios.  En
+lugar de eso tiene en cuenta las rutas de los ficheros.  Antes  de
+crear un fichero, primero crea todos los directorios que hagan falta
+para completar la ruta del mismo. Después de borrar un fichero,
+borra todos los directorios vacíos que estuvieran en la ruta del
+fichero borrado. Suena como una diferencia trivial, pero tiene una
+consecuencia práctica menor: no es posible representar un directorio
+completamente vacío en Mercurial.
+
+Los directorios vacíos rara vez son útiles, y hay soluciones
+alternativas no intrusivas que usted puede emplear para obtener el efecto
+apropiado. Los desarrolladores de Mercurial pensaron que la
+complejidad necesaria para administrar directorios vacíos no valía la
+pena frente al beneficio limitado que esta característica podría traer.
+
+Si necesita un directorio vacío en su repositorio, hay algunas formas
+de lograrlo. Una es crear un directorio, después hacer \hgcmd{add} a
+un fichero ``oculto'' dentro de ese directorio. En sistemas tipo
+Unix, cualquier fichero cuyo nombre comience con un punto
+(``\texttt{.}'') es tratado como oculto por la mayoría de
+comandos y herramientas GUI. Esta aproximación se ilustra en la figura~\ref{ex:daily:hidden}.
+
+\begin{figure}[ht]
+  \interaction{daily.files.hidden}
+  \caption{Simular un directorio vacío con un fichero oculto}
+  \label{ex:daily:hidden}
+\end{figure}
+
+Otra forma de abordar la necesidad de un directorio vacío es
+simplemente crear uno en sus guiones de construcción antes de que lo
+necesiten.
+
+\section{Cómo dejar de hacer seguimiento a un fichero}
+
+Si decide que un fichero no pertenece a su repositorio, use la orden
+\hgcmd{remove}; se borrará el fichero y le indicará a Mercurial que
+deje de hacerle seguimiento.  Los ficheros eliminados se representan
+con ``\texttt{R}'' al usar \hgcmd{status}.
+\interaction{daily.files.remove}
+
+Después de hacer \hgcmd{remove} a un fichero, Mercurial dejará de
+hacer seguimiento al mismo, incluso si recrea el fichero con el mismo
+nombre en su directorio de trabajo. Si decide recrear un fichero con
+el mismo nombre y desea que Mercurial le haga seguimiento, basta con
+hacerle \hgcmd{add}. Mercurial sabrá que el fichero recientemente
+adicionado no está relacionado con el fichero anterior que tenía el
+mismo nombre.
+
+\subsection{Al eliminar un fichero no se afecta su historial}
+
+Es preciso tener en cuenta que eliminar un fichero tiene sólo dos
+efectos.
+\begin{itemize}
+\item Se elimina la versión actual del fichero del directorio de 
+trabajo.
+\item Mercurial deja de hacer seguimiento a los cambios del fichero
+  desde la próxima consignación.
+\end{itemize}
+Al eliminar un fichero \emph{no} se altera de ninguna manera el
+\emph{historial} del mismo.
+
+Si actualiza su directorio de trabajo a un conjunto de cambios en el
+cual el fichero que eliminó aún era tenido en cuenta, éste reaparecerá en
+el directorio de trabajo, con los contenidos que este tenía cuando se
+consignó tal conjunto de cambios.  Si usted actualiza el directorio de
+trabajo a un conjunto de cambios posterior en el cual el fichero había
+sido eliminado, Mercurial lo eliminará de nuevo del directorio de
+trabajo.
+
+\subsection{Ficheros perdidos}
+
+Mercurial considera como \emph{perdido} un fichero que usted borró,
+pero para el que no se usó \hgcmd{remove}.  Los ficheros perdidos se
+representan con ``\texttt{!}'' al visualizar \hgcmd{status}.
+Las órdenes de Mercurial generalmente no harán nada con los ficheros
+perdidos.
+\interaction{daily.files.missing}
+
+Si su repositorio contiene un fichero que \hgcmd{status} reporta como
+perdido, y desea que el mismo se vaya, se puede usar 
+\hgcmdargs{remove}{\hgopt{remove}{--after}} posteriormente para
+indicarle a Mercurial que usted deseaba borrar tal fichero.
+\interaction{daily.files.remove-after}
+
+Por otro lado, si borró un fichero perdido por accidente, puede usar
+\hgcmdargs{revert}{\emph{nombre de fichero}} para recuperar el
+fichero. Reaparecerá, sin modificaciones.
+\interaction{daily.files.recover-missing}
+
+\subsection{Nota al margen: ¿Por qué decirle explícitamente a Mercurial
+  que elimine un fichero?}
+
+Es posible que se haya preguntado por qué Mercurial exige que usted le
+indique explícitamente que está borrando un fichero. Al principio del
+desarrollo de Mercurial, este permitía que usted borrara el fichero
+sin más; Mercurial se daría cuenta de la ausencia del fichero
+automáticamente después de la ejecución de \hgcmd{commit}, y dejaría de
+hacer seguimiento al fichero.  En la práctica, resultaba muy sencillo
+borrar un fichero accidentalmente sin darse cuenta.
+
+\subsection{Atajo útil---agregar y eliminar ficheros en un solo paso}
+
+Mercurial ofrece una orden combinada, \hgcmd{addremove}, que agrega
+los ficheros que no tienen seguimiento y marca los ficheros faltantes
+como eliminados.
+\interaction{daily.files.addremove}
+La orden \hgcmd{commit} se puede usar con la opción \hgopt{commit}{-A} 
+que aplica el mismo agregar-eliminar, seguido inmediatamente de una
+consignación.
+\interaction{daily.files.commit-addremove}
+
+\section{Copiar ficheros}
+
+Mercurial ofrece la orden \hgcmd{copy} para hacer una copia nueva de
+un fichero.  Cuando se copia un fichero con esta orden, Mercurial
+lleva un registro indicando que el nuevo fichero es una copia del
+fichero original. Los ficheros copiados se tratan de forma especial  cuando
+usted hace una fusión con el trabajo de alguien más.
+
+\subsection{Resultados de copiar un fichero durante una fusión}
+
+Durante una fusión los cambios ``siguen'' una copia.  Para ilustrar
+lo que esto significa, haremos un ejemplo.  Comenzaremos con el mini
+repositorio usual que contiene un solo fichero
+\interaction{daily.copy.init}
+Debemos hacer algo de trabajo en paralelo, de forma que tengamos algo para
+fusionar. Aquí clonamos el repositorio.
+\interaction{daily.copy.clone}
+De vuelta en el repositorio inicial, usemos la orden \hgcmd{copy} para hacer
+una copia del primer fichero que creamos.
+\interaction{daily.copy.copy}
+
+Si vemos la salida de la orden \hgcmd{status}, el fichero copiado luce
+tal como un fichero que se ha añadido normalmente.
+\interaction{daily.copy.status}
+Pero si usamos la opción \hgopt{status}{-C} de la orden
+\hgcmd{status}, se imprimirá otra línea: el fichero \emph{desde} el
+cual fue copiado nuestro fichero recién añadido.
+\interaction{daily.copy.status-copy}
+
+Ahora, en el repositorio que clonamos, hagamos un cambio en
+paralelo. Adicionaremos una línea de contenido al fichero original que
+creamos.
+\interaction{daily.copy.other}
+Hemos modificado el fichero \filename{file} en este
+repositorio. Cuando jalemos los cambios del primer repositorio y
+fusionemos las dos cabezas, Mercurial propagará los cambios que hemos
+hecho localmente en \filename{file} a su copia, \filename{new-file}.
+\interaction{daily.copy.merge}
+
+\subsection{¿Por qué los cambios se reflejan en las copias?}
+\label{sec:daily:why-copy}
+
+Este comportamiento de cambios en ficheros que se propagan a las
+copias de los ficheros parecería esotérico, pero en la mayoría de
+casos es absolutamente deseable.
+Es indispensable recordar que esta propagación \emph{solamente} sucede
+cuando fusionamos.  Por lo tanto si sobre un fichero se usa
+\hgcmd{copy}, y se modifica el fichero original durante el curso
+normal de su trabajo, nada pasará.
+
+Lo segundo a tener en cuenta es que las modificaciones solamente se
+propagarán en las copias únicamente si los repositorios de los cuales
+está jalando los cambios \emph{no saben} de la copia.
+
+Explicaremos a continuación la razón de este comportamiento de
+Mercurial. Digamos que yo he aplicado un arreglo de un fallo importante a un
+fichero fuente y consigné los cambios.  Por otro lado, usted decidió hacer
+\hgcmd{copy} sobre el fichero en su repositorio, sin saber acerca del
+fallo o sin ver el arreglo, y ha comenzado a trabajar sobre su copia
+del fichero.
+
+Si jala y fusiona mis cambios y Mercurial \emph{no hubiera} propagado
+los cambios en las copias, su fichero fuente tendría el fallo, a menos
+que usted haya recordado propagar el arreglo del fallo a mano, el
+mismo \emph{permanecería} en su copia del fichero.
+
+Mercurial previene esta clase de problemas, gracias a la propagación
+automática del cambio que arregló el fallo del fichero original. Hasta
+donde sé, Mercurial es el \emph{único} sistema de control de
+revisiones que propaga los cambios en las copias de esta forma.
+
+Cuando su historial de cambios tiene un registro de la copia y la
+subsecuente fusión, usualmente no es necesario propagar los cambios el
+fichero original a las copias del mismo, y por esta razón Mercurial
+propaga únicamente los cambios en las copias hasta este punto y no más
+allá.
+
+
+\subsection{Cómo hacer que los cambios \emph{no} sigan a la copia?}
+
+Si por algún motivo usted decide que esta característica de
+propagación automática de cambios en las copias no es para usted,
+simplemente use
+la orden usual de su sistema para copiar ficheros (en sistemas tipo
+Unix, es \command{cp}), y posteriormente use \hgcmd{add} sobre la nueva
+copia hecha a mano.  Antes de hacerlo, de todas maneras, relea la
+sección~\ref{sec:daily:why-copy}, y tome una decisión asegurándose que
+este comportamiento no es el apropiado para su caso específico.
+
+\subsection{Comportamiento de la orden \hgcmd{copy}}
+
+Cuando usa la orden \hgcmd{copy}, Mercurial hace una copia de cada
+fichero fuente tal como se encuentra en el directorio actual. Esto
+significa que si usted hace
+modificaciones a un fichero, y le aplica \hgcmd{copy} sin haber
+consignado primero los cambios, la nueva copia contendrá también las
+modificaciones que haya hecho hasta ese punto. (Este comportamiento me
+parece poco intuitivo, y por tal motivo lo menciono.)
+
+La orden \hgcmd{copy} actúa de forma parecida a la orden \command{cp}
+de Unix (puede usar el alias \hgcmd{cp} si le es más cómodo).  El
+último argumento es el \emph{destino}, y todos los argumentos previos
+son las \emph{fuentes}.  Si solamente indica un fichero como la
+fuente, y el destino no existe, se crea un fichero nuevo con ese nombre.
+\interaction{daily.copy.simple}
+Si el destino es un directorio, Mercurial copia las fuentes en éste.
+\interaction{daily.copy.dir-dest}
+La copia de un directorio es recursiva, y preserva la estructura del
+directorio fuente.
+\interaction{daily.copy.dir-src}
+Si tanto la fuente como el destino son directorios, la estructura de
+la fuente se recrea en el directorio destino.
+\interaction{daily.copy.dir-src-dest}
+
+De la misma forma que la orden \hgcmd{rename}, si copia un fichero
+manualmente y desea que Mercurial sepa que ha copiado un fichero,
+basta con aplicar la opción \hgopt{copy}{--after} a la orden 
+\hgcmd{copy}.
+\interaction{daily.copy.after}
+
+\section{Renombrar ficheros}
+
+La necesidad de renombrar un fichero es más común que hacer una copia
+del mismo.  La razón por la cual discutí la orden \hgcmd{copy} antes
+de hablar acerca de cambiar el nombre de los ficheros, es que
+Mercurial trata el renombrar un fichero de la misma forma que una
+copia.  Por lo tanto, saber lo que hace Mercurial cuando usted copia
+un fichero le indica qué esperar cuando renombra un fichero.
+
+Cuando usa la orden \hgcmd{rename}, Mercurial hace una copia de cada
+fichero fuente, lo borra y lo marca como fichero eliminado.
+\interaction{daily.rename.rename}
+La orden \hgcmd{status} muestra la nueva copia del fichero como
+añadida y el fichero inicial de la copia, como eliminado.
+\interaction{daily.rename.status}
+De la misma forma en que se usa la orden \hgcmd{copy}, debemos usar la
+opción \hgopt{status}{-C} de la orden \hgcmd{status} para verificar
+que el fichero añadido realmente comienza a  ser seguido por Mercurial
+como una copia del fichero original, ahora eliminado.
+\interaction{daily.rename.status-copy}
+
+Igual que con \hgcmd{remove} y \hgcmd{copy}, puede indicársele a
+Mercurial acerca de un renombramiento inmediato con la opción
+\hgopt{rename}{--after}.   El comportamiento de la orden
+\hgcmd{rename} y las opciones que acepta, son similares a la orden
+\hgcmd{copy} en casi todo.
+
+\subsection{Renombrar ficheros y fusionar cambios}
+
+Dado que el renombrado de Mercurial se implementa como un
+copiar-y-eliminar, la misma propagación de cambios ocurre cuando usted
+fusiona después de renombrar como después de hacer una copia.
+
+Si yo modifico un fichero y usted lo renombra a un nuevo fichero, y
+posteriormente fusionamos nuestros respectivos cambios, mi
+modificación al fichero bajo su nombre original se propagará en el
+fichero con el nuevo nombre. (Es lo que se esperaría que ``simplemente
+funcione,''
+pero, no todos los sistemas de control de revisiones hacen esto.)
+
+Aunque el hecho de que los cambios sigan la copia es una característica
+respecto a la cual usted puede estar de acuerdo y decir ``si, puede
+ser útil,'' debería ser claro
+que el seguimiento de cambios de un renombramiento es definitivamente
+importante.  Sin esto, sería muy sencillo que los cambios se
+quedaran atrás cuando los ficheros se renombran.
+
+\subsection{Cambios de nombre divergentes y fusión}
+
+El caso de renombramiento con nombres divergentes ocurre cuando dos
+desarrolladores comienzan  con un fichero---llamémoslo
+\filename{foo}---en sus repositorios respectivos.
+
+\interaction{rename.divergent.clone}
+%TODO we must either change the example's names, and these names, or
+%use the original names. as of now, we keep the old names
+Anne renombra el fichero a \filename{bar}.
+\interaction{rename.divergent.rename.anne}
+Mientras que Bob lo renombra como \filename{quux}.
+\interaction{rename.divergent.rename.bob}
+
+Veo esto como un conflicto porque cada desarrollador ha expresado
+intenciones diferentes acerca de cómo considera debería haberse
+nombrado el fichero.
+
+¿Qué cree que debería pasar cuando fusionen su trabajo?
+El comportamiento de Mercurial es que siempre preserva \emph{ambos}
+nombres cuando fusiona  los conjuntos de cambios que contienen nombres
+divergentes.
+%TODO traducir texto interaccion
+\interaction{rename.divergent.merge}
+
+Tenga en cuenta que Mercurial le advierte acerca de nombres
+divergentes, pero deja que usted decida qué hacer con la divergencia
+después de la fusión.
+
+\subsection{Cambios de nombre convergentes y fusión}
+
+Otra clase de conflicto al cambiar el nombre de ficheros ocurre cuando dos
+personas eligen renombrar diferentes ficheros \emph{fuente} al mismo
+\emph{destino}. En este caso Mercurial aplica su maquinaria de fusión
+usual, y le permite a usted guiar la situación a una resolución adecuada.
+
+\subsection{Otros casos límite relacionados con renombramientos}
+
+Mercurial tiene un fallo de mucho tiempo en el cual no es capaz de
+fusionar cuando por un lado hay un fichero con un nombre dado,
+mientras que en otro hay un directorio con el mismo nombre. Esto está
+documentado como~\bug{29}.
+\interaction{issue29.go}
+
+\section{Recuperarse de equivocaciones}
+
+Mercurial tiene unas órdenes poderosas que le ayudarán a recuperarse
+de equivocaciones comunes.
+
+La orden \hgcmd{revert} le permite deshacer cambios que haya hecho a
+su directorio de trabajo. Por ejemplo, si aplicó \hgcmd{add} a un
+fichero por accidente, ejecute \hgcmd{revert} con el nombre del
+fichero que añadió, y en tanto que el fichero no haya sido tocado de
+forma alguna, no será adicionado, ni seguido por Mercurial.  También
+puede usar \hgcmd{revert} para deshacerse de cambios erróneos a un
+fichero.
+
+Tenga en cuenta que la orden \hgcmd{revert} se usa para cambios que no
+han sido consignados. Cuando haya consignado un cambio, si decide que
+era un error, puede hacer algo todavía, pero sus opciones pueden estar
+más limitadas.
+
+Para obtener información acerca de la orden \hgcmd{revert} y detalles
+de cómo tratar con cambios consignados, vea el capítulo~\ref{chap:undo}.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

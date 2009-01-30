@@ -1,0 +1,308 @@
+\chapter{Una gira de Mercurial: fusionar trabajo}
+\label{chap:tour-merge}
+
+Hasta ahora hemos cubierto cómo clonar un repositorio, hacer cambios,
+y jalar o empujar dichos cambios de un repositorio a otro. Nuestro
+siguiente paso es \emph{fusionar} cambios de repositorios separados.
+
+% TODO cambié streams por líneas. check please
+\section{Fusionar líneas de trabajo}
+
+Fusionar es una parte fundamental de trabajar con una herramienta 
+de control distribuido de versiones.
+\begin{itemize}
+\item Alicia y Roberto tienen cada uno una copia personal del
+    repositorio de un proyecto en el que están trabajando. Alicia
+    arregla un fallo en su repositorio; Roberto añade una nueva
+    característica en el suyo. Ambos desean que el repositorio
+    compartido contenga el arreglo del fallo y la nueva
+    característica.
+\item Frecuentemente trabajo en varias tareas diferentes en un mismo
+    proyecto al mismo tiempo, cada una aislada convenientemente de las
+    otras en su propio repositorio. Trabajar de esta manera significa
+    que a menudo debo fusionar una parte de mi propio trabajo con
+    otra.
+\end{itemize}
+
+Como fusionar es una operación tan necesaria y común, Mercurial la
+facilita. Revisemos el proceso. Empezaremos clonando (otro)
+% TODO poner interrogante de apertura
+repositorio (ve lo seguido que aparecen?) y haciendo un cambio en él.
+\interaction{tour.merge.clone}
+Ahora deberíamos tener dos copias de \filename{hello.c} con contenidos
+diferentes.  El historial de los dos repositorios diverge ahora, como
+se ilustra en la figura~\ref{fig:tour-merge:sep-repos}.
+\interaction{tour.merge.cat}
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-sep-repos}
+  \caption{Historial reciente divergente de los repositorios
+      \dirname{my-hello} y \dirname{my-new-hello}}
+  \label{fig:tour-merge:sep-repos}
+\end{figure}
+
+Ya sabemos que jalar los cambios desde nuestro repositorio
+\dirname{my-hello} no tendrá efecto en el directorio de trabajo.
+\interaction{tour.merge.pull}
+Sin embargo, el comando \hgcmd{pull} dice algo acerca de
+``frentes''\ndt{El autor se refiere a \emph{heads} aquí.}.  
+
+\subsection{Conjuntos de cambios de frentes}
+
+Un frente es un cambio que no tiene descendientes, o hijos, como
+también se les conoce. La revisión de punta es, por tanto, un frente,
+porque la revisión más reciente en un repositorio no tiene ningún
+% TODO cambio en la redacción de la frase, pero espero que conserve el
+% sentido. Querido human@, apruebe o corrija :D
+hijo. Sin embargo, un repositorio puede contener más de un frente.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-pull}
+  \caption{Contenidos del repositorio después de jalar
+      \dirname{my-hello} a \dirname{my-new-hello}}
+  \label{fig:tour-merge:pull}
+\end{figure}
+
+En la figura~\ref{fig:tour-merge:pull} usted puede ver el efecto que
+tiene jalar los cambios de \dirname{my-hello} a \dirname{my-new-hello}.
+El historial que ya existía en \dirname{my-new-hello} se mantiene
+intacto, pero fue añadida una nueva revisión. Refiriéndonos a la
+figura~\ref{fig:tour-merge:sep-repos}, podemos ver que el \emph{ID del
+conjunto de cambios} se mantiene igual en el nuevo repositorio, pero
+el \emph{número de revisión} ha cambiado.  (Incidentalmente, éste es un
+buen ejemplo de porqué no es seguro usar números de revisión cuando se
+habla de conjuntos de cambios).  Podemos ver los frentes en un
+repositorio usando el comando \hgcmd{heads}\ndt{Frentes.}.
+\interaction{tour.merge.heads}
+
+\subsection{Hacer la fusión}
+
+% TODO poner interrogante de apertura
+Qué pasa si tratamos de usar el comando usual, \hgcmd{update}, para
+actualizar el nuevo frente?
+\interaction{tour.merge.update}
+Mercurial nos indica que el comando \hgcmd{update} no hará la fusión;
+no actualizará el directorio de trabajo cuando considera que lo que
+deseamos hacer es una fusión, a menos que lo obliguemos a hacerlo.
+En vez de \hgcmd{update}, usamos el comando \hgcmd{merge} para hacer
+la fusión entre los dos frentes.
+\interaction{tour.merge.merge}
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-merge}
+  \caption{Directorio de trabajo y repositorio durante la fusión, y
+  consignación consecuente}
+  \label{fig:tour-merge:merge}
+\end{figure}
+
+Esto actualiza el directorio de trabajo, de tal forma que contenga los
+cambios de \emph{ambos} frentes, lo que se ve reflejado tanto en la
+salida de \hgcmd{parents} como en los contenidos de \filename{hello.c}.
+\interaction{tour.merge.parents}
+
+\subsection{Consignar los resultados de la fusión}
+
+Siempre que hacemos una fusión, \hgcmd{parents} mostrará dos padres
+hasta que consignemos (\hgcmd{commit}) los resultados de la fusión.
+\interaction{tour.merge.commit}
+Ahora tenemos una nueva revisión de punta; note que tiene \emph{los
+dos} frentes anteriores como sus padres. Estos son las mismas
+revisiones que mostró previamente el comando \hgcmd{parents}.
+\interaction{tour.merge.tip}
+En la figura~\ref{fig:tour-merge:merge} usted puede apreciar una
+representación de lo que pasa en el directorio de trabajo durante la
+fusión cuando se hace la consignación. Durante la fusión, el
+directorio de trabajo tiene dos conjuntos de cambios como sus padres,
+y éstos se vuelven los padres del nuevo conjunto de cambios.
+
+\section{Fusionar cambios con conflictos}
+
+La mayoría de las fusiones son algo simple, pero a veces usted se
+encontrará fusionando cambios donde más de uno de ellos afecta las
+mismas secciones de los mismos ficheros. A menos que ambas
+modificaciones sean idénticas, el resultado es un \emph{conflicto}, en
+donde usted debe decidir cómo reconciliar ambos cambios y producir un
+resultado coherente.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-conflict}
+  \caption{Cambios con conflictos a un documento}
+  \label{fig:tour-merge:conflict}
+\end{figure}
+
+La figura~\ref{fig:tour-merge:conflict} ilustra un ejemplo con dos
+cambios generando conflictos en un documento. Empezamos con una sola
+versión del fichero; luego hicimos algunos cambios; mientras tanto,
+alguien más  hizo cambios diferentes en el mismo texto. Lo que debemos
+hacer para resolver el conflicto causado por ambos cambios es decidir
+cómo debe quedar finalmente el fichero.
+
+Mercurial no tiene ninguna utilidad integrada para manejar conflictos.
+En vez de eso, ejecuta un programa externo llamado \command{hgmerge}.
+Es un guión de línea de comandos que es instalado junto con Mercurial;
+usted puede modificarlo para que se comporte como usted lo desee. Por
+defecto, lo que hace es tratar de encontrar una de varias herramientas
+para fusionar que es probable que estén instaladas en su sistema.
+Primero se intenta con unas herramientas para fusionar cambios
+automáticamente; si esto no tiene éxito (porque la fusión demanda
+una guía humana) o dichas herramientas no están presentes, el guión
+intenta con herramientas gráficas para fusionar.
+
+También es posible hacer que Mercurial ejecute otro programa o guión
+en vez de \command{hgmerge}, definiendo la variable de entorno
+\envar{HGMERGE} con el nombre del programa de su preferencia.
+
+\subsection{Usar una herramienta gráfica para fusión}
+
+Mi herramienta favorita para hacer fusiones es \command{kdiff3}, y la
+usaré para describir las características comunes de las herramientas
+gráficas para hacer fusiones. Puede ver una captura de pantalla de
+\command{kdiff3} ejecutándose, en la
+figura~\ref{fig:tour-merge:kdiff3}.  El tipo de fusión que la
+herramienta hace se conoce como \emph{fusión de tres vías}, porque hay
+tres versiones diferentes del fichero en que estamos interesados.
+Debido a esto la herramienta divide la parte superior de la ventana en
+tres paneles.
+\begin{itemize}
+\item A la izquierda está la revisión \emph{base} del fichero, p.ej.~la
+    versión más reciente de la que descienden las dos versiones que
+    estamos tratando de fusionar.
+\item En la mitad está ``nuestra'' versión del fichero, con las
+    modificaciones que hemos hecho.
+\item A la derecha está la versión del fichero de ``ellos'', la que
+    forma parte del conjunto de cambios que estamos tratando de
+    fusionar.
+\end{itemize}
+En el panel inferior se encuentra el \emph{resultado} actual de la
+fusión. Nuestra tarea es reemplazar todo el texto rojo, que muestra
+los conflictos sin resolver, con una fusión adecuada de ``nuestra''
+versión del fichero y la de ``ellos''.
+
+Los cuatro paneles están \emph{enlazados}; si avanzamos vertical o
+horizontalmente en cualquiera de ellos, los otros son actualizados
+para mostrar las secciones correspondientes del fichero que tengan
+asociado.
+
+\begin{figure}[ht]
+  \centering
+  \grafix[width=\textwidth]{kdiff3}
+  \caption{Usando \command{kdiff3} para fusionar versiones de un
+  fichero}
+  \label{fig:tour-merge:kdiff3}
+\end{figure}
+
+En cada conflicto del fichero podemos escoger resolverlo usando
+cualquier combinación del texto de la revisión base, la nuestra, o la
+de ellos. También podemos editar manualmente el fichero en que queda
+la fusión, si es necesario hacer cambios adicionales.
+
+Hay \emph{muchas} herramientas para fusionar ficheros disponibles. Se
+diferencian en las plataformas para las que están disponibles, y en
+sus fortalezas y debilidades particulares. La mayoría están afinadas
+para fusionar texto plano, mientras que otras están pensadas para
+formatos de ficheros especializados (generalmente XML).
+
+% TODO traduje "worked" como "real"
+\subsection{Un ejemplo real}
+
+En este ejemplo, reproduciremos el historial de modificaciones al
+fichero de la figura~\ref{fig:tour-merge:conflict} mostrada
+anteriormente.  Empecemos creando un repositorio con la versión base
+de nuestro documento.
+\interaction{tour-merge-conflict.wife}
+Clonaremos el repositorio y haremos un cambio al fichero.
+\interaction{tour-merge-conflict.cousin}
+Y haremos otro clon, para simular a alguien más haciendo un cambio al
+mismo fichero. (Esto introduce la idea de que no es tan inusual hacer
+fusiones consigo mismo, cuando usted aísla tareas en repositorios
+separados, y de hecho encuentra conflictos al hacerlo.)
+\interaction{tour-merge-conflict.son}
+Ahora que tenemos dos versiones diferentes de nuestro fichero,
+crearemos un entorno adecuado para hacer la fusión.
+\interaction{tour-merge-conflict.pull}
+
+En este ejemplo, no usaré el comando normal de Mercurial para hacer la
+fusión (\command{hgmerge}), porque lanzaría mi linda herramienta
+automatizada para correr ejemplos dentro de una interfaz gráfica de
+usuario. En vez de eso, definiré la variable de entorno
+\envar{HGMERGE} para indicarle a Mercurial que use el comando
+\command{merge}. Este comando forma parte de la instalación base de
+muchos sistemas Unix y similares. Si usted está ejecutando este
+ejemplo en su computador, no se moleste en definir \envar{HGMERGE}.
+\interaction{tour-merge-conflict.merge}
+Debido a que \command{merge} no puede resolver los conflictos que
+aparecen, él deja \emph{marcadores de fusión} en el fichero con
+conflictos, indicando si provienen de nuestra versión o de la de
+ellos.
+
+Mercurial puede saber ---por el código de salida del comando
+\command{merge}--- que no fue posible hacer la fusión exitosamente,
+así que nos indica qué comandos debemos ejecutar si queremos rehacer
+la fusión. Esto puede ser útil si, por ejemplo, estamos ejecutando una
+herramienta gráfica de fusión y salimos de ella porque nos confundimos
+o cometimos un error.
+
+Si la fusión ---automática o manual--- falla, no hay nada que nos
+impida ``arreglar'' los ficheros afectados por nosotros mismos, y
+consignar los resultados de nuestra fusión:
+% TODO este mercurial no tiene el comando resolve. Revisar si sigue
+% siendo necesario
+\interaction{tour-merge-conflict.commit}
+
+\section{Simplificar el ciclo jalar-fusionar-consignar}
+\label{sec:tour-merge:fetch}
+
+El proceso de fusionar cambios delineado anteriomente es directo, pero
+requiere la ejecución de tres comandos en sucesión.
+\begin{codesample2}
+  hg pull
+  hg merge
+  hg commit -m 'Fusionados cambios remotos'
+\end{codesample2}
+En la consignación final usted debe proveer un mensaje adecuado, que
+casi siempre es un fragmento de texto ``de relleno'' carente de valor
+particular.
+
+Sería agradable reducir la cantidad de pasos necesarios, si fuera
+posible. De hecho, Mercurial es distribuido junto con una extensión
+llamada \hgext{fetch}\ndt{Descargar, traer.} que hace precisamente
+esto.
+
+Mercurial cuenta con un mecanismo de extensión flexible que le permite
+% TODO lets people => permite a usuarios
+a sus usuarios extender su funcionalidad, manteniendo el núcleo de
+Mercurial pequeño y fácil de manejar. Algunas extensiones añaden
+nuevos comandos que usted puede usar desde la línea de comandos,
+mientras que otros funcionan ``tras bambalinas'', por ejemplo,
+añadiendo funcionalidad al servidor.
+
+La extensión \hgext{fetch} añade un comando llamado, no
+sorpresivamente, \hgcmd{fetch}.  Esta extensión actúa como una
+combinación de \hgcmd{pull}, \hgcmd{update} y \hgcmd{merge}.  Empieza
+jalando cambios de otro repositorio al repositorio actual. Si
+encuentra que los cambios añaden un nuevo frente en el repositorio
+actual, inicia una fusión, y luego consigna el resultado de la misma
+con un mensaje generado automáticamente. Si no se añadieron nuevos
+frentes, actualiza el directorio de trabajo con el nuevo conjunto de
+cambios de punta.
+
+Activar la extensión \hgext{fetch} es fácil. Edite su
+\sfilename{.hgrc}, y vaya a (o cree) la sección
+\rcsection{extensions}.  Luego añada una línea que diga simplemente
+``\Verb+fetch +''.
+\begin{codesample2}
+  [extensions]
+  fetch =
+\end{codesample2}
+(Normalmente, a la derecha del ``\texttt{=}'' debería aparecer la
+ubicación de la extensión, pero como el comando \hgext{fetch} es parte
+de la distribución estándar, Mercurial sabe dónde buscarla.)
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

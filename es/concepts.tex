@@ -1,0 +1,650 @@
+\chapter{Tras bambalinas}
+\label{chap:concepts}
+
+A diferencia de varios sistemas de control de revisiones, los
+conceptos en los que se fundamenta Mercurial son lo suficientemente
+simples como para entender fácilmente cómo funciona el software. 
+Saber esto no es necesario, pero considero útil tener un ``modelo
+mental'' de qué es lo que sucede.
+
+Comprender esto me da la confianza de que Mercurial ha sido
+cuidadosamente diseñado para ser tanto \emph{seguro} como
+\emph{eficiente}.  Y tal vez con la misma importancia, si es fácil
+para mí hacerme a una idea adecuada de qué está haciendo el software
+cuando llevo a cabo una tarea relacionada con control de revisiones,
+es menos probable que me sosprenda su comportamiento.
+
+En este capítulo, cubriremos inicialmente los conceptos centrales
+del diseño de Mercurial, y luego discutiremos algunos detalles
+interesantes de su implementación.
+
+\section{Registro del historial de Mercurial}
+
+\subsection{Seguir el historial de un único fichero}
+
+Cuando Mercurial sigue las modificaciones a un fichero, guarda el
+historial de dicho fichero en un objeto de metadatos llamado
+\emph{filelog}\ndt{Fichero de registro}.  Cada entrada en el fichero
+de registro contiene suficiente información para reconstruir una
+revisión del fichero que se está siguiendo. Los ficheros de registro
+son almacenados como ficheros el el directorio
+\sdirname{.hg/store/data}. Un fichero de registro contiene dos tipos
+de información: datos de revisiones, y un índice para ayudar a
+Mercurial a buscar revisiones eficientemente.
+
+El fichero de registro de un fichero grande, o con un historial muy
+largo, es guardado como ficheros separados para datos (sufijo
+``\texttt{.d}'') y para el índice (sufijo ``\texttt{.i}''). Para
+ficheros pequeños con un historial pequeño, los datos de revisiones y
+el índice son combinados en un único fichero ``\texttt{.i}''. La
+correspondencia entre un fichero en el directorio de trabajo y el
+fichero de registro que hace seguimiento a su historial en el
+repositorio se ilustra en la figura~\ref{fig:concepts:filelog}.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{filelog}
+  \caption{Relación entre ficheros en el directorio de trabajo y
+  ficheros de registro en el repositorio}
+  \label{fig:concepts:filelog}
+\end{figure}
+
+\subsection{Administración de ficheros monitoreados}
+
+Mercurial usa una estructura llamada \emph{manifiesto} para
+% TODO collect together => centralizar
+centralizar la información que maneja acerca de los ficheros que
+monitorea. Cada entrada en el manifiesto contiene información acerca
+de los ficheros involucrados en un único conjunto de cambios. Una
+entrada registra qué ficheros están presentes en el conjunto de
+cambios, la revisión de cada fichero, y otros cuantos metadatos del
+mismo.
+
+\subsection{Registro de información del conjunto de cambios}
+
+La \emph{bitácora de cambios} contiene información acerca de cada
+conjunto de cambios. Cada revisión indica quién consignó un cambio, el
+comentario para el conjunto de cambios, otros datos relacionados con
+el conjunto de cambios, y la revisión del manifiesto a usar.
+
+\subsection{Relaciones entre revisiones}
+
+Dentro de una bitácora de cambios, un manifiesto, o un fichero de
+registro, cada revisión conserva un apuntador a su padre inmediato
+(o sus dos padres, si es la revisión de una fusión). Como menciońe
+anteriormente, también hay relaciones entre revisiones \emph{a través}
+de estas estructuras, y tienen naturaleza jerárquica.
+
+Por cada conjunto de cambios en un repositorio, hay exactamente una
+revisión almacenada en la bitácora de cambios. Cada revisión de la
+bitácora de cambios contiene un apuntador a una única revisión del
+manifiesto. Una revisión del manifiesto almacena un apuntador a una
+única revisión de cada fichero de registro al que se le hacía
+seguimiento cuando fue creado el conjunto de cambios. Estas relaciones
+se ilustran en la figura~\ref{fig:concepts:metadata}.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{metadata}
+  \caption{Relaciones entre metadatos}
+  \label{fig:concepts:metadata}
+\end{figure}
+
+Como lo muestra la figura, \emph{no} hay una relación ``uno a uno''
+entre las revisiones en el conjunto de cambios, el manifiesto, o el
+fichero de registro. Si el manifiesto no ha sido modificado de un
+conjunto de cambios a otro, las entradas en la bitácora de cambios
+para esos conjuntos de cambios apuntarán a la misma revisión del
+manifiesto. Si un fichero monitoreado por Mercurial no sufre ningún
+cambio de un conjunto de cambios a otro, la entrada para dicho fichero
+en las dos revisiones del manifiesto apuntará a la misma revisión de
+su fichero de registro.
+
+\section{Almacenamiento seguro y eficiente}
+
+La base común de las bitácoras de cambios, los manifiestos, y los
+ficheros de registros es provista por una única estructura llamada el
+\emph{revlog}\ndt{Contracción de \emph{revision log}, registro de
+revisión.}.
+
+\subsection{Almacenamiento eficiente}
+
+El revlog provee almacenamiento eficiente de revisiones por medio del
+mecanismo de \emph{deltas}\ndt{Diferencias.}.  En vez de almacenar una
+copia completa del fichero por cada revisión, almacena los cambios
+necesarios para transformar una revisión anterior en la nueva
+revisión. Para muchos tipos de fichero, estos deltas son típicamente
+de una fracción porcentual del tamaño de una copia completa del
+fichero.
+
+Algunos sistemas de control de revisiones obsoletos sólo pueden
+manipular deltas de ficheros de texto plano. Ellos o bien almacenan
+los ficheros binarios como instantáneas completas, o codificados en
+alguna representación de texto plano adecuada, y ambas alternativas
+son enfoques que desperdician bastantes recursos. Mercurial puede
+manejar deltas de ficheros con contenido binario arbitrario; no
+necesita tratar el texto plano como un caso especial.
+
+\subsection{Operación segura}
+\label{sec:concepts:txn}
+
+Mercurial sólo \emph{añade} datos al final de los ficheros de revlog. Nunca
+modifica ninguna sección de un fichero una vez ha sido escrita. Esto es más
+robusto y eficiente que otros esquemas que requieren modificar o reescribir
+datos.
+
+Adicionalmente, Mercurial trata cada escritura como parte de una
+\emph{transacción}, que puede cubrir varios ficheros. Una transacción es
+\emph{atómica}: o bien la transacción tiene éxito y entonces todos sus efectos
+son visibles para todos los lectores, o la operación completa es cancelada.
+% TODO atomicidad no existe de acuerdo a DRAE, reemplazar
+Esta garantía de atomicidad implica que, si usted está ejecutando dos copias de
+Mercurial, donde una de ellas está leyendo datos y la otra los está escribiendo,
+el lector nunca verá un resultado escrito parcialmente que podría confundirlo.
+
+El hecho de que Mercurial sólo hace adiciones a los ficheros hace más fácil
+proveer esta garantía transaccional. A medida que sea más fácil hacer
+operaciones como ésta, más confianza tendrá usted en que sean hechas
+correctamente.
+
+\subsection{Recuperación rápida de datos}
+
+Mercurial evita ingeniosamente un problema común a todos los sistemas de control
+de revisiones anteriores> el problema de la
+\emph{recuperación\ndt{\emph{Retrieval}. Recuperación en el sentido de traer los
+datos, o reconstruirlos a partir de otros datos, pero no debido a una falla o
+calamidad, sino a la operación normal del sistema.} ineficiente de datos}.
+Muchos sistemas de control de revisiones almacenan los contenidos de una
+revisión como una serie incremental de modificaciones a una ``instantánea''.
+Para reconstruir una versión cualquiera, primero usted debe leer la instantánea,
+y luego cada una de las revisiones entre la instantánea y su versión objetivo.
+Entre más largo sea el historial de un fichero, más revisiones deben ser leídas,
+y por tanto toma más tiempo reconstruir una versión particular.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{snapshot}
+  \caption{Instantánea de un revlog, con deltas incrementales}
+  \label{fig:concepts:snapshot}
+\end{figure}
+
+La innovación que aplica Mercurial a este problema es simple pero efectiva.
+Una vez la cantidad de información de deltas acumulada desde la última
+instantánea excede un umbral fijado de antemano, se almacena una nueva
+instantánea (comprimida, por supuesto), en lugar de otro delta. Esto hace
+posible reconstruir \emph{cualquier} versión de un fichero rápidamente. Este
+enfoque funciona tan bien que desde entonces ha sido copiado por otros sistemas
+de control de revisiones.
+
+La figura~\ref{fig:concepts:snapshot} ilustra la idea. En una entrada en el
+fichero índice de un revlog, Mercurial almacena el rango de entradas (deltas)
+del fichero de datos que se deben leer para reconstruir una revisión en
+particular.
+
+\subsubsection{Nota al margen: la influencia de la compresión de vídeo}
+
+Si le es familiar la compresión de vídeo, o ha mirado alguna vez una emisión de
+TV a través de cable digital o un servicio de satélite, puede que sepa que la 
+mayor parte de los esquemas de compresión de vídeo almacenan cada cuadro del
+mismo como un delta contra el cuadro predecesor. Adicionalmente, estos esquemas
+usan técnicas de compresión ``con pérdida'' para aumentar la tasa de
+compresión, por lo que los errores visuales se acumulan a lo largo de una
+cantidad de deltas inter-cuadros.
+
+Ya que existe la posibilidad de que un flujo de vídeo se ``pierda''
+ocasionalmente debido a fallas en la señal, y para limitar la acumulación de
+errores introducida por la compresión con pérdidas, los codificadores de vídeo
+insertan periódicamente un cuadro completo (también llamado ``cuadro clave'') en
+el flujo de vídeo; el siguiente delta es generado con respecto a dicho cuadro.
+Esto quiere decir que si la señal de vídeo se interrumpe, se reanudará una vez
+se reciba el siguiente cuadro clave. Además, la acumulación de errores de
+codificación se reinicia con cada cuadro clave.
+
+\subsection{Identificación e integridad fuerte}
+
+Además de la información de deltas e instantáneas, una entrada en un
+% TODO de pronto aclarar qué diablos es un hash?
+revlog contiene un hash criptográfico de los datos que representa.
+Esto hace difícil falsificar el contenido de una revisión, y hace
+fácil detectar una corrupción accidental.
+
+Los hashes proveen más que una simple revisión de corrupción: son
+usados como los identificadores para las revisiones. 
+% TODO no entendí completamente la frase a continuación
+Los hashes de
+identificación de conjuntos de cambios que usted ve como usuario final
+son de las revisiones de la bitácora de cambios. Aunque los ficheros
+de registro y el manifiesto también usan hashes, Mercurial sólo los
+usa tras bambalinas.
+
+Mercurial verifica que los hashes sean correctos cuando recupera
+revisiones de ficheros y cuando jala cambios desde otro repositorio.
+Si se encuentra un problema de integridad, Mercurial se quejará y
+detendrá cualquier operación que esté haciendo.
+
+Además del efecto que tiene en la eficiencia en la recuperación, el
+uso periódico de instantáneas de Mercurial lo hace más robusto frente
+a la corrupción parcial de datos. Si un fichero de registro se
+corrompe parcialmente debido a un error de hardware o del sistema, a
+menudo es posible reconstruir algunas o la mayoría de las revisiones a
+partir de las secciones no corrompidas del fichero de registro, tanto
+antes como después de la sección corrompida. Esto no sería posible con
+un sistema de almacenamiento basado únicamente en deltas.
+
+\section{Historial de revisiones, ramas y fusiones}
+
+Cada entrada en el revlog de Mercurial conoce la identidad de la
+revisión de su ancestro inmediato, al que se conoce usualmente como su
+\emph{padre}. De hecho, una revisión contiene sitio no sólo para un
+padre, sino para dos. Mercurial usa un hash especial, llamado el
+``ID nulo'', para representar la idea de ``no hay padre aquí''. Este
+hash es simplemente una cadena de ceros.
+
+En la figura~\ref{fig:concepts:revlog} usted puede ver un ejemplo de
+la estructura conceptual de un revlog. Los ficheros de registro,
+manifiestos, y bitácoras de cambios comparten la misma estructura;
+sólo difieren en el tipo de datos almacenados en cada delta o
+instantánea.
+
+La primera revisión en un revlog (al final de la imagen) tiene como
+padre al ID nulo, en las dos ranuras disponibles para padres. En una
+revisión normal, la primera ranura para padres contiene el ID de la
+revisión padre, y la segunda contiene el ID nulo, señalando así que la
+revisión sólo tiene un padre real. Un par de revisiones que tenga el
+mismo ID padre son ramas. Una revisión que representa una fusión entre
+ramas tiene dos IDs de revisión normales en sus ranuras para padres.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{revlog}
+  \caption{}
+  \label{fig:concepts:revlog}
+\end{figure}
+
+\section{El directorio de trabajo}
+
+% TODO revisar párrafo, no me convence la traducción
+En el directorio de trabajo, Mercurial almacena una instantánea de los
+ficheros  del repositorio como si fueran los de un conjunto de cambios
+particular.
+
+El directorio de trabajo ``sabe'' qué conjunto de cambios contiene.
+Cuando usted actualiza el directorio de trabajo para que contenga un
+conjunto de cambios particular, Mercurial busca la revisión adecuada
+del manifiesto para averiguar qué ficheros estaba monitoreando cuando
+se hizo la consignación del conjunto de cambios, y qué revisión de
+cada fichero era la actual en ese momento. Luego de eso, recrea una
+copia de cada uno de esos ficheros, con los mismos contenidos que
+tenían cuando fue consignado el conjunto de cambios.
+
+El \emph{estado de directorio}\ndt{dirstate, en inglés en el
+original.} contiene el conocimiento de Mercurial acerca del directorio
+de trabajo. Allí se detalla a qué conjunto de cambios es actualizado
+el directorio de trabajo, y todos los ficheros que Mercurial está
+monitoreando en este directorio.
+
+Tal como la revisión de un revlog tiene espacio para dos padres, para
+que pueda representar tanto una revisión normal (con un solo padre) o
+una fusión de dos revisiones anteriores, el estado de directorio tiene
+espacio para dos padres. Cuando usted usa el comando \hgcmd{update},
+el conjunto de cambios al que usted se actualiza es almacenado en la
+casilla destinada al ``primer padre'', y un ID nulo es almacenado en
+la segunda. Cuando usted hace una fusión (\hgcmd{merge}) con otro
+conjunto de cambios, la casilla para el primer padre permanece sin
+cambios, y la casilla para el segundo es actualizada con el conjunto
+de cambios con el que usted acaba de hacer la fusión. El comando
+\hgcmd{parents} le indica cuáles son los padres del estado de
+directorio.
+
+\subsection{Qué pasa en una consignación}
+
+El estado de directorio almacena información sobre los padres para
+algo más que mero registro. Mercurial usa los padres del estado de
+directorio como \emph{los padres de un nuevo conjunto de cambios}
+cuando usted hace una consignación.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir}
+  \caption{El directorio de trabajo puede tener dos padres}
+  \label{fig:concepts:wdir}
+\end{figure}
+
+La figura~\ref{fig:concepts:wdir} muestra el estado normal del
+directorio de trabajo, que tiene un único conjunto de cambios como
+padre. Dicho conjunto de cambios es la \emph{punta}, el conjunto de
+cambios más reciente en el repositorio que no tiene hijos.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir-after-commit}
+  \caption{El directorio de trabajo obtiene nuevos padres luego de una
+  consignación}
+  \label{fig:concepts:wdir-after-commit}
+\end{figure}
+
+Es útil pensar en el directorio de trabajo como en ``el conjunto de
+cambios que estoy a punto de enviar''. Cualquier fichero que usted le
+diga a Mercurial que fue añadido, borrado, renombrado o copiado, se
+verá reflejado en ese conjunto de cambios, como también se verán las
+modificaciones a cualquiera de los ficheros que Mercurial ya esté
+monitoreando; el nuevo conjunto de cambios dentrá los padres del
+directorio de trabajo como propios.
+
+Luego de una consignación, Mercurial actualizará los padres del
+directorio de trabajo, de tal manera que el primer padre sea el ID del
+nuevo conjunto de cambios, y el segundo sea el ID nulo. Esto puede
+verse en la figura~\ref{fig:concepts:wdir-after-commit}.  Mercurial no
+toca ninguno de los ficheros del directorio de trabajo cuando usted
+hace la consignación; sólo modifica el estado de directorio para
+anotar sus nuevos padres.
+
+\subsection{Creación de un nuevo frente}
+
+Es perfectamente normal actualizar el directorio de trabajo a un
+conjunto de cambios diferente a la punta actual. Por ejemplo, usted
+podría desear saber en qué estado se encontraba su proyecto el martes
+pasado, o podría estar buscando en todos los conjuntos de cambios para
+saber cuándo se introdujo un fallo. En casos como éstos, la acción
+natural es actualizar el directorio de trabajo al conjunto de cambios
+de su interés, y examinar directamente los ficheros en el directorio
+de trabajo para ver sus contenidos tal como estaban en el momento de
+hacer la consignación. El efecto que tiene esto se muestra en la
+figura~\ref{fig:concepts:wdir-pre-branch}.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir-pre-branch}
+  \caption{El directorio de trabajo, actualizado a un conjunto de
+  cambios anterior}
+  \label{fig:concepts:wdir-pre-branch}
+\end{figure}
+
+Una vez se ha actualizado el directorio de trabajo a un conjunto de
+cambios anterior, qué pasa si se hacen cambios, y luego se hace una
+consignación? Mercurial se comporta en la misma forma que describí
+anteriormente. Los padres del directorio de trabajo se convierten en
+los padres del nuevo conjunto de cambios. Este nuevo conjunto de
+cambios no tiene hijos, así que se convierte en la nueva punta. Y el
+repositorio tiene ahora dos conjuntos de cambios que no tienen hijos;
+a éstos los llamamos \emph{frentes}. Usted puede apreciar la
+estructura que esto crea en la figura~\ref{fig:concepts:wdir-branch}.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir-branch}
+  \caption{Después de una consignación hecha mientras se usaba un
+  conjunto de cambios anterior}
+  \label{fig:concepts:wdir-branch}
+\end{figure}
+
+\begin{note}
+    Si usted es nuevo en Mercurial, debería tener en mente un
+    ``error'' común, que es usar el comando \hgcmd{pull} sin ninguna
+    opción. Por defecto, el comando \hgcmd{pull} \emph{no} actualiza
+    el directorio de trabajo, así que usted termina trayendo nuevos
+    conjuntos de cambios a su repositorio, pero el directorio de
+    trabajo sigue usando el mismo conjunto de cambios que tenía antes
+    de jalar. Si usted hace algunos cambios, y luego hace una
+    consignación, estará creando un nuevo frente, porque su directorio
+    de trabajo no es sincronizado a cualquiera que sea la nueva punta.
+
+    Pongo la palabra ``error'' en comillas porque todo lo que usted
+    debe hacer para rectificar la situación es hacer una fusión
+    (\hgcmd{merge}), y luego una consignación (\hgcmd{commit}). En
+    otras palabras, esto casi nunca tiene consecuencias negativas;
+    sólo sorprende a la gente. Discutiré otras formas de evitar este
+    comportamiento, y porqué Mercurial se comporta de esta forma,
+    inicialmente sorprendente, más adelante.
+\end{note}
+
+\subsection{Fusión de frentes}
+
+Cuando usted ejecuta el comando \hgcmd{merge}, Mercurial deja el
+primer padre del directorio de trabajo intacto, y escribe como segundo
+padre el conjunto de cambios contra el cual usted está haciendo la
+fusión, como se muestra en la figura~\ref{fig:concepts:wdir-merge}.
+
+\begin{figure}[ht]
+  \centering
+  \grafix{wdir-merge}
+  \caption{Fusión de dos frentes}
+  \label{fig:concepts:wdir-merge}
+\end{figure}
+
+Mercurial también debe modificar el directorio de trabajo, para
+fusionar los ficheros que él monitorea en los dos conjuntos de
+cambios. Con algunas simplificaciones, el proceso es el siguiente, por
+cada fichero en los manifiestos de ambos conjuntos de cambios.
+\begin{itemize}
+\item Si ningún conjunto de cambios ha modificado un fichero, no se
+    hace nada con el mismo.
+\item Si un conjunto de cambios ha modificado un fichero, y el otro no
+    lo ha hecho, se crea una copia del fichero con las modificaciones
+    pertinentes en el directorio de trabajo.
+\item Si un conjunto de cambios borra un fichero, y el otro no lo ha
+    hecho (o también lo borró), se borra dicho fichero del directorio
+    de trabajo.
+\item Si un conjunto de cambios ha borrado un fichero, pero el otro lo ha
+    modificado, se le pregunta al usuario qué hacer: conservar el
+    fichero modificado, o borrarlo?
+\item Si ambos conjuntos de cambios han modificado un fichero, se
+    invoca el programa externo de fusión para definir el nuevo
+    contenido del fichero fusionado. Esto puede requerir interacción
+    directa de parte del usuario.
+\item Si un conjunto de cambios ha modificado un fichero, y el otro ha
+    renombrado o copiado el mismo, asegurarse de que los cambios sigan
+    al nuevo nombre de fichero.
+\end{itemize}
+Hay más detalles---hacer una fusión tiene una gran cantidad de casos
+especiales---pero éstas son las elecciones más comunes que se ven
+involucradas en una fusión. Como usted puede ver, muchos de los casos
+son completamente automáticos, y de hecho la mayoría de las fusiones
+terminan automáticamente, sin requerir la interacción del usuario para
+resolver ningún conflicto.
+
+Cuando considere qué pasa cuando usted hace una consignación después
+de una fusión, de nuevo el directorio de trabajo es ``el conjunto de
+cambios que estoy a punto de consignar''. Una vez termina su trabajo
+el comando \hgcmd{merge}, el directorio de trabajo tiene dos padre;
+éstos se convertirán en los padres del nuevo conjunto de cambios.
+
+Mercurial le permite hacer múltiples fusiones, pero usted debe
+consignar los resultados de cada fusión sucesivamente. Esto es
+necesario porque Mercurial sólo monitorea dos padres, tanto para las
+revisiones como para los directorios de trabajo. Aunque técnicamente
+es posible fusionar varios conjuntos de trabajo en una sola operación,
+la posibilidad de confundir al usuario y crear un desorden terrible en
+la fusión se hace incontenible de inmediato.
+
+\section{Otras características de diseño interesantes}
+
+En las secciones anteriores, he tratado de resaltar algunos de los
+aspectos más importantes del diseño de Mercurial, para mostrar que se
+presta gran cuidado y atención a la confiabilidad y el desempeño. Sin
+embargo, la atención a los detalles no para ahí. Hay una cantidad de
+aspectos de la construcción de Mercurial que encuentro interesantes
+personalmente. Detallaré unos cuantos de ellos aquí, aparte de los
+elementos ``importantes'' de arriba, para que, si usted está
+% TODO the amount of thinking => (la cantidad de) esfuerzo mental
+interesado, pueda obetener una idea mejor de la cantidad de esfuerzo
+mental invertido en el diseño de un sistema bien diseñado.
+
+
+\subsection{Compresión ingeniosa}
+
+Cuando es adecuado, Mercurial almacenará tanto las instantáneas como
+los deltas en formato comprimido. Lo hace \emph{tratando} siempre de
+comprimir una instantánea o delta, y conservando la versión comprimida
+sólo si es más pequeña que la versión sin compresión.
+
+Esto implica que Mercurial hace ``lo correcto'' cuando almacena un
+fichero cuyo formato original está comprimido, como un fichero
+\texttt{zip} o una imagen JPEG.  Cuando estos tipos de ficheros son
+comprimidos por segunda vez, el fichero resultante usualmente es más
+grande que la versión comprimida una sola vez, por lo que Mercurial
+almacenará el fichero \texttt{zip} o JPEG original.
+
+Los deltas entre revisiones de un fichero comprimido usualmente son
+más grandes que las instantáneas del mismo fichero, y Mercurial de
+nuevo hace ``lo correcto'' en estos casos. Él encuentra que dicho
+delta excede el umbral respecto al cual se debería almacenar una
+instantánea completa del fichero, así que almacena la instantánea,
+ahorrando espacio de nuevo respecto al enfoque simplista de usar
+únicamente deltas.
+
+\subsubsection{Recompresión de red}
+
+Cuando almacena las revisiones en disco, Mercurial usa el algoritmo de
+compresión ``deflación'' (el mismo usado en el popular formato de
+fichero \texttt{zip}), que provee una buena velocidad con una tasa de
+compresión respetable. Sin embargo, cuando se transmiten datos de
+revisiones a través de una conexión de red, Mercurial descomprime los
+datos comprimidos de las revisiones.
+
+Si la conexión es hecha a través de HTTP, Mercurial recomprime el
+flujo completo de datos usando un algoritmo de compresión que brinda
+una mejor tasa de compresión (el algoritmo Burrows-Wheeler del
+ampliamente usado paquete de compresión \texttt{bzip2}). Esta
+combinación de algoritmo y compresión del flujo completo de datos
+(en vez de una revisión a la vez) reduce sustancialmente la cantidad
+de bytes a transferir, brindando así un mejor desempeño de red sobre
+casi todo tipo de redes.
+
+(Si la conexión se hace sobre \command{ssh}, Mercurial \emph{no}
+recomprmime el flujo, porque \command{ssh} puede hacer esto por sí
+mismo.)
+
+\subsection{Reordenado de lectura/escritura y atomicidad}
+
+Añadir datos al final de un fichero no es todo lo que hace falta para
+garantizar que un lector no verá una escritura parcial. Si recuerda la
+figura~\ref{fig:concepts:metadata}, las revisiones en la bitácora de
+cambios apuntan a revisiones en el manifiesto, y las revisiones en el
+manifiesto apuntan a revisiones en ficheros de registro. Esta
+jerarquía es deliberada.
+
+Un escritor inicia una transacción al escribir los datos del ficheros
+del fichero de registro y el manifiesto, y no escribe nada en la
+bitácora de cambios hasta que dichas escrituras hayan terminado. Un
+lector empieza leyendo datos de la bitácora de cambios, luego del
+manifiesto, y finalmente del fichero de registro.
+
+%TODO revisar párrafo completo, no me gusta el resultado
+Como el escritor siempre termina de escribir los datos en el fichero
+de registro y en el manifiesto antes de escribir a la bitácora de
+cambios, un lector nunca verá un apuntador a una versión parcialmente
+escrita de revisiones del manifiesto desde la bitácora de cambios, y
+nunca leerá un apuntador a una revisión parcialmente escrita del
+fichero de registro desde el manifiesto.
+
+\subsection{Acceso concurrente}
+
+El reordenado de lectura/escritura y la atomicidad garantizan que
+Mercurial nunca necesita \emph{bloquear} un repositorio cuando está
+leyendo datos, aún si se está escribiendo al repositorio mientras se
+hace la lectura. Esto tiene un gran efecto en la escalabilidad; usted
+puede tener cualquier cantidad de procesos Mercurial leyendo datos de
+un repositorio de manera segura al mismo tiempo, sin importar si se
+está escribiendo al mismo o no.
+
+La naturaleza carente de bloqueos de la lectura significa que si usted
+está compartiendo un repositorio en un sistema multiusuario, no
+necesita dar a los usuarios locales permisos de \emph{escritura} a su
+repositorio para que ellos puedan clonarlo o jalar cambios; sólo
+necesitan permisos de \emph{lectura}. (Esta \emph{no} es una
+%TODO signo de admiración de apertura
+característica común entre los sistemas de control de revisiones, así
+que no la dé por hecha! Muchos de ellos requieren que los lectores
+sean capaces de bloquear el repositorio antes de poder leerlo, y esto
+requiere acceso de escritura en al menos un directorio, lo que por
+supuesto se convierte en una fuente de todo tipo de problemas
+administrativos y de seguridad bastante molestos.)
+
+Mercurial usar bloqueos para asegurarse de que sólo un proceso pueda
+escribir a un repositorio al mismo tiempo (el mecanismo de bloqueo es
+seguro incluso sobre sistemas de ficheros notoriamente hostiles al
+bloqueo, como NFS). Si un repositorio está bloqueado, los escritores
+esperarán un buen rato para revisar si el repositorio ya ha sido
+desbloqueado, pero si el repositorio sique bloqueado por mucho tiempo,
+el proceso que intenta escribir fallará por tiempo de espera máximo.
+Esto significa que sus guiones automáticos diarios no se quedarán
+esperando para siempre, apilándose si el sistema se cayó sin que nadie
+se diera cuenta, por ejemplo. (Sí, el tiempo de espera máximo es
+configurable, de cero a infinito).
+
+
+\subsubsection{Acceso seguro al estado de directorio}
+
+Al igual que con los datos de revisión, Mercurial no requiere un
+bloqueo para leer el fichero de estado de directorio; sí se usa un
+bloqueo para escribir a él. Para evitar la posibilidad de leer una
+copia parcialmente escrita del fichero de estado de directorio,
+Mercurial escribe a un fichero con un nombre único en el mismo
+directorio del fichero de estado de directorio, y luego renombra
+atómicamente este fichero temporal a \filename{dirstate}\ndt{Estado de
+directorio.}. Así se garantiza que el fichero llamado
+\filename{dirstate} esté completo, y no parcialmente escrito.
+
+\subsection{Evitar movimientos de brazo}
+
+Un aspecto crítico para el desempeño de Mercurial es evitar los
+movimientos del brazo de lectura del disco duro, ya que cualquier
+movimiento de brazo es mucho más costoso que incluso una operación de
+lectura relativamente grande.
+
+Es por esto que, por ejemplo, el estado de directorio es almacenado
+como un solo fichero. Si hubiera un estado de directorio por cada
+directorio que Mercurial monitorea, el disco haría un movimiento de
+brazo por cada directorio. En cambio, Mercurial lee el estado de
+directorio completo en un solo paso.
+
+Mercurial también usa un esquema de ``copiar al escribir'' cuando
+clona un repositorio en un mismo medio de almacenamiento local. En vez
+de copiar cada fichero de revlog del repositorio viejo al nuevo, se
+crea un ``enlace duro'', que es una manera sucinta de decir
+``estos dos nombres apuntan al mismo fichero''. Cuando Mercurial está
+a punto de escribir a uno de los ficheros de revlog, revisa si la
+cantidad de nombres apuntando al fichero es de más de uno. Si lo es,
+más de un repositorio está usando el fichero, así que Mercurial hace
+una nueva copia del fichero, privada para este repositorio.
+
+Algunos desarrolladores de control de revisiones han indicado que la
+idea de hacer una copia privada completa de un fichero no es eficiente
+desde el punto de vista de almacenamiento. Aunque esto es cierto, el
+almacenamiento es barato, y este método brinda el máximo rendimiento
+al tiempo que delega la mayor parte del trabajo de manejo de ficheros
+al sistema operativo. Un esquema alternativo seguramente reduciría el
+desempeño y aumentaría la complejidad del software, cada uno de los
+cuales es mucho más importante para la ``sensación'' que se tiene del
+software en el trabajo día a día.
+
+\subsection{Otros contenidos del estado de directorio}
+
+Debido a que Mercurial no lo fuerza a indicar si usted está
+modificando un fichero, se usa el estado de directorio para almacenar
+información extra para poder determinar efecientemente si usted ha
+modificado un fichero. Por cada fichero en el directorio de trabajo,
+se almacena el momento en que Mercurial modificó por última vez el
+fichero, y el tamaño del fichero en ese momento.
+
+Cuando usted añade (\hgcmd{add}), remueve (\hgcmd{remove}), renombra
+(\hgcmd{rename}) o copia (\hgcmd{copy}) ficheros, Mercurial actualiza
+el estado de directorio para saber qué hacer con dichos ficheros
+cuando usted haga la consignación.
+
+Cuando Mercurial está revisando el estado de los ficheros en el
+directorio de trabajo, revisa primero la fecha de modificación del
+fichero. Si no ha cambiado, el fichero no ha sido modificado. Si el
+tamaño del fichero ha cambiado, el fichero ha sido modificado. Sólo en
+el caso en que el tiempo de modificación ha cambiado, pero el tamaño
+no, es necesario leer el contenido del fichero para revisar si ha
+cambiado. Almacenar estos pocos datos reduce dramáticamente la
+cantidad de datos que Mercurial debe leer, lo que brinda una mejora en
+el rendimiento grande, comparado con otros sistemas de control de
+revisiones.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End:
