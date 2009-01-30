@@ -17,9 +17,9 @@ repositorios. Puede ver el historial de un repositorio, examinar cada
 cambio (comentarios y diferencias), y ver los contenidos de cada
 directorio y fichero.
 
-Adicionalmente la interfaz provee feeds de RSS de los cambios de los
+Adicionalmente la interfaz provee notificaciones RSS de los cambios de los
 repositorios. Que le permite ``subscribirse''a un repositorio usando
-su herramienta de lectura de feeds favorita, y ser notificado
+su herramienta de lectura de notificaciones favorita, y ser notificado
 automáticamente de la actividad en el repositorio tan pronto como
 sucede. Me gusta mucho más este modelo que el estar suscrito a una
 lista de correo a la cual se envían las notificaciones, dado que no
@@ -28,7 +28,7 @@ administrando el repositorio.
 
 La interfaz web también permite clonar repositorios a los usuarios
 remotos, jalar cambios, y (cuando el servidor está configurado para
-permitirlo) publicar cambios en el mismo.  El protocolo de tunneling
+permitirlo) publicar cambios en el mismo.  El protocolo de entunelamiento
 de Mercurial comprime datos agresivamente, de forma que trabaja
 eficientemente incluso con conexiones de red con poco ancho de banda.
 
@@ -53,7 +53,7 @@ visualizar el historial del repositorio.
 
 \subsection{Trabajo con muchas ramas}
 
-Los proyectos de cierta talla tienden naturlamente a progresar de
+Los proyectos de cierta talla tienden naturalmente a progresar de
 forma simultánea en varios frentes. En el caso del software, es común
 que un proyecto tenga versiones periódicas oficiales. Una versión
 puede entrar a ``modo mantenimiento'' por un tiempo después de su
@@ -112,7 +112,7 @@ arreglo del fallo en la rama principal, puede jalar y mezclar los
 cambios de la rama estable a la principal, Mercurial traerá tales
 arreglos por usted.
 \interaction{branching.merge}
-La rama principal contendtrá aún los cambios que no están en la
+La rama principal contendrá aún los cambios que no están en la
 estable y contendrá además todos los arreglos de fallos de la rama
 estable.  La rama estable permanece incólume a tales cambios.
 
@@ -187,7 +187,7 @@ principal; y así sucesivamente. Otros publican un solo árbol.
 
 Este modelo tiene dos características notables. La primera es que son
 de ``jalar exclusivamente''.  Usted debe solicitar, convencer o
-incluso rogar a otro desarrollador para que tome sus cabmios, porque
+incluso rogar a otro desarrollador para que tome sus cambios, porque
 casi no hay árboles en los cuales más de una persona pueda publicar, y
 no hay forma de publicar cambios en un árbol que otra persona controla.
 
@@ -197,7 +197,7 @@ responderle.  Pero un mantenedor de un subsistema probablemente los
 revisara, y los acogerá en caso de que aprueben su criterio de
 aplicabilidad.  A medida que usted ofrezca ``mejores'' cambios a un
 mantenedor, habrá más posibilidad de que se confíe en su juicio y se
-acepten los cambios.   Si usted es reconocido y matiene una rama
+acepten los cambios.   Si usted es reconocido y mantiene una rama
 durante bastante tiempo para algo que Linus no ha aceptado, personas
 con intereses similares pueden jalar sus cambios regularmente para
 estar al día con su trabajo.
@@ -222,7 +222,7 @@ yace en el modelo de desarrollo en el cual la gente solamente jala
 cambios de otros ``es mejor que'' uno  en el cual muchas personas
 pueden publicar cambios a un repositorio compartido.
 
-Tícamente los partidarios del modelo de publicar usan las herramientas
+Típicamente los partidarios del modelo de publicar usan las herramientas
 que se apegan a este modelo.  Si usted usa una herramienta
 centralizada de control de versiones como Subversion, no hay forma de
 elegir qué modelo va a usar: La herramienta le ofrece publicación
@@ -241,7 +241,7 @@ Una vez que usted y su equipo configurar algunos repositorios
 compartidos y comienzan a propagar cambios entre sus repositorios
 locales y compartidos, comenzará a encarar un reto relacionado, pero
 un poco distinto:  Administrar las direcciones en las cuales su equipo
-puede moverse.   A pesar de que está intimamente ligado acerca de cómo
+puede moverse.   A pesar de que está íntimamente ligado acerca de cómo
 interactúa su equipo, es lo suficientemente denso para ameritar un
 tratamiento en el capítulo~\ref{chap:branch}.
 
@@ -318,7 +318,7 @@ el protocolo Secure Shell (\texttt{ssh}).  Para usarlo satisfactoriamente,
 tendrá que hacer algo de configuración a nivel de cliente o el
 servidor.
 
-Si no está familizarizado con ssh, es un protocolo de red que le permite
+Si no está familiarizado con ssh, es un protocolo de red que le permite
 comunicarse con seguridad con otro computador.  Para usarlo con
 Mercurial, estará estableciendo una o más cuentas de usuario en un
 servidor de forma tal que los usuarios remotos puedan entrar y
@@ -337,7 +337,7 @@ Los URLs de ssh tienden a lucir de la siguiente forma:
 \item La parte ``\texttt{ssh://}'' indica a Mercurial que use el
   protocolo ssh.
 \item El componente ``\texttt{bos@}'' indica el nombre del usuario que
-  está entrando al servidor.  Puede omitirl si el usuario remoto
+  está entrando al servidor.  Puede omitirlo si el usuario remoto
   coincide con el usuario local.
 \item ``\texttt{hg.serpentine.com}'' es el nombre del servidor al cual
   se desea entrar.
@@ -357,7 +357,7 @@ es muy poco probable que vaya a cambiar.  Por favor lea los párrafos
 siguientes cuidadosamente.
 
 Mercurial trata la ruta al repositorio en el servidor como relativo al
-directorio chasa del usuario remoto.  Por ejemplo, si el usuario
+directorio personal del usuario remoto.  Por ejemplo, si el usuario
 \texttt{foo} en el servidor tiene el directorio casa
 \dirname{/home/foo},
 entonces un URL ssh que contenga en su ruta a \dirname{bar}
@@ -411,7 +411,7 @@ cliente de línea de órdenes.
 
 \subsection{Generar un par de llaves}
 
-Para evitar la necesidad de teclera una clave de forma repetitiva cada
+Para evitar la necesidad de teclear una clave de forma repetitiva cada
 vez que necesita usar el cliente, recomiendo generar un par de llaves.
 En un sistema tipo Unix, la orden \command{ssh-keygen} también se
 comportará bien. En Windows, si está usando PuTTY, la orden
@@ -437,7 +437,7 @@ la ventana en la cual se despliega directamente en el fichero
 
 \subsection{Uso de un agente de autenticación}
 
-Un agente de autentitcación es un daemonio que almacena frases clave en
+Un agente de autenticación es un demonio que almacena frases clave en
 memoria (olvidará las frases clave si sale y vuelve a entrar).  Un cliente
 ssh notará si está corriendo, y solicitará una frase clave.  Si no hay
 un agente de autenticación corriendo, o el agente no almacena la frase
@@ -447,7 +447,7 @@ que jale o publique cambios).
 
 El problema de almacenar frases claves en un agente es que es posible
 para un atacante bien preparado recuperar el texto plano de su frase
-clave, en alguntos casos incluso si su sistema sea muy alternante.
+clave, en algunos casos incluso si su sistema sea muy alternante.
 Es su decisión si es un riesgo aceptable.  Lo que si es seguro es que
 evita reteclear.
 
@@ -455,7 +455,7 @@ En sistemas tipo Unix, el agente se llama \command{ssh-agent}, y
 usualmente se ejecuta automáticamente cuando usted entra.  Tendrá que
 usar la orden \command{ssh-add} para añadir frases claves al agente.  En
 Windows, si está usando PuTTY, la orden \command{pageant} actúa como
-el agente.  Añade un ícono a su barra del sistema que le permitirá
+el agente.  Añade un icono a su barra del sistema que le permitirá
 almacenar frases clave.
 
 \subsection{Configurar el lado del servidor apropiadamente}
@@ -463,7 +463,7 @@ almacenar frases clave.
 Dado que puede ser dispendioso configurar ssh si usted es nuevo, hay 
 una variedad de cosas que podrían ir mal.  Añada piense primero en
 Mercurial y hay mucho más en qué pensar.  La mayor parte de estos
-problemas potenciales occuren en el lado del servidor, no en el cliente.
+problemas potenciales ocurren en el lado del servidor, no en el cliente.
 Las buenas noticias es que una vez tiene una configuración funcional,
 usualmente continuará trabajando indefinidamente.
 
@@ -481,8 +481,8 @@ desde otra máquina.  Si no puede entrar con \command{ssh} o
 \command{putty}, el mensaje de error que obtenga le puede dar pistas
 de qué ha ido mal.  Los problemas más comunes son los siguientes:
 \begin{itemize}
-\item Si obitene un error de ``conexión rehusada'', es posible que no 
-  haya un daemonio SSH corriendo en el servidor o que no pueda accederse
+\item Si obtiene un error de ``conexión rehusada'', es posible que no 
+  haya un demonio SSH corriendo en el servidor o que no pueda accederse
   a él por configuraciones de cortafuegos.
 \item Si obtiene un error de ``no hay ruta hasta el servidor'', puede
   tener la dirección del servidor incorrecta o un cortafuegos con
@@ -491,14 +491,14 @@ de qué ha ido mal.  Los problemas más comunes son los siguientes:
   tecleado mal el usuario en el servidor, o que haya tecleado
   incorrectamente la frase clave o la clave del usuario remoto.
 \end{itemize}
-En resumen, si tiene problemas al comunicarse con el daemonio ssh del
+En resumen, si tiene problemas al comunicarse con el demonio ssh del
 servidor, primero asegúrese de que está corriendo.  En muchos sistemas
 estará instalado, pero deshabilitado de forma predeterminada.  Una vez
 que haya hecho este paso tendrá que revisar si el cortafuegos del
 servidor está configurado para recibir conexiones entrantes en el
-puerto en el cual el daemonio de ssh está escuchando (usualmente el~22).
+puerto en el cual el demonio de ssh está escuchando (usualmente el~22).
 No trate de buscar otras posibilidades exóticas o configuraciones
-erradas haste que haya revisado primero estas dos.
+erradas hasta que haya revisado primero estas dos.
 
 Si está usando un agente de autenticación en el lado del cliente para
 almacenar las frase claves de sus contraseñas, debería poder entrar al
@@ -520,17 +520,17 @@ que deben revisarse:
   este síntoma.
 \item El fichero de usuario \sfilename{authorized\_keys} puede tener
   un problema.  Si alguien distinto al usuario es dueño o puede
-  escribir el fichero, el daemonio ssh no confiará o lo leerá.
+  escribir el fichero, el demonio ssh no confiará o lo leerá.
 \end{itemize}
 
 En un mundo ideal, debería poder ejecutar la siguiente orden
-exitósamente, y debería imprimir exactamente una línea de salida,
+exitosamente, y debería imprimir exactamente una línea de salida,
 la fecha y hora actual.
 \begin{codesample2}
   ssh miservidor fecha
 \end{codesample2}
 
-Si en su servidor tiene guión que se ejecuta a la entrada e imprimie
+Si en su servidor tiene guión que se ejecuta a la entrada e imprime
 letreros o cualquier otra cosa, incluso cuando se ejecutan órdenes no
 interactivas como esta, debería arreglarlo antes de continuar, de
 forma que solamente imprima algo si se ejecuta interactivamente.  De
@@ -539,7 +539,7 @@ Incluso podrían causar problemas potenciales cuando se ejecuten
 órdenes de forma remota.  Mercurial intenta detectar e ignorar los
 letreros en sesiones no interactivas de \command{ssh}, pero no es
 a prueba de tontos.  (Si edita sus guiones de entrada en el servidor,
-la forma usual de ver si un guión de script se ejecuta en un shell
+la forma usual de ver si un guión de línea de comandos se ejecuta en un intérprete
 interactivo, es verificar el código de retorno de la orden
 \Verb|tty -s|.)
 
@@ -563,10 +563,10 @@ continuación:
 \item Puede ser que su variable de ambiente \envar{PATH} soalamente
   apunte al lugar en el cual está el ejecutable \command{hg} si la
   sesión de entrada es interactiva.  Puede suceder si establece la
-  ruta en el guión de shell de entrada incorrecto.  Consulte la
+  ruta en el guión de línea de comandos de entrada incorrecto.  Consulte la
   documentación de su línea de órdenes.
 \item La variable de ambiente \envar{PYTHONPATH} puede requerir la
-  ruta a los módulos de Mercurial en Python.  Puede que nisiquiera
+  ruta a los módulos de Mercurial en Python.  Puede que ni siquiera
   está establecida; podría estar incorrecta; o puede ser que se
   establezca únicamente cuando hay entradas interactivas.
 \end{itemize}
@@ -631,7 +631,7 @@ necesitará leer y modificar su configuración del servidor web.
   Configurar un servidor web es una actividad compleja, engorrosa y
   altamente dependiente del sistema.  De ninguna manera podremos
   cubrir todos los casos posibles con los cuales pueda encontrarse.
-  Use su discresión y juicio respecto a las secciones siguientes.
+  Use su discreción y juicio respecto a las secciones siguientes.
   Esté preparado para cometer muchas equivocaciones, y emplear
   bastante tiempo leyendo sus bitácoras de error del servidor.
 \end{note}
@@ -684,7 +684,7 @@ y asegurarse que sea ejecutable.
 \end{codesample2}
 El argumento \texttt{755} de la orden \command{chmod} es un poco más
 general que hacerlo ejecutable: Asegura que el guión sea ejecutable
-por cualquiera, y que el ``grupo'' y los ``otros'' \emph{not}  tengan
+por cualquiera, y que el ``grupo'' y los ``otros'' \emph{no}  tengan
 permiso de escritura.  Si dejara los permisos de escritura abiertos,
 , el subsistema \texttt{suexec} de  Apache probablemente se negaría
 a ejecutar el guión.  De hecho, \texttt{suexec} también insiste en que
@@ -720,7 +720,7 @@ directorio de cada usuario, por ejemplo \dirname{public\_html}.
 Los permisos de sus ficheros pueden ser demasiado restrictivos.  El
 servidor web debe poder recorrer su directorio personal y los
 directorios que estén bajo \dirname{public\_html}, además de tener
-permiso para leer aquellos que estén adentro.  A continúación una
+permiso para leer aquellos que estén adentro.  A continuación una
 receta rápida para hacer que sus permisos estén acordes con las
 necesidades básicas.
 \begin{codesample2}
@@ -730,10 +730,10 @@ necesidades básicas.
 \end{codesample2}
 
 Otra posibilidad con los permisos es que obtenga una ventana
-completamente en blanco cuando trata de cargar el script. En cuyo
+completamente en blanco cuando trata de cargar el guión. En cuyo
 caso, es posible que los permisos que tiene son \emph{demasiado
  permisivos}.  El subsistema \texttt{suexec} de Apache no ejecutará un
-script que tenga permisos de escritura para el group o el planeta, por
+guión que tenga permisos de escritura para el grupo o el planeta, por
 ejemplo.
 
 Su servidor web puede estar configurado para evitar la ejecución de
@@ -759,7 +759,7 @@ en su configuración de Apache,  la directiva a revisar es \texttt{Options}.
 Adicione \texttt{ExecCGI} al final de esta lista en caso de que haga
 falta y reinicie su servidor web.
 
-Si resulta que Apache le muestra el texto del script CGI en lugar de
+Si resulta que Apache le muestra el texto del guión CGI en lugar de
 ejecutarlo, necesitará o bien descomentar (si se encuentra presente) o
 adicionar una directiva como la siguiente:
 \begin{codesample2}
@@ -769,7 +769,7 @@ adicionar una directiva como la siguiente:
 Otra posibilidad es que observe una traza de Python en colores
 informando que no puede importar un módulo relacionado con
 \texttt{mercurial}.  Esto es un gran progreso!  El servidor es capaz
-de ejecutar su script CGI.  Este error solamente ocurrirá si está
+de ejecutar su guión CGI.  Este error solamente ocurrirá si está
 ejecutando una instalación privada de Mercurial en lugar de una
 instalación para todo el sistema.  Recuerde que el servidor que
 ejecuta el programa CGI no cuenta con variables de ambiente de las
@@ -781,7 +781,7 @@ ambiente \envar{PYTHONPATH}.
 Finalmente, si encuentra \emph{otra} traza a todo color de Python al visitar
 el URL: Esta seguramente se referirá a que no puede encontrar
 \dirname{/path/to/repository}.  Edite su script \sfilename{hgweb.cgi}
-y reemplaze la cadena \dirname{/path/to/repository} con la ruta
+y reemplace la cadena \dirname{/path/to/repository} con la ruta
 completa al repositorio que desea servir.
 
 En este punto, cuando trate de recargar la página, deberá visualizar
@@ -816,7 +816,7 @@ maneras, considero que \texttt{lighttpd} es bastante más sencillo de
 configurar que Apache, a pesar de haber usado Apache por lo menos por
 una década, y esta fue mi primera experiencia con \texttt{lighttpd}.
 
-\subsection{Compartir varios repositorios con un script CGI}
+\subsection{Compartir varios repositorios con un guión CGI}
 
 El guión \sfilename{hgweb.cgi} permite publicar únicamente un
 repositorio, una restricción frustrante.  Si desea publicar más de uno
@@ -919,7 +919,7 @@ Si lo desea, puede usar los dos mecanismos \texttt{collections} y
 
 \subsection{Descarga de ficheros fuente}
 
-La interfaz web de Mercurial permite a los ususarios descargar
+La interfaz web de Mercurial permite a los usuarios descargar
 un conjunto de cualquier revisión.  Este fichero contendrá una réplica
 del directorio de trabajo en la revisión en cuestión, pero no
 contendrá una copia de los datos del repositorio.
@@ -943,12 +943,12 @@ opciones de configuración para establecer. Todas ellas en la sección
   de palabras extraídas de la lista de abajo.
   \begin{itemize}
   \item[\texttt{bz2}] Un fichero \command{tar} con el método de
-    compresión \texttt{bzip2}.  Tiene la mejor taza de compresión,
+    compresión \texttt{bzip2}.  Tiene la mejor tasa de compresión,
     pero usa más tiempo de procesamiento en el servidor.
   \item[\texttt{gz}] Un fichero \command{tar}, comprimido con
     \texttt{gzip}.
   \item[\texttt{zip}] Un fichero \command{zip}, comprimido con LZW.
-    Este formato posee la peor tasa de compresió, pero es muy usado en
+    Este formato posee la peor tasa de compresión, pero es muy usado en
     el mundo Windows.
   \end{itemize}
   Si da una lista vacía o no tiene la entrada
