@@ -4,26 +4,8 @@ sources := \
 	00book.tex \
 	99book.bib \
 	99defs.tex \
-	build_id.tex \
-	branch.tex \
-	cmdref.tex \
-	collab.tex \
-	concepts.tex \
-	daily.tex \
-	filenames.tex \
-	hg_id.tex \
-	hgext.tex \
-	hook.tex \
-	intro.tex \
-	mq.tex \
-	mq-collab.tex \
-	mq-ref.tex \
-	preface.tex \
-	srcinstall.tex \
-	template.tex \
-	tour-basic.tex \
-	tour-merge.tex \
-	undo.tex
+	app*.tex \
+	ch*.tex
 
 image-sources := \
 	feature-branches.dot \
