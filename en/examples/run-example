@@ -61,9 +61,10 @@ class example:
     
     timeout = 10
 
-    def __init__(self, name, verbose):
+    def __init__(self, name, verbose, keep_change):
         self.name = name
         self.verbose = verbose
+        self.keep_change = keep_change
         self.poll = select.poll()
 
     def parse(self):
@@ -320,7 +321,11 @@ class example:
             return False
         else:
             print >> sys.stderr, '\nOutput of %s has changed!' % base
-            os.system('diff -u %s %s 1>&2' % (oldname, errname))
+            if self.keep_change:
+                os.rename(errname, oldname)
+                return False
+            else:
+                os.system('diff -u %s %s 1>&2' % (oldname, errname))
             return True
 
 def print_help(exit, msg=None):
@@ -330,19 +335,23 @@ def print_help(exit, msg=None):
     print >> sys.stderr, 'Options:'
     print >> sys.stderr, '  -a --all       run all tests in this directory'
     print >> sys.stderr, '  -h --help      print this help message'
+    print >> sys.stderr, '     --help      keep new output as desired output'
     print >> sys.stderr, '  -v --verbose   display extra debug output'
     sys.exit(exit)
 
 def main(path='.'):
     opts, args = getopt.getopt(sys.argv[1:], '?ahv',
-                               ['all', 'help', 'verbose'])
+                               ['all', 'help', 'keep', 'verbose'])
     verbose = False
     run_all = False
+    keep_change = False
     for o, a in opts:
         if o in ('-h', '-?', '--help'):
             print_help(0)
         if o in ('-a', '--all'):
             run_all = True
+        if o in ('--keep',):
+            keep_change = True
         if o in ('-v', '--verbose'):
             verbose = True
     errs = 0
@@ -355,7 +364,7 @@ def main(path='.'):
                 errs += 1
                 continue
             if stat.S_ISREG(st.st_mode) and st.st_mode & 0111:
-                if example(a, verbose).run():
+                if example(a, verbose, keep_change).run():
                     errs += 1
             else:
                 print >> sys.stderr, '%s: not a file, or not executable' % a
@@ -376,7 +385,7 @@ def main(path='.'):
                     raise
                 continue
             if stat.S_ISREG(st.st_mode) and st.st_mode & 0111:
-                if example(pathname, verbose).run():
+                if example(pathname, verbose, keep_change).run():
                     errs += 1
         print >> open(os.path.join(path, '.run'), 'w'), time.asctime()
     else:
