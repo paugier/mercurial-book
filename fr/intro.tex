@@ -34,89 +34,85 @@ modifiés.
 gestion de source facilite le travail collaboratif. Par exemple, quand
 plusieurs personnes font, plus ou moins simultannéement, des modifications
 incompatibles, le logiciel vous aidera à identifier et résoudre les conflits.
-\item It can help you to recover from mistakes.  If you make a change
-  that later turns out to be in error, you can revert to an earlier
-  version of one or more files.  In fact, a \emph{really} good
-  revision control tool will even help you to efficiently figure out
-  exactly when a problem was introduced (see
-  section~\ref{sec:undo:bisect} for details).
-\item It will help you to work simultaneously on, and manage the drift
-  between, multiple versions of your project.
+\item L'outil vous aidera à réparer vos erreurs. Si vous effectuez un changement
+qui se révèlera être une erreur, vous pourrez revenir fiablement à une version
+antérieur d'une fichier ou même d'un ensemble de fichier. En fait, un outil de
+gestion de source \emph{vraiment} efficace vous permettra d'identifier à quel
+moment le problème est apparu (voir la section~\ref{sec:undo:bisect} pour plus
+de détails).
+\item L'outil vous permettra aussi de travailler sur plusieurs versions différentes
+de votre projet et à gérer l'écart entre chaque.
 \end{itemize}
-Most of these reasons are equally valid---at least in theory---whether
-you're working on a project by yourself, or with a hundred other
-people.
+La plupart de ces raisons ont autant d'importances---du moins en théorie--- que
+vous travailliez sur un projet pour vous, ou avec une centaine d'autres
+personnes.
 
-A key question about the practicality of revision control at these two
-different scales (``lone hacker'' and ``huge team'') is how its
-\emph{benefits} compare to its \emph{costs}.  A revision control tool
-that's difficult to understand or use is going to impose a high cost.
+Une question fondamental à propos des outils de gestion de source, qu'il s'agisse
+du projet d'une personne ou d'une grande équipe, est quelles sont ses  
+\emph{avantages} par rapport à ses \emph{coût}. Un outil qui est difficile à 
+utiliser ou à comprendre exigera un effort d'adoption.
 
-A five-hundred-person project is likely to collapse under its own
-weight almost immediately without a revision control tool and process.
-In this case, the cost of using revision control might hardly seem
-worth considering, since \emph{without} it, failure is almost
-guaranteed.
+Un projet de cinq milles personnnes s'effondrera très certainement de lui même
+sans aucun processus et outil de gestion de source. Dans ce cas, le coût 
+d'utilisation d'un logiciel de gestion de source est dérisoire, puisque 
+\emph{sans}, l'échec est presque garanti.
 
-On the other hand, a one-person ``quick hack'' might seem like a poor
-place to use a revision control tool, because surely the cost of using
-one must be close to the overall cost of the project.  Right?
+D'un autre coté, un ``rapide hack'' d'une personnne peut sembler un contexte
+bien pauvre pour utiliser un outil de gestion de source, car, bien évidement
+le coût d'utilisation dépasse le coût total du projet. N'est ce pas ?
 
-Mercurial uniquely supports \emph{both} of these scales of
-development.  You can learn the basics in just a few minutes, and due
-to its low overhead, you can apply revision control to the smallest of
-projects with ease.  Its simplicity means you won't have a lot of
-abstruse concepts or command sequences competing for mental space with
-whatever you're \emph{really} trying to do.  At the same time,
-Mercurial's high performance and peer-to-peer nature let you scale
-painlessly to handle large projects.
+Mercurial supporte ces \emph{deux} échelles de travail. Vous pouvez apprendre
+les bases en juste quelques minutes, et, grâce à sa performance, vous pouvez
+l'utiliser avec facilité sur le plus petit des projets. Cette simplicité 
+signifie que vous n'avez pas de concepts obscures ou de séquence de commandes
+défiant l'imagination, complètement décorrelé de \emph{ce que vous êtes 
+vraiment entrain de faire}. En même temps, ces mêmes performances et sa 
+nature ``peer-to-peer'' vous permet d'augmenter, sans difficulté, son 
+utilisation à de très grand projet.
 
-No revision control tool can rescue a poorly run project, but a good
-choice of tools can make a huge difference to the fluidity with which
-you can work on a project.
+Aucun outil de gestion de source ne peut sauver un projet mal mené, mais un
+bon outil peut faire une grande différence dans la fluidité avec lequel 
+vous pourrez travailler avec.
 
-\subsection{The many names of revision control}
+\subsection{Les multiples noms de la gestion de source}
 
-Revision control is a diverse field, so much so that it doesn't
-actually have a single name or acronym.  Here are a few of the more
-common names and acronyms you'll encounter:
+La gestion de source est un domaine divers, tellement qu'il n'existe pas
+une seul nom ou acronyme pour le désigner. Voilà quelqu'uns des noms ou 
+acronymes que vous rencontrerez le plus souvent:
 \begin{itemize}
-\item Revision control (RCS)
-\item Software configuration management (SCM), or configuration management
-\item Source code management
-\item Source code control, or source control
-\item Version control (VCS)
+\item \textit{Revision control (RCS)} ;
+\item Software configuration management (SCM), ou \textit{configuration management} ;
+\item \textit{Source code management} ;
+\item \textit{Source code control}, ou \textit{source control} ;
+\item \textit{Version control (VCS)}.
 \end{itemize}
-Some people claim that these terms actually have different meanings,
-but in practice they overlap so much that there's no agreed or even
-useful way to tease them apart.
 
-\section{A short history of revision control}
+\notebox {
+Note du traducteur : J'ai conservé la liste des noms en anglais pour des raisons de commodité (ils sont plus ``googelable''). J'ai choisi de conserver le terme ``gestion de sources'' comme traduction unique dans l'ensemble du document.
 
-The best known of the old-time revision control tools is SCCS (Source
-Code Control System), which Marc Rochkind wrote at Bell Labs, in the
-early 1970s.  SCCS operated on individual files, and required every
-person working on a project to have access to a shared workspace on a
-single system.  Only one person could modify a file at any time;
-arbitration for access to files was via locks.  It was common for
-people to lock files, and later forget to unlock them, preventing
-anyone else from modifying those files without the help of an
-administrator.  
+En outre, j'ai opté pour conserver l'ensemble des opérations de Mercurial (commit, push, pull,...) en anglais, là aussi pour faciliter la lecture d'autres documents en anglais, et 
+aussi son utilisation.
+}
 
-Walter Tichy developed a free alternative to SCCS in the early 1980s;
-he called his program RCS (Revison Control System).  Like SCCS, RCS
-required developers to work in a single shared workspace, and to lock
-files to prevent multiple people from modifying them simultaneously.
+Certains personnes prétendent que ces termes ont en fait des sens
+différents mais en pratique ils se recouvrent tellement qu'il n'y a pas
+réellement de manière pertinente de les distinguer.
 
-Later in the 1980s, Dick Grune used RCS as a building block for a set
-of shell scripts he initially called cmt, but then renamed to CVS
-(Concurrent Versions System).  The big innovation of CVS was that it
-let developers work simultaneously and somewhat independently in their
-own personal workspaces.  The personal workspaces prevented developers
-from stepping on each other's toes all the time, as was common with
-SCCS and RCS.  Each developer had a copy of every project file, and
-could modify their copies independently.  They had to merge their
-edits prior to committing changes to the central repository.
+\section{Une courte histoire de la gestion de source}
+
+Le plus célèbre des anciens outils de gestion de source est \textit{SCCS (Source
+Code Control System)}, que Marc Rochkind conçu dans les laboratoire de recherche de Bell 
+(\textit{Bell Labs}), dans le début des années 70. \textit{SCCS} ne fonctionner que sur des fichiers individuels, et demandait à personne travaillant sur le projet d'avoir un accès à un répertoire de travail commun, sur un unique système.
+Seulement une personne pouvait modifier un fichier au même moment, ce fonctionnement était assuré par l'utilisation de verrou (``lock''). Il était courant que des personnes ne vérouille
+des fichiers, et plus tard, oublie de le dévérouiller; empêchant  n'importe qui d'autre de 
+travailler sur ces fichiers sans l'aide de l'administrateur...
+
+Walter Tichy a développé une alternative libre à \textit{SCCS} au début des années 80, qu'il
+nomma \textit{RSC (Revison Control System)}.  Comme \textit{SCCS}, \textit{RCS}
+demander aux développeurs de travailler sur le même répertoire partagé, et de vérouiller les
+fichiers pour se prémunir de tout conflit issue de modifications concurrentes.
+
+Un peu plus tard dans les années 1980, Dick Grune utilisa \textit{RCS} comme une brique de base pour un ensemble de scripts \textit{shell} qu'il intitula cmt, avant de la renommer en \textit{CVS (Concurrent Versions System)}.  La grande innovation de CVS était que les développeurs pouvaient travailler simultanéement and indépendament dans leur propre espace de travail. Ces espaces de travail privés assuraient que les développeurs ne se marche mutuellement sur les pieds, comme c'était souvent le cas avec RCS et SCCS. Chaque développeur disposait donc de sa copie de tout les fichiers du projet, et ils pouvaient donc librement les modifier. Ils devaient néanmoins effectuer la ``fusion'' (\textit{``merge''}) de leur fichiers, avant d'effectuer le ``commit'' de leur modification sur le dépôt central.
 
 Brian Berliner took Grune's original scripts and rewrote them in~C,
 releasing in 1989 the code that has since developed into the modern
