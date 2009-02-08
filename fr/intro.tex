@@ -114,244 +114,221 @@ fichiers pour se prémunir de tout conflit issue de modifications concurrentes.
 
 Un peu plus tard dans les années 1980, Dick Grune utilisa \textit{RCS} comme une brique de base pour un ensemble de scripts \textit{shell} qu'il intitula cmt, avant de la renommer en \textit{CVS (Concurrent Versions System)}.  La grande innovation de CVS était que les développeurs pouvaient travailler simultanéement and indépendament dans leur propre espace de travail. Ces espaces de travail privés assuraient que les développeurs ne se marche mutuellement sur les pieds, comme c'était souvent le cas avec RCS et SCCS. Chaque développeur disposait donc de sa copie de tout les fichiers du projet, et ils pouvaient donc librement les modifier. Ils devaient néanmoins effectuer la ``fusion'' (\textit{``merge''}) de leur fichiers, avant d'effectuer le ``commit'' de leur modification sur le dépôt central.
 
-Brian Berliner took Grune's original scripts and rewrote them in~C,
-releasing in 1989 the code that has since developed into the modern
-version of CVS.  CVS subsequently acquired the ability to operate over
-a network connection, giving it a client/server architecture.  CVS's
-architecture is centralised; only the server has a copy of the history
-of the project.  Client workspaces just contain copies of recent
-versions of the project's files, and a little metadata to tell them
-where the server is.  CVS has been enormously successful; it is
-probably the world's most widely used revision control system.
+Brian Berliner repris les scripts de Grune's et les réécris en~C, qu'il publia en 1989. Depuis, ce code a été modifié jusqu'à devenir la version moderne de CVS. CVS a acquis ainsi la capacité de fonctionner en réseau, le transformant son architecture en client/serveur. L'architecture de CVS est centralisée, seul le serveur a une copie de l'historique du projet. L'espace de travail client ne contient qu'une copie de la dernière version du projet, et quelques métadonnées pour indiquer où le serveur se trouve. CVS a été un grand succès, aujourd'hui c'est probablement l'outil de gestion de contrôle le plus utilisé au monde. 
 
-In the early 1990s, Sun Microsystems developed an early distributed
-revision control system, called TeamWare.  A TeamWare workspace
-contains a complete copy of the project's history.  TeamWare has no
-notion of a central repository.  (CVS relied upon RCS for its history
-storage; TeamWare used SCCS.)
+Au début des années 1990, Sun Microsystmes développa un premier outil de gestion de source distribué, nommé TeamWare. Un espace de travail TeamWare contient une copie complète de l'historique du projet. TeamWare n'a pas de notion de dépot central. (CVS utilisé RCS pour le stockage de l'historique, TeamWare utilisé SCCS).
 
-As the 1990s progressed, awareness grew of a number of problems with
-CVS.  It records simultaneous changes to multiple files individually,
-instead of grouping them together as a single logically atomic
-operation.  It does not manage its file hierarchy well; it is easy to
-make a mess of a repository by renaming files and directories.  Worse,
-its source code is difficult to read and maintain, which made the
-``pain level'' of fixing these architectural problems prohibitive.
+Alors que les années 1990 avancé, les utilisateurs ont pris conscience d'un certain nombre de problème avec CVS. Il enregistrait simultanéement des modifications sur différents fichier individuellement, au lieu de les regrouper dans une seule opération cohérente et atomique. Il ne gère pas bien sa hiérarchie de fichier, il est donc assez aisé de créer le chaos en renommant les fichiers et les répertoires. Pire encore, son code source est difficile à lire et à maintenir, ce qui agrandit largement le ``niveau de souffrance'' associé à la réparation de ces problèmes d'architecture de manière prohibitive. 
 
-In 2001, Jim Blandy and Karl Fogel, two developers who had worked on
-CVS, started a project to replace it with a tool that would have a
-better architecture and cleaner code.  The result, Subversion, does
-not stray from CVS's centralised client/server model, but it adds
-multi-file atomic commits, better namespace management, and a number
-of other features that make it a generally better tool than CVS.
-Since its initial release, it has rapidly grown in popularity.
 
-More or less simultaneously, Graydon Hoare began working on an
-ambitious distributed revision control system that he named Monotone.
-While Monotone addresses many of CVS's design flaws and has a
-peer-to-peer architecture, it goes beyond earlier (and subsequent)
-revision control tools in a number of innovative ways.  It uses
-cryptographic hashes as identifiers, and has an integral notion of
-``trust'' for code from different sources.
+En 2001, Jim Blandy et Karl Fogel, deux développeurs qui avaient travaillé sur CVS, initialisèrent un projet pour le remplacer par un outil qui aurait une meilleur architecture et un code plus propre. Le résultat, Subversion, ne quitte pas le modèle centralisé et client/server de CVS, mais ajoute les opérations de ``commit'' atomique sur de multiples fichier, une meilleur gestion des espaces de noms, et d'autres fonctionnalités qui en font un meilleur outil que CVS. Depuis sa première publication, il est rapidement devenu très populaire.
 
-Mercurial began life in 2005.  While a few aspects of its design are
-influenced by Monotone, Mercurial focuses on ease of use, high
-performance, and scalability to very large projects.
+Plus ou moins de manière simultanné, Graydon Hoare a commencé sur l'ambitieux système de gestion distribué Monotone. Bien que Monotone corrige plusieurs défaut de CVS's tout en offrant une architecture ``peer-to-peer'', il va aussi plus loin que la plupart des outils de révision de manière assez innovante. Il utilise des ``hash'' cryptographique comme identifiant, et il a notion complète de ``confiance'' du code issues de différentes sources.
 
-\section{Trends in revision control}
+Mercurial est né en 2005. Bien que très influencé par Monotone, Mercurial se concentre sur la facilité d'utilisation, les performances et la capacité à monter en charge pour de très grand projets.
 
-There has been an unmistakable trend in the development and use of
-revision control tools over the past four decades, as people have
-become familiar with the capabilities of their tools and constrained
-by their limitations.
+\section{Tendances de la gestion de source}
 
-The first generation began by managing single files on individual
-computers.  Although these tools represented a huge advance over
-ad-hoc manual revision control, their locking model and reliance on a
-single computer limited them to small, tightly-knit teams.
+Il y a eu une tendance évidente dans le développement et l'utilisation d'outil de gestion de source depuis les quatre dernière décades, au fur et à mesure que les utilisateurs se sont habitués à leur outils et se sont sentis contraint par leur limitations.
 
-The second generation loosened these constraints by moving to
-network-centered architectures, and managing entire projects at a
-time.  As projects grew larger, they ran into new problems.  With
-clients needing to talk to servers very frequently, server scaling
-became an issue for large projects.  An unreliable network connection
-could prevent remote users from being able to talk to the server at
-all.  As open source projects started making read-only access
-available anonymously to anyone, people without commit privileges
-found that they could not use the tools to interact with a project in
-a natural way, as they could not record their changes.
+La première génération commença simplement par gérer un fichier unique sur un ordinateur individuel. Cependant, même si ces outils présentè-rent une grande avancée par rapport à la gestion manuel des versions, leur modèle de vérouillage et leur utilisation limité à un seul ordinateur rendaient leur utilisation possible uniquement dans une très petite équipe. 
 
-The current generation of revision control tools is peer-to-peer in
-nature.  All of these systems have dropped the dependency on a single
-central server, and allow people to distribute their revision control
-data to where it's actually needed.  Collaboration over the Internet
-has moved from constrained by technology to a matter of choice and
-consensus.  Modern tools can operate offline indefinitely and
-autonomously, with a network connection only needed when syncing
-changes with another repository.
+La seconde génération a assoupli ces contraintes en adoptant une architecture réseau et centralisé, permettant de gérer plusieurs projets entiers en même temps. Alors que les projets grandirent en taille, ils rencontrèrent de nouveau problèmes. Avec les clients discutant régulièrement avec le serveurs, la monte en charge devint un réellement problème sur les gros projets. Une connexion réseau peu fiable pouvant empêcher simplement les utilisateurs distant de discuter avec le serveur. Alors que les projets \textit{Open Source} commencèrent à mettre en place des accès en lecture seule disponible anonymement, les utilisateurs sans les privilèges de ``commit'' réalisèrent qu'ils ne pouvaient pas utiliser les outils pour collaboraient naturellement avec le projet, comme ils ne pouvaient pas non plus enregistrer leurs modifications.
 
-\section{A few of the advantages of distributed revision control}
+La génération actuelle des outils de gestion de source est ``peer-to-peer'' par nature. Tout ces systèmes ont abandonné la dépendance à un serveur central, et ont permis à leur utilisateur de distribué les données de leur gestion de source à qui en a besoin. La collaboration à travers Internet a transformée la contrainte technologique à une simple question de choix et de consencus. Les outils moderne peuvent maintenant fonctionner en mode déconnecté sans limite et de manière autonome, la connexion au réseau n'étant nécessaire que pour synchroniser les modifications avec les autres dépots.
 
-Even though distributed revision control tools have for several years
-been as robust and usable as their previous-generation counterparts,
-people using older tools have not yet necessarily woken up to their
-advantages.  There are a number of ways in which distributed tools
-shine relative to centralised ones.
+\section{Quelques avantages des gestionnaire de source distribué}
 
-For an individual developer, distributed tools are almost always much
-faster than centralised tools.  This is for a simple reason: a
-centralised tool needs to talk over the network for many common
-operations, because most metadata is stored in a single copy on the
-central server.  A distributed tool stores all of its metadata
-locally.  All else being equal, talking over the network adds overhead
-to a centralised tool.  Don't underestimate the value of a snappy,
-responsive tool: you're going to spend a lot of time interacting with
-your revision control software.
+Même si les gestionnaire de source distribué sont depuis plusieurs années
+assez robuste et aussi utilisable que leur prédécésseurs, les utilisateurs
+d'autres outils n'ont pas encore étaient sensibilisé. Les gestionnaires
+de sources distribué se distingue particulièrement de leurs équivalents
+centralisé de nombreuse manière.
 
-Distributed tools are indifferent to the vagaries of your server
-infrastructure, again because they replicate metadata to so many
-locations.  If you use a centralised system and your server catches
-fire, you'd better hope that your backup media are reliable, and that
-your last backup was recent and actually worked.  With a distributed
-tool, you have many backups available on every contributor's computer.
+Pour un développeur individuel, ils restent beaucoup plus rapide que les
+outils centralisés. Cela pour une raison simple: un outil centralisé doit
+toujours discuter à travers le réseau pour la plupart des opérations, car
+presque toutes les métadonnées sont stockées sur la seule copie du serveur
+central. Un outil distribué stocke toute ses métadonnées localement. À tâche
+égale, effectuer un échange avec le réseau ajoute un délai aux outils 
+centralisés. Ne sous estimez pas la valeur d'un outil rapide: vous allez
+passer beaucoup de temps à interagir avec un logiciel de gestion de sources.
 
-The reliability of your network will affect distributed tools far less
-than it will centralised tools.  You can't even use a centralised tool
-without a network connection, except for a few highly constrained
-commands.  With a distributed tool, if your network connection goes
-down while you're working, you may not even notice.  The only thing
-you won't be able to do is talk to repositories on other computers,
-something that is relatively rare compared with local operations.  If
-you have a far-flung team of collaborators, this may be significant.
+Les outils distribué sont complètement indépendant des aléas de votre serveur,
+encore une fois car ils répliquent les métadonnées à tellement d'endoit. Si
+votre serveur central prend feu, vous avez intérêt à ce que les média de 
+sauvegarde soient fiable, et que votre dernier ``backup'' soit récent et
+fonctionne sans problème. Avec un outil distribué, vous avez autant de 
+``backup'' que de contributeurs.
 
-\subsection{Advantages for open source projects}
+En outre, la fiabilité de votre réseau affectera beaucoup moins les
+outils distribué. Vous ne pouvez même pas utiliser un outil centralisé
+sans connexion réseau, à l'exception de quelques commandes, très limités. 
+Avec un outil distribué, si vous connexion réseau tombe pendant que vous
+travaillez, vous pouvez ne même pas vous en rendre compte. La seule chose
+que vous ne serez pas capable de faire sera de communiquer avec des dépôts
+distants, opération somme toute assez rare par comparaison aux opérations
+locales. Si vous avez une (TODO:far-flung???) équipe de collaborateurs, 
+ceci peut être significatif.
 
-If you take a shine to an open source project and decide that you
-would like to start hacking on it, and that project uses a distributed
-revision control tool, you are at once a peer with the people who
-consider themselves the ``core'' of that project.  If they publish
-their repositories, you can immediately copy their project history,
-start making changes, and record your work, using the same tools in
-the same ways as insiders.  By contrast, with a centralised tool, you
-must use the software in a ``read only'' mode unless someone grants
-you permission to commit changes to their central server.  Until then,
-you won't be able to record changes, and your local modifications will
-be at risk of corruption any time you try to update your client's view
-of the repository.
+\subsection{Avantages pour les projets \textit{Open Source}}
 
-\subsubsection{The forking non-problem}
+Si vous prenez goût à un projet \textit{Open Source} et que vous
+décidez de commencer à toucher à son code, et que le projet utilise
+un gestionnaire de source distribué, vous êtes immédiatement un "pair"
+avec les personnes formant le ``coeur'' du projet. Si ils publient
+leurs dépôts, vous pouvez immédiatement copier leurs historiques de
+projet, faire des modifications, enregistrer votre travail en utilisant
+les même outils qu'eux. Par comparaison, avec un outil centralisé, vous
+devez utiliser un logiciel en mode ``lecture seule'' à moins que 
+quelqu'un ne vous donne les privilèges de ``commit'' sur le serveur
+central. Avant ça, vous ne serez pas capable d'enregistrer vos 
+modifications, et vos propres modifications risqueront de se 
+corrompre chaque fois que vous essayerez de mettre à jour à votre
+espace de travail avec le serveur central.
 
-It has been suggested that distributed revision control tools pose
-some sort of risk to open source projects because they make it easy to
-``fork'' the development of a project.  A fork happens when there are
-differences in opinion or attitude between groups of developers that
-cause them to decide that they can't work together any longer.  Each
-side takes a more or less complete copy of the project's source code,
-and goes off in its own direction.
+\subsubsection{Le non-problème du \textit{fork}}
 
-Sometimes the camps in a fork decide to reconcile their differences.
-With a centralised revision control system, the \emph{technical}
-process of reconciliation is painful, and has to be performed largely
-by hand.  You have to decide whose revision history is going to
-``win'', and graft the other team's changes into the tree somehow.
-This usually loses some or all of one side's revision history.
+Il a été souvent suggeré que les gestionnaires de source distribués
+posent un risque pour les projets \textit{Open Source} car ils 
+facilitent grandement la création de ``fork''\footnote{NdT:Création 
+d'une version alternative du logiciel}. %%% TODO: Link to Wikipedia
+Un ``fork'' apparait quand il y des divergences d'opinion ou d'attitude
+au sein d'un groupe de développeurs qui aboutit à la décision de ne 
+plus travail ensemble. Chacun parti s'empare d'une copie plus ou moins
+complète du code source du projet et continue dans sa propre direction.
 
-What distributed tools do with respect to forking is they make forking
-the \emph{only} way to develop a project.  Every single change that
-you make is potentially a fork point.  The great strength of this
-approach is that a distributed revision control tool has to be really
-good at \emph{merging} forks, because forks are absolutely
-fundamental: they happen all the time.  
+Parfois ces différents partis décide de se réconcilier. Avec un 
+serveur central, l'aspect \emph{technique} de cette réconciliation
+est un processus douloureux, et essentiellement manuel. Vous devez
+décider quelle modification est ``la gagnante'', et replacer, par un
+moyen ou un autre, les modifications de l'autre équipe dans l'arboresence
+du projet. Ceci implique généralement la perte d'une partie l'historique 
+d'un des partie, ou même des deux.
 
-If every piece of work that everybody does, all the time, is framed in
-terms of forking and merging, then what the open source world refers
-to as a ``fork'' becomes \emph{purely} a social issue.  If anything,
-distributed tools \emph{lower} the likelihood of a fork:
+Ce que les outils distribués permettent à ce sujet est probablement
+la \emph{meilleur} façon de développer un projet. Chaque modification
+que vous effectué est potentiellement un ``fork''. La grande force de 
+cette approche est que les gestionnaire de source distribué doit être
+vraiment très efficase pour \emph{fusionner}\footnote{NdT:j'ai choisi de
+traduire ici \textit{merging} par ``fusionner'' pour des raisons de clarté}
+des ``forks'', car les ``forks'', dans ce contexte, arrivent tout le
+temps.
+
+Si chaque altération que n'importe qui effectue, à tout moment, est vu
+comme un ``fork'' à fusionner, alors ce que le monde de l'\textit{Open 
+Source} voit comme un ``fork'' devient \emph{uniquement} une problématique 
+social. En fait, les outils de gestion de source distribué \emph{réduisent} 
+les chances de ``fork'':
 \begin{itemize}
-\item They eliminate the social distinction that centralised tools
-  impose: that between insiders (people with commit access) and
-  outsiders (people without).
-\item They make it easier to reconcile after a social fork, because
-  all that's involved from the perspective of the revision control
-  software is just another merge.
+\item Ils éliminent la distinction social qu'imposent les outils centralisés
+	entre les membres du projets (ce qui ont accès au ``comit'') et ceux de l'
+	extérieur (ce qui ne l'ont pas).
+\item Ils rendent plus facile la réconciliation après un ``fork'' social, car
+	tout ce qu'elle implique est juste une simple fusion.
 \end{itemize}
 
-Some people resist distributed tools because they want to retain tight
-control over their projects, and they believe that centralised tools
-give them this control.  However, if you're of this belief, and you
-publish your CVS or Subversion repositories publically, there are
-plenty of tools available that can pull out your entire project's
-history (albeit slowly) and recreate it somewhere that you don't
-control.  So while your control in this case is illusory, you are
-forgoing the ability to fluidly collaborate with whatever people feel
-compelled to mirror and fork your history.
+Certaines personnes font de la résistance envers les gestionnaires de source
+distribués parce qu'ils veulent garder un contrôle ferme de leur projet, et
+ils pensent que les outils centralisés leur fournissent ce contrôle. Néanmoins,
+si c'est votre cas, sachez que si vous publier votre dépôt CVS ou Subversion
+de manière publique, il existe une quantité d'outils disponibles pour récupérer
+entièrement votre projet et son historique (quoique lentement) et le récréer 
+ailleurs, sans votre contrôle. En fait, votre contrôle sur votre projet est 
+illusoire, vous ne faites qu'interdire à vos collaborateurs de travailler
+de manière fluide, en disposant d'un miroir ou d'un ``fork'' de votre
+historique.
+%%%TODO: Fussy, those last sentences are not really well translated:
+%However, if you're of this belief, and you publish your CVS or Subversion 
+%repositories publically, there are plenty of tools available that can pull 
+%out your entire project's history (albeit slowly) and recreate it somewhere 
+%that you don't control.  So while your control in this case is illusory, you are
+%forgoing the ability to fluidly collaborate with whatever people feel
+%compelled to mirror and fork your history.
 
-\subsection{Advantages for commercial projects}
+\subsection{Avantages pour les projets commerciaux}
 
-Many commercial projects are undertaken by teams that are scattered
-across the globe.  Contributors who are far from a central server will
-see slower command execution and perhaps less reliability.  Commercial
-revision control systems attempt to ameliorate these problems with
-remote-site replication add-ons that are typically expensive to buy
-and cantankerous to administer.  A distributed system doesn't suffer
-from these problems in the first place.  Better yet, you can easily
-set up multiple authoritative servers, say one per site, so that
-there's no redundant communication between repositories over expensive
-long-haul network links.
+Beaucoup de projets commerciaux sont réalisé par des équipes éparpillées
+à travers le globe. Les contributeurs qui sont loin du serveur central
+devront subir des commandes lentes et même parfois peu fiable. Les 
+solutions propriétaires gestion de source, tentent de palier ce problème 
+avec des réplications de site distant qui sont à la fois coûteuses à mettre
+en place et lourdes à administrer. A un système distribué ne souffre pas
+de ce genre de problèmes. En outre, il est très aisé de mettre en place
+plusieurs serveurs de références, disont un par site, de manière à ce qu'il
+n'y est pas de communication redondante entre les dépôts, sur une connexion
+longue distance souvent onéreuse.
 
-Centralised revision control systems tend to have relatively low
-scalability.  It's not unusual for an expensive centralised system to
-fall over under the combined load of just a few dozen concurrent
-users.  Once again, the typical response tends to be an expensive and
-clunky replication facility.  Since the load on a central server---if
-you have one at all---is many times lower with a distributed
-tool (because all of the data is replicated everywhere), a single
-cheap server can handle the needs of a much larger team, and
-replication to balance load becomes a simple matter of scripting.
+Les systèmes de gestion de source supportent généralement assez mal la 
+monté en charge. Ce n'est pas rare pour un gestionnaire de source centralisé 
+pourtant onéreux de s'effondrer sous la charge combinée de juste une douzaine 
+d'utilisateurs concurrents. Une fois encore, la réponse à cette problématique 
+est généralement encore la mise en place d'un ensemble complexe de serveurs
+synchronisé par un mécanisme de réplication. Dans le cas d'un gestionnaire
+de source distribué, la charge du serveur central--- si vous avez un--- est
+plusieurs fois inférieur (car toutes les données sont déjà répliqués ailleurs),
+un simple server, pas très cher, peut gérer les besoins d'une plus grande
+équipe, et la réplication pour balancer la charge devient simplement le
+travail d'un simple script.
 
-If you have an employee in the field, troubleshooting a problem at a
-customer's site, they'll benefit from distributed revision control.
-The tool will let them generate custom builds, try different fixes in
-isolation from each other, and search efficiently through history for
-the sources of bugs and regressions in the customer's environment, all
-without needing to connect to your company's network.
+Si vous avez des employés sur le terrain, entrain de chercher à résoudre sur
+le site d'un client, ils bénéficieront aussi d'un gestionnaire de source
+distribués. Cet outil leur permettra de générer des versions personnalisées,
+d'essayer différentes solutions, en les isolant aisément les une des autres,
+et de recherche efficasement à travers l'historique des sources, la cause
+des bugs ou des régression, tout ceci sans avoir besoin de la moindre 
+connexion au réseau de votre compagnie.
 
-\section{Why choose Mercurial?}
+\section{Pourquoi choisir Mercurial?}
 
-Mercurial has a unique set of properties that make it a particularly
-good choice as a revision control system.
+Mercurial a plusieurs caractéristiques qui en font un choix particulièrement
+pertinent pour la gestion de source:
 \begin{itemize}
-\item It is easy to learn and use.
-\item It is lightweight.
-\item It scales excellently.
-\item It is easy to customise.
+	\item Il est facile à apprendre et à utiliser ;It is easy to learn and use.
+	\item il est léger et performant ;
+	\item il monte facilement en charge ; 
+	\item il est facile à personnaliser ;
 \end{itemize}
 
-If you are at all familiar with revision control systems, you should
-be able to get up and running with Mercurial in less than five
-minutes.  Even if not, it will take no more than a few minutes
-longer.  Mercurial's command and feature sets are generally uniform
-and consistent, so you can keep track of a few general rules instead
-of a host of exceptions.
+Si vous êtes déjà familier d'un outil de gestion de source, vous serez
+capable de l'utiliser en moins de 5 minutes. Sinon, ça ne sera pas beaucoup
+plus long\footnote{NdT: Pour appuyer le propos de l'auteur, je signale que 
+j'utilise Mercurial comme outil d'initiation à la gestion de contrôle dans
+des travaux pratique à l'ESME Sudria (\url{http://www.esme.fr}) et que les
+élèves le prennent en main sans difficulté majeur malgré l'approche distribuée.}. 
+Les commandes utilisées par Mercurial, comme ses fonctionnalités, sont 
+généralement uniformes et cohérentes, et vous pouvez donc ainsi garder en tête 
+simplement quelques règles générales, plutôt qu'un lot complexe d'exceptions.
 
-On a small project, you can start working with Mercurial in moments.
-Creating new changes and branches; transferring changes around
-(whether locally or over a network); and history and status operations
-are all fast.  Mercurial attempts to stay nimble and largely out of
-your way by combining low cognitive overhead with blazingly fast
-operations.
+Sur un petit projet, vous pouvez commencer à travailler avec Mercurial en
+quelques instants. Ajouter des modifications ou des branches, transférer 
+ces modifications (localement ou via le réseau), et les opérations 
+d'historique ou de statut sont aussi très rapide. Mercurial reste hors de 
+votre chemin grâce à sa simplicité d'utilisation et sa rapidité d'exécution.
 
-The usefulness of Mercurial is not limited to small projects: it is
-used by projects with hundreds to thousands of contributors, each
-containing tens of thousands of files and hundreds of megabytes of
-source code.
+L'utilité de Mercurial ne se limite pas à des petits projets: il est 
+aussi utilisé par des projets ayant des centaines ou même des milliers
+de contributeurs, avec plusieurs dizaines de milliers de fichiers, et des
+centaines de méga de code source.
 
-If the core functionality of Mercurial is not enough for you, it's
-easy to build on.  Mercurial is well suited to scripting tasks, and
-its clean internals and implementation in Python make it easy to add
-features in the form of extensions.  There are a number of popular and
-useful extensions already available, ranging from helping to identify
-bugs to improving performance.
+Voici une liste non exhaustive des projets complexe ou critique utilisant 
+mercurial :
+%TODO
+% For both spanish and english version, add the following examples:
+\begin{itemize}
+	\item Firefox ;
+	\item OpenSolaris ;
+	\item OpenJDK (utilisant en outre l'extension ``forest'' pour gérer
+	ses sous modules);
+\end{itemize}
+% TODO: Also add appropriate link.
+
+Si les fonctionnalités coeur de Mercurial ne sont pas suffisantes pour vous, 
+il est très aisé de construire dessus. Mercurial est adapté à l'utilisation
+au sein de script, et son implémentation interne en python, propre et claire,
+rend encore plus facile l'ajout de fonctionnalité sous forme d'extension. Il
+en existe déjà un certains nombres de très populaires et très utiles, 
+dont le périmètre va de la recherche de bugs à l'amélioration des performances.
 
 \section{Mercurial compared with other tools}
 
