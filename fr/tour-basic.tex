@@ -1,26 +1,27 @@
-\chapter{A tour of Mercurial: the basics}
+\chapter{Un rapide tour de Mercurial}
 \label{chap:tour-basic}
 
-\section{Installing Mercurial on your system}
+\section{Installer Mercurial sur votre système}
 \label{sec:tour:install}
 
-Prebuilt binary packages of Mercurial are available for every popular
-operating system.  These make it easy to start using Mercurial on your
-computer immediately.
+Des paquetages binaires de Mercurial sont disponible pour tous les plupart
+des systèmes d'exploitation, ce qui rend facile de commencer de suite
+à utiliser Mercurial sur votre ordinateur.
 
 \subsection{Linux}
 
-Because each Linux distribution has its own packaging tools, policies,
-and rate of development, it's difficult to give a comprehensive set of
-instructions on how to install Mercurial binaries.  The version of
-Mercurial that you will end up with can vary depending on how active
-the person is who maintains the package for your distribution.
+Parce que chaque distribution de Linux a ses propres outils de gestion
+de paquets, politique et rythme de développements, il est difficile de
+donner un ensemble instructions fixes pour installer les binaires de
+Mercurial. La version de Mercurial avec laquelle vous vous retrouverez
+dépendera grandement selon l'activité de la personne en charge du paquetage
+pour la distribution.
 
-To keep things simple, I will focus on installing Mercurial from the
-command line under the most popular Linux distributions.  Most of
-these distributions provide graphical package managers that will let
-you install Mercurial with a single click; the package name to look
-for is \texttt{mercurial}.
+Pour rester simple, je me concentrerais sur l'installation de Mercurial
+en ligne de commande, sous les plus courantes des distributions. La 
+plupart des distributions fournissent des gestionnaires graphiques de
+paquetage qui vous permettront d'installer Mercurial en quelques clicks.
+Le paquetage devrait se nommer \textit{mercurial}.
 
 \begin{itemize}
 \item[Debian]
@@ -43,73 +44,79 @@ for is \texttt{mercurial}.
     yum install mercurial
   \end{codesample4}
 
-\item[Ubuntu] Ubuntu's Mercurial package is based on Debian's.  To
-  install it, run the following command.
+\item[Ubuntu] Le paquetage de Mercurial d'Ubuntu est construit sur celui de Debian. Pour
+  l'installer, exécute simplement les commandes suivantes:
   \begin{codesample4}
     apt-get install mercurial
   \end{codesample4}
-  The Ubuntu package for Mercurial tends to lag behind the Debian
-  version by a considerable time margin (at the time of writing, seven
-  months), which in some cases will mean that on Ubuntu, you may run
-  into problems that have since been fixed in the Debian package.
+  Les paquetages Ubuntu pour Mercurial ont tendance à être un peu en retard
+  par rapport au paquetage Debian (au moment de l'écriture de ce livre, un 
+  peu près 7 mois), ce qui signifie que parfois sur Ubuntu, vous risquez
+  de rencontrer des problèmes qui ont été corrigés depuis longtemps dans
+  les paquetages Debian.
 \end{itemize}
 
 \subsection{Solaris}
 
-SunFreeWare, at \url{http://www.sunfreeware.com}, is a good source for a
-large number of pre-built Solaris packages for 32 and 64 bit Intel and
-Sparc architectures, including current versions of Mercurial.
+SunFreeWare, à \url{http://www.saufreeware.com}, est une bonne source 
+pour trouver un vaste nombre de paquet précompiler pour 32 ou 64 bits
+Intel et les architecture Sparc, dont les versions courantes de Mercurial.
 
 \subsection{Mac OS X}
 
-Lee Cantey publishes an installer of Mercurial for Mac OS~X at
-\url{http://mercurial.berkwood.com}.  This package works on both
-Intel-~and Power-based Macs.  Before you can use it, you must install
-a compatible version of Universal MacPython~\cite{web:macpython}.  This
-is easy to do; simply follow the instructions on Lee's site.
+Lee Cantey publie un installeur de Mercurial pour Mac OS~X sur le site 
+\url{http://mercurial.berkwood.com}.  Ce paquetage fonctionne sur les 
+architecture Intel-~et PowerPCC. Avant de vous en servir, vous devez
+installer une version Universel MacPython~\cite{web:macpython}. C'est
+assez facile à faire : suivez simplement les instructions sur le site
+de Lee.
 
-It's also possible to install Mercurial using Fink or MacPorts,
-two popular free package managers for Mac OS X.  If you have Fink,
-use \command{sudo apt-get install mercurial-py25}.  If MacPorts,
-\command{sudo port install mercurial}.
+Il est aussi possible d'installer Mercurial en utilisant Fink ou MacPorts,
+deux outils de gestion de paquetage libre pour Mac OS X. Si vous avez 
+Fink, utiliser \command{sudo fink install mercurial-py25}. Si vous avez 
+acPorts, \command{sudo port install mercurial}.
 
 \subsection{Windows}
 
-Lee Cantey publishes an installer of Mercurial for Windows at
-\url{http://mercurial.berkwood.com}.  This package has no external
-dependencies; it ``just works''.
+Lee Cantey publie aussi un installeur de Mercurial pour Windows sur le site
+\url{http://mercurial.berkwood.com}. Ce paquetage n'a aucune dépendance 
+externe, il fonctionne ``tout court''.
 
 \begin{note}
-  The Windows version of Mercurial does not automatically convert line
-  endings between Windows and Unix styles.  If you want to share work
-  with Unix users, you must do a little additional configuration
-  work. XXX Flesh this out.
+  Le version de Windows de Mercurial ne convertie pas automatiquement
+  les retour chariot Windows et Unix. Si vous désirez partager votre
+  travail avec des utilisateurs Unix, vous devez faire un peu de configuration
+  supllémentaire. XXX En dire plus.
 \end{note}
 
-\section{Getting started}
+\section{Commencer à utiliser Mercurial}
 
-To begin, we'll use the \hgcmd{version} command to find out whether
-Mercurial is actually installed properly.  The actual version
-information that it prints isn't so important; it's whether it prints
-anything at all that we care about.
+Pour commencer, nous utiliserons la commande \hgcmd{version} pour vérifier
+si Mercurial est installé proprement. Les informations affichées sur la 
+version ne sont pas réellement importante en soit, c'est surtout de savoir
+si elles s'affichent qui nous intéresse.
 \interaction{tour.version}
 
-\subsection{Built-in help}
+\subsection{L'aide intégrée}
 
-Mercurial provides a built-in help system.  This is invaluable for those
-times when you find yourself stuck trying to remember how to run a
-command.  If you are completely stuck, simply run \hgcmd{help}; it
-will print a brief list of commands, along with a description of what
-each does.  If you ask for help on a specific command (as below), it
-prints more detailed information.
+Mercurial fournit un système d'aide intégré, ce qui est inestimable quand
+vous vous retrouvez coincé à essayer de vous rappeler comment lancer telle
+ou telle commande. 
+Si c'est le cas, exécuter simplement \hgcmd{help}; il vous aidera à imprimer
+une brève liste de commandes, avec une description de ce qu'elle fait. Si vous
+demandez de l'aide sur une commande spécifique (voir ci dessous), il affichera
+des informations plus détaillés.
 \interaction{tour.help}
-For a more impressive level of detail (which you won't usually need)
-run \hgcmdargs{help}{\hggopt{-v}}.  The \hggopt{-v} option is short
-for \hggopt{--verbose}, and tells Mercurial to print more information
-than it usually would.
+Pour un niveau d'informations encore plus détaillé (ce dont vous aurez rarement
+besoins), exécuter \hgcmdargs{help}{\hggopt{-v}}.  L'option \hggopt{-v} est 
+l'abréviation de \hggopt{--verbose}, et indique à Mercurial d'afficher plus 
+d'information que d'habitude.
 
-\section{Working with a repository}
+\section{Travailler avec un dépot}
 
+Avec Mercurial, tout se déroule au sein du \emph{dépot}\footnote{NdT: Dépôt est
+la traduction que j'ai retenu pour tout l'ouvrage du terme anglais \textit{repository}}.
+Le dépôt d'une projet contient tout les fichiers qui ``appartiennent'' au projet.
 In Mercurial, everything happens inside a \emph{repository}.  The
 repository for a project contains all of the files that ``belong to''
 that project, along with a historical record of the project's files.
