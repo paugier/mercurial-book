@@ -476,60 +476,61 @@ Mercurial peut importer l'historique depuis un dépôt CVS.
 
 \subsection{Commercial tools}
 
-Perforce has a centralised client/server architecture, with no
-client-side caching of any data.  Unlike modern revision control
-tools, Perforce requires that a user run a command to inform the
-server about every file they intend to edit.
+Perforce a une architecture client/server centralisée, sans aucun
+mécanisme de cache de données coté client. Contrairement à la plupart
+des outils modernes de gestion de source, Perforce exige de ses 
+utilisateurs d'exécuter une commande pour informer le serveur
+central de tout fichier qu'il souhaite modifier.
 
-The performance of Perforce is quite good for small teams, but it
-falls off rapidly as the number of users grows beyond a few dozen.
-Modestly large Perforce installations require the deployment of
-proxies to cope with the load their users generate.
-
+Les performances de Perforce sont plutôt bonnes pour des petites
+équipes, mais elles s'effondrent rapidement lorsque le nombre 
+d'utilisateurs augmente au delà de la douzaine. Des installations 
+de Perforce assez large nécessite le déployement de proxies pour 
+supporter la montée en charge associée.
 
 \subsection{Choosing a revision control tool}
 
-With the exception of CVS, all of the tools listed above have unique
-strengths that suit them to particular styles of work.  There is no
-single revision control tool that is best in all situations.
+A l'exception de CVS, tout les outils listés ci dessus ont des 
+forces qui leur sont propres et qui correspondent à certaines
+formes de projet. Il n'y a pas un seul meilleur outil de gestion
+de source qui correspondent le mieux à toutes les situations.
 
-As an example, Subversion is a good choice for working with frequently
-edited binary files, due to its centralised nature and support for
-file locking.
+Par exemple, Subversion est un très bon choix lorsque travailler
+avec beaucoup de fichiers binaires, qui évolue régulièrement, grâce
+à sa nature centraliser et sa capacité à vérouiller des fichiers.
 
-I personally find Mercurial's properties of simplicity, performance,
-and good merge support to be a compelling combination that has served
-me well for several years.
+Personnellement, je préfère Mercurial pour sa simplicité, ses 
+performances et son bonne capacité de fusion, et il me sert très bien
+de plusieurs années maintenant.
 
+\section{Migrer depuis un outil à Mercurial}
 
-\section{Switching from another tool to Mercurial}
+Mercurial est livré avec une extension nommée \hgext{convert}, qui
+peut de manière incrémental importer des révision depuis différents
+autres outils de gestion de source. Par ``incrémental'', j'entend que
+vous pouvez convertir l'historique entier du projet en une seule fois,
+puis relancer l'outil d'import plus tard pour obtenir les modifications
+effectués depuis votre import intial.
 
-Mercurial is bundled with an extension named \hgext{convert}, which
-can incrementally import revision history from several other revision
-control tools.  By ``incremental'', I mean that you can convert all of
-a project's history to date in one go, then rerun the conversion later
-to obtain new changes that happened after the initial conversion.
-
-The revision control tools supported by \hgext{convert} are as
-follows:
+Les outils de gestion de source supportés par \hgext{convert} sont :
 \begin{itemize}
-\item Subversion
-\item CVS
-\item Git
-\item Darcs
+	\item Subversion
+	\item CVS
+	\item Git
+	\item Darcs
 \end{itemize}
 
-In addition, \hgext{convert} can export changes from Mercurial to
-Subversion.  This makes it possible to try Subversion and Mercurial in
-parallel before committing to a switchover, without risking the loss
-of any work.
+En outre, \hgext{convert} peut exporter les modifications depuis Mercurial
+vers Subversion. Ceci rend possible de d'essayer Subversion en parallèle 
+avant de choisir une solution définitive, sans aucun risque de perte de
+données.
 
-The \hgxcmd{conver}{convert} command is easy to use.  Simply point it
-at the path or URL of the source repository, optionally give it the
-name of the destination repository, and it will start working.  After
-the initial conversion, just run the same command again to import new
-changes.
 
+La commande \hgxcmd{conver}{convert} est très simple à utiliser. Simplement,
+indiquer le chemin ou l'URL du dépôt de source, en lui indiquant, optionnellement
+le nom du chemin de destination, et l'extension se met en route. Après cet
+import initial, il suffit de relancer la commande encore une fois pour 
+importer les modifications effectuées depuis.
 
 %%% Local Variables: 
 %%% mode: latex
