@@ -104,41 +104,113 @@ réellement de manière pertinente de les distinguer.
 
 \section{Une courte histoire de la gestion de source}
 
-Le plus célèbre des anciens outils de gestion de source est \textit{SCCS (Source
-Code Control System)}, que Marc Rochkind conçu dans les laboratoire de recherche de Bell 
-(\textit{Bell Labs}), dans le début des années 70. \textit{SCCS} ne fonctionnait que sur des fichiers individuels, et obligeait à chaque personne travaillant sur le projet d'avoir un accès à un répertoire de travail commun, sur le même système.
-Seulement une seule personne pouvait modifier un fichier au même moment, ce fonctionnement était assuré par l'utilisation de verrou (``lock''). Il était courant que des personnes verrouillent
-des fichiers, et plus tard, oublient de le déverrouiller; empêchant n'importe qui d'autre de 
-travailler sur ces fichiers sans l'aide de l'administrateur...
+Le plus célèbre des anciens outils de gestion de source est \textit{SCCS
+(Source Code Control System)}, que Marc Rochkind conçu dans les laboratoire de
+recherche de Bell (\textit{Bell Labs}), dans le début des années 70.
+\textit{SCCS} ne fonctionnait que sur des fichiers individuels, et obligeait à
+chaque personne travaillant sur le projet d'avoir un accès à un répertoire de
+travail commun, sur le même système.  Seulement une seule personne pouvait
+modifier un fichier au même moment, ce fonctionnement était assuré par
+l'utilisation de verrou (``lock''). Il était courant que des personnes
+verrouillent des fichiers, et plus tard, oublient de le déverrouiller;
+empêchant n'importe qui d'autre de travailler sur ces fichiers sans l'aide de
+l'administrateur...
 
-Walter Tichy a développé une alternative libre à \textit{SCCS} au début des années 80, qu'il
-nomma \textit{RSC (Revison Control System)}.  Comme \textit{SCCS}, \textit{RCS}
-demander aux développeurs de travailler sur le même répertoire partagé, et de verrouiller les
+Walter Tichy a développé une alternative libre à \textit{SCCS} au début des
+années 80, qu'il nomma \textit{RSC (Revison Control System)}.  Comme
+\textit{SCCS}, \textit{RCS} demander aux développeurs de travailler sur le même
+répertoire partagé, et de verrouiller les
 fichiers pour se prémunir de tout conflit issue de modifications concurrentes.
 
-Un peu plus tard dans les années 1980, Dick Grune utilisa \textit{RCS} comme une brique de base pour un ensemble de scripts \textit{shell} qu'il intitula cmt, avant de la renommer en \textit{CVS (Concurrent Versions System)}.  La grande innovation de CVS était que les développeurs pouvaient travailler simultanément et indépendamment dans leur propre espace de travail. Ces espaces de travail privés assuraient que les développeurs ne se marchent pas mutuellement sur les pieds, comme c'était souvent le cas avec RCS et SCCS. Chaque développeur disposait donc de sa copie de tous les fichiers du projet, et ils pouvaient donc librement les modifier. Ils devaient néanmoins effectuer la ``fusion'' (\textit{``merge''}) de leurs fichiers, avant d'effectuer le ``commit'' de leur modifications sur le dépôt central.
+Un peu plus tard dans les années 1980, Dick Grune utilisa \textit{RCS} comme
+une brique de base pour un ensemble de scripts \textit{shell} qu'il intitula
+cmt, avant de la renommer en \textit{CVS (Concurrent Versions System)}.  La
+grande innovation de CVS était que les développeurs pouvaient travailler
+simultanément et indépendamment dans leur propre espace de travail. Ces espaces
+de travail privés assuraient que les développeurs ne se marchent pas
+mutuellement sur les pieds, comme c'était souvent le cas avec RCS et SCCS.
+Chaque développeur disposait donc de sa copie de tous les fichiers du projet,
+et ils pouvaient donc librement les modifier. Ils devaient néanmoins effectuer
+la ``fusion'' (\textit{``merge''}) de leurs fichiers, avant d'effectuer le
+``commit'' de leur modifications sur le dépôt central.
 
-Brian Berliner repris les scripts de Grune's et les réécris en~C, qu'il publia en 1989. Depuis, ce code a été modifié jusqu'à devenir la version moderne de CVS. CVS a acquis ainsi la capacité de fonctionner en réseau, transformant son architecture en client/serveur. L'architecture de CVS est centralisée, seul le serveur a une copie de l'historique du projet. L'espace de travail client ne contient qu'une copie de la dernière version du projet, et quelques métadonnées pour indiquer où le serveur se trouve. CVS a été un grand succès, aujourd'hui c'est probablement l'outil de gestion de contrôle le plus utilisé au monde. 
+Brian Berliner repris les scripts de Grune's et les réécris en~C, qu'il publia
+en 1989. Depuis, ce code a été modifié jusqu'à devenir la version moderne de
+CVS. CVS a acquis ainsi la capacité de fonctionner en réseau, transformant son
+architecture en client/serveur. L'architecture de CVS est centralisée, seul le
+serveur a une copie de l'historique du projet. L'espace de travail client ne
+contient qu'une copie de la dernière version du projet, et quelques métadonnées
+pour indiquer où le serveur se trouve. CVS a été un grand succès, aujourd'hui
+c'est probablement l'outil de gestion de contrôle le plus utilisé au monde. 
 
-Au début des années 1990, Sun Microsystmes développa un premier outil de gestion de source distribué, nommé TeamWare. Un espace de travail TeamWare contient une copie complète de l'historique du projet. TeamWare n'a pas de notion de dépôt central. (CVS utilisait RCS pour le stockage de l'historique, TeamWare utilisait SCCS).
+Au début des années 1990, Sun Microsystmes développa un premier outil de
+gestion de source distribué, nommé TeamWare. Un espace de travail TeamWare
+contient une copie complète de l'historique du projet. TeamWare n'a pas de
+notion de dépôt central. (CVS utilisait RCS pour le stockage de l'historique,
+TeamWare utilisait SCCS).
 
-Alors que les années 1990 avançaient, les utilisateurs ont pris conscience d'un certain nombre de problèmes avec CVS. Il enregistrait simultanément des modifications sur différents fichiers individuellement, au lieu de les regrouper dans une seule opération cohérente et atomique. Il ne gère pas bien sa hiérarchie de fichier, il est donc assez aisé de créer le chaos en renommant les fichiers et les répertoires. Pire encore, son code source est difficile à lire et à maintenir, ce qui agrandit largement le ``niveau de souffrance'' associé à la réparation de ces problèmes d'architecture de manière prohibitive. 
+Alors que les années 1990 avançaient, les utilisateurs ont pris conscience d'un
+certain nombre de problèmes avec CVS. Il enregistrait simultanément des
+modifications sur différents fichiers individuellement, au lieu de les
+regrouper dans une seule opération cohérente et atomique. Il ne gère pas bien
+sa hiérarchie de fichier, il est donc assez aisé de créer le chaos en renommant
+les fichiers et les répertoires. Pire encore, son code source est difficile à
+lire et à maintenir, ce qui agrandit largement le ``niveau de souffrance''
+associé à la réparation de ces problèmes d'architecture de manière prohibitive. 
 
-En 2001, Jim Blandy et Karl Fogel, deux développeurs qui avaient travaillés sur CVS, initièrent un projet pour le remplacer par un outil qui aurait une meilleur architecture et un code plus propre. Le résultat, Subversion, ne quitte pas le modèle centralisé et client/server de CVS, mais ajoute les opérations de ``commit'' atomique sur de multiples fichiers, une meilleure gestion des espaces de noms, et d'autres fonctionnalités qui en font un meilleur outil que CVS. Depuis sa première publication, il est rapidement devenu très populaire.
+En 2001, Jim Blandy et Karl Fogel, deux développeurs qui avaient travaillés sur
+CVS, initièrent un projet pour le remplacer par un outil qui aurait une
+meilleur architecture et un code plus propre. Le résultat, Subversion, ne
+quitte pas le modèle centralisé et client/server de CVS, mais ajoute les
+opérations de ``commit'' atomique sur de multiples fichiers, une meilleure
+gestion des espaces de noms, et d'autres fonctionnalités qui en font un
+meilleur outil que CVS. Depuis sa première publication, il est rapidement
+devenu très populaire.
 
-Plus ou moins de simultanément, Graydon Hoare a commencé sur l'ambitieux système de gestion distribué Monotone. Bien que Monotone corrige plusieurs défaut de CVS's tout en offrant une architecture ``peer-to-peer'', il va aussi plus loin que la plupart des outils de révision de manière assez innovante. Il utilise des ``hash'' cryptographique comme identifiant, et il a une notion complète de ``confiance'' du code issue de différentes sources.
+Plus ou moins de simultanément, Graydon Hoare a commencé sur l'ambitieux
+système de gestion distribué Monotone. Bien que Monotone corrige plusieurs
+défaut de CVS's tout en offrant une architecture ``peer-to-peer'', il va aussi
+plus loin que la plupart des outils de révision de manière assez innovante. Il
+utilise des ``hash'' cryptographique comme identifiant, et il a une notion
+complète de ``confiance'' du code issue de différentes sources.
 
-Mercurial est né en 2005. Bien que très influencé par Monotone, Mercurial se concentre sur la facilité d'utilisation, les performances et la capacité à monter en charge pour de très gros projets.
+Mercurial est né en 2005. Bien que très influencé par Monotone, Mercurial se
+concentre sur la facilité d'utilisation, les performances et la capacité à
+monter en charge pour de très gros projets.
 
 \section{Tendances de la gestion de source}
 
-Il y a eu une tendance évidente dans le développement et l'utilisation d'outil de gestion de source depuis les quatre dernières décades, au fur et à mesure que les utilisateurs se sont habitués à leur outils et se sont sentis contraint par leur limitations.
+Il y a eu une tendance évidente dans le développement et l'utilisation d'outil
+de gestion de source depuis les quatre dernières décades, au fur et à mesure
+que les utilisateurs se sont habitués à leur outils et se sont sentis contraint
+par leur limitations.
 
-La première génération commença simplement par gérer un fichier unique sur un ordinateur individuel. Cependant, même si ces outils présentaient une grande avancée par rapport à la gestion manuelle des versions, leur modèle de verrouillage et leur utilisation limitée à un seul ordinateur rendait leur utilisation possible uniquement dans une très petite équipe. 
+La première génération commença simplement par gérer un fichier unique sur un
+ordinateur individuel. Cependant, même si ces outils présentaient une grande
+avancée par rapport à la gestion manuelle des versions, leur modèle de
+verrouillage et leur utilisation limitée à un seul ordinateur rendait leur
+utilisation possible uniquement dans une très petite équipe. 
 
-La seconde génération a assoupli ces contraintes en adoptant une architecture réseau et centralisé, permettant de gérer plusieurs projets entiers en même temps. Alors que les projets grandirent en taille, ils rencontrèrent de nouveau problèmes. Avec les clients discutant régulièrement avec le serveurs, la montée en charge devint un réel problème sur les gros projets. Une connexion réseau peu fiable pouvant complètement empêcher les utilisateurs distant de dialoguer avec le serveur. Alors que les projets \textit{Open Source} commencèrent à mettre en place des accès en lecture seule disponible anonymement, les utilisateurs sans les privilèges de ``commit'' réalisèrent qu'ils ne pouvaient pas utiliser les outils pour collaborer naturellement avec le projet, comme ils ne pouvaient pas non plus enregistrer leurs modifications.
+La seconde génération a assoupli ces contraintes en adoptant une architecture
+réseau et centralisé, permettant de gérer plusieurs projets entiers en même
+temps. Alors que les projets grandirent en taille, ils rencontrèrent de nouveau
+problèmes. Avec les clients discutant régulièrement avec le serveurs, la montée
+en charge devint un réel problème sur les gros projets. Une connexion réseau
+peu fiable pouvant complètement empêcher les utilisateurs distant de dialoguer
+avec le serveur. Alors que les projets \textit{Open Source} commencèrent à
+mettre en place des accès en lecture seule disponible anonymement, les
+utilisateurs sans les privilèges de ``commit'' réalisèrent qu'ils ne pouvaient
+pas utiliser les outils pour collaborer naturellement avec le projet, comme ils
+ne pouvaient pas non plus enregistrer leurs modifications.
 
-La génération actuelle des outils de gestion de source est ``peer-to-peer'' par nature. Tout ces systèmes ont abandonné la dépendance à un serveur central, et ont permis à leur utilisateur de distribuer les données de leur gestion de source à qui en a besoin. La collaboration à travers Internet a transformée la contrainte technologique à une simple question de choix et de consencus. Les outils moderne peuvent maintenant fonctionner en mode déconnecté sans limite et de manière autonome, la connexion au réseau n'étant nécessaire que pour synchroniser les modifications avec les autres dépôts.
+La génération actuelle des outils de gestion de source est ``peer-to-peer'' par
+nature. Tout ces systèmes ont abandonné la dépendance à un serveur central, et
+ont permis à leur utilisateur de distribuer les données de leur gestion de
+source à qui en a besoin. La collaboration à travers Internet a transformée la
+contrainte technologique à une simple question de choix et de consencus. Les
+outils moderne peuvent maintenant fonctionner en mode déconnecté sans limite et
+de manière autonome, la connexion au réseau n'étant nécessaire que pour
+synchroniser les modifications avec les autres dépôts.
 
 \section{Quelques avantages des gestionnaire de source distribué}
 
