@@ -16,21 +16,22 @@ envs = {
     'codesample2': 'programlisting',
     'codesample4': 'programlisting',
     'enumerate': 'orderedlist',
-    'figure': 'figure',
+    'figure': 'informalfigure',
     'itemize': 'itemizedlist',
     'note': 'note',
     'quote': 'blockquote',
     }
 
 def process(ifp, ofp):
+    print >> ofp, '<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->\n'
     stack = []
     para = True
-    inlist = False
+    inlist = 0
     for line in ifp:
         if line.startswith('%%% Local Variables:'):
             break
         line = (line.rstrip()
-                .replace(' ', ' ')
+                .replace('~', ' ')
                 .replace('&', '&amp;')
                 .replace('&emdash;', '&emdash;')
                 .replace('\_', '_')
@@ -41,8 +42,8 @@ def process(ifp, ofp):
                 .replace('\#', '#')
                 .replace('<', '&lt;')
                 .replace('>', '&gt;')
-                .replace('<quote>', '<quote>')
-                .replace("</quote>", '</quote>')
+                .replace('``', '<quote>')
+                .replace("''", '</quote>')
                 .replace('\\', '\\'))
         line = re.sub(r'\s*\\(?:centering|small)\b\s*', '', line)
         line = re.sub(r'\\(?:hgrc\\|hgrc)\b',
@@ -68,7 +69,7 @@ def process(ifp, ofp):
         line = re.sub(r'\\hgcmd{(?P<cmd>[^}]+)}',
                       r'<command role="hg-cmd">hg \g<cmd></command>', line)
         line = re.sub(r'\\caption{(?P<text>[^}]+?)}',
-                      r'<caption>\g<text></caption>', line)
+                      r'<caption><para>\g<text></para></caption>', line)
         line = re.sub(r'\\grafix{(?P<name>[^}]+)}',
                       r'<mediaobject><imageobject><imagedata fileref="\g<name>"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>', line)
         line = re.sub(r'\\envar{(?P<name>[^}]+)}',
@@ -103,7 +104,7 @@ def process(ifp, ofp):
                       r'<command>\g<cmd></command>', line)
         line = re.sub(r'\\option{(?P<opt>[^}]+)}',
                       r'<option>\g<opt></option>', line)
-        line = re.sub(r'\\ref{(?P<id>[^}]+)}', r'<xref id="\g<id>"/>', line)
+        line = re.sub(r'\\ref{(?P<id>[^}]+)}', r'<xref linkend="\g<id>"/>', line)
         line = re.sub(r'\\emph{(?P<txt>[^}]+)}',
                       r'<emphasis>\g<txt></emphasis>', line)
         line = re.sub(r'\\texttt{(?P<txt>[^}]+)}',
@@ -149,15 +150,20 @@ def process(ifp, ofp):
                 env = envs[env]
                 if state == 'begin':
                     ofp.write('<')
-                    if env == 'itemizedlist':
-                        inlist = True
+                    if env in ('itemizedlist', 'orderedlist'):
+                        inlist = 1
                 else:
                     ofp.write('</')
-                    if env == 'itemizedlist':
-                        inlist = False
+                    if env == ('itemizedlist', 'orderedlist'):
+                        inlist = 0
                 print >> ofp, env + '>'
             else:
                 if line.startswith('\\item '):
+                    if inlist > 1:
+                        print >> ofp, '</para>'
+                        print >> ofp, '</listitem>'
+                    else:
+                        inlist = 2
                     para = True
                     line = line[6:]
                 if line and para:
@@ -173,7 +179,7 @@ def process(ifp, ofp):
                 print >> ofp, line
     while stack:
         print >> ofp, '</%s>' % stack.pop()
-    ofp.write('\n'.join(['<!--',
+    ofp.write('\n'.join(['\n<!--',
                          'local variables: ',
                          'sgml-parent-document: ("00book.xml" "book" "chapter")',
                          'end:',
