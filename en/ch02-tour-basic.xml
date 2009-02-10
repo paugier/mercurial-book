@@ -237,7 +237,7 @@
 	log</command> is purely a summary; it is missing a lot of
       detail.</para>
 
-    <para>Figure <xref id="fig:tour-basic:history"/> provides a
+    <para>Figure <xref linkend="fig:tour-basic:history"/> provides a
       graphical representation of the history of the <filename
 	class="directory">hello</filename> repository, to make it a
       little easier to see which direction history is
@@ -245,15 +245,15 @@
       several times in this chapter and the chapter that
       follows.</para>
 
-    <figure>
-
-      <para>  <mediaobject><imageobject><imagedata
-					  fileref="tour-history"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject></mediaobject>
-	<caption>Graphical history of the <filename
-	  class="directory">hello</filename> repository</caption>
-	\label{fig:tour-basic:history}</para>
-    </figure>
+    <informalfigure id="fig:tour-basic:history">
+      <mediaobject>
+	<imageobject><imagedata fileref="tour-history"/></imageobject>
+	<textobject><phrase>XXX add text</phrase></textobject>
+	<caption><para>Graphical history of the <filename
+	      class="directory">hello</filename>
+	    repository</para></caption>
+      </mediaobject>
+    </informalfigure>
 
     <sect2>
       <title>Changesets, revisions, and talking to other
@@ -342,7 +342,7 @@
 	<option role="hg-opt-log">--patch</option>) option.  This
 	displays the content of a change as a <emphasis>unified
 	  diff</emphasis> (if you've never seen a unified diff before,
-	see section <xref id="sec:mq:patch"/> for an
+	see section <xref linkend="sec:mq:patch"/> for an
 	overview). <!-- &interaction.tour.log-vp; --></para>
 
     </sect2>
@@ -489,7 +489,7 @@
 	    <envar role="rc-item-ui">username</envar> entry, that will
 	    be used next.  To see what the contents of this file
 	    should look like, refer to section <xref
-	      id="sec:tour-basic:username"/>
+	      linkend="sec:tour-basic:username"/>
 	    below.</para></listitem>
 	<listitem><para>If you have set the <envar>EMAIL</envar>
 	    environment variable, this will be used
@@ -499,159 +499,172 @@
 	    username from these components. Since this often results
 	    in a username that is not very useful, it will print a
 	    warning if it has to do
-	    this.</para></listitem></orderedlist>
-      <listitem><para>If all of these mechanisms fail, Mercurial will
+	    this.</para></listitem>
+      </orderedlist>
+      <para>If all of these mechanisms fail, Mercurial will
 	  fail, printing an error message.  In this case, it will not
 	  let you commit until you set up a
-	  username.</para></listitem>
-      <listitem><para>You should think of the <envar>HGUSER</envar>
-	  environment variable and the <option
-	    role="hg-opt-commit">-u</option> option to the <command
-	    role="hg-cmd">hg commit</command> command as ways to
-	  <emphasis>override</emphasis> Mercurial's default selection
-	  of username.  For normal use, the simplest and most robust
-	  way to set a username for yourself is by creating a
-	  <filename role="special">.hgrc</filename> file; see below
-	  for details.</para></listitem>
-      <sect3>
+	  username.</para>
+      <para>You should think of the <envar>HGUSER</envar> environment
+	variable and the <option role="hg-opt-commit">-u</option>
+	option to the <command role="hg-cmd">hg commit</command>
+	command as ways to <emphasis>override</emphasis> Mercurial's
+	default selection of username.  For normal use, the simplest
+	and most robust way to set a username for yourself is by
+	creating a <filename role="special">.hgrc</filename> file; see
+	below for details.</para>
+      <sect3 id="sec:tour-basic:username">
 	<title>Creating a Mercurial configuration file</title>
-	<listitem><para>\label{sec:tour-basic:username}</para></listitem>
-	<listitem><para>To set a user name, use your favourite editor
+
+	<para>To set a user name, use your favourite editor
 	    to create a file called <filename
 	      role="special">.hgrc</filename> in your home directory.
 	    Mercurial will use this file to look up your personalised
 	    configuration settings.  The initial contents of your
 	    <filename role="special">.hgrc</filename> should look like
-	    this.</para></listitem><programlisting>
-	  <listitem><para>  # This is a Mercurial configuration file.
-	      [ui] username = Firstname Lastname
-	      &lt;email.address@domain.net&gt;</para></listitem></programlisting>
-	<listitem><para>The <quote><literal>[ui]</literal></quote>
-	    line begins a <emphasis>section</emphasis> of the config
-	    file, so you can read the <quote><literal>username =
-		...</literal></quote> line as meaning <quote>set the
-	      value of the <literal>username</literal> item in the
-	      <literal>ui</literal> section</quote>. A section
-	    continues until a new section begins, or the end of the
-	    file.  Mercurial ignores empty lines and treats any text
-	    from <quote><literal>#</literal></quote> to the end of a
-	    line as a comment.</para></listitem>
+	    this.</para>
+	<programlisting># This is a Mercurial configuration file.
+[ui] username = Firstname Lastname
+&lt;email.address@domain.net&gt;</programlisting>
+
+	<para>The <quote><literal>[ui]</literal></quote> line begins a
+	  <emphasis>section</emphasis> of the config file, so you can
+	  read the <quote><literal>username = ...</literal></quote>
+	  line as meaning <quote>set the value of the
+	    <literal>username</literal> item in the
+	    <literal>ui</literal> section</quote>. A section continues
+	  until a new section begins, or the end of the file.
+	  Mercurial ignores empty lines and treats any text from
+	  <quote><literal>#</literal></quote> to the end of a line as
+	  a comment.</para>
       </sect3>
+
       <sect3>
 	<title>Choosing a user name</title>
 
-	<listitem><para>You can use any text you like as the value of
+	<para>You can use any text you like as the value of
 	    the <literal>username</literal> config item, since this
 	    information is for reading by other people, but for
 	    interpreting by Mercurial.  The convention that most
 	    people follow is to use their name and email address, as
-	    in the example above.</para></listitem>
+	    in the example above.</para>
 	<note>
-	  <listitem><para>  Mercurial's built-in web server obfuscates
+	  <para>Mercurial's built-in web server obfuscates
 	      email addresses, to make it more difficult for the email
 	      harvesting tools that spammers use. This reduces the
 	      likelihood that you'll start receiving more junk email
 	      if you publish a Mercurial repository on the
-	      web.</para></listitem></note>
+	      web.</para></note>
 
       </sect3>
     </sect2>
     <sect2>
       <title>Writing a commit message</title>
 
-      <listitem><para>When we commit a change, Mercurial drops us into
+      <para>When we commit a change, Mercurial drops us into
 	  a text editor, to enter a message that will describe the
 	  modifications we've made in this changeset.  This is called
 	  the <emphasis>commit message</emphasis>.  It will be a
 	  record for readers of what we did and why, and it will be
 	  printed by <command role="hg-cmd">hg log</command> after
-	  we've finished committing. <!-- &interaction.tour.commit;
-	  --></para></listitem>
-      <listitem><para>The editor that the <command role="hg-cmd">hg
+	  we've finished committing.</para>
+
+       <!-- &interaction.tour.commit; -->
+
+      <para>The editor that the <command role="hg-cmd">hg
 	    commit</command> command drops us into will contain an
 	  empty line, followed by a number of lines starting with
-	  <quote><literal>HG:</literal></quote>.</para></listitem><programlisting>
-	<listitem><para>  <emphasis>empty line</emphasis> HG: changed
-	    hello.c</para></listitem></programlisting>
-      <listitem><para>Mercurial ignores the lines that start with
+	  <quote><literal>HG:</literal></quote>.</para>
+
+    <programlisting>XXX fix this XXX</programlisting>
+
+      <para>Mercurial ignores the lines that start with
 	  <quote><literal>HG:</literal></quote>; it uses them only to
 	  tell us which files it's recording changes to.  Modifying or
-	  deleting these lines has no effect.</para></listitem>
+	  deleting these lines has no effect.</para>
     </sect2>
     <sect2>
       <title>Writing a good commit message</title>
 
-      <listitem><para>Since <command role="hg-cmd">hg log</command>
+      <para>Since <command role="hg-cmd">hg log</command>
 	  only prints the first line of a commit message by default,
 	  it's best to write a commit message whose first line stands
 	  alone.  Here's a real example of a commit message that
 	  <emphasis>doesn't</emphasis> follow this guideline, and
 	  hence has a summary that is not
-	  readable.</para></listitem><programlisting>
-	<listitem><para>  changeset:   73:584af0e231be user: Censored
-	    Person &lt;censored.person@example.org&gt; date: Tue Sep
-	    26 21:37:07 2006 -0700 summary:     include
-	    buildmeister/commondefs.   Add an exports and
-	    install</para></listitem></programlisting>
+	  readable.</para>
 
-      <listitem><para>As far as the remainder of the contents of the
+      <programlisting>
+changeset:   73:584af0e231be
+user: Censored Person &lt;censored.person@example.org&gt;
+date: Tue Sep 26 21:37:07 2006 -0700
+summary:     include buildmeister/commondefs. Add exports.</programlisting>
+
+      <para>As far as the remainder of the contents of the
 	  commit message are concerned, there are no hard-and-fast
 	  rules.  Mercurial itself doesn't interpret or care about the
 	  contents of the commit message, though your project may have
 	  policies that dictate a certain kind of
-	  formatting.</para></listitem>
-      <listitem><para>My personal preference is for short, but
+	  formatting.</para>
+      <para>My personal preference is for short, but
 	  informative, commit messages that tell me something that I
 	  can't figure out with a quick glance at the output of
 	  <command role="hg-cmd">hg log
-	    --patch</command>.</para></listitem>
+	    --patch</command>.</para>
     </sect2>
     <sect2>
       <title>Aborting a commit</title>
 
-      <listitem><para>If you decide that you don't want to commit
+      <para>If you decide that you don't want to commit
 	  while in the middle of editing a commit message, simply exit
 	  from your editor without saving the file that it's editing.
 	  This will cause nothing to happen to either the repository
-	  or the working directory.</para></listitem>
-      <listitem><para>If we run the <command role="hg-cmd">hg
+	  or the working directory.</para>
+      <para>If we run the <command role="hg-cmd">hg
 	    commit</command> command without any arguments, it records
 	  all of the changes we've made, as reported by <command
 	    role="hg-cmd">hg status</command> and <command
-	    role="hg-cmd">hg diff</command>.</para></listitem>
+	    role="hg-cmd">hg diff</command>.</para>
     </sect2>
     <sect2>
       <title>Admiring our new handiwork</title>
 
-      <listitem><para>Once we've finished the commit, we can use the
+      <para>Once we've finished the commit, we can use the
 	  <command role="hg-cmd">hg tip</command> command to display
 	  the changeset we just created.  This command produces output
 	  that is identical to <command role="hg-cmd">hg
 	    log</command>, but it only displays the newest revision in
-	  the repository. <!-- &interaction.tour.tip; --> We refer to
+	  the repository.</para>
+
+      <!-- &interaction.tour.tip; -->
+
+      <para>We refer to
 	  the newest revision in the repository as the tip revision,
-	  or simply the tip.</para></listitem>
+	  or simply the tip.</para>
     </sect2>
   </sect1>
+
   <sect1>
     <title>Sharing changes</title>
 
-    <listitem><para>We mentioned earlier that repositories in
+    <para>We mentioned earlier that repositories in
 	Mercurial are self-contained.  This means that the changeset
 	we just created exists only in our <filename
 	  class="directory">my-hello</filename> repository.  Let's
 	look at a few ways that we can propagate this change into
-	other repositories.</para></listitem>
-    <sect2>
+	other repositories.</para>
+
+    <sect2 id="sec:tour:pull">
       <title>Pulling changes from another repository</title>
-      <listitem><para>\label{sec:tour:pull}</para></listitem>
-      <listitem><para>To get started, let's clone our original
+      <para>To get started, let's clone our original
 	  <filename class="directory">hello</filename> repository,
 	  which does not contain the change we just committed.  We'll
 	  call our temporary repository <filename
-	    class="directory">hello-pull</filename>. <!--
-	  &interaction.tour.clone-pull; --></para></listitem>
-      <listitem><para>We'll use the <command role="hg-cmd">hg
+	    class="directory">hello-pull</filename>.</para>
+
+      <!-- &interaction.tour.clone-pull; -->
+
+      <para>We'll use the <command role="hg-cmd">hg
 	    pull</command> command to bring changes from <filename
 	    class="directory">my-hello</filename> into <filename
 	    class="directory">hello-pull</filename>.  However, blindly
@@ -660,38 +673,46 @@
 	    role="hg-cmd">hg incoming</command> command to tell us
 	  what changes the <command role="hg-cmd">hg pull</command>
 	  command <emphasis>would</emphasis> pull into the repository,
-	  without actually pulling the changes in. <!--
-	  &interaction.tour.incoming; --> (Of course, someone could
+	  without actually pulling the changes in.</para>
+
+      <!-- &interaction.tour.incoming; -->
+
+      <para>(Of course, someone could
 	  cause more changesets to appear in the repository that we
 	  ran <command role="hg-cmd">hg incoming</command> in, before
 	  we get a chance to <command role="hg-cmd">hg pull</command>
 	  the changes, so that we could end up pulling changes that we
-	  didn't expect.)</para></listitem>
-      <listitem><para>Bringing changes into a repository is a simple
+	  didn't expect.)</para>
+
+      <para>Bringing changes into a repository is a simple
 	  matter of running the <command role="hg-cmd">hg
 	    pull</command> command, and telling it which repository to
-	  pull from. <!-- &interaction.tour.pull; --> As you can see
+	  pull from.</para>
+
+      <!-- &interaction.tour.pull; -->
+
+      <para>As you can see
 	  from the before-and-after output of <command
 	    role="hg-cmd">hg tip</command>, we have successfully
 	  pulled changes into our repository.  There remains one step
 	  before we can see these changes in the working
-	  directory.</para></listitem>
+	  directory.</para>
     </sect2>
     <sect2>
       <title>Updating the working directory</title>
 
-      <listitem><para>We have so far glossed over the relationship
+      <para>We have so far glossed over the relationship
 	  between a repository and its working directory.  The
 	  <command role="hg-cmd">hg pull</command> command that we ran
-	  in section <xref id="sec:tour:pull"/> brought changes into
+	  in section <xref linkend="sec:tour:pull"/> brought changes into
 	  the
 	  repository, but if we check, there's no sign of those
 	  changes in the working directory.  This is because <command
 	    role="hg-cmd">hg pull</command> does not (by default)
 	  touch the working directory.  Instead, we use the <command
 	    role="hg-cmd">hg update</command> command to do this. <!--
-	  &interaction.tour.update; --></para></listitem>
-      <listitem><para>It might seem a bit strange that <command
+	  &interaction.tour.update; --></para>
+      <para>It might seem a bit strange that <command
 	    role="hg-cmd">hg pull</command> doesn't update the working
 	  directory automatically.  There's actually a good reason for
 	  this: you can use <command role="hg-cmd">hg update</command>
@@ -701,81 +722,103 @@
 	  old revision---to hunt down the origin of a bug, say---and
 	  ran a <command role="hg-cmd">hg pull</command> which
 	  automatically updated the working directory to a new
-	  revision, you might not be terribly happy.</para></listitem>
-      <listitem><para>However, since pull-then-update is such a common
+	  revision, you might not be terribly happy.</para>
+      <para>However, since pull-then-update is such a common
 	  thing to do, Mercurial lets you combine the two by passing
 	  the <option role="hg-opt-pull">-u</option> option to
 	  <command role="hg-cmd">hg
-	    pull</command>.</para></listitem><programlisting>
-	<listitem><para>  hg pull
-	    -u</para></listitem></programlisting>
-      <listitem><para>If you look back at the output of <command
+	    pull</command>.</para>
+
+      <para>If you look back at the output of <command
 	    role="hg-cmd">hg pull</command> in section <xref
-	    id="sec:tour:pull"/> when we ran it without <option
+	    linkend="sec:tour:pull"/> when we ran it without <option
 	    role="hg-opt-pull">-u</option>, you can see that it
 	  printed a helpful reminder that we'd have to take an
 	  explicit step to update the working
-	  directory:</para></listitem><programlisting>
-	<listitem><para>  (run 'hg update' to get a working
-	    copy)</para></listitem></programlisting>
+	  directory:</para>
 
-      <listitem><para>To find out what revision the working directory
+      <!-- &interaction.xxx.fixme; -->
+
+      <para>To find out what revision the working directory
 	  is at, use the <command role="hg-cmd">hg parents</command>
-	  command. <!-- &interaction.tour.parents; --> If you look
-	  back at figure <xref id="fig:tour-basic:history"/>, you'll
+	  command.</para>
+
+      <!-- &interaction.tour.parents; -->
+
+      <para>If you look
+	  back at figure <xref linkend="fig:tour-basic:history"/>, you'll
 	  see arrows connecting each changeset.  The node that the
 	  arrow leads <emphasis>from</emphasis> in each case is a
 	  parent, and the node that the arrow leads
 	  <emphasis>to</emphasis> is its child.  The working directory
 	  has a parent in just the same way; this is the changeset
 	  that the working directory currently
-	  contains.</para></listitem>
-      <listitem><para>To update the working directory to a particular
+	  contains.</para>
+      <para>To update the working directory to a particular
 	  revision, give a revision number or changeset ID to the
 	  <command role="hg-cmd">hg update</command> command. <!--
 	  &interaction.tour.older; --> If you omit an explicit
 	  revision, <command role="hg-cmd">hg update</command> will
 	  update to the tip revision, as shown by the second call to
 	  <command role="hg-cmd">hg update</command> in the example
-	  above.</para></listitem>
+	  above.</para>
     </sect2>
+
     <sect2>
       <title>Pushing changes to another repository</title>
 
-      <listitem><para>Mercurial lets us push changes to another
+      <para>Mercurial lets us push changes to another
 	  repository, from the repository we're currently visiting.
 	  As with the example of <command role="hg-cmd">hg
 	    pull</command> above, we'll create a temporary repository
-	  to push our changes into. <!-- &interaction.tour.clone-push;
-	  --> The <command role="hg-cmd">hg outgoing</command> command
+	  to push our changes into.</para>
+
+      <!-- &interaction.tour.clone-push; -->
+
+      <para>The <command role="hg-cmd">hg outgoing</command> command
 	  tells us what changes would be pushed into another
-	  repository. <!-- &interaction.tour.outgoing; --> And the
+	  repository.</para>
+
+      <!-- &interaction.tour.outgoing; -->
+
+      <para>And the
 	  <command role="hg-cmd">hg push</command> command does the
-	  actual push. <!-- &interaction.tour.push; --> As with
+	  actual push.</para>
+
+      <!-- &interaction.tour.push; -->
+
+      <para>As with
 	  <command role="hg-cmd">hg pull</command>, the <command
 	    role="hg-cmd">hg push</command> command does not update
 	  the working directory in the repository that it's pushing
 	  changes into. (Unlike <command role="hg-cmd">hg
 	    pull</command>, <command role="hg-cmd">hg push</command>
 	  does not provide a <literal>-u</literal> option that updates
-	  the other repository's working directory.)</para></listitem>
-      <listitem><para>What happens if we try to pull or push changes
+	  the other repository's working directory.)</para>
+
+      <para>What happens if we try to pull or push changes
 	  and the receiving repository already has those changes?
-	  Nothing too exciting. <!-- &interaction.tour.push.nothing;
-	  --></para></listitem>
+	  Nothing too exciting.</para>
+
+      <!-- &interaction.tour.push.nothing; -->
     </sect2>
     <sect2>
       <title>Sharing changes over a network</title>
 
-      <listitem><para>The commands we have covered in the previous few
+      <para>The commands we have covered in the previous few
 	  sections are not limited to working with local repositories.
 	  Each works in exactly the same fashion over a network
-	  connection; simply pass in a URL instead of a local path.
-	  <!-- &interaction.tour.outgoing.net; --> In this example, we
+	  connection; simply pass in a URL instead of a local
+	  path.</para>
+	
+      <!-- &interaction.tour.outgoing.net; -->
+
+      <para>In this example, we
 	  can see what changes we could push to the remote repository,
 	  but the repository is understandably not set up to let
-	  anonymous users push to it. <!-- &interaction.tour.push.net;
-	  --></para></listitem>
+	  anonymous users push to it.</para>
+
+      <!-- &interaction.tour.push.net; -->
     </sect2>
   </sect1>
 </chapter>

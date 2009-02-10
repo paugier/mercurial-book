@@ -31,6 +31,12 @@ image-sources := \
 	wdir-merge.svg \
 	wdir-pre-branch.svg
 
+xml-src-files := \
+	00book.xml \
+	ch01-intro.xml \
+	ch02-tour-basic.xml \
+	ch12-mq.xml
+
 image-dot := $(filter %.dot,$(image-sources))
 image-svg := $(filter %.svg,$(image-sources))
 image-png := $(filter %.png,$(image-sources))
@@ -69,6 +75,33 @@ example-sources := \
 	template.svnstyle \
 	tour \
 	tour-merge-conflict
+
+xsltproc := xsltproc
+xsltproc-opts := --nonet --xinclude --path '$(xml-path)'
+
+xmllint := xmllint
+xmllint-opts := --noout --nonet --valid
+
+system-xsl-dir := $(firstword $(wildcard \
+	/usr/share/sgml/docbook/xsl-stylesheets \
+	/usr/share/xml/docbook/stylesheet/nwalsh \
+	))
+
+# Bletcherousness.
+
+ifneq ($(wildcard /usr/share/sgml/docbook/xml-dtd-4.4-*),)
+dtd-dir := $(wildcard /usr/share/sgml/docbook/xml-dtd-4.4-*)
+else
+ifneq ($(wildcard /usr/share/xml/docbook/schema/dtd/4.4),)
+dtd-dir := $(wildcard /usr/share/xml/docbook/schema/dtd/4.4)
+else
+$(error Do not know where to look for DocBook XML 4.4 DTD)
+endif
+endif
+
+ifeq ($(system-xsl-dir),)
+$(error add a suitable directory to system-xsl-dir)
+endif
 
 example-prereqs := \
 	/usr/bin/merge
@@ -109,6 +142,18 @@ pdf/hgbook.pdf: $(sources) examples $(image-pdf)
 	$(call pdf)
 
 html: onepage split
+
+../xsl/system-xsl: $(system-xsl-dir)
+	ln -s $< $@
+
+dbhtml: ../xsl/system-xsl $(xml-src-files) valid
+	xsltproc $(xsltproc-opts) ../xsl/chunk-stylesheet.xsl 00book.xml
+
+valid: .validated-00book.xml
+
+.validated-00book.xml: $(xml-src-files)
+	$(xmllint) --path '$(dtd-dir):$(xml-path)' $(xmllint-opts) $<
+	touch $@
 
 onepage: $(htlatex) html/onepage/hgbook.html html/onepage/hgbook.css $(image-html:%=html/onepage/%)
 
