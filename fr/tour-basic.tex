@@ -221,57 +221,63 @@ ceux qui suivent.
 
 \subsection{Changesets, révisions, et discuter avec les autres}
 
-As English is a notoriously sloppy language, and computer science has
-a hallowed history of terminological confusion (why use one term when
-four will do?), revision control has a variety of words and phrases
-that mean the same thing.  If you are talking about Mercurial history
-with other people, you will find that the word ``changeset'' is often
-compressed to ``change'' or (when written) ``cset'', and sometimes a
-changeset is referred to as a ``revision'' or a ``rev''.
+Comme l'anglais est réputé pour un langage maladroit, et que l'informatique
+est la source de bien des erreurs terminologique (pourquoi utiliser un
+seul terme quand quatre feront l'affaire ?), la gestion de version a une
+variété de mot et de phrases qui veulent dire la même chose. Si vous 
+parlez à quelqu'un de l'historique de Mercurial à d'autres personnes, 
+vous constaterez que souvent le mot ``\textit{changeset}'' est compressé 
+en juste ``change'' ou (à l'écrit) ``cset'', et même parfois un 
+\textit{changeset} simplement ``révision'', abrégé en ``rev''.
 
-While it doesn't matter what \emph{word} you use to refer to the
-concept of ``a~changeset'', the \emph{identifier} that you use to
-refer to ``a~\emph{specific} changeset'' is of great importance.
-Recall that the \texttt{changeset} field in the output from
-\hgcmd{log} identifies a changeset using both a number and a
-hexadecimal string.
+Bien que le \emph{mot} que vous utilisez pour désigner le concept de
+\textit{changeset} importe peu, l'\emph{identifiant} que vous utilisez
+pour désigner un \emph{spécifique} \textit{spécifique} a une grande
+importance. Rappelez vous que le \textit{changeset} affiché par la 
+commande \hgcmd{log} identifie un \textit{changeset} à la fois avec
+un numéro de révision et une séquence hexadécimale.
+
 \begin{itemize}
-\item The revision number is \emph{only valid in that repository},
-\item while the hex string is the \emph{permanent, unchanging
-    identifier} that will always identify that exact changeset in
-  \emph{every} copy of the repository.
+\item Le numéro de révision est \emph{seulement valable dans ce dépôt},
+\item alors que la séquence hexadécimale est un \emph{identifiant 
+	permanent, et immutable } qui pourra toujours être associé à %%%TODO: Immutable ? Is this french ?
+	\textit{changeset} exacte de \emph{chaque} copie de votre dépôt.
 \end{itemize}
-This distinction is important.  If you send someone an email talking
-about ``revision~33'', there's a high likelihood that their
-revision~33 will \emph{not be the same} as yours.  The reason for this
-is that a revision number depends on the order in which changes
-arrived in a repository, and there is no guarantee that the same
-changes will happen in the same order in different repositories.
-Three changes $a,b,c$ can easily appear in one repository as $0,1,2$,
-while in another as $1,0,2$.
 
-Mercurial uses revision numbers purely as a convenient shorthand.  If
-you need to discuss a changeset with someone, or make a record of a
-changeset for some other reason (for example, in a bug report), use
-the hexadecimal identifier.
+La distinction est importante. Si vous envoyez un email à quelqu'un en
+parlant de la ``révision 33'', il est très probable que sa révision~33
+\emph{ne sera pas la même} que la votre. La raison de ceci est que le
+numéro de révision dépend de l'ordre dans lequel les modifications sont
+arrivés dans le dépôt, et il n'y a aucune garantie que les mêmes changements
+soient arrivés dans le même ordre dans différents dépôts. Trois modifications
+$a,b,c$ peuvent aisément apparaitre dans un dépôt comme $0,1,2$, et dans
+un autre comme $1,0,2$.
 
-\subsection{Viewing specific revisions}
+Mercurial utilise les numéro de révision uniquement comme des raccourcis
+pratique. Si vous devez disctuer d'un \textit{changeset} avec quelqu'un, 
+our faire un enregistrement d'un \textit{changeset} pour une quelquonque
+raison (par exemple, un rapport de \textit{bug}), utilisez la séquence
+hexadécimale.
 
-To narrow the output of \hgcmd{log} down to a single revision, use the
-\hgopt{log}{-r} (or \hgopt{log}{--rev}) option.  You can use either a
-revision number or a long-form changeset identifier, and you can
-provide as many revisions as you want.  \interaction{tour.log-r}
+\subsection{Afficher une révision spécifique}
 
-If you want to see the history of several revisions without having to
-list each one, you can use \emph{range notation}; this lets you
-express the idea ``I want all revisions between $a$ and $b$,
-inclusive''.
+Pour réduire la sortie de \hgcmd{log} à une seule révision, utilisez
+l'option \hgopt{log}{-r} (ou \hgopt{log}{--rev}). Vous pouvez utiser
+le numéro de révision ou la séquence hexadécimal comme identifiant, et 
+vous demandez autant de révisions que vous le souhaitez. 
+\interaction{tour.log-r}
+
+Si vous voulez voir l'historique de plusieurs révisions sans avoir à 
+les énumérer, vous pouvez utiliser la \emph{\textit{range notation}}
+\footnote{NdT: Il n'est pas aisé de traduire ce terme, donc je le 
+laisse en anglais} qui vous permet d'exprimer l'idée ``je veux toutes
+les révisions entre $a$ et $b$, inclus''.
 \interaction{tour.log.range}
-Mercurial also honours the order in which you specify revisions, so
-\hgcmdargs{log}{-r 2:4} prints $2,3,4$ while \hgcmdargs{log}{-r 4:2}
-prints $4,3,2$.
+Mercurial respecte aussi l'ordre dans lequel vous spécifier les 
+révisions, ainsi \hgcmdargs{log}{-r 2:4} affichera $2,3,4$ alors que 
+\hgcmdargs{log}{-r 4:2} affichera $4,3,2$.
 
-\subsection{More detailed information}
+\subsection{Informations détaillées}
 
 While the summary information printed by \hgcmd{log} is useful if you
 already know what you're looking for, you may need to see a complete
