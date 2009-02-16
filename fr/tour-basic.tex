@@ -304,121 +304,135 @@ les options que vous passez aux commandes. Il suit une convention commune
 à la plupart des systèmes Unix et Linux modernes.
 
 \begin{itemize}
-\item Every option has a long name.  For example, as we've already
-  seen, the \hgcmd{log} command accepts a \hgopt{log}{--rev} option.
-\item Most options have short names, too.  Instead of
-  \hgopt{log}{--rev}, we can use \hgopt{log}{-r}.  (The reason that
-  some options don't have short names is that the options in question
-  are rarely used.)
-\item Long options start with two dashes (e.g.~\hgopt{log}{--rev}),
-  while short options start with one (e.g.~\hgopt{log}{-r}).
-\item Option naming and usage is consistent across commands.  For
-  example, every command that lets you specify a changeset~ID or
-  revision number accepts both \hgopt{log}{-r} and \hgopt{log}{--rev}
-  arguments.
+\item Chaque option a un nom complet. Par exemple, comme nous l'avons déjà
+      vu, la command e\hgcmd{log} accepte l'option \hgopt{log}{--rev}.
+\item La plupart des options dispose de noms abrégés, aussi. Au lieu d'utiliser
+  \hgopt{log}{--rev}, vous pouvez utiliser \hgopt{log}{-r}. (Les options qui
+  n'ont pas de noms abrégés sont généralement rarement utilisés, c'est pour ça).
+\item Les noms complets commence par deux tirets (i.e.~\hgopt{log}{--rev}),
+  alors que les options courtes commencent avec un seul (i.e.~\hgopt{log}{-r}).
+\item Les noms des options sont cohérent entre les commandes. Par exemple, 
+  chaque commande qui accepte un \textit{changeset~ID} ou une numéro de révision
+  accepte aussi \hgopt{log}{-r} et \hgopt{log}{--rev} comme arguments.
+  %TODO: Small mistake here, shouldn't have log here... shouldn't it ?
 \end{itemize}
-In the examples throughout this book, I use short options instead of
-long.  This just reflects my own preference, so don't read anything
-significant into it.
 
-Most commands that print output of some kind will print more output
-when passed a \hggopt{-v} (or \hggopt{--verbose}) option, and less
-when passed \hggopt{-q} (or \hggopt{--quiet}).
+Dans les exemples de ce libre, j'utilise les noms abrégés plutôt que les noms
+complet. Ceci est une préférence personnelle, par une recommandation.
 
-\section{Making and reviewing changes}
+La plupart des commandes qui affiche une quelquonque sortie à l'écran,
+afficheront plus avec l'option \hggopt{-v} (ou \hggopt{--verbose}), et
+mois avec l'option \hggopt{-q} (ou \hggopt{--quiet}).
 
-Now that we have a grasp of viewing history in Mercurial, let's take a
-look at making some changes and examining them.
+\section{Faire et vérifier des modifications}
 
-The first thing we'll do is isolate our experiment in a repository of
-its own.  We use the \hgcmd{clone} command, but we don't need to
-clone a copy of the remote repository.  Since we already have a copy
-of it locally, we can just clone that instead.  This is much faster
-than cloning over the network, and cloning a local repository uses
-less disk space in most cases, too.
+Maintenant que nous avons une bonne idée de commande consulter l'historique
+de Mercurial, regardons comment faire des modifications et les examiner.
+
+La première chose que nous allons faire c'est isoler notre expérience dans
+un dépôt à part. Nous allons utiliser la commande \hgcmd{clone}, mais nous
+n'avons pas besoin de faire une copie de dépôt distant. Comme nous avons 
+déjà une copie locale, nous pouvons juste faire un clone de celle ci à la 
+place. C'est beaucoup plus rapide que de faire une copie à travers le 
+réseau, et un dépôt cloné localement prend moins d'espace disques aussi.
+
 \interaction{tour.reclone}
-As an aside, it's often good practice to keep a ``pristine'' copy of a
-remote repository around, which you can then make temporary clones of
-to create sandboxes for each task you want to work on.  This lets you
-work on multiple tasks in parallel, each isolated from the others
-until it's complete and you're ready to integrate it back.  Because
-local clones are so cheap, there's almost no overhead to cloning and
-destroying repositories whenever you want.
 
-In our \dirname{my-hello} repository, we have a file
-\filename{hello.c} that contains the classic ``hello, world'' program.
-Let's use the ancient and venerable \command{sed} command to edit this
-file so that it prints a second line of output.  (I'm only using
-\command{sed} to do this because it's easy to write a scripted example
-this way.  Since you're not under the same constraint, you probably
-won't want to use \command{sed}; simply use your preferred text editor to
-do the same thing.)
+On notera au passage qu'il est souvent considéré comme une bonne pratique
+de conserver une copie ``immaculée'' du dépôt distant, à partir de laquelle
+vous pourrez faire des copies locales temporaires pour créer des ``bacs à 
+sable'' pour chaque tâche sur laquelle vous souhaitez travailler. Ceci vous
+permet de travailler sur plusieur choses en parallèle, chacune isolée les 
+unes des autres en attendant que ces tâches soient fini et que vous soyez
+prêt à les réintégrer. Parce que les copies locales sont peu coûteuse, il
+est très rapide de créer ou détruire des dépôts dès que vous en avez besoin.
+
+%% Note: la dernière phrase n'est pas une traduction littérale, mais je
+%% pense qu'elle exprime plus clairement en français ce que veut dire son 
+%% équivalent anglais.
+
+Dans notre dépôt \dirname{my-hello}, nous avons un fichier \filename{hello.c}
+qui contient le classique programme ``hello, world''. Nous allons utiliser 
+l'ancienne et vénérable commande \command{sed} pour l'éditer pour qu'il 
+affiche une seconde ligne à l'écran. (J'utilise \command{sed} seulement parce
+qu'il est facile d'écrire des exemples sous formes de script ainsi. Comme 
+vous n'avez pas ces contraintes, vous n'utiliserez probablement pas \command{sed}
+mais plutôt votre éditeur de texte favori). 
+
 \interaction{tour.sed}
 
-Mercurial's \hgcmd{status} command will tell us what Mercurial knows
-about the files in the repository.
+La commande \hgcmd{status} de Mercurial nous dira de quels fichiers Mercurial
+s'occupe au sein de ce dépôt.
 \interaction{tour.status}
-The \hgcmd{status} command prints no output for some files, but a line
-starting with ``\texttt{M}'' for \filename{hello.c}.  Unless you tell
-it to, \hgcmd{status} will not print any output for files that have
-not been modified.  
+La commande \hgcmd{status} n'affiche rien sur la sortie pour quelques fichiers
+mais une ligne commence par ``\texttt{M}'' for \filename{hello.c}. À moins que
+vous ne lui indiquiez de le faire, \hgcmd{status} n'affichera aucune sortie 
+pour les fichiers qui n'ont pas été modifiés.
 
-The ``\texttt{M}'' indicates that Mercurial has noticed that we
-modified \filename{hello.c}.  We didn't need to \emph{inform}
-Mercurial that we were going to modify the file before we started, or
-that we had modified the file after we were done; it was able to
-figure this out itself.
+Le caractère ``\texttt{M}'' indique que Mercurial a remarqué que nous avions
+modifié le fichier \filename{hello.c}. Nous n'avons pas besoin d'\emph{informer}
+Mercurial que nous allons modifier un fichier avant de le faire, ou que nous 
+venons de le modifier, il est capable de s'en rendre compte tout seul.
 
-It's a little bit helpful to know that we've modified
-\filename{hello.c}, but we might prefer to know exactly \emph{what}
-changes we've made to it.  To do this, we use the \hgcmd{diff}
-command.
+C'est pratique de savoir que nous avons modifié \filename{hello.c}, mais il
+serait encore plus pratique de savoir ce que nous avons modifié exactement. Pour
+cela, nous avons la commande  \hgcmd{diff}.
+
 \interaction{tour.diff}
 
-\section{Recording changes in a new changeset}
+\section{Enregister les modifications dans un nouveau \textit{changeset}}
 
-We can modify files, build and test our changes, and use
-\hgcmd{status} and \hgcmd{diff} to review our changes, until we're
-satisfied with what we've done and arrive at a natural stopping point
-where we want to record our work in a new changeset.
+Nous pouvons modifier des fichiers, compiler et tester nos modifications,
+et utiliser les commandes \hgcmd{status} and \hgcmd{diff} pour voir les
+modifications effectués, jusqu'au moment où nous serons assez satisfait
+pour décider d'enregister notre travail dans un \textit{changeset}.
 
-The \hgcmd{commit} command lets us create a new changeset; we'll
-usually refer to this as ``making a commit'' or ``committing''.  
+La commande \hgcmd{commit} vous laisse créer un nouveau \textit{changeset},
+nous désignerons généralement cette opération par ``faire un commit'' ou
+``commité''\footnote{NdT: De mon expérience, la plupart des francophones 
+utilisent  régulièrement, à l'oral, cette expression, mais bien évidement
+il ne s'agit pas d'un terme terminologiquement correct, ni même français.}
 
-\subsection{Setting up a username}
+\subsection{Définir le nom d'utilisateur}
 
-When you try to run \hgcmd{commit} for the first time, it is not
-guaranteed to succeed.  Mercurial records your name and address with
-each change that you commit, so that you and others will later be able
-to tell who made each change.  Mercurial tries to automatically figure
-out a sensible username to commit the change with.  It will attempt
-each of the following methods, in order:
+Quand vous exécuter la commande \hgcmd{commit} pour la première fois, elle
+n'est pas garanti de réussir. Mercurial enregistre votre nom et votre 
+adresse avec chaque modification que vous effectuez, de manière à ce que
+vous soyez capable (ou d'autres le soient) de savoir qui a fait quelle
+modification. Mercurial essaye automatiquement de découvrir un nom 
+d'utilisateur qui est un minimum de sense pour effectuer l'opération
+de \textit{commit} avec. Il va essayer chacune des méthodes suivantes,
+dans l'ordre:
 \begin{enumerate}
-\item If you specify a \hgopt{commit}{-u} option to the \hgcmd{commit}
-  command on the command line, followed by a username, this is always
-  given the highest precedence.
-\item If you have set the \envar{HGUSER} environment variable, this is
-  checked next.
-\item If you create a file in your home directory called
-  \sfilename{.hgrc}, with a \rcitem{ui}{username} entry, that will be
-  used next.  To see what the contents of this file should look like,
-  refer to section~\ref{sec:tour-basic:username} below.
-\item If you have set the \envar{EMAIL} environment variable, this
-  will be used next.
-\item Mercurial will query your system to find out your local user
-  name and host name, and construct a username from these components.
-  Since this often results in a username that is not very useful, it
-  will print a warning if it has to do this.
+\item Si vous spécifiez l'option \hgopt{commit}{-u} avec la commande 
+  \hgcmd{commit}, suivi d'un nom d'utilisateur, ceci aura toujours la 
+  priorité sur les autres méthodes ci dessous.
+\item Si vous avez défini une variable d'environement \envar{HGUSER}, 
+  c'est cette valeur qui est alors utilisée.
+\item Si vous créer un fichier nommé \sfilename{.hgrc} dans votre 
+   répertoire \textit{home}, avec une entrée \rcitem{ui}{username}, 
+   c'est la valeur associée qui sera utilisée. Pour voir à quoi 
+   ressemble le contenu de ce fichier regardez la 
+   section~\ref{sec:tour-basic:username} ci dessous.
+\item Si vous avez défini une variable d'environement \envar{EMAIL}
+  celle ci sera utilisée ensuite.
+\item Enfin, Mercurial interrogera votre système pour trouver votre
+  nom d'utilisateur local ainsi que le nom de la machine hôte, et il 
+  un nom d'utilisateur à partir de ces composants. Comme il arrive
+  souvent que ce genre de noms soit totalement inutile, il vous 
+  préviendra en affichant un message d'avertissement.
 \end{enumerate}
-If all of these mechanisms fail, Mercurial will fail, printing an
-error message.  In this case, it will not let you commit until you set
-up a username.
 
-You should think of the \envar{HGUSER} environment variable and the
-\hgopt{commit}{-u} option to the \hgcmd{commit} command as ways to
-\emph{override} Mercurial's default selection of username.  For normal
-use, the simplest and most robust way to set a username for yourself
-is by creating a \sfilename{.hgrc} file; see below for details.
+Si tous ces méchanismes échouent, Mercurial n'exécutera pas la commande,
+affichant un message d'erreur. Dans ce cas, il ne vous laissera pas 
+effectuer de \textit{commit} tant que vous n'aurez pas défini un nom
+d'utilisateur.
+
+Vous devriez penser à utiliser la variable d'environement \envar{HGUSER} 
+et l'option \hgopt{commit}{-u} comme moyen pour \emph{changer le nom
+d'utilisateur} par défaut. Pour une utilisation normale, le plus simple
+et robuste manière d'opérer est de créer un fichier \sfilename{.hgrc},
+voir ci dessous pour les détails à ce sujet.
 
 \subsubsection{Creating a Mercurial configuration file}
 \label{sec:tour-basic:username}
