@@ -116,105 +116,110 @@ d'information que d'habitude.
 
 Avec Mercurial, tout se déroule au sein du \emph{dépot}\footnote{NdT: Dépôt est
 la traduction que j'ai retenu pour tout l'ouvrage du terme anglais \textit{repository}}.
-Le dépôt d'une projet contient tout les fichiers qui ``appartiennent'' au projet.
-In Mercurial, everything happens inside a \emph{repository}.  The
-repository for a project contains all of the files that ``belong to''
-that project, along with a historical record of the project's files.
+Le dépôt d'une projet contient tout les fichiers qui ``appartiennent'' 
+au projet, avec l'historique des fichiers du projet.
 
-There's nothing particularly magical about a repository; it is simply
-a directory tree in your filesystem that Mercurial treats as special.
-You can rename or delete a repository any time you like, using either the
-command line or your file browser.
+Il n'y a rien de particulièrement magique au sujet de ce dépot, c'est
+simplement une arboresence sur votre système de fichiers que Mercurial
+traite de manière spéciale. Si vous pouvez renommer ou effacer ce répertoire
+à n'importe quel moment, en utilisant la ligne de commande ou votre
+explorateur de fichiers.
 
-\subsection{Making a local copy of a repository}
+\subsection{Faire une copie locale de votre dépot}
 
-\emph{Copying} a repository is just a little bit special.  While you
-could use a normal file copying command to make a copy of a
-repository, it's best to use a built-in command that Mercurial
-provides.  This command is called \hgcmd{clone}, because it creates an
-identical copy of an existing repository.
+\emph{Copier} un dépôt est just un peu spécial. Bien que vous 
+puissiez utiliser une commande habituelle de copie pour copier
+votre dépôt, il vaut mieux utiliser une commande fournie par
+Mercurial. Cette commande est appelée \hgcmd{clone}, car elle
+crée une copie identique d'un dépôt existant.
 \interaction{tour.clone}
-If our clone succeeded, we should now have a local directory called
-\dirname{hello}.  This directory will contain some files.
+Si votre opération de clonage réussit, vous devriez maintenant
+avoir un répertoire local appelé \dirname{hello}. Ce répertoire
+contiendra quelques fichiers.
 \interaction{tour.ls}
-These files have the same contents and history in our repository as
-they do in the repository we cloned.
+Ces fichiers ont le même contenu et historique dans votre dépôt
+qu'ils ont dans le dépôt que vous avez cloné.
 
-Every Mercurial repository is complete, self-contained, and
-independent.  It contains its own private copy of a project's files
-and history.  A cloned repository remembers the location of the
-repository it was cloned from, but it does not communicate with that
-repository, or any other, unless you tell it to.
+Chaque dépôt Mercurial est complet, autonome et indépendant. Il
+contient sa propre copie privé des fichiers du projet et de leurs
+historiques. Le clone d'un dépôt se souvient de la localisation du
+dépôt à partir duquel il a été clôné, mais il ne communique pas avec
+ce dernier, ou un autre, à moins que vous ne lui demandiez.
 
-What this means for now is that we're free to experiment with our
-repository, safe in the knowledge that it's a private ``sandbox'' that
-won't affect anyone else.
+Ce que tout ceci signifie pour le moment est que nous sommes libre
+d'expérimenter avec ce dépôt, confiant dans le fait qu'il s'agit d'un
+``bac à sable'' qui n'affectera personne d'autres.
 
-\subsection{What's in a repository?}
+\subsection{Quel est le contenu d'un dépôt ?}
 
-When we take a more detailed look inside a repository, we can see that
-it contains a directory named \dirname{.hg}.  This is where Mercurial
-keeps all of its metadata for the repository.
+Prêtons plus attention un instant au contenu d'un dépôt. Nous voyons 
+qu'il contient un répertoire nommée \dirname{.hg}. C'est ici que Mercurial
+conserve toutes ses métadonnées.
 \interaction{tour.ls-a}
 
-The contents of the \dirname{.hg} directory and its subdirectories are
-private to Mercurial.  Every other file and directory in the
-repository is yours to do with as you please.
+Le contenu du répertoire \dirname{.hg} et ses sous répertoires sont les
+seules propre à Mercurial. Tout les autres fichiers et répertoire dans 
+le répertoire sont à vous, et vous pouvez faire ce que vous en voulez.
 
-To introduce a little terminology, the \dirname{.hg} directory is the
-``real'' repository, and all of the files and directories that coexist
-with it are said to live in the \emph{working directory}.  An easy way
-to remember the distinction is that the \emph{repository} contains the
-\emph{history} of your project, while the \emph{working directory}
-contains a \emph{snapshot} of your project at a particular point in
-history.
+Pour introduire un peu de terminologie, le répertoire \dirname{.hg} est
+un ``vrai'' dépôt, et tout les fichiers et les répertoires qui coexistent
+avec lui, sont désigné sous le nom de \emph{espace de travail}\footnote{NdT: 
+\textit{working directory}}. Une manière facile de se rappeler cette 
+distinction est de retenir que le \emph{dépôt} contient l'\emph{historique}
+de votre projet, alors que l'\emph{espace de travail} contient une \emph{copie
+précise}\footnote{NdT: Ce terme est une traduction du terme anglais 
+\textit{snapshot}. Il est traduit ici pour faciliter la lecture, mais ne sera
+plus traduit par la suite.} de votre projet à un certain point de son
+historique.
 
-\section{A tour through history}
+\section{Une ballade dans l'historique}
 
-One of the first things we might want to do with a new, unfamiliar
-repository is understand its history.  The \hgcmd{log} command gives
-us a view of history.
+Une des premières choses que vous aurez envie de faire avec un nouveau
+dépôt, sera de comprendre son historique. La commande \hgcmd{log} vous
+donne une vue de l'historique.
 \interaction{tour.log}
-By default, this command prints a brief paragraph of output for each
-change to the project that was recorded.  In Mercurial terminology, we
-call each of these recorded events a \emph{changeset}, because it can
-contain a record of changes to several files.
+Par défaut, cette commande affiche à l'écran un bref paragraphe pour chaque
+révision enregistrée pour ce projet. Dans la terminologie de Mercurial, nous
+appelons chacun de ces évènements enregistrés un \emph{changeset}, parce 
+qu'il contient un ensemble de mofications sur plusieurs fichiers.
 
-The fields in a record of output from \hgcmd{log} are as follows.
+La commande \hgcmd{log} affiche ainsi ces informations:
 \begin{itemize}
-\item[\texttt{changeset}] This field has the format of a number,
-  followed by a colon, followed by a hexadecimal string.  These are
-  \emph{identifiers} for the changeset.  There are two identifiers
-  because the number is shorter and easier to type than the hex
-  string.
-\item[\texttt{user}] The identity of the person who created the
-  changeset.  This is a free-form field, but it most often contains a
-  person's name and email address.
-\item[\texttt{date}] The date and time on which the changeset was
-  created, and the timezone in which it was created.  (The date and
-  time are local to that timezone; they display what time and date it
-  was for the person who created the changeset.)
-\item[\texttt{summary}] The first line of the text message that the
-  creator of the changeset entered to describe the changeset.
+\item[\texttt{changeset}] Ce champ contient un nombre, séparé par une 
+  virgule, d'une chaine hexadécimal. Il s'agit en effet d'\emph{identifiants}
+  pour un \textit{changeset}. Il y a deux identifiants car le numéro de
+  la révision est plus court et plus à facile à saisir qu'une séquence
+  hexadécimale.
+\item[\texttt{utilisateur}] L'identité de la personne qui a crée ce 
+  \textit{changeset}. C'est un champ libre de forme, mais la plupart du
+  temps il contient le nom et l'email de la personne.
+\item[\texttt{date}] La date et l'heure à laquelle le \textit{changeset}
+  a été crée, ainsi que le \textit{timezone} dans laquelle il a été crée. %%%TODO: Translate 'timezone' properly
+  (La date et l'heure sont locals à cette \textit{timezone}, ils indiquent
+  donc quelle date et quelle il était pour la personne qui a crée ce 
+  \textit{changeset}.)
+\item[\texttt{résumé}] La première du message que le créateur a associée à
+  son \textit{changeset} pour le décrire.
 \end{itemize}
-The default output printed by \hgcmd{log} is purely a summary; it is
-missing a lot of detail.
 
-Figure~\ref{fig:tour-basic:history} provides a graphical representation of
-the history of the \dirname{hello} repository, to make it a little
-easier to see which direction history is ``flowing'' in.  We'll be
-returning to this figure several times in this chapter and the chapter
-that follows.
+Par défaut, la commande \hgcmd{log} n'affiche qu'un résumé, il manque 
+beaucoup de détails.
+
+
+La figure~\ref{fig:tour-basic:history} fournit un représentation graphique
+de l'historique du dépôt \dirname{hello}, pour rendre plus facile de voir
+dans quelle direction l'historique se ``déroule''\footnote{NdT: \textit{flowing in}.}.
+Nous reviendrons régulièrement à cette représentation dans ce chapitre et
+ceux qui suivent.
 
 \begin{figure}[ht]
   \centering
   \grafix{tour-history}
-  \caption{Graphical history of the \dirname{hello} repository}
+  \caption{Représentation graphique du dépôt \dirname{hello} }
   \label{fig:tour-basic:history}
 \end{figure}
 
-\subsection{Changesets, revisions, and talking to other 
-  people}
+\subsection{Changesets, révisions, et discuter avec les autres}
 
 As English is a notoriously sloppy language, and computer science has
 a hallowed history of terminological confusion (why use one term when
