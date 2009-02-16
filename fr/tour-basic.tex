@@ -278,30 +278,31 @@ révisions, ainsi \hgcmdargs{log}{-r 2:4} affichera $2,3,4$ alors que
 
 \subsection{Informations détaillées}
 
-While the summary information printed by \hgcmd{log} is useful if you
-already know what you're looking for, you may need to see a complete
-description of the change, or a list of the files changed, if you're
-trying to decide whether a changeset is the one you're looking for.
-The \hgcmd{log} command's \hggopt{-v} (or \hggopt{--verbose})
-option gives you this extra detail.
-\interaction{tour.log-v}
+Si le résumé affiché par \hgcmd{log} est utile si vous savez déjà ce                                                                   
+que vous cherchez. Vous aurez probablement besoin de voir un description                                                               
+complète du changement, ou une liste des fichiers modifiés. Si vous                                                                    
+cherchez à déterminer si ce \textit{changeset} est bien celui que vous                                                                 
+recherchez. L'option \hgopt{-v} de la commande \hgcmd{log} (ou                                                                         
+\hgopt{--verbose}) vous donne des informations supplémentaires.
 
-If you want to see both the description and content of a change, add
-the \hgopt{log}{-p} (or \hgopt{log}{--patch}) option.  This displays
-the content of a change as a \emph{unified diff} (if you've never seen
-a unified diff before, see section~\ref{sec:mq:patch} for an overview).
-\interaction{tour.log-vp}
+Si vous voulez voir à la fois la description et le contenu d'une                                                                       
+modification, ajouter l'option \hgopt{log}{-p} (ou \hgopt{log}{--patch}).                                                              
+Ceci affiche le contenu d'une modification comme un \emph{diff unifié}                                                                 
+\footnote{NdT: \textit{unified diff}} (si vous n'avez jamais vu de diff                                                                
+unifié avant, consulter la section~\ref{sec:mq:patch} pour rapide                                                                      
+survol).
 
-\section{All about command options}
 
-Let's take a brief break from exploring Mercurial commands to discuss
-a pattern in the way that they work; you may find this useful to keep
-in mind as we continue our tour.
+\section{Tout sur les options de commandes}
 
-Mercurial has a consistent and straightforward approach to dealing
-with the options that you can pass to commands.  It follows the
-conventions for options that are common to modern Linux and Unix
-systems.
+Avant d'aller plus loin sur le fonctionnement des commandes de Mercurial,
+étudions un moment comment elles fonctionnent de manière générale, vous
+trouverez ça probablement utile pour la suite de notre parcours.
+
+Mercurial a une manière approche directe et cohérente pour interpréter
+les options que vous passez aux commandes. Il suit une convention commune
+à la plupart des systèmes Unix et Linux modernes.
+
 \begin{itemize}
 \item Every option has a long name.  For example, as we've already
   seen, the \hgcmd{log} command accepts a \hgopt{log}{--rev} option.
