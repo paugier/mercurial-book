@@ -426,8 +426,7 @@ dans l'ordre:
   celle ci sera utilisée ensuite.
 \item Enfin, Mercurial interrogera votre système pour trouver votre
   nom d'utilisateur local ainsi que le nom de la machine hôte, et il 
-%%%FIXME : et il quoi ? un nom...
-  un nom d'utilisateur à partir de ces composants. Comme il arrive
+  fabriquera un nom d'utilisateur à partir de ces données. Comme il arrive
   souvent que ce genre de noms soit totalement inutile, il vous 
   préviendra en affichant un message d'avertissement.
 \end{enumerate}
@@ -460,51 +459,56 @@ configuration, ainsi la ligne ``\texttt{username = ...}'' signifie ``
 définir la valeur de l'élément \texttt{username} dans la section 
 \texttt{ui}''. Une section continue jusqu'à ce qu'une nouvelle 
 commence, ou que la fin du fichier soit atteinte. Mercurial ignore
-les lignes vide et traite tout texte 
-file.  Mercurial ignores empty lines and treats any text from
-``\texttt{\#}'' to the end of a line as a comment.
+les lignes vide et traite tout texte situé à la suite d'un  
+``\texttt{\#}'' jusqu'à la fin de la ligne comme un commentaire.
 
-\subsubsection{Choosing a user name}
+\subsubsection{Choisir un nom d'utilisateur}
 
-You can use any text you like as the value of the \texttt{username}
-config item, since this information is for reading by other people,
-but for interpreting by Mercurial.  The convention that most people
-follow is to use their name and email address, as in the example
-above.
+Vous pouvez utiliser n'importe quelle valeur pour votre \texttt{username},
+car cette information est destinée à d'autres personnes et non à être
+interprétée par Mercurial. La convention que la plupart des personnes
+suivent est d'utiliser leurs noms suivies de leurs adresses emails,
+comme montrée ci dessus:
 
 \begin{note}
-  Mercurial's built-in web server obfuscates email addresses, to make
-  it more difficult for the email harvesting tools that spammers use.
-  This reduces the likelihood that you'll start receiving more junk
-  email if you publish a Mercurial repository on the web.
+  Le mécanisme interne du serveur \textit{web} intégré à Mercurial,
+  masque les adresses emails, pour rendre plus difficile leurs
+  récupérations par les outils utilisés par les \textit{spammmers}.
+  Ceci réduit la probabilité que vous receviez encore plus de 
+  \textit{spam} si vous vous publiez un dépôt sur internet.
 \end{note}
 
-\subsection{Writing a commit message}
+\subsection{Rédiger un message de \textit{commit}}
 
-When we commit a change, Mercurial drops us into a text editor, to
-enter a message that will describe the modifications we've made in
-this changeset.  This is called the \emph{commit message}.  It will be
-a record for readers of what we did and why, and it will be printed by
-\hgcmd{log} after we've finished committing.
+Lorsque l'on effectue une opération de \textit{commit}, Mercurial 
+lance automatiquement un éditeur de texte pour permettre de saisir
+un message qui décrira les modifications effectuées dans ce 
+\textit{changeset}. Ce message est nommée le \emph{message de 
+\textit{commit}}. Ce sera un enregistrement pour tout lecteur 
+expliquant le pourquoi et le comment de vos modifications, et il sera
+affiché par la commande \hgcmd{log}.
 \interaction{tour.commit}
 
-The editor that the \hgcmd{commit} command drops us into will contain
-an empty line, followed by a number of lines starting with
-``\texttt{HG:}''.
+L'éditor que la commande \hgcmd{commit} déclenche ne contiendra
+qu'une ligne vide suivi d'un certain nombre de lignes commençant
+par ``\texttt{HG:}''.
 \begin{codesample2}
   \emph{empty line}
   HG: changed hello.c
 \end{codesample2}
-Mercurial ignores the lines that start with ``\texttt{HG:}''; it uses
-them only to tell us which files it's recording changes to.  Modifying
-or deleting these lines has no effect.
+Mercurial ignore les lignes qui commence avec ``\texttt{HG:}'', il 
+ne les utilise que pour nous indiquer quels fichiers modifiés il se 
+prépare à \textit{commiter}. Modifier ou effacer ces lignes n'a 
+aucune conséquence sur l'opération de \textit{commit}.
 
-\subsection{Writing a good commit message}
+\subsection{Rédiger un message de \textit{approprié}}
 
-Since \hgcmd{log} only prints the first line of a commit message by
-default, it's best to write a commit message whose first line stands
-alone.  Here's a real example of a commit message that \emph{doesn't}
-follow this guideline, and hence has a summary that is not readable.
+Comme \hgcmd{log} n'affiche que la première ligne du message de
+\textit{commit} par défaut, il est souvent considéré comme une bonne
+pratique de rédiger des messages de \textit{commit} qui rentre que 
+sur une seule ligne. Voilà un exemple concret de message de 
+\textit{commit} qui \emph{ne suit pas} cette directive, et qui a donc
+un résumé peu lisible.
 \begin{codesample2}
   changeset:   73:584af0e231be
   user:        Censored Person <censored.person@example.org>
@@ -512,153 +516,171 @@ follow this guideline, and hence has a summary that is not readable.
   summary:     include buildmeister/commondefs.   Add an exports and install
 \end{codesample2}
 
-As far as the remainder of the contents of the commit message are
-concerned, there are no hard-and-fast rules.  Mercurial itself doesn't
-interpret or care about the contents of the commit message, though
-your project may have policies that dictate a certain kind of
-formatting.
+A ce sujet, il faut noter qu'il n'existe pas de règle absolu dans ce 
+domaine. Mercurial lui-même n'interprète pas les contenus des messages
+de \textit{commit}, ainsi votre projet est libre de concevoir différentes
+politiques de formattage des messages.
 
-My personal preference is for short, but informative, commit messages
-that tell me something that I can't figure out with a quick glance at
-the output of \hgcmdargs{log}{--patch}.
+Ma préférence personnelle va au message court, mais informatif, qui offre
+des précisions supplémentaires à ce que pourrait m'apprendre une commande
+\hgcmdargs{log}{--patch}.
 
-\subsection{Aborting a commit}
+\subsection{Annuler un \textit{commit}}
 
-If you decide that you don't want to commit while in the middle of
-editing a commit message, simply exit from your editor without saving
-the file that it's editing.  This will cause nothing to happen to
-either the repository or the working directory.
+Si, en rédigeant le message, vous décidez que finalement vous ne 
+voulez pas effectuer ce \textit{commit}, il suffit de simplement quitter
+l'éditeur sans sauver. Ceci n'aura aucune conséquence sur le dépôt ou
+les fichiers de l'espace de travail.
 
-If we run the \hgcmd{commit} command without any arguments, it records
-all of the changes we've made, as reported by \hgcmd{status} and
-\hgcmd{diff}.
+Si vous exécuter la commande \hgcmd{commit} sans aucun arguments, elle
+enregistre toutes les modifications que vous avez faites, comme le montre
+la commande \hgcmd{status} et \hgcmd{diff}.
 
-\subsection{Admiring our new handiwork}
+\subsection{Admirer votre travail}
 
-Once we've finished the commit, we can use the \hgcmd{tip} command to
-display the changeset we just created.  This command produces output
-that is identical to \hgcmd{log}, but it only displays the newest
-revision in the repository.
+Une fois que votre \textit{commit} est terminé, vous pouvez utiliser
+la commande \hgcmd{tip} pour afficher le \textit{changeset} que nous
+venons de créer. Cette commande produit une sortie à l'écran qui est
+identique à celle du \hgcmd{log}, maios qui n'affiche que la dernière
+révision du dépôt.
 \interaction{tour.tip}
-We refer to the newest revision in the repository as the tip revision,
-or simply the tip.
+On fait courament référénce à la dernière révision du dépôt comme
+étant la révision \textit{tip}, ou plus simplement le \textit{tip}.
 
-\section{Sharing changes}
+\section{Partager ses modifications}
 
-We mentioned earlier that repositories in Mercurial are
-self-contained.  This means that the changeset we just created exists
-only in our \dirname{my-hello} repository.  Let's look at a few ways
-that we can propagate this change into other repositories.
+Nous avons mentionné plus haut que les dépôts de Mercurial 
+sont autosuffisants. Ce qui signifie que le \textit{changeset} 
+que vous venez de créer existe seulement dans votre répertoire 
+\dirname{my-hello}. Etudions comment propager cette modification
+dans d'autres dépôts.
 
-\subsection{Pulling changes from another repository}
+\subsection{Récupérer les modifications d'autres dépôts}
 \label{sec:tour:pull}
 
-To get started, let's clone our original \dirname{hello} repository,
-which does not contain the change we just committed.  We'll call our
-temporary repository \dirname{hello-pull}.
+Pour commencer, construisons un clône de notre dépôt \dirname{hello} 
+qui ne contiendra pas le changement que nous venons d'effectuer. Nous
+l'appelerons notre dépôt temporaire \dirname{hello-pull}.
 \interaction{tour.clone-pull}
 
-We'll use the \hgcmd{pull} command to bring changes from
-\dirname{my-hello} into \dirname{hello-pull}.  However, blindly
-pulling unknown changes into a repository is a somewhat scary
-prospect.  Mercurial provides the \hgcmd{incoming} command to tell us
-what changes the \hgcmd{pull} command \emph{would} pull into the
-repository, without actually pulling the changes in.
+Nous allons utiliser la commande \hgcmd{pull} pour apporter les 
+modifications depuis \dirname{my-hello} dans \dirname{hello-pull}.
+Néanmoins, récupérer aveuglement des modifications depuis un dépôt
+a quelquechose d'un peu effrayant. Mercurial propose donc une 
+commande \hgcmd{incoming} qui permet de savoir quelles modifications
+la commande \hgcmd{pull} \emph{pourrait} entraîner dans notre dépôt,
+et ceci sans effectuant réellement de modification dessus.
 \interaction{tour.incoming}
-(Of course, someone could cause more changesets to appear in the
-repository that we ran \hgcmd{incoming} in, before we get a chance to
-\hgcmd{pull} the changes, so that we could end up pulling changes that we
-didn't expect.)
+(Bien évidement, quelqu'un pourrait peut ajouter des modifications
+supplémentaires sur le dépôt que nous étudions avec \hgcmd{incoming},
+avant que nous ayons effectué notre \hgcmd{pull}, avec comme 
+triste conséquence que nous aurons récupéré des modifications que 
+nous n'attendions pas.)
 
-Bringing changes into a repository is a simple matter of running the
-\hgcmd{pull} command, and telling it which repository to pull from.
+Apporter les modifications rapatriées dans un dépôt sera résume donc
+à exécuter la commande \hgcmd{pull}, et préciser depuis quel dépôt 
+effectuer le \hgcmd{pull}.
 \interaction{tour.pull}
-As you can see from the before-and-after output of \hgcmd{tip}, we
-have successfully pulled changes into our repository.  There remains
-one step before we can see these changes in the working directory.
 
-\subsection{Updating the working directory}
+Comme vous le voyez avec une sortie avant et après de la commande
+\hgcmd{tip}, nous avons réussi à récupérer aisément les modifications
+dans notre dépôt. Il reste néanmoins quelquechose à faire avant de
+placer ces modifications dans l'espace de travail.
 
-We have so far glossed over the relationship between a repository and
-its working directory.  The \hgcmd{pull} command that we ran in
-section~\ref{sec:tour:pull} brought changes into the repository, but
-if we check, there's no sign of those changes in the working
-directory.  This is because \hgcmd{pull} does not (by default) touch
-the working directory.  Instead, we use the \hgcmd{update} command to
-do this.
+\subsection{Mise à jour de l'espace de travail}
+
+Nous avons jusqu'à maintenant que grossièrement définie la relation 
+entre un dépôt et un espace de travail. La commande \hgcmd{pull} que
+nous avons exécuter dans la section~\ref{sec:tour:pull} a apportée
+des modifications, que nous avons vérifiées, dans notre dépôt, mais
+il n'ya aucune trace de ces modifications dans notre espace de travail.
+En effet, \hgcmd{pull} ne touche pas (par défaut) à l'espace de 
+travail. C'est la commande \hgcmd{update} qui s'en charge.
 \interaction{tour.update}
 
-It might seem a bit strange that \hgcmd{pull} doesn't update the
-working directory automatically.  There's actually a good reason for
-this: you can use \hgcmd{update} to update the working directory to
-the state it was in at \emph{any revision} in the history of the
-repository.  If you had the working directory updated to an old
-revision---to hunt down the origin of a bug, say---and ran a
-\hgcmd{pull} which automatically updated the working directory to a
-new revision, you might not be terribly happy.
+Il peut sembler un peu étrange que la commande \hgcmd{pull} ne met
+pas à jour l'espace de travail automatiquement. Il y a en fait une
+très bonne raison à cela: vous pouvez utilisez la commmande 
+\hgcmd{update} pour mettre à jour votre espace de travail à l'état
+dans lequel il était à \emph{n'importe quelle révision} de l'historique
+du dépôt. Si vous aviez un espace de travail contenant une ancienne
+révision---pour chercher l'origine d'un \textit{bug}, par exemple---et
+que vous effectuiez un \hgcmd{pull} qui mettrait à jour automatiquement
+votre espace de travail, vous ne seriez probablement pas très satisfait.
 
-However, since pull-then-update is such a common thing to do,
-Mercurial lets you combine the two by passing the \hgopt{pull}{-u}
-option to \hgcmd{pull}.
+Néanmoins, commme les opérations de \textit{pull} sont très souvent
+suivies d'un \textit{update}, Mercurial vous permet de combiner les
+deux aisément passant l'option \hgopt{pull}{-u} à la commande 
+\hgcmd{pull}
 \begin{codesample2}
   hg pull -u
 \end{codesample2}
-If you look back at the output of \hgcmd{pull} in
-section~\ref{sec:tour:pull} when we ran it without \hgopt{pull}{-u},
-you can see that it printed a helpful reminder that we'd have to take
-an explicit step to update the working directory:
+
+Si vous étudiez de nouveau la sortie de la commande \hgcmd{pull} dans
+la section~\ref{sec:tour:pull} quand nous l'avons exécuter sans l'option
+\hgopt{pull}{-u}, vous pouvez constater qu'elle a afficher un rappel assez
+utile que vous devez encore effectuer une opération pour mettre à jour
+votre espace de travail:
 \begin{codesample2}
   (run 'hg update' to get a working copy)
 \end{codesample2}
 
-To find out what revision the working directory is at, use the
-\hgcmd{parents} command.
+Pour découvrir quelle révision de l'espace de travail en est, utiliser
+la commande \hgcmd{parents}. 
 \interaction{tour.parents}
-If you look back at figure~\ref{fig:tour-basic:history}, you'll see
-arrows connecting each changeset.  The node that the arrow leads
-\emph{from} in each case is a parent, and the node that the arrow
-leads \emph{to} is its child.  The working directory has a parent in
-just the same way; this is the changeset that the working directory
-currently contains.
+Si vous regardez de nouveau le dessin~\ref{fig:tour-basic:history}, vous
+verrez que les flèches reliant entreux les \textit{changeset}. Le noeud 
+dont la flèche mène \emph{de quelquepart} est dans chaque cas un parent, 
+et le node dont la flèche mène \emph{à quelquepart} est un enfant. 
+L'espace de travail a un parent de la même manière, c'est ce \textit{changeset} 
+que l'espace de travail contient à ce moment.
 
-To update the working directory to a particular revision, give a
-revision number or changeset~ID to the \hgcmd{update} command.
+Pour mettre à jour l'espace de travail d'une révision particulière, 
+indiquer un numéro de révision ou un \textit{changeset~ID} à la commande 
+\hgcmd{update}.
 \interaction{tour.older}
-If you omit an explicit revision, \hgcmd{update} will update to the
-tip revision, as shown by the second call to \hgcmd{update} in the
-example above.
+Si vous ne précisez pas de manière explicite de numéro de révision
 
-\subsection{Pushing changes to another repository}
+la commande \hgcmd{update} mettra à jour votre espace de travail avec
+le contenu de la révsion \textit{tip}, comme montré dans l'exemple 
+ci dessus lors du second appel à \hgcmd{update}.
 
-Mercurial lets us push changes to another repository, from the
-repository we're currently visiting.  As with the example of
-\hgcmd{pull} above, we'll create a temporary repository to push our
-changes into.
+\subsection{Transférer les modifications à un autre dépôt}
+
+Mercurial vous laisse transférer les modifications à un autre
+dépôt, depuis votre dépôt actuel. Comme dans l'exemple du 
+\hgcmd{pull} ci dessus, nous allons créer un dépôt temporaire
+vers lequel transférer\footnote{NdT: Les francophones disent souvent 
+``pousser'' tout simplement} nos modifications.
 \interaction{tour.clone-push}
-The \hgcmd{outgoing} command tells us what changes would be pushed
-into another repository.
+La commande \hgcmd{outgoing} nous indique quels changements nous
+allons transférer vers l'autre serveyr.
 \interaction{tour.outgoing}
-And the \hgcmd{push} command does the actual push.
+Et la commande \hgcmd{push} effectue réellement le transfert.
 \interaction{tour.push}
-As with \hgcmd{pull}, the \hgcmd{push} command does not update the
-working directory in the repository that it's pushing changes into.
-(Unlike \hgcmd{pull}, \hgcmd{push} does not provide a \texttt{-u}
-option that updates the other repository's working directory.)
+Comme avec \hgcmd{pull}, la commande \hgcmd{push} ne met pas à jour
+le répertoire de travail du dépôt dans lequel il transfère les 
+modifications. (À l'inverse de \hgcmd{pull}, \hgcmd{push} ne fournit
+pas d'option \texttt{-u} pour forcer la mise à jour de l'espace
+de travail cible).
 
-What happens if we try to pull or push changes and the receiving
-repository already has those changes?  Nothing too exciting.
+Qu'est ce qui se passe lorsque vous essayez de récupérer ou de transférer
+vos modifications et que le dépôt cible a déjà reçu ces modifications ? 
+Rien de bien excitant.
 \interaction{tour.push.nothing}
 
-\subsection{Sharing changes over a network}
+\subsection{Partager ses modifications à travers le réseau}
 
-The commands we have covered in the previous few sections are not
-limited to working with local repositories.  Each works in exactly the
-same fashion over a network connection; simply pass in a URL instead
-of a local path.
+Les commandes que nous avons étudiés dans les sections précédentes
+ne sont pas limite aux dépôt locaux. Chacune fonction de la même
+manière à travers une connexion réseau, il suffit de lui passer une 
+URL et non un chemin de fichier local.
+
 \interaction{tour.outgoing.net}
-In this example, we can see what changes we could push to the remote
-repository, but the repository is understandably not set up to let
-anonymous users push to it.
+Dans cet exemple, nous allons voir quels changements nous pourrions
+transférer vers le dépôt distant, mais le dépôt est, de manière tout
+à fait compréhensible, pas configuré pour accepter des modifications
+d'utilisateurs anonymes.
 \interaction{tour.push.net}
 
 %%% Local Variables: 
