@@ -120,13 +120,13 @@ Le dépôt d'un projet contient tous les fichiers qui ``appartiennent'' au proje
 
 Il n'y a rien de particulièrement magique au sujet de ce dépot, c'est
 simplement une arboresence sur votre système de fichiers que Mercurial
-traite de manière spéciale. Si vous pouvez renommer ou effacer ce répertoire
-à n'importe quel moment, en utilisant la ligne de commande ou votre
+traite de manière spéciale. Vous pouvez renommer ou effacer ce répertoire
+'importe quel moment, en utilisant la ligne de commande ou votre
 explorateur de fichiers.
 
 \subsection{Faire une copie locale de votre dépot}
 
-\emph{Copier} un dépôt est just un peu spécial. Bien que vous 
+\emph{Copier} un dépôt est juste un peu spécial. Bien que vous 
 puissiez utiliser une commande habituelle de copie pour copier
 votre dépôt, il vaut mieux utiliser une commande fournie par
 Mercurial. Cette commande est appelée \hgcmd{clone}, car elle
@@ -140,29 +140,29 @@ Ces fichiers ont le même contenu et historique dans votre dépôt
 qu'ils ont dans le dépôt que vous avez cloné.
 
 Chaque dépôt Mercurial est complet, autonome et indépendant. Il
-contient sa propre copie privé des fichiers du projet et de leurs
+contient sa propre copie privée des fichiers du projet et de leurs
 historiques. Le clone d'un dépôt se souvient de la localisation du
 dépôt à partir duquel il a été clôné, mais il ne communique pas avec
 ce dernier, ou un autre, à moins que vous ne lui demandiez.
 
-Ce que tout ceci signifie pour le moment est que nous sommes libre
-d'expérimenter avec ce dépôt, confiant dans le fait qu'il s'agit d'un
-``bac à sable'' qui n'affectera personne d'autres.
+Ce que tout ceci signifie pour le moment est que nous sommes libres
+d'expérimenter avec ce dépôt, confiants dans le fait qu'il s'agit d'un
+``bac à sable'' qui n'affectera personne d'autre.
 
 \subsection{Quel est le contenu d'un dépôt ?}
 
 Prêtons plus attention un instant au contenu d'un dépôt. Nous voyons 
-qu'il contient un répertoire nommée \dirname{.hg}. C'est ici que Mercurial
+qu'il contient un répertoire nommé \dirname{.hg}. C'est ici que Mercurial
 conserve toutes ses métadonnées.
 \interaction{tour.ls-a}
 
 Le contenu du répertoire \dirname{.hg} et ses sous répertoires sont les
-seules propre à Mercurial. Tout les autres fichiers et répertoire dans 
+seuls propres à Mercurial. Tous les autres fichiers et répertoires dans 
 le répertoire sont à vous, et vous pouvez faire ce que vous en voulez.
 
 Pour introduire un peu de terminologie, le répertoire \dirname{.hg} est
-un ``vrai'' dépôt, et tout les fichiers et les répertoires qui coexistent
-avec lui, sont désigné sous le nom de \emph{espace de travail}\footnote{NdT: 
+un ``vrai'' dépôt, et tous les fichiers et les répertoires qui coexistent
+avec lui, sont désignés sous le nom de \emph{espace de travail}\footnote{NdT: 
 \textit{working directory}}. Une manière facile de se rappeler cette 
 distinction est de retenir que le \emph{dépôt} contient l'\emph{historique}
 de votre projet, alors que l'\emph{espace de travail} contient une \emph{copie
@@ -185,17 +185,17 @@ qu'il contient un ensemble de mofications sur plusieurs fichiers.
 La commande \hgcmd{log} affiche ainsi ces informations:
 \begin{itemize}
 \item[\texttt{changeset}] Ce champ contient un nombre, séparé par une 
-  virgule, d'une chaine hexadécimal. Il s'agit en effet d'\emph{identifiants}
+  virgule, d'une chaine hexadécimale. Il s'agit en effet d'\emph{identifiants}
   pour un \textit{changeset}. Il y a deux identifiants car le numéro de
   la révision est plus court et plus à facile à saisir qu'une séquence
   hexadécimale.
-\item[\texttt{utilisateur}] L'identité de la personne qui a crée ce 
+\item[\texttt{utilisateur}] L'identité de la personne qui a créé ce 
   \textit{changeset}. C'est un champ libre de forme, mais la plupart du
   temps il contient le nom et l'email de la personne.
 \item[\texttt{date}] La date et l'heure à laquelle le \textit{changeset}
-  a été crée, ainsi que le \textit{timezone} dans laquelle il a été crée. %%%TODO: Translate 'timezone' properly
-  (La date et l'heure sont locals à cette \textit{timezone}, ils indiquent
-  donc quelle date et quelle il était pour la personne qui a crée ce 
+  a été créé, ainsi que le \textit{timezone} dans laquelle il a été créé. %%%TODO: Translate 'timezone' properly
+  (La date et l'heure sont locales à cette \textit{timezone}, elles indiquent
+  donc quelle date et quelle il était pour la personne qui a créé ce %%%TODO: je suppose (quelle "heure")
   \textit{changeset}.)
 \item[\texttt{résumé}] La première du message que le créateur a associée à
   son \textit{changeset} pour le décrire.
@@ -218,15 +218,17 @@ ceux qui suivent.
   \label{fig:tour-basic:history}
 \end{figure}
 
-\subsection{Changesets, révisions, et discuter avec les autres}
+\subsection{Changesets, révisions, et discuter avec les autres}%%%TODO: je propose : "discussion" (3 noms communs)
 
-Comme l'anglais est réputé pour un langage maladroit, et que l'informatique
-est la source de bien des erreurs terminologique (pourquoi utiliser un
+Comme l'anglais est réputé pour être un langage maladroit, et que l'informatique
+est la source de bien des erreurs terminologiques (pourquoi utiliser un
 seul terme quand quatre feront l'affaire ?), la gestion de version a une
-variété de mot et de phrases qui veulent dire la même chose. Si vous 
+variété de mots et de phrases qui veulent dire la même chose. Si vous 
 parlez à quelqu'un de l'historique de Mercurial à d'autres personnes, 
-vous constaterez que souvent le mot ``\textit{changeset}'' est compressé 
-en juste ``change'' ou (à l'écrit) ``cset'', et même parfois un 
+%%%TODO: ça ne veut rien dire: il faut supprimer une des personnes : soit "quelqu'un", 
+% soit "à d'autres personnes"
+vous constaterez que souvent le mot ``\textit{changeset}'' est compressé simplement
+en ``change'' ou (à l'écrit) ``cset'', et même parfois un 
 \textit{changeset} simplement ``révision'', abrégé en ``rev''.
 
 Bien que le \emph{mot} que vous utilisez pour désigner le concept de
@@ -239,30 +241,30 @@ un numéro de révision et une séquence hexadécimale.
 \begin{itemize}
 \item Le numéro de révision est \emph{seulement valable dans ce dépôt},
 \item alors que la séquence hexadécimale est un \emph{identifiant 
-	permanent, et immutable } qui pourra toujours être associé à %%%TODO: Immutable ? Is this french ?
-	\textit{changeset} exacte de \emph{chaque} copie de votre dépôt.
+	permanent, et invariant } qui pourra toujours être associé au 
+	\textit{changeset} exact de \emph{chaque} copie de votre dépôt.
 \end{itemize}
 
 La distinction est importante. Si vous envoyez un email à quelqu'un en
 parlant de la ``révision 33'', il est très probable que sa révision~33
 \emph{ne sera pas la même} que la votre. La raison de ceci est que le
 numéro de révision dépend de l'ordre dans lequel les modifications sont
-arrivés dans le dépôt, et il n'y a aucune garantie que les mêmes changements
+arrivées dans le dépôt, et il n'y a aucune garantie que les mêmes changements
 soient arrivés dans le même ordre dans différents dépôts. Trois modifications
 $a,b,c$ peuvent aisément apparaitre dans un dépôt comme $0,1,2$, et dans
 un autre comme $1,0,2$.
 
 Mercurial utilise les numéro de révision uniquement comme des raccourcis
-pratique. Si vous devez disctuer d'un \textit{changeset} avec quelqu'un, 
-our faire un enregistrement d'un \textit{changeset} pour une quelquonque
+pratiques. Si vous devez disctuer d'un \textit{changeset} avec quelqu'un, 
+our faire un enregistrement d'un \textit{changeset} pour une quelquonque %%%TODO: our : "pour" ou "ou"
 raison (par exemple, un rapport de \textit{bug}), utilisez la séquence
 hexadécimale.
 
 \subsection{Afficher une révision spécifique}
 
 Pour réduire la sortie de \hgcmd{log} à une seule révision, utilisez
-l'option \hgopt{log}{-r} (ou \hgopt{log}{--rev}). Vous pouvez utiser
-le numéro de révision ou la séquence hexadécimal comme identifiant, et 
+l'option \hgopt{log}{-r} (ou \hgopt{log}{--rev}). Vous pouvez utiliser
+le numéro de révision ou la séquence hexadécimale comme identifiant, et 
 vous demandez autant de révisions que vous le souhaitez. 
 \interaction{tour.log-r}
 
@@ -272,17 +274,17 @@ les énumérer, vous pouvez utiliser la \emph{\textit{range notation}}
 laisse en anglais} qui vous permet d'exprimer l'idée ``je veux toutes
 les révisions entre $a$ et $b$, inclus''.
 \interaction{tour.log.range}
-Mercurial respecte aussi l'ordre dans lequel vous spécifier les 
+Mercurial respecte aussi l'ordre dans lequel vous spécifiez les 
 révisions, ainsi \hgcmdargs{log}{-r 2:4} affichera $2,3,4$ alors que 
 \hgcmdargs{log}{-r 4:2} affichera $4,3,2$.
 
 \subsection{Informations détaillées}
 
 
-Si le résumé affiché par \hgcmd{log} est utile si vous savez déjà ce 
+Si le résumé affiché par \hgcmd{log} est utile si vous savez déjà ce %%%TODO: je pense que le premier "si" est de trop
 que vous cherchez. Vous aurez probablement besoin de voir un description
 complète du changement, ou une liste des fichiers modifiés. Si vous 
-cherchez à déterminer si ce \textit{changeset} est bien celui que vous
+cherchez à déterminer si ce \textit{changeset} est bien celui que vous%%%TODO: les propositions sont mal construites : après un "si...." il faut une proposition sans "si... donc ici : "si ... recherchez", ben quoi ?
 recherchez. L'option \hgopt{-v} de la commande \hgcmd{log} (ou 
 \hgopt{--verbose}) vous donne des informations supplémentaires.
 \interaction{tour.log-v}
@@ -291,7 +293,7 @@ Si vous voulez voir à la fois la description et le contenu d'une
 modification, ajouter l'option \hgopt{log}{-p} (ou \hgopt{log}{--patch}).
 Ceci affiche le contenu d'une modification comme un \emph{diff unifié}
 \footnote{NdT: \textit{unified diff}} (si vous n'avez jamais vu de diff 
-unifié avant, consulter la section~\ref{sec:mq:patch} pour rapide 
+unifié avant, consultez la section~\ref{sec:mq:patch} pour un rapide 
 survol).
 
 \interaction{tour.log-vp}
@@ -300,45 +302,47 @@ survol).
 
 
 Avant d'aller plus loin sur le fonctionnement des commandes de Mercurial,
-étudions un moment comment elles fonctionnent de manière générale, vous
+étudions un moment comment elles fonctionnent de manière générale. Vous
 trouverez ça probablement utile pour la suite de notre parcours.
 
-Mercurial a une manière approche directe et cohérente pour interpréter
+Mercurial a une manière approche directe et cohérente pour interpréter %%%TODO: une manière d'approche ?
 les options que vous passez aux commandes. Il suit une convention commune
 à la plupart des systèmes Unix et Linux modernes.
 
 \begin{itemize}
 \item Chaque option a un nom complet. Par exemple, comme nous l'avons déjà
-      vu, la command e\hgcmd{log} accepte l'option \hgopt{log}{--rev}.
-\item La plupart des options dispose de noms abrégés, aussi. Au lieu d'utiliser
+      vu, la command e\hgcmd{log} accepte l'option \hgopt{log}{--rev}.%%%TODO: commande ou command e\hgcmd...?
+\item La plupart des options disposent de noms abrégés. Aussi, au lieu d'utiliser
   \hgopt{log}{--rev}, vous pouvez utiliser \hgopt{log}{-r}. (Les options qui
-  n'ont pas de noms abrégés sont généralement rarement utilisés, c'est pour ça).
-\item Les noms complets commence par deux tirets (i.e.~\hgopt{log}{--rev}),
+  n'ont pas de noms abrégés sont généralement rarement utilisées, c'est pour ça).
+\item Les noms complets commencent par deux tirets (i.e.~\hgopt{log}{--rev}),
   alors que les options courtes commencent avec un seul (i.e.~\hgopt{log}{-r}).
-\item Les noms des options sont cohérent entre les commandes. Par exemple, 
+\item Les noms des options sont cohérents entre les commandes. Par exemple, 
   chaque commande qui accepte un \textit{changeset~ID} ou une numéro de révision
   accepte aussi \hgopt{log}{-r} et \hgopt{log}{--rev} comme arguments.
   %TODO: Small mistake here, shouldn't have log here... shouldn't it ?
 \end{itemize}
 
-Dans les exemples de ce libre, j'utilise les noms abrégés plutôt que les noms
-complet. Ceci est une préférence personnelle, par une recommandation.
+Dans les exemples de ce livre, j'utilise les noms abrégés plutôt que les noms
+complets. Ceci est une préférence personnelle, pas une recommandation.
 
-La plupart des commandes qui affiche une quelquonque sortie à l'écran,
+La plupart des commandes qui affichent une quelquonque sortie à l'écran,
 afficheront plus avec l'option \hggopt{-v} (ou \hggopt{--verbose}), et
-mois avec l'option \hggopt{-q} (ou \hggopt{--quiet}).
+moins avec l'option \hggopt{-q} (ou \hggopt{--quiet}).
 
 \section{Faire et vérifier des modifications}
 
-Maintenant que nous avons une bonne idée de commande consulter l'historique
-de Mercurial, regardons comment faire des modifications et les examiner.
+Maintenant que nous avons une bonne idée des commandes pour consulter 
+l'historique de Mercurial, regardons comment faire des modifications et 
+les examiner.
+
 
 La première chose que nous allons faire c'est isoler notre expérience dans
 un dépôt à part. Nous allons utiliser la commande \hgcmd{clone}, mais nous
 n'avons pas besoin de faire une copie de dépôt distant. Comme nous avons 
 déjà une copie locale, nous pouvons juste faire un clone de celle ci à la 
 place. C'est beaucoup plus rapide que de faire une copie à travers le 
-réseau, et un dépôt cloné localement prend moins d'espace disques aussi.
+réseau, et un dépôt cloné localement prend moins d'espace disque aussi.
 
 \interaction{tour.reclone}
 
@@ -346,9 +350,9 @@ On notera au passage qu'il est souvent considéré comme une bonne pratique
 de conserver une copie ``immaculée'' du dépôt distant, à partir de laquelle
 vous pourrez faire des copies locales temporaires pour créer des ``bacs à 
 sable'' pour chaque tâche sur laquelle vous souhaitez travailler. Ceci vous
-permet de travailler sur plusieur choses en parallèle, chacune isolée les 
-unes des autres en attendant que ces tâches soient fini et que vous soyez
-prêt à les réintégrer. Parce que les copies locales sont peu coûteuse, il
+permet de travailler sur plusieurs choses en parallèle, chacune isolée les 
+unes des autres en attendant que ces tâches soient finies et que vous soyez
+prêt à les réintégrer. Parce que les copies locales sont peu coûteuses, il
 est très rapide de créer ou détruire des dépôts dès que vous en avez besoin.
 
 %% Note: la dernière phrase n'est pas une traduction littérale, mais je
@@ -359,7 +363,7 @@ Dans notre dépôt \dirname{my-hello}, nous avons un fichier \filename{hello.c}
 qui contient le classique programme ``hello, world''. Nous allons utiliser 
 l'ancienne et vénérable commande \command{sed} pour l'éditer pour qu'il 
 affiche une seconde ligne à l'écran. (J'utilise \command{sed} seulement parce
-qu'il est facile d'écrire des exemples sous formes de script ainsi. Comme 
+qu'il est facile d'écrire des exemples sous forme de script ainsi. Comme 
 vous n'avez pas ces contraintes, vous n'utiliserez probablement pas \command{sed}
 mais plutôt votre éditeur de texte favori). 
 
@@ -388,23 +392,23 @@ cela, nous avons la commande  \hgcmd{diff}.
 
 Nous pouvons modifier des fichiers, compiler et tester nos modifications,
 et utiliser les commandes \hgcmd{status} and \hgcmd{diff} pour voir les
-modifications effectués, jusqu'au moment où nous serons assez satisfait
-pour décider d'enregister notre travail dans un \textit{changeset}.
+modifications effectuées, jusqu'au moment où nous serons assez satisfaits
+pour décider d'enregistrer notre travail dans un \textit{changeset}.
 
 La commande \hgcmd{commit} vous laisse créer un nouveau \textit{changeset},
 nous désignerons généralement cette opération par ``faire un commit'' ou
-``commité''\footnote{NdT: De mon expérience, la plupart des francophones 
+``commiter''\footnote{NdT: De mon expérience, la plupart des francophones 
 utilisent  régulièrement, à l'oral, cette expression, mais bien évidement
 il ne s'agit pas d'un terme terminologiquement correct, ni même français.}
 
 \subsection{Définir le nom d'utilisateur}
 
-Quand vous exécuter la commande \hgcmd{commit} pour la première fois, elle
-n'est pas garanti de réussir. Mercurial enregistre votre nom et votre 
+Quand vous exécutez la commande \hgcmd{commit} pour la première fois, elle
+n'est pas garantie de réussir. Mercurial enregistre votre nom et votre 
 adresse avec chaque modification que vous effectuez, de manière à ce que
 vous soyez capable (ou d'autres le soient) de savoir qui a fait quelle
 modification. Mercurial essaye automatiquement de découvrir un nom 
-d'utilisateur qui est un minimum de sense pour effectuer l'opération
+d'utilisateur qui ait un minimum de sens pour effectuer l'opération
 de \textit{commit} avec. Il va essayer chacune des méthodes suivantes,
 dans l'ordre:
 \begin{enumerate}
@@ -413,7 +417,7 @@ dans l'ordre:
   priorité sur les autres méthodes ci dessous.
 \item Si vous avez défini une variable d'environement \envar{HGUSER}, 
   c'est cette valeur qui est alors utilisée.
-\item Si vous créer un fichier nommé \sfilename{.hgrc} dans votre 
+\item Si vous créez un fichier nommé \sfilename{.hgrc} dans votre 
    répertoire \textit{home}, avec une entrée \rcitem{ui}{username}, 
    c'est la valeur associée qui sera utilisée. Pour voir à quoi 
    ressemble le contenu de ce fichier regardez la 
@@ -422,38 +426,41 @@ dans l'ordre:
   celle ci sera utilisée ensuite.
 \item Enfin, Mercurial interrogera votre système pour trouver votre
   nom d'utilisateur local ainsi que le nom de la machine hôte, et il 
+%%%FIXME : et il quoi ? un nom...
   un nom d'utilisateur à partir de ces composants. Comme il arrive
   souvent que ce genre de noms soit totalement inutile, il vous 
   préviendra en affichant un message d'avertissement.
 \end{enumerate}
 
-Si tous ces méchanismes échouent, Mercurial n'exécutera pas la commande,
+Si tous ces mécanismes échouent, Mercurial n'exécutera pas la commande,
 affichant un message d'erreur. Dans ce cas, il ne vous laissera pas 
 effectuer de \textit{commit} tant que vous n'aurez pas défini un nom
 d'utilisateur.
 
 Vous devriez penser à utiliser la variable d'environement \envar{HGUSER} 
 et l'option \hgopt{commit}{-u} comme moyen pour \emph{changer le nom
-d'utilisateur} par défaut. Pour une utilisation normale, le plus simple
+d'utilisateur} par défaut. Pour une utilisation normale, la plus simple
 et robuste manière d'opérer est de créer un fichier \sfilename{.hgrc},
 voir ci dessous pour les détails à ce sujet.
 
-\subsubsection{Creating a Mercurial configuration file}
+\subsubsection{Créer un fichier de configuration pour Mercurial}
 \label{sec:tour-basic:username}
 
-To set a user name, use your favourite editor to create a file called
-\sfilename{.hgrc} in your home directory.  Mercurial will use this
-file to look up your personalised configuration settings.  The initial
-contents of your \sfilename{.hgrc} should look like this.
+Pour définir un nom d'utilisateur, utiliser votre éditeur de texte favori
+pour créer un fichier \sfilename{.hgrc} dans votre répertoire \textit{home}.
+Mercurial va utiliser ce fichier pour retrouver votre configuration personnelle.
+Le contenu initial devrait ressembler à ceci:
 \begin{codesample2}
   # This is a Mercurial configuration file.
   [ui]
   username = Firstname Lastname <email.address@domain.net>
 \end{codesample2}
-The ``\texttt{[ui]}'' line begins a \emph{section} of the config file,
-so you can read the ``\texttt{username = ...}'' line as meaning ``set
-the value of the \texttt{username} item in the \texttt{ui} section''.
-A section continues until a new section begins, or the end of the
+La ligne avec \texttt{[ui]} commence une \emph{section} du fichier de
+configuration, ainsi la ligne ``\texttt{username = ...}'' signifie ``
+définir la valeur de l'élément \texttt{username} dans la section 
+\texttt{ui}''. Une section continue jusqu'à ce qu'une nouvelle 
+commence, ou que la fin du fichier soit atteinte. Mercurial ignore
+les lignes vide et traite tout texte 
 file.  Mercurial ignores empty lines and treats any text from
 ``\texttt{\#}'' to the end of a line as a comment.
 
