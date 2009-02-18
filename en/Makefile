@@ -33,9 +33,8 @@ image-sources := \
 
 xml-src-files := \
 	00book.xml \
-	ch01-intro.xml \
-	ch02-tour-basic.xml \
-	ch12-mq.xml
+	app*.xml \
+	ch*.xml
 
 image-dot := $(filter %.dot,$(image-sources))
 image-svg := $(filter %.svg,$(image-sources))

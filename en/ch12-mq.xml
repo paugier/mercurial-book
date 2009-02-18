@@ -36,17 +36,17 @@
     <para>When you have few changes to maintain, it is easy to manage
       a single patch using the standard <command>diff</command> and
       <command>patch</command> programs (see section <xref
-	linkend="sec:mq:patch"/> for a discussion of these tools).
-      Once the number of changes grows, it starts to make sense to
-      maintain patches as discrete <quote>chunks of work,</quote> so
-      that for example a single patch will contain only one bug fix
-      (the patch might modify several files, but it's doing
-      <quote>only one thing</quote>), and you may have a number of
-      such patches for different bugs you need fixed and local changes
-      you require.  In this situation, if you submit a bug fix patch
-      to the upstream maintainers of a package and they include your
-      fix in a subsequent release, you can simply drop that single
-      patch when you're updating to the newer release.</para>
+	linkend="sec:mq:patch"/> for a discussion of these
+      tools). Once the number of changes grows, it starts to make
+      sense to maintain patches as discrete <quote>chunks of
+	work,</quote> so that for example a single patch will contain
+      only one bug fix (the patch might modify several files, but it's
+      doing <quote>only one thing</quote>), and you may have a number
+      of such patches for different bugs you need fixed and local
+      changes you require.  In this situation, if you submit a bug fix
+      patch to the upstream maintainers of a package and they include
+      your fix in a subsequent release, you can simply drop that
+      single patch when you're updating to the newer release.</para>
 
     <para>Maintaining a single patch against an upstream tree is a
       little tedious and error-prone, but not difficult.  However, the
@@ -146,42 +146,42 @@
       unification of patches and revision control.</para>
 
     <para>A major reason that patches have persisted in the free
-      software and open source world&emdash;in spite of the availability of
-      increasingly capable revision control tools over the years&emdash;is
-      the <emphasis>agility</emphasis> they offer.</para>
+      software and open source world&emdash;in spite of the
+      availability of increasingly capable revision control tools over
+      the years&emdash;is the <emphasis>agility</emphasis> they
+      offer.</para>
 
     <para>Traditional revision control tools make a permanent,
       irreversible record of everything that you do.  While this has
       great value, it's also somewhat stifling.  If you want to
       perform a wild-eyed experiment, you have to be careful in how
       you go about it, or you risk leaving unneeded&emdash;or worse,
-      misleading or destabilising&emdash;traces of your missteps and errors
-      in the permanent revision record.</para>
+      misleading or destabilising&emdash;traces of your missteps and
+      errors in the permanent revision record.</para>
 
     <para>By contrast, MQ's marriage of distributed revision control
       with patches makes it much easier to isolate your work.  Your
       patches live on top of normal revision history, and you can make
       them disappear or reappear at will.  If you don't like a patch,
       you can drop it.  If a patch isn't quite as you want it to be,
-      simply fix it&emdash;as many times as you need to, until you have
-      refined it into the form you desire.</para>
+      simply fix it&emdash;as many times as you need to, until you
+      have refined it into the form you desire.</para>
 
     <para>As an example, the integration of patches with revision
       control makes understanding patches and debugging their
       effects&emdash;and their interplay with the code they're based
-      on&emdash;<emphasis>enormously</emphasis> easier. Since every applied
-      patch has an associated changeset, you can use <command
-	role="hg-cmd">hg log</command> to see which changesets and
-      patches affected a file.  You can use the <literal
-	role="hg-ext">bisect</literal> command to binary-search
-      through all changesets and applied patches to see where a bug
-      got introduced or fixed.  You can use the <command
+      on&emdash;<emphasis>enormously</emphasis> easier. Since every
+      applied patch has an associated changeset, you can give <command
+	role="hg-cmd">hg log</command> a file name to see which
+      changesets and patches affected the file.  You can use the
+      <command role="hg-cmd">hg bisect</command> command to
+      binary-search through all changesets and applied patches to see
+      where a bug got introduced or fixed.  You can use the <command
 	role="hg-cmd">hg annotate</command> command to see which
       changeset or patch modified a particular line of a source file.
       And so on.</para>
 
   </sect1>
-
   <sect1 id="sec:mq:patch">
     <title>Understanding patches</title>
 
@@ -241,7 +241,8 @@
 
     <para>We will return to some of the more subtle aspects of patches
       later (in section <xref linkend="sec:mq:adv-patch"/>), but you
-      should have enough information now to use MQ.</para>
+      should have
+      enough information now to use MQ.</para>
 
   </sect1>
   <sect1 id="sec:mq:start">
@@ -250,15 +251,16 @@
     <para>Because MQ is implemented as an extension, you must
       explicitly enable before you can use it.  (You don't need to
       download anything; MQ ships with the standard Mercurial
-      distribution.)  To enable MQ, edit your <filename role="home">
-	/.hgrc</filename> file, and add the lines below.</para>
+      distribution.)  To enable MQ, edit your <filename
+	role="home">~/.hgrc</filename> file, and add the lines
+      below.</para>
 
     <programlisting>[extensions] hgext.mq =</programlisting>
 
     <para>Once the extension is enabled, it will make a number of new
       commands available.  To verify that the extension is working,
       you can use <command role="hg-cmd">hg help</command> to see if
-      the <command role="hg-ext-mq">hg qinit</command> command is now
+      the <command role="hg-ext-mq">qinit</command> command is now
       available.</para>
 
 <!-- &interaction.mq.qinit-help.help; -->
@@ -266,25 +268,29 @@
     <para>You can use MQ with <emphasis>any</emphasis> Mercurial
       repository, and its commands only operate within that
       repository.  To get started, simply prepare the repository using
-      the <command role="hg-ext-mq">hg qinit</command> command.  This
-      command creates an empty directory called <filename
-	role="special" class="directory">.hg/patches</filename>, where
-      MQ will keep its metadata.  As with many Mercurial commands, the
-      <command role="hg-ext-mq">hg qinit</command> command prints nothing
-      if it succeeds.</para>
+      the <command role="hg-ext-mq">qinit</command> command.</para>
+
 <!-- &interaction.mq.tutorial.qinit; -->
 
+    <para>This command creates an empty directory called <filename
+	role="special" class="directory">.hg/patches</filename>, where
+      MQ will keep its metadata.  As with many Mercurial commands, the
+      <command role="hg-ext-mq">qinit</command> command prints nothing
+      if it succeeds.</para>
 
     <sect2>
       <title>Creating a new patch</title>
 
       <para>To begin work on a new patch, use the <command
-	  role="hg-ext-mq">hg qnew</command> command.  This command takes
-	one argument, the name of the patch to create.  MQ will use
-	this as the name of an actual file in the <filename
-	  role="special" class="directory">.hg/patches</filename>
-	directory, as you can see in figure <xref
-	  linkend="ex:mq:qnew"/>.</para>
+	  role="hg-ext-mq">qnew</command> command.  This command takes
+	one argument, the name of the patch to create.</para>
+
+      <para>MQ will use this as the name of an actual file in the
+	<filename role="special"
+	  class="directory">.hg/patches</filename> directory, as you
+	can see below.</para>
+
+<!-- &interaction.mq.tutorial.qnew; -->
 
       <para>Also newly present in the <filename role="special"
 	  class="directory">.hg/patches</filename> directory are two
@@ -318,18 +324,19 @@
       <title>Refreshing a patch</title>
 
       <para>When you reach a point where you want to save your work,
-	use the <command role="hg-ext-mq">hg qrefresh</command>
-	command to update the patch you are working on.  This command
-	folds the changes you have made in the working directory into
-	your patch, and updates its corresponding changeset to contain
-	those changes.</para>
+	use the <command role="hg-ext-mq">qrefresh</command> command
+	to update the patch you are working on.</para>
 
 <!-- &interaction.mq.tutorial.qrefresh; -->
 
-      <para>You can run <command role="hg-ext-mq">hg hg
-	  qrefresh</command> as often as you like, so it's a good way
-	to <quote>checkpoint</quote> your work.  Refresh your patch at
-	an opportune time; try an experiment; and if the experiment
+      <para>This command folds the changes you have made in the
+	working directory into your patch, and updates its
+	corresponding changeset to contain those changes.</para>
+
+      <para>You can run <command role="hg-ext-mq">qrefresh</command>
+	as often as you like, so it's a good way to
+	<quote>checkpoint</quote> your work.  Refresh your patch at an
+	opportune time; try an experiment; and if the experiment
 	doesn't work out, <command role="hg-cmd">hg revert</command>
 	your modifications back to the last time you refreshed.</para>
 
@@ -340,38 +347,39 @@
       <title>Stacking and tracking patches</title>
 
       <para>Once you have finished working on a patch, or need to work
-	on another, you can use the <command role="hg-ext-mq">hg hg
-	  qnew</command> command again to create a new patch.
-	Mercurial will apply this patch on top of your existing patch.
-	See figure <xref linkend="ex:mq:qnew2"/> for an example.
-	Notice that the patch contains the changes in our prior patch
-	as part of its context (you can see this more clearly in the
-	output of <command role="hg-cmd">hg
-	  annotate</command>).</para>
+	on another, you can use the <command
+	  role="hg-ext-mq">qnew</command> command again to create a
+	new patch. Mercurial will apply this patch on top of your
+	existing patch.</para>
 
 <!-- &interaction.mq.tutorial.qnew2; -->
+      <para>Notice that the patch contains the changes in our prior
+	patch as part of its context (you can see this more clearly in
+	the output of <command role="hg-cmd">hg
+	  annotate</command>).</para>
 
       <para>So far, with the exception of <command
-	  role="hg-ext-mq">hg qnew</command> and <command
-	  role="hg-ext-mq">hg qrefresh</command>, we've been careful to
+	  role="hg-ext-mq">qnew</command> and <command
+	  role="hg-ext-mq">qrefresh</command>, we've been careful to
 	only use regular Mercurial commands.  However, MQ provides
 	many commands that are easier to use when you are thinking
-	about patches, as illustrated in figure <xref
-	  linkend="ex:mq:qseries"/>:</para>
+	about patches, as illustrated below.</para>
+
+<!-- &interaction.mq.tutorial.qseries; -->
 
       <itemizedlist>
 	<listitem><para>The <command
-	      role="hg-ext-mq">hg qseries</command> command lists every
+	      role="hg-ext-mq">qseries</command> command lists every
 	    patch that MQ knows about in this repository, from oldest
 	    to newest (most recently
-	    <emphasis>created</emphasis>).</para></listitem>
+	    <emphasis>created</emphasis>).</para>
+	</listitem>
 	<listitem><para>The <command
-	      role="hg-ext-mq">hg qapplied</command> command lists every
+	      role="hg-ext-mq">qapplied</command> command lists every
 	    patch that MQ has <emphasis>applied</emphasis> in this
 	    repository, again from oldest to newest (most recently
-	    applied).</para></listitem></itemizedlist>
-
-<!-- &interaction.mq.tutorial.qseries; -->
+	    applied).</para>
+	</listitem></itemizedlist>
 
     </sect2>
     <sect2>
@@ -386,52 +394,53 @@
 	changeset in the repository, and the effects of the patch and
 	changeset are visible in the working directory.  You can undo
 	the application of a patch using the <command
-	  role="hg-ext-mq">hg qpop</command> command.  MQ still
+	  role="hg-ext-mq">qpop</command> command.  MQ still
 	<emphasis>knows about</emphasis>, or manages, a popped patch,
 	but the patch no longer has a corresponding changeset in the
 	repository, and the working directory does not contain the
 	changes made by the patch.  Figure <xref
-	  linkend="fig:mq:stack"/> illustrates the difference between
-	applied and tracked patches.</para>
+	  linkend="fig:mq:stack"/> illustrates
+	the difference between applied and tracked patches.</para>
 
       <informalfigure id="fig:mq:stack">
-	<mediaobject>
-	  <imageobject><imagedata fileref="mq-stack"/></imageobject>
-	  <textobject><phrase>XXX add text</phrase></textobject>
-	  <caption><para>Applied and unapplied patches in the MQ patch
-	      stack</para></caption>
-	</mediaobject>
+	<mediaobject><imageobject><imagedata
+				    fileref="mq-stack"/></imageobject><textobject><phrase>XXX 
+	      add text</phrase></textobject><caption><para>Applied and
+	      unapplied patches in the MQ patch
+	      stack</para></caption></mediaobject>
       </informalfigure>
 
       <para>You can reapply an unapplied, or popped, patch using the
-	<command role="hg-ext-mq">hg qpush</command> command.  This
+	<command role="hg-ext-mq">qpush</command> command.  This
 	creates a new changeset to correspond to the patch, and the
 	patch's changes once again become present in the working
-	directory.  See figure <xref linkend="ex:mq:qpop"/> for
-	examples of <command role="hg-ext-mq">hg qpop</command> and
-	<command role="hg-ext-mq">hg qpush</command> in action.  Notice
-	that once we have popped a patch or two patches, the output of
-	<command role="hg-ext-mq">hg qseries</command> remains the same,
-	while that of <command role="hg-ext-mq">hg qapplied</command> has
-	changed.</para>
-
+	directory.  See below for examples of <command
+	  role="hg-ext-mq">qpop</command> and <command
+	  role="hg-ext-mq">qpush</command> in action.</para>
 <!-- &interaction.mq.tutorial.qpop; -->
+
+      <para>Notice that once we have popped a patch or two patches,
+	the output of <command role="hg-ext-mq">qseries</command>
+	remains the same, while that of <command
+	  role="hg-ext-mq">qapplied</command> has changed.</para>
+
 
     </sect2>
     <sect2>
       <title>Pushing and popping many patches</title>
 
-      <para>While <command role="hg-ext-mq">hg qpush</command> and
-	<command role="hg-ext-mq">hg qpop</command> each operate on a
+      <para>While <command role="hg-ext-mq">qpush</command> and
+	<command role="hg-ext-mq">qpop</command> each operate on a
 	single patch at a time by default, you can push and pop many
 	patches in one go.  The <option
-	  role="hg-ext-mq-cmd-qpush-opt">-a</option> option to
-	<command role="hg-ext-mq">hg qpush</command> causes it to push
+	  role="hg-ext-mq-cmd-qpush-opt">hg -a</option> option to
+	<command role="hg-ext-mq">qpush</command> causes it to push
 	all unapplied patches, while the <option
 	  role="hg-ext-mq-cmd-qpop-opt">-a</option> option to <command
-	  role="hg-ext-mq">hg qpop</command> causes it to pop all applied
+	  role="hg-ext-mq">qpop</command> causes it to pop all applied
 	patches.  (For some more ways to push and pop many patches,
-	see section <xref linkend="sec:mq:perf"/> below.)</para>
+	see section <xref linkend="sec:mq:perf"/>
+	below.)</para>
 
 <!-- &interaction.mq.tutorial.qpush-a; -->
 
@@ -442,9 +451,9 @@
       <para>Several MQ commands check the working directory before
 	they do anything, and fail if they find any modifications.
 	They do this to ensure that you won't lose any changes that
-	you have made, but not yet incorporated into a patch.  Figure
-	<xref linkend="ex:mq:add"/> illustrates this; the <command
-	  role="hg-ext-mq">hg qnew</command> command will not create a
+	you have made, but not yet incorporated into a patch.  The
+	example below illustrates this; the <command
+	  role="hg-ext-mq">qnew</command> command will not create a
 	new patch if there are outstanding changes, caused in this
 	case by the <command role="hg-cmd">hg add</command> of
 	<filename>file3</filename>.</para>
@@ -456,19 +465,19 @@
 	named <option>-f</option>.  The exact meaning of
 	<option>-f</option> depends on the command.  For example,
 	<command role="hg-cmd">hg qnew <option
-	    role="hg-ext-mq-cmd-qnew-opt">-f</option></command> will
-	incorporate any outstanding changes into the new patch it
+	    role="hg-ext-mq-cmd-qnew-opt">hg -f</option></command>
+	will incorporate any outstanding changes into the new patch it
 	creates, but <command role="hg-cmd">hg qpop <option
-	    role="hg-ext-mq-cmd-qpop-opt">-f</option></command> will
-	revert modifications to any files affected by the patch that
-	it is popping.  Be sure to read the documentation for a
+	    role="hg-ext-mq-cmd-qpop-opt">hg -f</option></command>
+	will revert modifications to any files affected by the patch
+	that it is popping.  Be sure to read the documentation for a
 	command's <option>-f</option> option before you use it!</para>
 
     </sect2>
     <sect2>
       <title>Working on several patches at once</title>
 
-      <para>The <command role="hg-ext-mq">hg qrefresh</command> command
+      <para>The <command role="hg-ext-mq">qrefresh</command> command
 	always refreshes the <emphasis>topmost</emphasis> applied
 	patch.  This means that you can suspend work on one patch (by
 	refreshing it), pop or push to make a different patch the top,
@@ -478,20 +487,19 @@
       <para>Here's an example that illustrates how you can use this
 	ability. Let's say you're developing a new feature as two
 	patches.  The first is a change to the core of your software,
-	and the second&emdash;layered on top of the first&emdash;changes the
-	user interface to use the code you just added to the core.  If
-	you notice a bug in the core while you're working on the UI
-	patch, it's easy to fix the core.  Simply <command
-	  role="hg-ext-mq">hg qrefresh</command> the UI patch to save
-	your in-progress changes, and <command
-	  role="hg-ext-mq">hg qpop</command> down to the core patch.  Fix
-	the core bug, <command role="hg-ext-mq">hg qrefresh</command> the
-	core patch, and <command role="hg-ext-mq">hg qpush</command> back
+	and the second&emdash;layered on top of the
+	first&emdash;changes the user interface to use the code you
+	just added to the core.  If you notice a bug in the core while
+	you're working on the UI patch, it's easy to fix the core.
+	Simply <command role="hg-ext-mq">qrefresh</command> the UI
+	patch to save your in-progress changes, and <command
+	  role="hg-ext-mq">qpop</command> down to the core patch.  Fix
+	the core bug, <command role="hg-ext-mq">qrefresh</command> the
+	core patch, and <command role="hg-ext-mq">qpush</command> back
 	to the UI patch to continue where you left off.</para>
 
     </sect2>
   </sect1>
-
   <sect1 id="sec:mq:adv-patch">
     <title>More about patches</title>
 
@@ -555,19 +563,20 @@
       <para>If you receive a patch from someone that you want to add
 	to your patch queue, and the patch needs a strip count other
 	than one, you cannot just <command
-	  role="hg-ext-mq">hg qimport</command> the patch, because
-	<command role="hg-ext-mq">hg qimport</command> does not yet have
+	  role="hg-ext-mq">qimport</command> the patch, because
+	<command role="hg-ext-mq">qimport</command> does not yet have
 	a <literal>-p</literal> option (see <ulink role="hg-bug"
 	  url="http://www.selenic.com/mercurial/bts/issue311">issue
 	  311</ulink>).  Your best bet is to <command
-	  role="hg-ext-mq">hg qnew</command> a patch of your own, then
+	  role="hg-ext-mq">qnew</command> a patch of your own, then
 	use <command>patch -pN</command> to apply their patch,
 	followed by <command role="hg-cmd">hg addremove</command> to
 	pick up any files added or removed by the patch, followed by
-	<command role="hg-ext-mq">hg qrefresh</command>. This complexity
-	may become unnecessary; see <ulink role="hg-bug"
+	<command role="hg-ext-mq">hg qrefresh</command>. This
+	complexity may become unnecessary; see <ulink role="hg-bug"
 	  url="http://www.selenic.com/mercurial/bts/issue311">issue
-	  311</ulink> for details.</para>
+	  311</ulink> for details.
+      </para>
     </sect2>
     <sect2>
       <title>Strategies for applying a patch</title>
@@ -619,42 +628,39 @@
 
       <para>There are a few useful things to know about how
 	<command>patch</command> works with files.</para>
-
       <itemizedlist>
 	<listitem><para>This should already be obvious, but
 	    <command>patch</command> cannot handle binary
-	    files.</para></listitem>
-
+	    files.</para>
+	</listitem>
 	<listitem><para>Neither does it care about the executable bit;
 	    it creates new files as readable, but not
-	    executable.</para></listitem>
-
+	    executable.</para>
+	</listitem>
 	<listitem><para><command>patch</command> treats the removal of
 	    a file as a diff between the file to be removed and the
 	    empty file.  So your idea of <quote>I deleted this
 	      file</quote> looks like <quote>every line of this file
-	      was deleted</quote> in a patch.</para></listitem>
-
+	      was deleted</quote> in a patch.</para>
+	</listitem>
 	<listitem><para>It treats the addition of a file as a diff
 	    between the empty file and the file to be added.  So in a
 	    patch, your idea of <quote>I added this file</quote> looks
 	    like <quote>every line of this file was
-	      added</quote>.</para></listitem>
-
+	      added</quote>.</para>
+	</listitem>
 	<listitem><para>It treats a renamed file as the removal of the
 	    old name, and the addition of the new name.  This means
 	    that renamed files have a big footprint in patches.  (Note
 	    also that Mercurial does not currently try to infer when
-	    files have been renamed or copied in a
-	    patch.)</para></listitem>
-
+	    files have been renamed or copied in a patch.)</para>
+	</listitem>
 	<listitem><para><command>patch</command> cannot represent
 	    empty files, so you cannot use a patch to represent the
 	    notion <quote>I added this empty file to the
-	      tree</quote>.</para></listitem>
-      </itemizedlist>
+	      tree</quote>.</para>
+	</listitem></itemizedlist>
     </sect2>
-
     <sect2>
       <title>Beware the fuzz</title>
 
@@ -664,7 +670,7 @@
 	file.  The most common cases typically involve applying a
 	patch twice, or at an incorrect location in the file.  If
 	<command>patch</command> or <command
-	  role="hg-ext-mq">hg qpush</command> ever mentions an offset or
+	  role="hg-ext-mq">qpush</command> ever mentions an offset or
 	fuzz factor, you should make sure that the modified files are
 	correct afterwards.</para>
 
@@ -683,7 +689,7 @@
     <sect2>
       <title>Handling rejection</title>
 
-      <para>If <command role="hg-ext-mq">hg qpush</command> fails to
+      <para>If <command role="hg-ext-mq">qpush</command> fails to
 	apply a patch, it will print an error message and exit.  If it
 	has left <filename role="special">.rej</filename> files
 	behind, it is usually best to fix up the rejected hunks before
@@ -692,7 +698,8 @@
       <para>If your patch <emphasis>used to</emphasis> apply cleanly,
 	and no longer does because you've changed the underlying code
 	that your patches are based on, Mercurial Queues can help; see
-	section <xref linkend="sec:mq:merge"/> for details.</para>
+	section <xref
+	  linkend="sec:mq:merge"/> for details.</para>
 
       <para>Unfortunately, there aren't any great techniques for
 	dealing with rejected hunks.  Most often, you'll need to view
@@ -715,19 +722,18 @@
 
       <itemizedlist>
 	<listitem><para>The context in the middle of a hunk has
-	    changed.</para></listitem>
-
+	    changed.</para>
+	</listitem>
 	<listitem><para>A hunk is missing some context at the
-	    beginning or end.</para></listitem>
-
+	    beginning or end.</para>
+	</listitem>
 	<listitem><para>A large hunk might apply better&emdash;either
-	    entirely or in part&emdash;if it was broken up into smaller
-	    hunks.</para></listitem>
-
+	    entirely or in part&emdash;if it was broken up into
+	    smaller hunks.</para>
+	</listitem>
 	<listitem><para>A hunk removes lines with slightly different
-	    content than those currently present in the
-	    file.</para></listitem>
-      </itemizedlist>
+	    content than those currently present in the file.</para>
+	</listitem></itemizedlist>
 
       <para>If you use <command>wiggle</command> or
 	<command>mpatch</command>, you should be doubly careful to
@@ -754,12 +760,12 @@
 
     <para>On my old, slow laptop, I was able to <command
 	role="hg-cmd">hg qpush <option
-	  role="hg-ext-mq-cmd-qpush-opt">-a</option></command> all
+	  role="hg-ext-mq-cmd-qpush-opt">hg -a</option></command> all
       1,738 patches in 3.5 minutes, and <command role="hg-cmd">hg qpop
-	<option role="hg-ext-mq-cmd-qpop-opt">-a</option></command>
+	<option role="hg-ext-mq-cmd-qpop-opt">hg -a</option></command>
       them all in 30 seconds.  (On a newer laptop, the time to push
       all patches dropped to two minutes.)  I could <command
-	role="hg-ext-mq">hg qrefresh</command> one of the biggest patches
+	role="hg-ext-mq">qrefresh</command> one of the biggest patches
       (which made 22,779 lines of changes to 287 files) in 6.6
       seconds.</para>
 
@@ -769,23 +775,23 @@
 
     <para>First of all, try to <quote>batch</quote> operations
       together.  Every time you run <command
-	role="hg-ext-mq">hg qpush</command> or <command
-	role="hg-ext-mq">hg qpop</command>, these commands scan the
+	role="hg-ext-mq">qpush</command> or <command
+	role="hg-ext-mq">qpop</command>, these commands scan the
       working directory once to make sure you haven't made some
       changes and then forgotten to run <command
-	role="hg-ext-mq">hg qrefresh</command>.  On a small tree, the
+	role="hg-ext-mq">qrefresh</command>.  On a small tree, the
       time that this scan takes is unnoticeable.  However, on a
       medium-sized tree (containing tens of thousands of files), it
       can take a second or more.</para>
 
-    <para>The <command role="hg-ext-mq">hg qpush</command> and <command
-	role="hg-ext-mq">hg qpop</command> commands allow you to push and
+    <para>The <command role="hg-ext-mq">qpush</command> and <command
+	role="hg-ext-mq">qpop</command> commands allow you to push and
       pop multiple patches at a time.  You can identify the
       <quote>destination patch</quote> that you want to end up at.
-      When you <command role="hg-ext-mq">hg qpush</command> with a
+      When you <command role="hg-ext-mq">qpush</command> with a
       destination specified, it will push patches until that patch is
       at the top of the applied stack.  When you <command
-	role="hg-ext-mq">hg qpop</command> to a destination, MQ will pop
+	role="hg-ext-mq">qpop</command> to a destination, MQ will pop
       patches until the destination patch is at the top.</para>
 
     <para>You can identify a destination patch using either the name
@@ -794,7 +800,6 @@
       is zero, the second is one, and so on.</para>
 
   </sect1>
-
   <sect1 id="sec:mq:merge">
     <title>Updating your patches when the underlying code
       changes</title>
@@ -809,15 +814,14 @@
       series.</para>
 
     <para>The simplest way to do this is to <command role="hg-cmd">hg
-	qpop <option
-	  role="hg-ext-mq-cmd-qpop-opt">-a</option></command> your
-      patches, then <command role="hg-cmd">hg pull</command> changes
-      into the underlying repository, and finally <command
-	role="hg-cmd">hg qpush <option
-	  role="hg-ext-mq-cmd-qpop-opt">-a</option></command> your
+	qpop <option role="hg-ext-mq-cmd-qpop-opt">hg
+	  -a</option></command> your patches, then <command
+	role="hg-cmd">hg pull</command> changes into the underlying
+      repository, and finally <command role="hg-cmd">hg qpush <option
+	  role="hg-ext-mq-cmd-qpop-opt">hg -a</option></command> your
       patches again.  MQ will stop pushing any time it runs across a
       patch that fails to apply during conflicts, allowing you to fix
-      your conflicts, <command role="hg-ext-mq">hg qrefresh</command> the
+      your conflicts, <command role="hg-ext-mq">qrefresh</command> the
       affected patch, and continue pushing until you have fixed your
       entire stack.</para>
 
@@ -828,8 +832,8 @@
       fixing up rejected hunks by hand quickly becomes
       tiresome.</para>
 
-    <para>It's possible to partially automate the rebasing process. If
-      your patches apply cleanly against some revision of the
+    <para>It's possible to partially automate the rebasing process.
+      If your patches apply cleanly against some revision of the
       underlying repo, MQ can use this information to help you to
       resolve conflicts between your patches and a different
       revision.</para>
@@ -838,12 +842,12 @@
     <orderedlist>
       <listitem><para>To begin, <command role="hg-cmd">hg qpush
 	    -a</command> all of your patches on top of the revision
-	  where you know that they apply cleanly.</para></listitem>
-
+	  where you know that they apply cleanly.</para>
+      </listitem>
       <listitem><para>Save a backup copy of your patch directory using
 	  <command role="hg-cmd">hg qsave <option
-	      role="hg-ext-mq-cmd-qsave-opt">-e</option> <option
-	      role="hg-ext-mq-cmd-qsave-opt">-c</option></command>.
+	      role="hg-ext-mq-cmd-qsave-opt">hg -e</option> <option
+	      role="hg-ext-mq-cmd-qsave-opt">hg -c</option></command>.
 	  This prints the name of the directory that it has saved the
 	  patches in.  It will save the patches to a directory called
 	  <filename role="special"
@@ -852,36 +856,34 @@
 	  <quote>save changeset</quote> on top of your applied
 	  patches; this is for internal book-keeping, and records the
 	  states of the <filename role="special">series</filename> and
-	  <filename role="special">status</filename>
-	  files.</para></listitem>
-
-      <listitem>
-	<para>Use <command role="hg-cmd">hg pull</command> to bring
-	  new changes into the underlying repository.  (Don't run
-	  <command role="hg-cmd">hg pull -u</command>; see below for
-	  why.)</para></listitem>
-
+	  <filename role="special">status</filename> files.</para>
+      </listitem>
+      <listitem><para>Use <command role="hg-cmd">hg pull</command> to
+	  bring new changes into the underlying repository.  (Don't
+	  run <command role="hg-cmd">hg pull -u</command>; see below
+	  for why.)</para>
+      </listitem>
       <listitem><para>Update to the new tip revision, using <command
 	    role="hg-cmd">hg update <option
 	      role="hg-opt-update">-C</option></command> to override
-	  the patches you have pushed.</para></listitem>
-
+	  the patches you have pushed.</para>
+      </listitem>
       <listitem><para>Merge all patches using
-	  \hgcmdargs{qpush}{<option
-	    role="hg-ext-mq-cmd-qpush-opt">-m</option> <option
-	    role="hg-ext-mq-cmd-qpush-opt">-a</option>}.  The <option
-	    role="hg-ext-mq-cmd-qpush-opt">-m</option> option to
-	  <command role="hg-ext-mq">hg qpush</command> tells MQ to
+	  \hgcmdargs{qpush}{<option role="hg-ext-mq-cmd-qpush-opt">hg
+	    -m</option> <option role="hg-ext-mq-cmd-qpush-opt">hg
+	    -a</option>}.  The <option
+	    role="hg-ext-mq-cmd-qpush-opt">hg -m</option> option to
+	  <command role="hg-ext-mq">qpush</command> tells MQ to
 	  perform a three-way merge if the patch fails to
-	  apply.</para></listitem>
-    </orderedlist>
+	  apply.</para>
+      </listitem></orderedlist>
 
     <para>During the <command role="hg-cmd">hg qpush <option
-	  role="hg-ext-mq-cmd-qpush-opt">-m</option></command>, each
-      patch in the <filename role="special">series</filename> file is
-      applied normally.  If a patch applies with fuzz or rejects, MQ
-      looks at the queue you <command
-	role="hg-ext-mq">hg qsave</command>d, and performs a three-way
+	  role="hg-ext-mq-cmd-qpush-opt">hg -m</option></command>,
+      each patch in the <filename role="special">series</filename>
+      file is applied normally.  If a patch applies with fuzz or
+      rejects, MQ looks at the queue you <command
+	role="hg-ext-mq">qsave</command>d, and performs a three-way
       merge with the corresponding changeset.  This merge uses
       Mercurial's normal merge machinery, so it may pop up a GUI merge
       tool to help you to resolve problems.</para>
@@ -893,9 +895,7 @@
       extra head from the old patch queue, and a copy of the old patch
       queue will be in <filename role="special"
 	class="directory">.hg/patches.N</filename>. You can remove the
-      extra head using <command role="hg-cmd">hg qpop <option
-	  role="hg-ext-mq-cmd-qpop-opt">-a</option> <option
-	  role="hg-ext-mq-cmd-qpop-opt">-n</option>
+      extra head using <command role="hg-cmd">hg qpop -a -n
 	patches.N</command> or <command role="hg-cmd">hg
 	strip</command>.  You can delete <filename role="special"
 	class="directory">.hg/patches.N</filename> once you are sure
@@ -908,7 +908,7 @@
     <para>MQ commands that work with patches let you refer to a patch
       either by using its name or by a number.  By name is obvious
       enough; pass the name <filename>foo.patch</filename> to <command
-	role="hg-ext-mq">hg qpush</command>, for example, and it will
+	role="hg-ext-mq">qpush</command>, for example, and it will
       push patches until <filename>foo.patch</filename> is
       applied.</para>
 
@@ -920,7 +920,7 @@
 
     <para>Referring to a patch by index isn't much different.  The
       first patch printed in the output of <command
-	role="hg-ext-mq">hg qseries</command> is patch zero (yes, it's
+	role="hg-ext-mq">qseries</command> is patch zero (yes, it's
       one of those start-at-zero counting systems); the second is
       patch one; and so on.</para>
 
@@ -941,19 +941,18 @@
     <itemizedlist>
       <listitem><para>Want to patchbomb a mailing list with your
 	  latest series of changes?</para>
-	<programlisting>
-	  hg email qbase:qtip
-	</programlisting></listitem>
-      <listitem><para>  (Don't know what <quote>patchbombing</quote>
-	  is?  See section <xref
-	    linkend="sec:hgext:patchbomb"/>.)</para></listitem>
-
+	<programlisting>hg email qbase:qtip
+	</programlisting>
+	<para>  (Don't know what <quote>patchbombing</quote> is?  See
+	  section <xref linkend="sec:hgext:patchbomb"/>.)</para>
+      </listitem>
       <listitem><para>Need to see all of the patches since
 	  <literal>foo.patch</literal> that have touched files in a
 	  subdirectory of your tree?</para>
 	<programlisting>
 	  hg log -r foo.patch:qtip <emphasis>subdir</emphasis>
-	</programlisting></listitem>
+	</programlisting>
+      </listitem>
     </itemizedlist>
 
     <para>Because MQ makes the names of patches available to the rest
@@ -961,16 +960,16 @@
       don't need to type in the entire name of a patch when you want
       to identify it by name.</para>
 
-<!-- &interaction.mq.id.output; -->
-
     <para>Another nice consequence of representing patch names as tags
       is that when you run the <command role="hg-cmd">hg log</command>
       command, it will display a patch's name as a tag, simply as part
       of its normal output.  This makes it easy to visually
       distinguish applied patches from underlying
-      <quote>normal</quote> revisions.  Figure <xref
-	linkend="ex:mq:id"/> shows a few normal Mercurial commands in
-      use with applied patches.</para>
+      <quote>normal</quote> revisions.  The following example shows a
+      few normal Mercurial commands in use with applied
+      patches.</para>
+
+<!-- &interaction.mq.id.output; -->
 
   </sect1>
   <sect1>
@@ -982,25 +981,24 @@
 
     <itemizedlist>
       <listitem><para>Normally, when you <command
-	    role="hg-ext-mq">hg qpop</command> a patch and <command
-	    role="hg-ext-mq">hg qpush</command> it again, the changeset
+	    role="hg-ext-mq">qpop</command> a patch and <command
+	    role="hg-ext-mq">qpush</command> it again, the changeset
 	  that represents the patch after the pop/push will have a
 	  <emphasis>different identity</emphasis> than the changeset
 	  that represented the hash beforehand.  See section <xref
-	    linkend="sec:mqref:cmd:qpush"/> for information as to why
-	  this is.</para></listitem>
-
+	    linkend="sec:mqref:cmd:qpush"/> for
+	  information as to why this is.</para>
+      </listitem>
       <listitem><para>It's not a good idea to <command
 	    role="hg-cmd">hg merge</command> changes from another
 	  branch with a patch changeset, at least if you want to
 	  maintain the <quote>patchiness</quote> of that changeset and
 	  changesets below it on the patch stack.  If you try to do
 	  this, it will appear to succeed, but MQ will become
-	  confused.</para></listitem>
-    </itemizedlist>
+	  confused.</para>
+      </listitem></itemizedlist>
 
   </sect1>
-
   <sect1 id="sec:mq:repo">
     <title>Managing patches in a repository</title>
 
@@ -1014,7 +1012,7 @@
       contents of the patch directory as a Mercurial repository in its
       own right.  This can be a useful way to work.  For example, you
       can work on a patch for a while, <command
-	role="hg-ext-mq">hg qrefresh</command> it, then <command
+	role="hg-ext-mq">qrefresh</command> it, then <command
 	role="hg-cmd">hg commit</command> the current state of the
       patch.  This lets you <quote>roll back</quote> to that version
       of the patch later on.</para>
@@ -1040,25 +1038,24 @@
       <para>MQ helps you to work with the <filename role="special"
 	  class="directory">.hg/patches</filename> directory as a
 	repository; when you prepare a repository for working with
-	patches using <command role="hg-ext-mq">hg qinit</command>, you
-	can pass the <option
-	  role="hg-ext-mq-cmd-qinit-opt">-c</option> option to create
-	the <filename role="special"
+	patches using <command role="hg-ext-mq">qinit</command>, you
+	can pass the <option role="hg-ext-mq-cmd-qinit-opt">hg
+	  -c</option> option to create the <filename role="special"
 	  class="directory">.hg/patches</filename> directory as a
 	Mercurial repository.</para>
 
       <note>
 	<para>  If you forget to use the <option
-	    role="hg-ext-mq-cmd-qinit-opt">-c</option> option, you can
-	  simply go into the <filename role="special"
+	    role="hg-ext-mq-cmd-qinit-opt">hg -c</option> option, you
+	  can simply go into the <filename role="special"
 	    class="directory">.hg/patches</filename> directory at any
-	  time and run <command role="hg-cmd">hg init</command>. Don't
-	  forget to add an entry for the <filename
+	  time and run <command role="hg-cmd">hg init</command>.
+	  Don't forget to add an entry for the <filename
 	    role="special">status</filename> file to the <filename
 	    role="special">.hgignore</filename> file, though</para>
 
 	<para>  (<command role="hg-cmd">hg qinit <option
-	      role="hg-ext-mq-cmd-qinit-opt">-c</option></command>
+	      role="hg-ext-mq-cmd-qinit-opt">hg -c</option></command>
 	  does this for you automatically); you
 	  <emphasis>really</emphasis> don't want to manage the
 	  <filename role="special">status</filename> file.</para>
@@ -1070,7 +1067,7 @@
 	  add</command> every patch that you create and import.</para>
 
       <para>MQ provides a shortcut command, <command
-	  role="hg-ext-mq">hg qcommit</command>, that runs <command
+	  role="hg-ext-mq">qcommit</command>, that runs <command
 	  role="hg-cmd">hg commit</command> in the <filename
 	  role="special" class="directory">.hg/patches</filename>
 	directory.  This saves some bothersome typing.</para>
@@ -1079,12 +1076,11 @@
 	you can define the alias <command>mq</command> on Unix
 	systems. For example, on Linux systems using the
 	<command>bash</command> shell, you can include the following
-	snippet in your <filename role="home">
-	  /.bashrc</filename>.</para>
+	snippet in your <filename
+	  role="home">~/.bashrc</filename>.</para>
 
-      <programlisting>
-	alias mq=`hg -R $(hg root)/.hg/patches'
-      </programlisting>
+      <programlisting>alias mq=`hg -R $(hg
+	root)/.hg/patches'</programlisting>
 
       <para>You can then issue commands of the form <command>mq
 	  pull</command> from the main repository.</para>
@@ -1102,9 +1098,9 @@
 	  update</command> changes to patches or the <filename
 	  role="special">series</filename> file, you will have to
 	<command role="hg-cmd">hg qpop <option
-	    role="hg-ext-mq-cmd-qpop-opt">-a</option></command> and
+	    role="hg-ext-mq-cmd-qpop-opt">hg -a</option></command> and
 	then <command role="hg-cmd">hg qpush <option
-	    role="hg-ext-mq-cmd-qpush-opt">-a</option></command> in
+	    role="hg-ext-mq-cmd-qpush-opt">hg -a</option></command> in
 	the underlying repository to see those changes show up there.
 	If you forget to do this, you can confuse MQ's idea of which
 	patches are applied.</para>
@@ -1121,9 +1117,9 @@
     <para>The <command>diffstat</command> command
       <citation>web:diffstat</citation> generates a histogram of the
       modifications made to each file in a patch.  It provides a good
-      way to <quote>get a sense of</quote> a patch&emdash;which files it
-      affects, and how much change it introduces to each file and as a
-      whole.  (I find that it's a good idea to use
+      way to <quote>get a sense of</quote> a patch&emdash;which files
+      it affects, and how much change it introduces to each file and
+      as a whole.  (I find that it's a good idea to use
       <command>diffstat</command>'s <option
 	role="cmd-opt-diffstat">-p</option> option as a matter of
       course, as otherwise it will try to do clever things with
@@ -1162,30 +1158,30 @@
       the patch is.  Long names shouldn't be a problem; you won't be
       typing the names often, but you <emphasis>will</emphasis> be
       running commands like <command
-	role="hg-ext-mq">hg qapplied</command> and <command
-	role="hg-ext-mq">hg qtop</command> over and over. Good naming
+	role="hg-ext-mq">qapplied</command> and <command
+	role="hg-ext-mq">qtop</command> over and over. Good naming
       becomes especially important when you have a number of patches
       to work with, or if you are juggling a number of different tasks
       and your patches only get a fraction of your attention.</para>
 
     <para>Be aware of what patch you're working on.  Use the <command
-	role="hg-ext-mq">hg qtop</command> command and skim over the text
+	role="hg-ext-mq">qtop</command> command and skim over the text
       of your patches frequently&emdash;for example, using <command
 	role="hg-cmd">hg tip <option
-	  role="hg-opt-tip">-p</option></command>)&emdash;to be sure of
-      where you stand.  I have several times worked on and <command
-	role="hg-ext-mq">hg qrefresh</command>ed a patch other than the
+	  role="hg-opt-tip">-p</option></command>)&emdash;to be sure
+      of where you stand.  I have several times worked on and <command
+	role="hg-ext-mq">qrefresh</command>ed a patch other than the
       one I intended, and it's often tricky to migrate changes into
       the right patch after making them in the wrong one.</para>
 
     <para>For this reason, it is very much worth investing a little
       time to learn how to use some of the third-party tools I
       described in section <xref linkend="sec:mq:tools"/>,
-      particularly <command>diffstat</command> and
-      <command>filterdiff</command>. The former will give you a quick
-      idea of what changes your patch is making, while the latter
-      makes it easy to splice hunks selectively out of one patch and
-      into another.</para>
+      particularly
+      <command>diffstat</command> and <command>filterdiff</command>.
+      The former will give you a quick idea of what changes your patch
+      is making, while the latter makes it easy to splice hunks
+      selectively out of one patch and into another.</para>
 
   </sect1>
   <sect1>
@@ -1225,7 +1221,7 @@
       <title>Combining entire patches</title>
 
       <para>MQ provides a command, <command
-	  role="hg-ext-mq">hg qfold</command> that lets you combine
+	  role="hg-ext-mq">qfold</command> that lets you combine
 	entire patches.  This <quote>folds</quote> the patches you
 	name, in the order you name them, into the topmost applied
 	patch, and concatenates their descriptions onto the end of its
@@ -1234,7 +1230,7 @@
 
       <para>The order in which you fold patches matters.  If your
 	topmost applied patch is <literal>foo</literal>, and you
-	<command role="hg-ext-mq">hg qfold</command>
+	<command role="hg-ext-mq">qfold</command>
 	<literal>bar</literal> and <literal>quux</literal> into it,
 	you will end up with a patch that has the same effect as if
 	you applied first <literal>foo</literal>, then
@@ -1257,9 +1253,9 @@
 	output onto the end of the patch you want to merge into.  You
 	usually won't need to modify the patch you've merged the
 	changes from.  Instead, MQ will report some rejected hunks
-	when you <command role="hg-ext-mq">hg qpush</command> it (from
+	when you <command role="hg-ext-mq">qpush</command> it (from
 	the hunks you moved into the other patch), and you can simply
-	<command role="hg-ext-mq">hg qrefresh</command> the patch to drop
+	<command role="hg-ext-mq">qrefresh</command> the patch to drop
 	the duplicate hunks.</para>
 
       <para>If you have a patch that has multiple hunks modifying a
@@ -1273,16 +1269,14 @@
       <itemizedlist>
 	<listitem><para>(in the first column) a <emphasis>file
 	      number</emphasis> to identify each file modified in the
-	    patch;</para></listitem>
-
+	    patch;</para>
+	</listitem>
 	<listitem><para>(on the next line, indented) the line number
-	    within a modified file where a hunk starts;
-	    and</para></listitem>
-
+	    within a modified file where a hunk starts; and</para>
+	</listitem>
 	<listitem><para>(on the same line) a <emphasis>hunk
-	      number</emphasis> to identify that
-	    hunk.</para></listitem>
-      </itemizedlist>
+	      number</emphasis> to identify that hunk.</para>
+	</listitem></itemizedlist>
 
       <para>You'll have to use some visual inspection, and reading of
 	the patch, to identify the file and hunk numbers you'll want,

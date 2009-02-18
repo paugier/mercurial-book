@@ -33,7 +33,7 @@ def process(ifp, ofp):
         line = (line.rstrip()
                 .replace('~', ' ')
                 .replace('&', '&amp;')
-                .replace('&emdash;', '&emdash;')
+                .replace('---', '&emdash;')
                 .replace('\_', '_')
                 .replace('\{', '{')
                 .replace('\}', '}')
@@ -83,7 +83,7 @@ def process(ifp, ofp):
         line = re.sub(r'\\filename{(?P<file>[^}]+?)}',
                       r'<filename>\g<file></filename>', line)
         line = re.sub(r'\\tildefile{(?P<file>[^}]+)}',
-                      r'<filename role="home"> /\g<file></filename>', line)
+                      r'<filename role="home">~/\g<file></filename>', line)
         line = re.sub(r'\\sfilename{(?P<file>[^}]+)}',
                       r'<filename role="special">\g<file></filename>', line)
         line = re.sub(r'\\sdirname{(?P<dir>[^}]+)}',
@@ -95,7 +95,7 @@ def process(ifp, ofp):
         line = re.sub(r'\\pymod{(?P<mod>[^}]+)}',
                       r'<literal role="py-mod">\g<mod></literal>', line)
         line = re.sub(r'\\pymodclass{(?P<mod>[^}]+)}{(?P<class>[^}]+)}',
-                      r'<literal url="py-mod-\g<mod>">\g<class></ulink>', line)
+                      r'<literal role="py-mod-\g<mod>">\g<class></literal>', line)
         line = re.sub(r'\\url{(?P<url>[^}]+)}',
                       r'<ulink url="\g<url>">\g<url></ulink>', line)
         line = re.sub(r'\\href{(?P<url>[^}]+)}{(?P<text>[^}]+)}',
@@ -154,7 +154,7 @@ def process(ifp, ofp):
                         inlist = 1
                 else:
                     ofp.write('</')
-                    if env == ('itemizedlist', 'orderedlist'):
+                    if env in ('itemizedlist', 'orderedlist'):
                         inlist = 0
                 print >> ofp, env + '>'
             else:

@@ -1,12 +1,10 @@
 <!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
 
-<chapter>
+<chapter id="chap:tour-basic">
   <title>A tour of Mercurial: the basics</title>
-  <para>\label{chap:tour-basic}</para>
 
-  <sect1>
+  <sect1 id="sec:tour:install">
     <title>Installing Mercurial on your system</title>
-    <para>\label{sec:tour:install}</para>
 
     <para>Prebuilt binary packages of Mercurial are available for
       every popular operating system.  These make it easy to start
@@ -65,10 +63,10 @@
       <para>Lee Cantey publishes an installer of Mercurial for Mac OS
 	X at <ulink
 	  url="http://mercurial.berkwood.com">http://mercurial.berkwood.com</ulink>. 
-	This package works on both Intel- and Power-based Macs.
-	Before you can use it, you must install a compatible version
-	of Universal MacPython <citation>web:macpython</citation>.
-	This is easy to do; simply follow the instructions on Lee's
+	This package works on both Intel- and Power-based Macs. Before
+	you can use it, you must install a compatible version of
+	Universal MacPython <citation>web:macpython</citation>. This
+	is easy to do; simply follow the instructions on Lee's
 	site.</para>
 
       <para>It's also possible to install Mercurial using Fink or
@@ -104,26 +102,31 @@
 	version</command> command to find out whether Mercurial is
       actually installed properly.  The actual version information
       that it prints isn't so important; it's whether it prints
-      anything at all that we care about. <!--
-      &interaction.tour.version; --></para>
+      anything at all that we care about.</para>
+
+      <!-- &interaction.tour.version; -->
 
     <sect2>
       <title>Built-in help</title>
 
       <para>Mercurial provides a built-in help system.  This is
-	invaluable for those times when you find yourself stuck trying
-	to remember how to run a command.  If you are completely
-	stuck, simply run <command role="hg-cmd">hg help</command>; it
-	will print a brief list of commands, along with a description
-	of what each does.  If you ask for help on a specific command
-	(as below), it prints more detailed information. <!--
-	&interaction.tour.help; --> For a more impressive level of
-	detail (which you won't usually need) run <command
-	  role="hg-cmd">hg help <option
-	    role="hg-opt-global">-v</option></command>.  The <option
-	  role="hg-opt-global">-v</option> option is short for <option
-	  role="hg-opt-global">--verbose</option>, and tells Mercurial
-	to print more information than it usually would.</para>
+	  invaluable for those times when you find yourself stuck
+	  trying to remember how to run a command.  If you are
+	  completely stuck, simply run <command role="hg-cmd">hg
+	    help</command>; it will print a brief list of commands,
+	  along with a description of what each does.  If you ask for
+	  help on a specific command (as below), it prints more
+	  detailed information.</para>
+
+	<!-- &interaction.tour.help; -->
+
+	<para>For a more impressive level of detail (which you won't
+	  usually need) run <command role="hg-cmd">hg help <option
+	      role="hg-opt-global">-v</option></command>.  The <option
+	    role="hg-opt-global">-v</option> option is short for
+	  <option role="hg-opt-global">--verbose</option>, and tells
+	  Mercurial to print more information than it usually
+	  would.</para>
 
     </sect2>
   </sect1>
@@ -150,13 +153,18 @@
 	command to make a copy of a repository, it's best to use a
 	built-in command that Mercurial provides.  This command is
 	called <command role="hg-cmd">hg clone</command>, because it
-	creates an identical copy of an existing repository. <!--
-	&interaction.tour.clone; --> If our clone succeeded, we should
-	now have a local directory called <filename
-	  class="directory">hello</filename>.  This directory will
-	contain some files. <!-- &interaction.tour.ls; --> These files
-	have the same contents and history in our repository as they
-	do in the repository we cloned.</para>
+	creates an identical copy of an existing repository.</para>
+
+      <!-- &interaction.tour.clone; -->
+
+      <para>If our clone succeeded, we should now have a local
+	directory called <filename class="directory">hello</filename>.
+	This directory will contain some files.</para>
+
+      <!-- &interaction.tour.ls; -->
+
+      <para>These files have the same contents and history in our
+	repository as they do in the repository we cloned.</para>
 
       <para>Every Mercurial repository is complete, self-contained,
 	and independent.  It contains its own private copy of a
@@ -176,8 +184,9 @@
       <para>When we take a more detailed look inside a repository, we
 	can see that it contains a directory named <filename
 	  class="directory">.hg</filename>.  This is where Mercurial
-	keeps all of its metadata for the repository. <!--
-	&interaction.tour.ls-a; --></para>
+	keeps all of its metadata for the repository.</para>
+
+      <!-- &interaction.tour.ls-a; -->
 
       <para>The contents of the <filename
 	  class="directory">.hg</filename> directory and its
@@ -205,10 +214,13 @@
     <para>One of the first things we might want to do with a new,
       unfamiliar repository is understand its history.  The <command
 	role="hg-cmd">hg log</command> command gives us a view of
-      history. <!-- &interaction.tour.log; --> By default, this
-      command prints a brief paragraph of output for each change to
-      the project that was recorded.  In Mercurial terminology, we
-      call each of these recorded events a
+      history.</para>
+
+    <!-- &interaction.tour.log; -->
+
+    <para>By default, this command prints a brief paragraph of output
+      for each change to the project that was recorded.  In Mercurial
+      terminology, we call each of these recorded events a
       <emphasis>changeset</emphasis>, because it can contain a record
       of changes to several files.</para>
 
@@ -310,18 +322,22 @@
 	  role="hg-opt-log">-r</option> (or <option
 	  role="hg-opt-log">--rev</option>) option.  You can use
 	either a revision number or a long-form changeset identifier,
-	and you can provide as many revisions as you want.  <!--
-	&interaction.tour.log-r; --></para>
+	and you can provide as many revisions as you want.</para>
+
+      <!-- &interaction.tour.log-r; -->
 
       <para>If you want to see the history of several revisions
 	without having to list each one, you can use <emphasis>range
 	  notation</emphasis>; this lets you express the idea <quote>I
-	  want all revisions between $a$ and $b$, inclusive</quote>.
-	<!-- &interaction.tour.log.range; --> Mercurial also honours
-	the order in which you specify revisions, so <command
-	  role="hg-cmd">hg log -r 2:4</command> prints $2,3,4$ while
-	<command role="hg-cmd">hg log -r 4:2</command> prints
-	$4,3,2$.</para>
+	  want all revisions between <literal>abc</literal> and
+	  <literal>def</literal>, inclusive</quote>.</para>
+      
+	<!-- &interaction.tour.log.range; -->
+
+      <para>Mercurial also honours the order in which you specify
+	revisions, so <command role="hg-cmd">hg log -r 2:4</command>
+	prints 2, 3, and 4. while <command role="hg-cmd">hg log -r
+	  4:2</command> prints 4, 3, and 2.</para>
 
     </sect2>
     <sect2>
@@ -335,7 +351,9 @@
 	looking for. The <command role="hg-cmd">hg log</command>
 	command's <option role="hg-opt-global">-v</option> (or <option
 	  role="hg-opt-global">--verbose</option>) option gives you
-	this extra detail. <!-- &interaction.tour.log-v; --></para>
+	this extra detail.</para>
+
+      <!-- &interaction.tour.log-v; -->
 
       <para>If you want to see both the description and content of a
 	change, add the <option role="hg-opt-log">-p</option> (or
@@ -343,7 +361,9 @@
 	displays the content of a change as a <emphasis>unified
 	  diff</emphasis> (if you've never seen a unified diff before,
 	see section <xref linkend="sec:mq:patch"/> for an
-	overview). <!-- &interaction.tour.log-vp; --></para>
+	overview).</para>
+
+      <!-- &interaction.tour.log-vp; -->
 
     </sect2>
   </sect1>
@@ -402,16 +422,18 @@
       the remote repository.  Since we already have a copy of it
       locally, we can just clone that instead.  This is much faster
       than cloning over the network, and cloning a local repository
-      uses less disk space in most cases, too. <!--
-      &interaction.tour.reclone; --> As an aside, it's often good
-      practice to keep a <quote>pristine</quote> copy of a remote
-      repository around, which you can then make temporary clones of
-      to create sandboxes for each task you want to work on.  This
-      lets you work on multiple tasks in parallel, each isolated from
-      the others until it's complete and you're ready to integrate it
-      back.  Because local clones are so cheap, there's almost no
-      overhead to cloning and destroying repositories whenever you
-      want.</para>
+      uses less disk space in most cases, too.</para>
+
+    <!-- &interaction.tour.reclone; -->
+
+    <para>As an aside, it's often good practice to keep a
+      <quote>pristine</quote> copy of a remote repository around,
+      which you can then make temporary clones of to create sandboxes
+      for each task you want to work on.  This lets you work on
+      multiple tasks in parallel, each isolated from the others until
+      it's complete and you're ready to integrate it back.  Because
+      local clones are so cheap, there's almost no overhead to cloning
+      and destroying repositories whenever you want.</para>
 
     <para>In our <filename class="directory">my-hello</filename>
       repository, we have a file <filename>hello.c</filename> that
@@ -422,13 +444,18 @@
       to write a scripted example this way.  Since you're not under
       the same constraint, you probably won't want to use
       <command>sed</command>; simply use your preferred text editor to
-      do the same thing.) <!-- &interaction.tour.sed; --></para>
+      do the same thing.)</para>
+
+    <!-- &interaction.tour.sed; -->
 
     <para>Mercurial's <command role="hg-cmd">hg status</command>
       command will tell us what Mercurial knows about the files in the
-      repository. <!-- &interaction.tour.status; --> The <command
-	role="hg-cmd">hg status</command> command prints no output for
-      some files, but a line starting with
+      repository.</para>
+
+    <!-- &interaction.tour.status; -->
+
+    <para>The <command role="hg-cmd">hg status</command> command
+      prints no output for some files, but a line starting with
       <quote><literal>M</literal></quote> for
       <filename>hello.c</filename>.  Unless you tell it to, <command
 	role="hg-cmd">hg status</command> will not print any output
@@ -446,7 +473,9 @@
       <filename>hello.c</filename>, but we might prefer to know
       exactly <emphasis>what</emphasis> changes we've made to it.  To
       do this, we use the <command role="hg-cmd">hg diff</command>
-      command. <!-- &interaction.tour.diff; --></para>
+      command.</para>
+
+    <!-- &interaction.tour.diff; -->
 
   </sect1>
   <sect1>
@@ -701,67 +730,70 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
     <sect2>
       <title>Updating the working directory</title>
 
-      <para>We have so far glossed over the relationship
-	  between a repository and its working directory.  The
-	  <command role="hg-cmd">hg pull</command> command that we ran
-	  in section <xref linkend="sec:tour:pull"/> brought changes into
-	  the
-	  repository, but if we check, there's no sign of those
-	  changes in the working directory.  This is because <command
-	    role="hg-cmd">hg pull</command> does not (by default)
-	  touch the working directory.  Instead, we use the <command
-	    role="hg-cmd">hg update</command> command to do this. <!--
-	  &interaction.tour.update; --></para>
-      <para>It might seem a bit strange that <command
-	    role="hg-cmd">hg pull</command> doesn't update the working
-	  directory automatically.  There's actually a good reason for
-	  this: you can use <command role="hg-cmd">hg update</command>
-	  to update the working directory to the state it was in at
-	  <emphasis>any revision</emphasis> in the history of the
-	  repository.  If you had the working directory updated to an
-	  old revision---to hunt down the origin of a bug, say---and
-	  ran a <command role="hg-cmd">hg pull</command> which
-	  automatically updated the working directory to a new
-	  revision, you might not be terribly happy.</para>
-      <para>However, since pull-then-update is such a common
-	  thing to do, Mercurial lets you combine the two by passing
-	  the <option role="hg-opt-pull">-u</option> option to
-	  <command role="hg-cmd">hg
-	    pull</command>.</para>
+      <para>We have so far glossed over the relationship between a
+	repository and its working directory.  The <command
+	  role="hg-cmd">hg pull</command> command that we ran in
+	section <xref linkend="sec:tour:pull"/> brought changes
+	into the repository, but if we check, there's no sign of those
+	changes in the working directory.  This is because <command
+	  role="hg-cmd">hg pull</command> does not (by default) touch
+	the working directory.  Instead, we use the <command
+	  role="hg-cmd">hg update</command> command to do this.</para>
+
+      <!-- &interaction.tour.update; -->
+
+      <para>It might seem a bit strange that <command role="hg-cmd">hg
+	  pull</command> doesn't update the working directory
+	automatically.  There's actually a good reason for this: you
+	can use <command role="hg-cmd">hg update</command> to update
+	the working directory to the state it was in at <emphasis>any
+	  revision</emphasis> in the history of the repository.  If
+	you had the working directory updated to an old revision---to
+	hunt down the origin of a bug, say---and ran a <command
+	  role="hg-cmd">hg pull</command> which automatically updated
+	the working directory to a new revision, you might not be
+	terribly happy.</para>
+      <para>However, since pull-then-update is such a common thing to
+	do, Mercurial lets you combine the two by passing the <option
+	  role="hg-opt-pull">-u</option> option to <command
+	  role="hg-cmd">hg pull</command>.</para>
 
       <para>If you look back at the output of <command
-	    role="hg-cmd">hg pull</command> in section <xref
+	  role="hg-cmd">hg pull</command> in section <xref
 	    linkend="sec:tour:pull"/> when we ran it without <option
-	    role="hg-opt-pull">-u</option>, you can see that it
-	  printed a helpful reminder that we'd have to take an
-	  explicit step to update the working
-	  directory:</para>
+	  role="hg-opt-pull">-u</option>, you can see that it printed
+	a helpful reminder that we'd have to take an explicit step to
+	update the working directory:</para>
 
       <!-- &interaction.xxx.fixme; -->
 
-      <para>To find out what revision the working directory
-	  is at, use the <command role="hg-cmd">hg parents</command>
-	  command.</para>
+      <para>To find out what revision the working directory is at, use
+	the <command role="hg-cmd">hg parents</command>
+	command.</para>
 
       <!-- &interaction.tour.parents; -->
 
-      <para>If you look
-	  back at figure <xref linkend="fig:tour-basic:history"/>, you'll
-	  see arrows connecting each changeset.  The node that the
-	  arrow leads <emphasis>from</emphasis> in each case is a
-	  parent, and the node that the arrow leads
-	  <emphasis>to</emphasis> is its child.  The working directory
-	  has a parent in just the same way; this is the changeset
-	  that the working directory currently
-	  contains.</para>
-      <para>To update the working directory to a particular
-	  revision, give a revision number or changeset ID to the
-	  <command role="hg-cmd">hg update</command> command. <!--
-	  &interaction.tour.older; --> If you omit an explicit
-	  revision, <command role="hg-cmd">hg update</command> will
-	  update to the tip revision, as shown by the second call to
-	  <command role="hg-cmd">hg update</command> in the example
-	  above.</para>
+      <para>If you look back at figure <xref
+	  linkend="fig:tour-basic:history"/>,
+	you'll see arrows connecting each changeset.  The node that
+	the arrow leads <emphasis>from</emphasis> in each case is a
+	parent, and the node that the arrow leads
+	<emphasis>to</emphasis> is its child.  The working directory
+	has a parent in just the same way; this is the changeset that
+	the working directory currently contains.</para>
+
+      <para>To update the working directory to a particular revision,
+
+	give a revision number or changeset ID to the <command
+	  role="hg-cmd">hg update</command> command.</para>
+
+      <!-- &interaction.tour.older; -->
+
+      <para>If you omit an explicit revision, <command
+	  role="hg-cmd">hg update</command> will update to the tip
+	revision, as shown by the second call to <command
+	  role="hg-cmd">hg update</command> in the example
+	above.</para>
     </sect2>
 
     <sect2>
