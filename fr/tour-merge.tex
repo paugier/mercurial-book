@@ -1,7 +1,7 @@
 \chapter{Un rapide tour de Mercurial: fusionner les travaux}
 \label{chap:tour-merge}
 
-Nous avons maintenons étudié comment clôner un dépôt, effectuer
+Nous avons maintenons étudié comment cloner un dépôt, effectuer
 des changements dedans, et récupérer ou transférer depuis un 
 autre dépôt. La prochaine étape est donc de \emph{fusionner} les
 modifications de différents dépôts.
@@ -9,9 +9,9 @@ modifications de différents dépôts.
 \section{Fusionner différents travaux} %%%TODO: better translation
 				       %%% for 'Merging streams of work' ?
 La fusion\footnote{NdT: Je garde fusion mais le jargon professionnel 
-employera généralement le terme \textit{merge}.} est un aspect 
+emploiera généralement le terme \textit{merge}.} est un aspect 
 fondamental lorsqu'on travail avec un gestionnaire de source 
-distribé.
+distribué.
 \begin{itemize}
 \item Alice et Bob ont chacun une copie personnelle du dépôt d'un
   projet sur lequel ils collaborent. Alice corrige un \textit{bug} 
@@ -25,8 +25,8 @@ distribé.
 \end{itemize}
 
 Parce que la fusion est une opération si commune que je dois réaliser,
-Mercurial la rend facile. Etudions ensemble le déroulement des opérations.
-Nous commencerons par faire un clone d'encore un autre dépôt (vous voyez
+Mercurial la rend facile. Étudions ensemble le déroulement des opérations.
+Nous commencerons par faire un clone de encore un autre dépôt (vous voyez
 comment on fait ça tout le temps ?) puis nous ferons quelques modifications
 dessus.
 \interaction{tour.merge.clone}
@@ -49,7 +49,7 @@ Nous savons déjà que récupérer les modifications depuis notre dépôt
 
 \interaction{tour.merge.pull}
 
-Néanmoins, la commande \hgcmd{pull} nous indique quelquechose au 
+Néanmoins, la commande \hgcmd{pull} nous indique quelque chose au 
 sujet des ``heads''.
 
 \subsection{\textit{Head changesets}} %%%TODO: Hard (too?) to translate
@@ -103,15 +103,16 @@ pour fusionner les deux \textit{heads}.
 \end{figure}
 
 Ceci met à jour de l'espace de travail de manière à ce qu'il contienne
-les modifications des \emph{deux} \textit{heads}, ce qui apparait dans
+les modifications des \emph{deux} \textit{heads}, ce qui apparaît dans
 les sorties de la commande \hgcmd{parents} et le contenu de 
 \filename{hello.c}. 
 \interaction{tour.merge.parents}
 
-\subsection{Committing the results of the merge}
+\subsection{Effectuer le \textit{commit} du résultat de la fusion}
 
-Whenever we've done a merge, \hgcmd{parents} will display two parents
-until we \hgcmd{commit} the results of the merge.
+Dès l'instant où vous avez effectuer une fusion, \hgcmd{parents} vous
+affichera deux parents, avant que vous n'exécuter la commande 
+\hgcmd{commit} sur le résultat de la fusion.
 \interaction{tour.merge.commit}
 Nous avons maintenant un nouveau \textit{tip}, remarquer qu'il contient
 \emph{à la fois} nos anciennes \textit{heads} et leurs parents. Ce sont
@@ -128,10 +129,10 @@ d'un nouveau \textit{changeset}.
 \section{Fusionner les modifications en conflit}
 
 La plupart des fusions sont assez simple à réaliser, mais parfois 
-vous vous trouverez à fusioner des fichiers où la modification touche
+vous vous trouverez à fusionner des fichiers où la modification touche
 la même portion de code, au sein d'un même fichier. À moins que ces
 modification ne soient identiques, ceci aboutira à un \emph{conflit},
-et vous devrez décider comment réconcillier les différentes modifications
+et vous devrez décider comment réconcilier les différentes modifications
 dans un tout cohérent. 
 
 \begin{figure}[ht]
@@ -148,7 +149,7 @@ quelqu'un d'autre modifie le même texte. Notre tâche dans la résolution
 du conflit est de décider à quoi le fichier devrait ressembler.
 
 Mercurial n'a pas de mécanisme interne pour gérer les conflits. 
-À la place, il exéctue un programme externe appelé \command{hgmerge}.
+À la place, il exécute un programme externe appelé \command{hgmerge}.
 Il s'agit d'un script shell qui est embarqué par Mercurial, vous
 pouvez le modifier si vous le voulez. Ce qu'il fait par défaut est
 d'essayer de trouver un des différents outils de fusion qui seront
@@ -159,7 +160,7 @@ le script tente d'exécuter certains outils graphiques de fusion.
 
 Il est aussi possible de demander à Mercurial d'exécuter un autre
 programme ou un autre script au lieu de la commande \command{hgmerge},
-en définissant la variable d'environement \envar{HGMERGE} avec le nom
+en définissant la variable d'environnement \envar{HGMERGE} avec le nom
 du programme de votre choix.
 
 \subsection{Utiliser un outil graphique de fusion}
@@ -186,7 +187,7 @@ fusion. Notre tâche consiste donc à remplacement tout les textes en rouges,
 qui indiquent des conflits non résolus, avec un fusion manuel et pertinente
 de ``notre'' version et de la ``leur''. 
 
-Tout les quatres panneaux sont \emph{accrochés ensemble}, si nous déroulons
+Tout les quatre panneaux sont \emph{accrochés ensemble}, si nous déroulons
 les ascenseurs verticalement ou horizontalement dans chacun d'entre eux, les
 autres sont mise à jours avec la section correspondantes dans leurs fichiers.
 
@@ -199,56 +200,65 @@ autres sont mise à jours avec la section correspondantes dans leurs fichiers.
 \end{figure}
 
 Pour chaque portion de fichier posant problème, nous pouvons choisir 
-de résoudre le le conlfit en utilisant en utilisant une combinaison 
+de résoudre le le conflit en utilisant en utilisant une combinaison 
 de texte depuis la version de base, la notre, ou la leur. Nous pouvons 
 aussi éditer manuellement les fichiers à tous moments, si c'est
 nécessaire.
 
 Il y a \emph{beaucoup} d'outils de fusion disponibles, bien trop pour
-en parler de tous ici. Leurs disponibilités varient selon les plateformes
-ainsi que leurs avantages et incovénients. La plupart sont optimisé pour
+en parler de tous ici. Leurs disponibilités varient selon les plate formes
+ainsi que leurs avantages et inconvénients. La plupart sont optimisé pour
 la fusion de fichier contenant un texte plat, certains sont spécialisé
-dans un format de fichier précis (générallement XML).
+dans un format de fichier précis (généralement XML).
 
-\subsection{A worked example}
+\subsection{A worked example} %TODO: Find a translation for this !
 
-In this example, we will reproduce the file modification history of
-figure~\ref{fig:tour-merge:conflict} above.  Let's begin by creating a
-repository with a base version of our document.
+Dans cet exemple, nous allons reproduire la modification de l'historique
+du fichier de la figure~\ref{fig:tour-merge:conflict} ci dessus. Commençons
+par créer un dépôt avec une version de base de notre document.
+
 \interaction{tour-merge-conflict.wife}
-We'll clone the repository and make a change to the file.
+Créons un clone de ce dépôt et faisons une modification dans le fichier.
 \interaction{tour-merge-conflict.cousin}
-And another clone, to simulate someone else making a change to the
-file.  (This hints at the idea that it's not all that unusual to merge
-with yourself when you isolate tasks in separate repositories, and
-indeed to find and resolve conflicts while doing so.)
+Et un autre clone, pour simuler que quelqu'un d'autre effectuer une
+modification sur le fichier. (Ceci pour suggérer qu'il n'est pas rare
+de devoir effectuer des \textit{merge} avec vos propres travaux quand 
+vous isoler les tâches dans des dépôts distincts. En effet, vous 
+aurez alors à trouver et résoudre certains conflits).
 \interaction{tour-merge-conflict.son}
-Having created two different versions of the file, we'll set up an
-environment suitable for running our merge.
+Maintenant que ces deux versions différentes du même fichier sont 
+créées, nous allons configurer l'environnement approprié pour exécuter 
+notre \textit{merge}.
 \interaction{tour-merge-conflict.pull}
 
-In this example, I won't use Mercurial's normal \command{hgmerge}
-program to do the merge, because it would drop my nice automated
-example-running tool into a graphical user interface.  Instead, I'll
-set \envar{HGMERGE} to tell Mercurial to use the non-interactive
-\command{merge} command.  This is bundled with many Unix-like systems.
-If you're following this example on your computer, don't bother
-setting \envar{HGMERGE}.
+Dans cette exemple, je n'utiliserais pas la commande Mercurial
+habituelle \command{hgmerge} pour effectuer le \textit{merge},
+car il me faudrait abandonner ce joli petit exemple automatisé
+pour utiliser un outil graphique. À la place, je vais définir
+la variable d'environnement \envar{HGMERGE} pour indiquer à 
+Mercurial d'utiliser la commande non-interactive \command{merge}.
+Cette dernière est embarqué par de nombreux systèmes ``à la Unix''.
+Si vous exécuter cet exemple depuis votre ordinateur, ne vous
+occupez pas de définir \envar{HGMERGE}.
 \interaction{tour-merge-conflict.merge}
-Because \command{merge} can't resolve the conflicting changes, it
-leaves \emph{merge markers} inside the file that has conflicts,
-indicating which lines have conflicts, and whether they came from our
-version of the file or theirs.
+Parce que \command{merge} ne peut pas résoudre les modifications
+conflictuelles, il laisse des \emph{marqueurs de différences}
+\footnote{NdT: Oui, je traduis \textit{merge markers} par un sens
+inverse en Français, mais je pense vraiment que c'est plus clair 
+comme ça...} à l'intérieur du fichier qui a des conflits, indiquant
+clairement quelles lignes sont en conflits, et si elles viennent de
+notre fichier ou du fichier externe.
 
-Mercurial can tell from the way \command{merge} exits that it wasn't
-able to merge successfully, so it tells us what commands we'll need to
-run if we want to redo the merging operation.  This could be useful
-if, for example, we were running a graphical merge tool and quit
-because we were confused or realised we had made a mistake.
+Mercurial peut distinguer, à la manière dont la commande \command{merge}
+se termine, qu'elle n'a pas été capable d'effectuer le \textit{merge},
+alors il nous indique qu'il faut devons effectuer de nouveau cette
+opération. Ceci peut être très utile si, par exemple, nous exécutons un
+outil graphique de fusion et que nous le quittons sans se rendre compte
+qu'il reste des conflits ou simplement par erreur.
 
-If automatic or manual merges fail, there's nothing to prevent us from
-``fixing up'' the affected files ourselves, and committing the results
-of our merge:
+Si le \textit{merge} automatique ou manuel échoue, il n'y a rien pour
+nous empêcher de ``corriger le tir'' en modifiant nous même les fichiers,
+et enfin effectuer le \textit{commit} du fichier:
 \interaction{tour-merge-conflict.commit}
 
 \section{Simplifying the pull-merge-commit sequence}

@@ -467,14 +467,19 @@ les lignes vides et traite tout texte situé à la suite d'un
 Vous pouvez utiliser n'importe quelle valeur pour votre \texttt{username},
 car cette information est destinée à d'autres personnes et non à être
 interprétée par Mercurial. La convention que la plupart des personnes
+<<<<<<< local
 suivent est d'utiliser leurs noms suivies de leurs adresses emails,
 comme montrée ci-dessus:
+=======
+suivent est d'utiliser leur nom suivi de leur adresse email,
+comme montrée ci dessus:
+>>>>>>> other
 
 \begin{note}
   Le mécanisme interne du serveur \textit{web} intégré à Mercurial,
   masque les adresses emails, pour rendre plus difficile leurs
   récupérations par les outils utilisés par les \textit{spammmers}.
-  Ceci réduit la probabilité que vous receviez encore plus de 
+  Ceci réduit la probabilité que de recevoir encore plus de 
   \textit{spam} si vous vous publiez un dépôt sur internet.
 \end{note}
 
@@ -483,7 +488,7 @@ comme montrée ci-dessus:
 Lorsqu'on effectue une opération de \textit{commit}, Mercurial 
 lance automatiquement un éditeur de texte pour permettre de saisir
 un message qui décrira les modifications effectuées dans ce 
-\textit{changeset}. Ce message est nommée le \emph{message de 
+\textit{changeset}. Ce message est nommé le \emph{message de 
 \textit{commit}}. Ce sera un enregistrement pour tout lecteur 
 expliquant le pourquoi et le comment de vos modifications, et il sera
 affiché par la commande \hgcmd{log}.
@@ -496,7 +501,7 @@ par ``\texttt{HG:}''.
   \emph{empty line}
   HG: changed hello.c
 \end{codesample2}
-Mercurial ignore les lignes qui commence avec ``\texttt{HG:}'', il 
+Mercurial ignore les lignes qui commencent avec ``\texttt{HG:}'', il 
 ne les utilise que pour nous indiquer quels fichiers modifiés il se 
 prépare à \textit{commiter}. Modifier ou effacer ces lignes n'a 
 aucune conséquence sur l'opération de \textit{commit}.
@@ -505,7 +510,11 @@ aucune conséquence sur l'opération de \textit{commit}.
 
 Comme \hgcmd{log} n'affiche que la première ligne du message de
 \textit{commit} par défaut, il est souvent considéré comme une bonne
+<<<<<<< local
 pratique de rédiger des messages de \textit{commit} qui tiennent
+=======
+pratique de rédiger des messages de \textit{commit} qui n'entrent que 
+>>>>>>> other
 sur une seule ligne. Voilà un exemple concret de message de 
 \textit{commit} qui \emph{ne suit pas} cette directive, et qui a donc
 un résumé peu lisible.
@@ -519,22 +528,35 @@ un résumé peu lisible.
 A ce sujet, il faut noter qu'il n'existe pas de règle absolue dans ce 
 domaine. Mercurial lui-même n'interprète pas les contenus des messages
 de \textit{commit}, ainsi votre projet est libre de concevoir différentes
+<<<<<<< local
 politiques de mise en page des messages.
+=======
+politiques de formatage des messages.
+>>>>>>> other
 
 Ma préférence personnelle va au message court, mais informatif, qui offre
-des précisions supplémentaires à ce que pourrait m'apprendre une commande
+des précisions supplémentaires par rapport à ce que pourrait m'apprendre une commande
 \hgcmdargs{log}{--patch}.
 
 \subsection{Annuler un \textit{commit}}
 
 Si, en rédigeant le message, vous décidez que finalement vous ne 
+<<<<<<< local
 voulez pas effectuer ce \textit{commit}, il suffit de simplement quitter
 l'éditeur sans sauvegarder. Ceci n'aura aucune conséquence sur le dépôt ou
+=======
+voulez pas effectuer ce \textit{commit}, il suffit de quitter simplement
+l'éditeur sans sauver. Ceci n'aura aucune conséquence sur le dépôt ou
+>>>>>>> other
 les fichiers de l'espace de travail.
 
+<<<<<<< local
 Si vous exécuter la commande \hgcmd{commit} sans aucun argument, elle
+=======
+Si vous exécutez la commande \hgcmd{commit} sans aucun argument, elle
+>>>>>>> other
 enregistre toutes les modifications que vous avez faites, comme le montre
-la commande \hgcmd{status} et \hgcmd{diff}.
+les commandes \hgcmd{status} et \hgcmd{diff}.
 
 \subsection{Admirer votre travail}
 
@@ -544,7 +566,11 @@ venons de créer. Cette commande produit une sortie à l'écran qui est
 identique à celle du \hgcmd{log}, mais qui n'affiche que la dernière
 révision du dépôt.
 \interaction{tour.tip}
+<<<<<<< local
 On fait couramment référence à la dernière révision du dépôt comme
+=======
+On fait couramment référénce à la dernière révision du dépôt comme
+>>>>>>> other
 étant la révision \textit{tip}, ou plus simplement le \textit{tip}.
 
 \section{Partager ses modifications}
@@ -560,7 +586,11 @@ dans d'autres dépôts.
 
 Pour commencer, construisons un clone de notre dépôt \dirname{hello} 
 qui ne contiendra pas le changement que nous venons d'effectuer. Nous
+<<<<<<< local
 l'appellerons notre dépôt temporaire \dirname{hello-pull}.
+=======
+appelerons notre dépôt temporaire \dirname{hello-pull}.
+>>>>>>> other
 \interaction{tour.clone-pull}
 
 Nous allons utiliser la commande \hgcmd{pull} pour apporter les 
@@ -591,16 +621,20 @@ placer ces modifications dans l'espace de travail.
 
 Nous avons jusqu'à maintenant grossièrement définie la relation 
 entre un dépôt et un espace de travail. La commande \hgcmd{pull} que
-nous avons exécuter dans la section~\ref{sec:tour:pull} a apportée
+nous avons exécutée dans la section~\ref{sec:tour:pull} a apporté
 des modifications, que nous avons vérifiées, dans notre dépôt, mais
 il n'y a aucune trace de ces modifications dans notre espace de travail.
 En effet, \hgcmd{pull} ne touche pas (par défaut) à l'espace de 
 travail. C'est la commande \hgcmd{update} qui s'en charge.
 \interaction{tour.update}
 
-Il peut sembler un peu étrange que la commande \hgcmd{pull} ne met
+Il peut sembler un peu étrange que la commande \hgcmd{pull} ne mette
 pas à jour l'espace de travail automatiquement. Il y a en fait une
+<<<<<<< local
 très bonne raison à cela : vous pouvez utilisez la commande 
+=======
+très bonne raison à cela: vous pouvez utiliser la commmande 
+>>>>>>> other
 \hgcmd{update} pour mettre à jour votre espace de travail à l'état
 dans lequel il était à \emph{n'importe quelle révision} de l'historique
 du dépôt. Si vous aviez un espace de travail contenant une ancienne
@@ -610,30 +644,47 @@ votre espace de travail, vous ne seriez probablement pas très satisfait.
 
 Néanmoins, comme les opérations de \textit{pull} sont très souvent
 suivies d'un \textit{update}, Mercurial vous permet de combiner les
-deux aisément passant l'option \hgopt{pull}{-u} à la commande 
+deux aisément en passant l'option \hgopt{pull}{-u} à la commande
 \hgcmd{pull}
 \begin{codesample2}
   hg pull -u
 \end{codesample2}
 
 Si vous étudiez de nouveau la sortie de la commande \hgcmd{pull} dans
+<<<<<<< local
 la section~\ref{sec:tour:pull} quand nous l'avons exécuté sans l'option
 \hgopt{pull}{-u}, vous pouvez constater qu'elle a affiché le rappel assez
 utile comme quoi vous devez encore effectuer une opération pour mettre à jour
+=======
+la section~\ref{sec:tour:pull} quand nous l'avons exécutée sans l'option
+\hgopt{pull}{-u}, vous pouvez constater qu'elle a affiché un rappel assez
+utile : vous devez encore effectuer une opération pour mettre à jour
+>>>>>>> other
 votre espace de travail:
 \begin{codesample2}
   (run 'hg update' to get a working copy)
 \end{codesample2}
 
+<<<<<<< local
 Pour découvrir sur quelle révision de l'espace de travail on est, utilisez
+=======
+Pour découvrir quelle révision de l'espace de travail en est où, utiliser
+>>>>>>> other
 la commande \hgcmd{parents}. 
 \interaction{tour.parents}
 Si vous regardez de nouveau le dessin~\ref{fig:tour-basic:history}, vous
+<<<<<<< local
 verrez les flèches reliant entre eux les \textit{changeset}. Le nœud 
 d'où la flèche \emph{part} est dans chaque cas un parent, 
 et le nœud où la flèche \emph{arrive} est un enfant. 
+=======
+verrez que les flèches reliant les \textit{changeset} entre eux. Le noeud 
+dont la flèche mène \emph{de quelquepart} est dans chaque cas un parent, 
+et le node dont la flèche mène \emph{vers quelquepart} est un enfant. %%%TODO: vers quelque part ?
+>>>>>>> other
 L'espace de travail a un parent de la même manière, c'est ce \textit{changeset} 
 que l'espace de travail contient à ce moment.
+%%%TODO : difficile à comprendre : l'espace de travail a un parent, de la même manière, c'est ce changeset que l'espace...
 
 Pour mettre à jour l'espace de travail d'une révision particulière, 
 indiquez un numéro de révision ou un \textit{changeset~ID} à la commande 
@@ -641,8 +692,13 @@ indiquez un numéro de révision ou un \textit{changeset~ID} à la commande
 \interaction{tour.older}
 Si vous ne précisez pas de manière explicite de numéro de révision
 la commande \hgcmd{update} mettra à jour votre espace de travail avec
+<<<<<<< local
 le contenu de la révision \textit{tip}, comme montré dans l'exemple 
 ci-dessus lors du second appel à \hgcmd{update}.
+=======
+le contenu de la révsion \textit{tip}, comme montrée dans l'exemple 
+ci dessus lors du second appel à \hgcmd{update}.
+>>>>>>> other
 
 \subsection{Transférer les modifications à un autre dépôt}
 
@@ -653,7 +709,7 @@ vers lequel transférer\footnote{NdT: Les francophones disent souvent
 ``pousser'' tout simplement} nos modifications.
 \interaction{tour.clone-push}
 La commande \hgcmd{outgoing} nous indique quels changements nous
-allons transférer vers l'autre serveyr.
+allons transférer vers l'autre serveur ?
 \interaction{tour.outgoing}
 Et la commande \hgcmd{push} effectue réellement le transfert.
 \interaction{tour.push}
@@ -670,8 +726,13 @@ Rien de bien excitant.
 
 \subsection{Partager ses modifications à travers le réseau}
 
+<<<<<<< local
 Les commandes que nous avons étudiés dans les sections précédentes
 ne se limitent pas aux dépôt locaux. Chacune commande fonctionne de la même
+=======
+Les commandes que nous avons étudiées dans les sections précédentes
+ne sont pas limitées aux dépôt locaux. Chacune fonctionne de la même
+>>>>>>> other
 manière à travers une connexion réseau, il suffit de lui passer une 
 URL à la place d'un chemin de fichier local.
 
