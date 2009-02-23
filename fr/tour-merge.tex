@@ -261,51 +261,54 @@ nous empêcher de ``corriger le tir'' en modifiant nous même les fichiers,
 et enfin effectuer le \textit{commit} du fichier:
 \interaction{tour-merge-conflict.commit}
 
-\section{Simplifying the pull-merge-commit sequence}
+\section{Simplifier l'enchaînement de \textit{pull-merge-commit} }
 \label{sec:tour-merge:fetch}
 
-The process of merging changes as outlined above is straightforward,
-but requires running three commands in sequence.
+Le processus de fusion des modifications, comme indiqué ci dessus,
+est simple, mais il requiert d'exécuter 3 commandes de suite.
 \begin{codesample2}
   hg pull
   hg merge
   hg commit -m 'Merged remote changes'
 \end{codesample2}
-In the case of the final commit, you also need to enter a commit
-message, which is almost always going to be a piece of uninteresting
-``boilerplate'' text.
+Dans le cas d'un \textit{commit} final, vous avez aussi besoin
+de saisir un message, qui sera presque systématiquemetn un texte
+sans grand interêt, juste pour mentionner qu'un \textit{merge} a
+eu lieu.
 
-It would be nice to reduce the number of steps needed, if this were
-possible.  Indeed, Mercurial is distributed with an extension called
-\hgext{fetch} that does just this.
+Il serait agréable de pouvoir réduire le nombre d'étape nécessaire.
+En effet, Mercurial est distribué avec une extension nommée \hg{fetch}
+qui le permet.
 
-Mercurial provides a flexible extension mechanism that lets people
-extend its functionality, while keeping the core of Mercurial small
-and easy to deal with.  Some extensions add new commands that you can
-use from the command line, while others work ``behind the scenes,''
-for example adding capabilities to the server.
+Mercurial fournit un méchanisme flexible d'extension qui permet à 
+quiquonque d'ajouter des fonctionnalités, tout en conservant le 
+coeur de Mercurial relativement petit et facile à maintenir. Quelques
+extensions ajoutent des nouvelles commandes que vous pouvez utiliser
+depuis votre terminal, alors que d'autres opèrent ``dans les coulisses'',
+pour ajouter par exemple des fonctionnalités au server.
 
-The \hgext{fetch} extension adds a new command called, not
-surprisingly, \hgcmd{fetch}.  This extension acts as a combination of
-\hgcmd{pull}, \hgcmd{update} and \hgcmd{merge}.  It begins by pulling
-changes from another repository into the current repository.  If it
-finds that the changes added a new head to the repository, it begins a
-merge, then commits the result of the merge with an
-automatically-generated commit message.  If no new heads were added,
-it updates the working directory to the new tip changeset.
+L'extension \hgext{fetch} ajoute une nouvelle commande appelée, sans
+surprise, \hgcmd{fetch}. Cette extension agit comme une combinaison
+de \hgcmd{pull}, \hgupdate{update} et \hgcmd{merge}. Elle commence
+par faire un \textit{pull} des modifications depuis un autre dépôt dans
+le dépôt local. Si elle trouve des modifications ajoutés à la \textit{head}
+du dépôt, elle commencera à effectuer le \textit{merge}, puis elle 
+déclenchera le \textit{commit} du résultat avec un message généré
+automatiquement. Si aucune nouvell \textit{head} n'est ajouté elle
+met à jour l'espace de travail avec le nouveau \textit{tip}.
 
-Enabling the \hgext{fetch} extension is easy.  Edit your
-\sfilename{.hgrc}, and either go to the \rcsection{extensions} section
-or create an \rcsection{extensions} section.  Then add a line that
-simply reads ``\Verb+fetch +''.
+Activé l'extension \hgext{fetch} est très facile. Ouvrez le fichier
+\sfilename{.hgrc}, et, soit allez dans la section \rcsection{extensions}
+ou créer une section \rcsection{extensions} si elle absente. Ensuite, 
+ajoutée une ligne qui contient simplement ``\Verb+fetch +''.
 \begin{codesample2}
   [extensions]
   fetch =
 \end{codesample2}
-(Normally, on the right-hand side of the ``\texttt{=}'' would appear
-the location of the extension, but since the \hgext{fetch} extension
-is in the standard distribution, Mercurial knows where to search for
-it.)
+(Normalement, à droite du signe ``\texttt{=}'' on verrait apparaître
+l'adresse de l'extension sur le système, mais comme \hgext{fetch} est
+une extension distribué avec Mercurial, ce dernier sait où la 
+retrouver.)
 
 %%% Local Variables: 
 %%% mode: latex
