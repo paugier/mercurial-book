@@ -1,12 +1,5 @@
 # This makefile requires GNU make.
 
-sources := \
-	00book.tex \
-	99book.bib \
-	99defs.tex \
-	app*.tex \
-	ch*.tex
-
 image-sources := \
 	feature-branches.dot \
 	filelog.svg \

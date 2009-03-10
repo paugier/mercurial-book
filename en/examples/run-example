@@ -65,6 +65,8 @@ class example:
     
     timeout = 10
 
+    entities = dict.fromkeys(l.rstrip() for l in open('auto-snippets.xml'))
+
     def __init__(self, name, verbose, keep_change):
         self.name = name
         self.verbose = verbose
@@ -240,6 +242,11 @@ class example:
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
+                                norm = os.path.normpath(ofp_basename)
+                                example.entities[
+                                    '<!ENTITY "interaction.%s" '
+                                    'SYSTEM "results/%s.out">'
+                                    % (norm, norm)] = 1
                                 read_hint = ofp_basename + ' '
                                 ofp = open(result_name(ofp_basename + '.tmp'),
                                            'w')
@@ -348,11 +355,16 @@ def print_help(exit, msg=None):
     sys.exit(exit)
 
 def main(path='.'):
+    if os.path.realpath(path).split(os.sep)[-1] != 'examples':
+        print >> sys.stderr, 'Not being run from the examples directory!'
+        sys.exit(1)
+
     opts, args = getopt.getopt(sys.argv[1:], '?ahv',
                                ['all', 'help', 'keep', 'verbose'])
     verbose = False
     run_all = False
     keep_change = False
+
     for o, a in opts:
         if o in ('-h', '-?', '--help'):
             print_help(0)
@@ -397,6 +409,11 @@ def main(path='.'):
         print >> open(os.path.join(path, '.run'), 'w'), time.asctime()
     else:
         print_help(1, msg='no test names given, and --all not provided')
+
+    fp = open('auto-snippets.xml', 'w')
+    for key in sorted(example.entities.iterkeys()):
+        print >> fp, key
+    fp.close()
     return errs
 
 if __name__ == '__main__':
