@@ -20,21 +20,21 @@
     <para>Before we take a look at Mercurial's bundled styles, let's
       review its normal output.</para>
 
-    <para><!-- &interaction.template.simple.normal; --></para>
+    &interaction.template.simple.normal;
 
     <para>This is somewhat informative, but it takes up a lot of
       space&emdash;five lines of output per changeset.  The
       <literal>compact</literal> style reduces this to three lines,
       presented in a sparse manner.</para>
 
-    <para><!-- &interaction.template.simple.compact; --></para>
+    &interaction.template.simple.compact;
 
     <para>The <literal>changelog</literal> style hints at the
       expressive power of Mercurial's templating engine.  This style
       attempts to follow the GNU Project's changelog
       guidelines<citation>web:changelog</citation>.</para>
 
-    <para><!-- &interaction.template.simple.changelog; --></para>
+    &interaction.template.simple.changelog;
 
     <para>You will not be shocked to learn that Mercurial's default
       output style is named <literal>default</literal>.</para>
@@ -85,12 +85,12 @@
     <para>Before we continue, let's look again at a simple example of
       Mercurial's normal output.</para>
 
-    <para><!-- &interaction.template.simple.normal; --></para>
+    &interaction.template.simple.normal;
 
     <para>Now, let's run the same command, but using a template to
       change its output.</para>
 
-    <para><!-- &interaction.template.simple.simplest; --></para>
+    &interaction.template.simple.simplest;
 
     <para>The example above illustrates the simplest possible
       template; it's just a piece of static text, printed once for
@@ -112,7 +112,7 @@
       isn't very useful; let's try something a bit more
       complex.</para>
 
-    <para><!-- &interaction.template.simple.simplesub; --></para>
+    &interaction.template.simple.simplesub;
 
     <para>As you can see, the string
       <quote><literal>{desc}</literal></quote> in the template has
@@ -190,7 +190,7 @@
     <para>A few simple experiments will show us what to expect when we
       use these keywords; you can see the results below.</para>
 
-<!-- &interaction.template.simple.keywords; -->
+&interaction.template.simple.keywords;
 
     <para>As we noted above, the date keyword does not produce
       human-readable output, so we must treat it specially.  This
@@ -198,7 +198,7 @@
       in section <xref
 	linkend="sec:template:filter"/>.</para>
 
-    <para><!-- &interaction.template.simple.datekeyword; --></para>
+    &interaction.template.simple.datekeyword;
 
   </sect1>
   <sect1 id="sec:template:escape">
@@ -410,7 +410,7 @@
 	  <quote><literal>bos</literal></quote>.</para>
       </listitem></itemizedlist>
 
-<!-- &interaction.template.simple.manyfilters; -->
+&interaction.template.simple.manyfilters;
 
     <note>
       <para>  If you try to apply a filter to a piece of data that it
@@ -431,7 +431,7 @@
 	on Unix-like systems, where a tab is conventionally 8
 	characters wide).</para>
 
-      <para><!-- &interaction.template.simple.combine; --></para>
+      &interaction.template.simple.combine;
 
       <para>Note the use of <quote><literal>\t</literal></quote> (a
 	tab character) in the template to force the first line to be
@@ -467,7 +467,7 @@
 
       <para>Our simple style file contains just one line:</para>
 
-      <para><!-- &interaction.template.simple.rev; --></para>
+      &interaction.template.simple.rev;
 
       <para>This tells Mercurial, <quote>if you're printing a
 	  changeset, use the text on the right as the
@@ -532,15 +532,14 @@
 	working on, it prints a terse error message that, once you
 	figure out what it means, is actually quite useful.</para>
 
-<!-- &interaction.template.svnstyle.syntax.input; -->
+&interaction.template.svnstyle.syntax.input;
 
       <para>Notice that <filename>broken.style</filename> attempts to
 	define a <literal>changeset</literal> keyword, but forgets to
 	give any content for it. When instructed to use this style
 	file, Mercurial promptly complains.</para>
 
-      <para><!-- &interaction.template.svnstyle.syntax.error;
-	--></para>
+      &interaction.template.svnstyle.syntax.error;
 
       <para>This error message looks intimidating, but it is not too
 	hard to follow.</para>
@@ -580,9 +579,12 @@
       <para>If you would like to be able to identify a Mercurial
 	repository <quote>fairly uniquely</quote> using a short string
 	as an identifier, you can use the first revision in the
-	repository. <!-- &interaction.template.svnstyle.id; --> This
-	is not guaranteed to be unique, but it is nevertheless useful
-	in many cases.</para>
+	repository.</para>
+
+      &interaction.template.svnstyle.id;
+
+      <para>This is not guaranteed to be unique, but it is
+	nevertheless useful in many cases.</para>
       <itemizedlist>
 	<listitem><para>It will not work in a completely empty
 	    repository, because such a repository does not have a
@@ -611,14 +613,16 @@
       <title>Mimicking Subversion's output</title>
 
       <para>Let's try to emulate the default output format used by
-	another revision control tool, Subversion. <!--
-	&interaction.template.svnstyle.short; --></para>
+	another revision control tool, Subversion.</para>
+
+      &interaction.template.svnstyle.short;
 
       <para>Since Subversion's output style is fairly simple, it is
 	easy to copy-and-paste a hunk of its output into a file, and
 	replace the text produced above by Subversion with the
-	template values we'd like to see expanded. <!--
-	&interaction.template.svnstyle.template; --></para>
+	template values we'd like to see expanded.</para>
+
+      &interaction.template.svnstyle.template;
 
       <para>There are a few small ways in which this template deviates
 	from the output produced by Subversion.</para>
@@ -648,8 +652,9 @@
       <para>It took me no more than a minute or two of work to replace
 	literal text from an example of Subversion's output with some
 	keywords and filters to give the template above.  The style
-	file simply refers to the template. <!--
-	&interaction.template.svnstyle.style; --></para>
+	file simply refers to the template.</para>
+
+      &interaction.template.svnstyle.style;
 
       <para>We could have included the text of the template file
 	directly in the style file by enclosing it in quotes and

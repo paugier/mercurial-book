@@ -41,32 +41,43 @@
 
       <para>Here's a mistake that I often find myself making:
 	committing a change in which I've created a new file, but
-	forgotten to <command role="hg-cmd">hg add</command> it. <!--
-	&interaction.rollback.commit; --> Looking at the output of
-	<command role="hg-cmd">hg status</command> after the commit
-	immediately confirms the error. <!--
-	&interaction.rollback.status; --> The commit captured the
-	changes to the file <filename>a</filename>, but not the new
-	file <filename>b</filename>.  If I were to push this changeset
-	to a repository that I shared with a colleague, the chances
-	are high that something in <filename>a</filename> would refer
-	to <filename>b</filename>, which would not be present in their
+	forgotten to <command role="hg-cmd">hg add</command>
+	it.</para>
+
+      &interaction.rollback.commit;
+
+      <para>Looking at the output of <command role="hg-cmd">hg
+	  status</command> after the commit immediately confirms the
+	error.</para>
+
+      &interaction.rollback.status;
+
+      <para>The commit captured the changes to the file
+	<filename>a</filename>, but not the new file
+	<filename>b</filename>.  If I were to push this changeset to a
+	repository that I shared with a colleague, the chances are
+	high that something in <filename>a</filename> would refer to
+	<filename>b</filename>, which would not be present in their
 	repository when they pulled my changes.  I would thus become
 	the object of some indignation.</para>
 
       <para>However, luck is with me&emdash;I've caught my error
 	before I pushed the changeset.  I use the <command
 	  role="hg-cmd">hg rollback</command> command, and Mercurial
-	makes that last changeset vanish. <!--
-	&interaction.rollback.rollback; --> Notice that the changeset
-	is no longer present in the repository's history, and the
-	working directory once again thinks that the file
-	<filename>a</filename> is modified.  The commit and rollback
-	have left the working directory exactly as it was prior to the
-	commit; the changeset has been completely erased.  I can now
-	safely <command role="hg-cmd">hg add</command> the file
-	<filename>b</filename>, and rerun my commit. <!--
-	&interaction.rollback.add; --></para>
+	makes that last changeset vanish.</para>
+
+      &interaction.rollback.rollback;
+
+      <para>Notice that the changeset is no longer present in the
+	repository's history, and the working directory once again
+	thinks that the file <filename>a</filename> is modified.  The
+	commit and rollback have left the working directory exactly as
+	it was prior to the commit; the changeset has been completely
+	erased.  I can now safely <command role="hg-cmd">hg
+	  add</command> the file <filename>b</filename>, and rerun my
+	commit.</para>
+
+      &interaction.rollback.add;
 
     </sect2>
     <sect2>
@@ -139,9 +150,12 @@
 	occurred in the repository. This means that you can only roll
 	back one transaction.  If you expect to be able to roll back
 	one transaction, then its predecessor, this is not the
-	behaviour you will get. <!-- &interaction.rollback.twice; -->
-	Once you've rolled back one transaction in a repository, you
-	can't roll back again in that repository until you perform
+	behaviour you will get.</para>
+
+      &interaction.rollback.twice;
+
+      <para>Once you've rolled back one transaction in a repository,
+	you can't roll back again in that repository until you perform
 	another commit or pull.</para>
 
     </sect2>
@@ -161,14 +175,22 @@
     <para>Let's illustrate how the <command role="hg-cmd">hg
 	revert</command> command works with yet another small example.
       We'll begin by modifying a file that Mercurial is already
-      tracking. <!-- &interaction.daily.revert.modify; --> If we don't
+      tracking.</para>
+
+    &interaction.daily.revert.modify;
+
+    <para>If we don't
       want that change, we can simply <command role="hg-cmd">hg
-	revert</command> the file. <!--
-      &interaction.daily.revert.unmodify; --> The <command
-	role="hg-cmd">hg revert</command> command provides us with an
-      extra degree of safety by saving our modified file with a
-      <filename>.orig</filename> extension. <!--
-      &interaction.daily.revert.status; --></para>
+	revert</command> the file.</para>
+
+      &interaction.daily.revert.unmodify;
+
+    <para>The <command role="hg-cmd">hg revert</command> command
+      provides us with an extra degree of safety by saving our
+      modified file with a <filename>.orig</filename>
+      extension.</para>
+
+    &interaction.daily.revert.status;
 
     <para>Here is a summary of the cases that the <command
 	role="hg-cmd">hg revert</command> command can deal with.  We
@@ -204,25 +226,28 @@
 	then decide that in fact you don't want Mercurial to track it,
 	use <command role="hg-cmd">hg revert</command> to undo the
 	add.  Don't worry; Mercurial will not modify the file in any
-	way.  It will just <quote>unmark</quote> the file. <!--
-	&interaction.daily.revert.add; --></para>
+	way.  It will just <quote>unmark</quote> the file.</para>
+
+      &interaction.daily.revert.add;
 
       <para>Similarly, if you ask Mercurial to <command
 	  role="hg-cmd">hg remove</command> a file, you can use
 	<command role="hg-cmd">hg revert</command> to restore it to
 	the contents it had as of the parent of the working directory.
-	<!-- &interaction.daily.revert.remove; --> This works just as
+	&interaction.daily.revert.remove; This works just as
 	well for a file that you deleted by hand, without telling
 	Mercurial (recall that in Mercurial terminology, this kind of
-	file is called <quote>missing</quote>). <!--
-	&interaction.daily.revert.missing; --></para>
+	file is called <quote>missing</quote>).</para>
+
+      &interaction.daily.revert.missing;
 
       <para>If you revert a <command role="hg-cmd">hg copy</command>,
 	the copied-to file remains in your working directory
 	afterwards, untracked.  Since a copy doesn't affect the
 	copied-from file in any way, Mercurial doesn't do anything
-	with the copied-from file. <!--
-	&interaction.daily.revert.copy; --></para>
+	with the copied-from file.</para>
+
+      &interaction.daily.revert.copy;
 
       <sect3>
 	<title>A slightly special case: reverting a rename</title>
@@ -231,17 +256,23 @@
 	  file, there is one small detail that you should remember.
 	  When you <command role="hg-cmd">hg revert</command> a
 	  rename, it's not enough to provide the name of the
-	  renamed-to file, as you can see here. <!--
-	  &interaction.daily.revert.rename; --> As you can see from
-	  the output of <command role="hg-cmd">hg status</command>,
-	  the renamed-to file is no longer identified as added, but
-	  the renamed-<emphasis>from</emphasis> file is still removed!
+	  renamed-to file, as you can see here.</para>
+
+	&interaction.daily.revert.rename;
+
+	<para>As you can see from the output of <command
+	    role="hg-cmd">hg status</command>, the renamed-to file is
+	  no longer identified as added, but the
+	  renamed-<emphasis>from</emphasis> file is still removed!
 	  This is counter-intuitive (at least to me), but at least
-	  it's easy to deal with. <!--
-	  &interaction.daily.revert.rename-orig; --> So remember, to
-	  revert a <command role="hg-cmd">hg rename</command>, you
-	  must provide <emphasis>both</emphasis> the source and
-	  destination names.</para>
+	  it's easy to deal with.</para>
+
+	&interaction.daily.revert.rename-orig;
+
+	<para>So remember, to revert a <command role="hg-cmd">hg
+	    rename</command>, you must provide
+	  <emphasis>both</emphasis> the source and destination
+	  names.</para>
 
 	<para>% TODO: the output doesn't look like it will be
 	  removed!</para>
@@ -291,8 +322,9 @@
       <para>The operation of the <command role="hg-cmd">hg
 	  backout</command> command is a little intricate, so let's
 	illustrate it with some examples.  First, we'll create a
-	repository with some simple changes. <!--
-	&interaction.backout.init; --></para>
+	repository with some simple changes.</para>
+
+      &interaction.backout.init;
 
       <para>The <command role="hg-cmd">hg backout</command> command
 	takes a single changeset ID as its argument; this is the
@@ -308,15 +340,19 @@
       <title>Backing out the tip changeset</title>
 
       <para>We're going to start by backing out the last changeset we
-	committed. <!-- &interaction.backout.simple; --> You can see
-	that the second line from <filename>myfile</filename> is no
-	longer present.  Taking a look at the output of <command
-	  role="hg-cmd">hg log</command> gives us an idea of what the
-	<command role="hg-cmd">hg backout</command> command has done.
-	<!-- &interaction.backout.simple.log; --> Notice that the new
-	changeset that <command role="hg-cmd">hg backout</command> has
-	created is a child of the changeset we backed out.  It's
-	easier to see this in figure <xref
+	committed.</para>
+
+      &interaction.backout.simple;
+
+      <para>You can see that the second line from
+	<filename>myfile</filename> is no longer present.  Taking a
+	look at the output of <command role="hg-cmd">hg log</command>
+	gives us an idea of what the <command role="hg-cmd">hg
+	  backout</command> command has done.
+	&interaction.backout.simple.log; Notice that the new changeset
+	that <command role="hg-cmd">hg backout</command> has created
+	is a child of the changeset we backed out.  It's easier to see
+	this in figure <xref
 	  linkend="fig:undo:backout"/>, which presents a graphical
 	view of the change history.  As you can see, the history is
 	nice and linear.</para>
@@ -338,16 +374,22 @@
       <para>If you want to back out a change other than the last one
 	you committed, pass the <option
 	  role="hg-opt-backout">--merge</option> option to the
-	<command role="hg-cmd">hg backout</command> command. <!--
-	&interaction.backout.non-tip.clone; --> This makes backing out
-	any changeset a <quote>one-shot</quote> operation that's
-	usually simple and fast. <!--
-	&interaction.backout.non-tip.backout; --></para>
+	<command role="hg-cmd">hg backout</command> command.</para>
+
+      &interaction.backout.non-tip.clone;
+
+      <para>This makes backing out any changeset a
+	<quote>one-shot</quote> operation that's usually simple and
+	fast.</para>
+
+      &interaction.backout.non-tip.backout;
 
       <para>If you take a look at the contents of
 	<filename>myfile</filename> after the backout finishes, you'll
 	see that the first and third changes are present, but not the
-	second. <!-- &interaction.backout.non-tip.cat; --></para>
+	second.</para>
+
+      &interaction.backout.non-tip.cat;
 
       <para>As the graphical history in figure <xref
 	  linkend="fig:undo:backout-non-tip"/> illustrates, Mercurial
@@ -404,15 +446,21 @@
 	clone our first repository, but omit the backout change that
 	it contains.</para>
 
-      <para><!-- &interaction.backout.manual.clone; --> As with our
+      &interaction.backout.manual.clone;
+
+      <para>As with our
 	earlier example, We'll commit a third changeset, then back out
-	its parent, and see what happens. <!--
-	&interaction.backout.manual.backout; --> Our new changeset is
-	again a descendant of the changeset we backout out; it's thus
-	a new head, <emphasis>not</emphasis> a descendant of the
-	changeset that was the tip.  The <command role="hg-cmd">hg
-	  backout</command> command was quite explicit in telling us
-	this. <!-- &interaction.backout.manual.log; --></para>
+	its parent, and see what happens.</para>
+
+      &interaction.backout.manual.backout;
+
+      <para>Our new changeset is again a descendant of the changeset
+	we backout out; it's thus a new head, <emphasis>not</emphasis>
+	a descendant of the changeset that was the tip.  The <command
+	  role="hg-cmd">hg backout</command> command was quite
+	explicit in telling us this.</para>
+
+      &interaction.backout.manual.log;
 
       <para>Again, it's easier to see what has happened by looking at
 	a graph of the revision history, in figure <xref
@@ -435,9 +483,13 @@
       <para>After the <command role="hg-cmd">hg backout</command>
 	command has completed, it leaves the new
 	<quote>backout</quote> changeset as the parent of the working
-	directory. <!-- &interaction.backout.manual.parents; --> Now
-	we have two isolated sets of changes. <!--
-	&interaction.backout.manual.heads; --></para>
+	directory.</para>
+
+      &interaction.backout.manual.parents;
+
+      <para>Now we have two isolated sets of changes.</para>
+
+      &interaction.backout.manual.heads;
 
       <para>Let's think about what we expect to see as the contents of
 	<filename>myfile</filename> now.  The first change should be
@@ -445,11 +497,17 @@
 	should be missing, as that's the change we backed out.  Since
 	the history graph shows the third change as a separate head,
 	we <emphasis>don't</emphasis> expect to see the third change
-	present in <filename>myfile</filename>. <!--
-	&interaction.backout.manual.cat; --> To get the third change
-	back into the file, we just do a normal merge of our two
-	heads. <!-- &interaction.backout.manual.merge; --> Afterwards,
-	the graphical history of our repository looks like figure
+	present in <filename>myfile</filename>.</para>
+
+      &interaction.backout.manual.cat;
+
+      <para>To get the third change back into the file, we just do a
+	normal merge of our two heads.</para>
+
+      &interaction.backout.manual.merge;
+
+      <para>Afterwards, the graphical history of our repository looks
+	like figure
 	<xref linkend="fig:undo:backout-manual-merge"/>.</para>
 
       <informalfigure id="fig:undo:backout-manual-merge">
@@ -731,19 +789,26 @@
 
       <para>Now let's create a repository, so that we can try out the
 	<command role="hg-cmd">hg bisect</command> command in
-	isolation. <!-- &interaction.bisect.init; --> We'll simulate a
-	project that has a bug in it in a simple-minded way: create
-	trivial changes in a loop, and nominate one specific change
-	that will have the <quote>bug</quote>.  This loop creates 35
-	changesets, each adding a single file to the repository.
-	We'll represent our <quote>bug</quote> with a file that
-	contains the text <quote>i have a gub</quote>. <!--
-	&interaction.bisect.commits; --></para>
+	isolation.</para>
+
+      &interaction.bisect.init;
+
+      <para>We'll simulate a project that has a bug in it in a
+	simple-minded way: create trivial changes in a loop, and
+	nominate one specific change that will have the
+	<quote>bug</quote>.  This loop creates 35 changesets, each
+	adding a single file to the repository. We'll represent our
+	<quote>bug</quote> with a file that contains the text <quote>i
+	  have a gub</quote>.</para>
+
+      &interaction.bisect.commits;
 
       <para>The next thing that we'd like to do is figure out how to
 	use the <command role="hg-cmd">hg bisect</command> command.
 	We can use Mercurial's normal built-in help mechanism for
-	this. <!-- &interaction.bisect.help; --></para>
+	this.</para>
+
+      &interaction.bisect.help;
 
       <para>The <command role="hg-cmd">hg bisect</command> command
 	works in steps.  Each step proceeds as follows.</para>
@@ -771,8 +836,9 @@
 	<quote>succeeding</quote> to <quote>failing</quote>.</para>
 
       <para>To start the search, we must run the <command
-	  role="hg-cmd">hg bisect --reset</command> command. <!--
-	&interaction.bisect.search.init; --></para>
+	  role="hg-cmd">hg bisect --reset</command> command.</para>
+
+      &interaction.bisect.search.init;
 
       <para>In our case, the binary test we use is simple: we check to
 	see if any file in the repository contains the string <quote>i
@@ -785,8 +851,9 @@
       <para>Most of the time, the revision to which the working
 	directory is synced (usually the tip) already exhibits the
 	problem introduced by the buggy change, so we'll mark it as
-	<quote>bad</quote>. <!-- &interaction.bisect.search.bad-init;
-	--></para>
+	<quote>bad</quote>.</para>
+
+      &interaction.bisect.search.bad-init;
 
       <para>Our next task is to nominate a changeset that we know
 	<emphasis>doesn't</emphasis> have the bug; the <command
@@ -794,8 +861,9 @@
 	<quote>bracket</quote> its search between the first pair of
 	good and bad changesets.  In our case, we know that revision
 	10 didn't have the bug.  (I'll have more words about choosing
-	the first <quote>good</quote> changeset later.) <!--
-	&interaction.bisect.search.good-init; --></para>
+	the first <quote>good</quote> changeset later.)</para>
+
+      &interaction.bisect.search.good-init;
 
       <para>Notice that this command printed some output.</para>
       <itemizedlist>
@@ -812,16 +880,21 @@
 	<command>grep</command> command to see if our
 	<quote>bad</quote> file is present in the working directory.
 	If it is, this revision is bad; if not, this revision is good.
-	<!-- &interaction.bisect.search.step1; --></para>
+	&interaction.bisect.search.step1;</para>
 
       <para>This test looks like a perfect candidate for automation,
-	so let's turn it into a shell function. <!--
-	&interaction.bisect.search.mytest; --> We can now run an
-	entire test step with a single command,
-	<literal>mytest</literal>. <!--
-	&interaction.bisect.search.step2; --> A few more invocations
-	of our canned test step command, and we're done. <!--
-	&interaction.bisect.search.rest; --></para>
+	so let's turn it into a shell function.</para>
+      &interaction.bisect.search.mytest;
+
+      <para>We can now run an entire test step with a single command,
+	<literal>mytest</literal>.</para>
+
+      &interaction.bisect.search.step2;
+
+      <para>A few more invocations of our canned test step command,
+	and we're done.</para>
+
+      &interaction.bisect.search.rest;
 
       <para>Even though we had 40 changesets to search through, the
 	<command role="hg-cmd">hg bisect</command> command let us find
@@ -844,8 +917,9 @@
 	forget to run this command.  However, <command
 	  role="hg-cmd">hg bisect</command> won't let you start a new
 	search in that repository until you do a <command
-	  role="hg-cmd">hg bisect reset</command>. <!--
-	&interaction.bisect.search.reset; --></para>
+	  role="hg-cmd">hg bisect reset</command>.</para>
+
+      &interaction.bisect.search.reset;
 
     </sect2>
   </sect1>

@@ -196,7 +196,7 @@
       file.  Take a look below for a simple example of these commands
       in action.</para>
 
-<!-- &interaction.mq.dodiff.diff; -->
+&interaction.mq.dodiff.diff;
 
     <para>The type of file that <command>diff</command> generates (and
       <command>patch</command> takes as input) is called a
@@ -263,14 +263,14 @@
       the <command role="hg-ext-mq">qinit</command> command is now
       available.</para>
 
-<!-- &interaction.mq.qinit-help.help; -->
+&interaction.mq.qinit-help.help;
 
     <para>You can use MQ with <emphasis>any</emphasis> Mercurial
       repository, and its commands only operate within that
       repository.  To get started, simply prepare the repository using
       the <command role="hg-ext-mq">qinit</command> command.</para>
 
-<!-- &interaction.mq.tutorial.qinit; -->
+&interaction.mq.tutorial.qinit;
 
     <para>This command creates an empty directory called <filename
 	role="special" class="directory">.hg/patches</filename>, where
@@ -290,7 +290,7 @@
 	  class="directory">.hg/patches</filename> directory, as you
 	can see below.</para>
 
-<!-- &interaction.mq.tutorial.qnew; -->
+&interaction.mq.tutorial.qnew;
 
       <para>Also newly present in the <filename role="special"
 	  class="directory">.hg/patches</filename> directory are two
@@ -327,7 +327,7 @@
 	use the <command role="hg-ext-mq">qrefresh</command> command
 	to update the patch you are working on.</para>
 
-<!-- &interaction.mq.tutorial.qrefresh; -->
+&interaction.mq.tutorial.qrefresh;
 
       <para>This command folds the changes you have made in the
 	working directory into your patch, and updates its
@@ -340,7 +340,7 @@
 	doesn't work out, <command role="hg-cmd">hg revert</command>
 	your modifications back to the last time you refreshed.</para>
 
-<!-- &interaction.mq.tutorial.qrefresh2; -->
+&interaction.mq.tutorial.qrefresh2;
 
     </sect2>
     <sect2>
@@ -352,7 +352,7 @@
 	new patch. Mercurial will apply this patch on top of your
 	existing patch.</para>
 
-<!-- &interaction.mq.tutorial.qnew2; -->
+&interaction.mq.tutorial.qnew2;
       <para>Notice that the patch contains the changes in our prior
 	patch as part of its context (you can see this more clearly in
 	the output of <command role="hg-cmd">hg
@@ -365,7 +365,7 @@
 	many commands that are easier to use when you are thinking
 	about patches, as illustrated below.</para>
 
-<!-- &interaction.mq.tutorial.qseries; -->
+&interaction.mq.tutorial.qseries;
 
       <itemizedlist>
 	<listitem><para>The <command
@@ -417,7 +417,7 @@
 	directory.  See below for examples of <command
 	  role="hg-ext-mq">qpop</command> and <command
 	  role="hg-ext-mq">qpush</command> in action.</para>
-<!-- &interaction.mq.tutorial.qpop; -->
+&interaction.mq.tutorial.qpop;
 
       <para>Notice that once we have popped a patch or two patches,
 	the output of <command role="hg-ext-mq">qseries</command>
@@ -442,7 +442,7 @@
 	see section <xref linkend="sec:mq:perf"/>
 	below.)</para>
 
-<!-- &interaction.mq.tutorial.qpush-a; -->
+&interaction.mq.tutorial.qpush-a;
 
     </sect2>
     <sect2>
@@ -458,7 +458,7 @@
 	case by the <command role="hg-cmd">hg add</command> of
 	<filename>file3</filename>.</para>
 
-<!-- &interaction.mq.tutorial.add; -->
+&interaction.mq.tutorial.add;
 
       <para>Commands that check the working directory all take an
 	<quote>I know what I'm doing</quote> option, which is always
@@ -969,7 +969,7 @@
       few normal Mercurial commands in use with applied
       patches.</para>
 
-<!-- &interaction.mq.id.output; -->
+&interaction.mq.id.output;
 
   </sect1>
   <sect1>
@@ -1126,7 +1126,7 @@
       prefixes of file names that inevitably confuse at least
       me.)</para>
 
-<!-- &interaction.mq.tools.tools; -->
+&interaction.mq.tools.tools;
 
     <para>The <literal role="package">patchutils</literal> package
       <citation>web:patchutils</citation> is invaluable. It provides a
@@ -1196,16 +1196,22 @@
 	changes to a source tarball that you downloaded.</para>
 
       <para>Begin by downloading and unpacking the source tarball, and
-	turning it into a Mercurial repository. <!--
-	&interaction.mq.tarball.download; --></para>
+	turning it into a Mercurial repository.</para>
+
+      &interaction.mq.tarball.download;
 
       <para>Continue by creating a patch stack and making your
-	changes. <!-- &interaction.mq.tarball.qinit; --></para>
+	changes.</para>
+
+      &interaction.mq.tarball.qinit;
 
       <para>Let's say a few weeks or months pass, and your package
 	author releases a new version.  First, bring their changes
-	into the repository. <!-- &interaction.mq.tarball.newsource;
-	--> The pipeline starting with <command role="hg-cmd">hg
+	into the repository.</para>
+
+      &interaction.mq.tarball.newsource;
+
+      <para>The pipeline starting with <command role="hg-cmd">hg
 	  locate</command> above deletes all files in the working
 	directory, so that <command role="hg-cmd">hg
 	  commit</command>'s <option
@@ -1214,7 +1220,9 @@
 	newer version of the source.</para>
 
       <para>Finally, you can apply your patches on top of the new
-	tree. <!-- &interaction.mq.tarball.repush; --></para>
+	tree.</para>
+
+      &interaction.mq.tarball.repush;
 
     </sect2>
     <sect2 id="sec:mq:combine">
@@ -1262,7 +1270,9 @@
 	file, and you only want to move a few of those hunks, the job
 	becomes more messy, but you can still partly automate it.  Use
 	<command>lsdiff -nvv</command> to print some metadata about
-	the patch. <!-- &interaction.mq.tools.lsdiff; --></para>
+	the patch.</para>
+
+      &interaction.mq.tools.lsdiff;
 
       <para>This command prints three different kinds of
 	number:</para>

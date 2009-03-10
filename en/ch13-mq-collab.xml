@@ -108,10 +108,13 @@
       situation.  MQ provides a feature called <quote>guards</quote>
       (which originates with quilt's <literal>guards</literal>
       command) that does just this.  To start off, let's create a
-      simple repository for experimenting in. <!--
-      &interaction.mq.guards.init; --> This gives us a tiny repository
-      that contains two patches that don't have any dependencies on
-      each other, because they touch different files.</para>
+      simple repository for experimenting in.</para>
+
+    &interaction.mq.guards.init;
+
+    <para>This gives us a tiny repository that contains two patches
+      that don't have any dependencies on each other, because they
+      touch different files.</para>
 
     <para>The idea behind conditional application is that you can
       <quote>tag</quote> a patch with a <emphasis>guard</emphasis>,
@@ -133,14 +136,20 @@
     <para>The <command role="hg-ext-mq">qguard</command> command lets
       you determine which guards should apply to a patch, or display
       the guards that are already in effect. Without any arguments, it
-      displays the guards on the current topmost patch. <!--
-      &interaction.mq.guards.qguard; --> To set a positive guard on a
-      patch, prefix the name of the guard with a
-      <quote><literal>+</literal></quote>. <!--
-      &interaction.mq.guards.qguard.pos; --> To set a negative guard
+      displays the guards on the current topmost patch.</para>
+
+      &interaction.mq.guards.qguard;
+
+    <para>To set a positive guard on a patch, prefix the name of the
+      guard with a <quote><literal>+</literal></quote>.</para>
+
+      &interaction.mq.guards.qguard.pos;
+
+    <para>To set a negative guard
       on a patch, prefix the name of the guard with a
-      <quote><literal>-</literal></quote>. <!--
-      &interaction.mq.guards.qguard.neg; --></para>
+      <quote><literal>-</literal></quote>.</para>
+
+    &interaction.mq.guards.qguard.neg;
 
     <note>
       <para>  The <command role="hg-ext-mq">qguard</command> command
@@ -158,8 +167,9 @@
       other words, you don't have to use the <command
 	role="hg-ext-mq">qguard</command> command if you don't want
       to; it's okay to simply edit the <filename
-	role="special">series</filename> file.) <!--
-      &interaction.mq.guards.series; --></para>
+	role="special">series</filename> file.)</para>
+
+    &interaction.mq.guards.series;
 
   </sect1>
   <sect1>
@@ -175,26 +185,38 @@
     <para>With no arguments, the <command
 	role="hg-ext-mq">qselect</command> command lists the guards
       currently in effect, one per line of output.  Each argument is
-      treated as the name of a guard to apply. <!--
-      &interaction.mq.guards.qselect.foo; --> In case you're
-      interested, the currently selected guards are stored in the
-      <filename role="special">guards</filename> file. <!--
-      &interaction.mq.guards.qselect.cat; --> We can see the effect
-      the selected guards have when we run <command
-	role="hg-ext-mq">qpush</command>. <!--
-      &interaction.mq.guards.qselect.qpush; --></para>
+      treated as the name of a guard to apply.</para>
+
+      &interaction.mq.guards.qselect.foo;
+
+    <para>In case you're interested, the currently selected guards are
+      stored in the <filename role="special">guards</filename> file.</para>
+
+    &interaction.mq.guards.qselect.cat;
+
+    <para>We can see the effect the selected guards have when we run
+      <command role="hg-ext-mq">qpush</command>.</para>
+
+    &interaction.mq.guards.qselect.qpush;
 
     <para>A guard cannot start with a
       <quote><literal>+</literal></quote> or
       <quote><literal>-</literal></quote> character.  The name of a
       guard must not contain white space, but most other characters
       are acceptable.  If you try to use a guard with an invalid name,
-      MQ will complain: <!-- &interaction.mq.guards.qselect.error; -->
-      Changing the selected guards changes the patches that are
-      applied. <!-- &interaction.mq.guards.qselect.quux; --> You can
-      see in the example below that negative guards take precedence
-      over positive guards. <!--
-      &interaction.mq.guards.qselect.foobar; --></para>
+      MQ will complain:</para>
+
+    &interaction.mq.guards.qselect.error;
+      
+    <para>Changing the selected guards changes the patches that are
+      applied.</para>
+
+    &interaction.mq.guards.qselect.quux;
+
+    <para>You can see in the example below that negative guards take
+      precedence over positive guards.</para>
+
+    &interaction.mq.guards.qselect.foobar;
 
   </sect1>
   <sect1>

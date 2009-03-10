@@ -16,15 +16,16 @@
 
     <para>If you explicitly name real files on the command line,
       Mercurial works with exactly those files, as you would expect.
-      <!-- &interaction.filenames.files; --></para>
+      &interaction.filenames.files;</para>
 
     <para>When you provide a directory name, Mercurial will interpret
       this as <quote>operate on every file in this directory and its
 	subdirectories</quote>. Mercurial traverses the files and
       subdirectories in a directory in alphabetical order.  When it
       encounters a subdirectory, it will traverse that subdirectory
-      before continuing with the current directory. <!--
-      &interaction.filenames.dirs; --></para>
+      before continuing with the current directory.</para>
+
+      &interaction.filenames.dirs;
 
   </sect1>
   <sect1>
@@ -53,8 +54,9 @@
       don't suit you.  If a command normally operates on the whole
       working directory, you can invoke it on just the current
       directory and its subdirectories by giving it the name
-      <quote><filename class="directory">.</filename></quote>. <!--
-      &interaction.filenames.wdir-subdir; --></para>
+      <quote><filename class="directory">.</filename></quote>.</para>
+
+    &interaction.filenames.wdir-subdir;
 
     <para>Along the same lines, some commands normally print file
       names relative to the root of the repository, even if you're
@@ -64,8 +66,9 @@
 	status</command> from a subdirectory, and get it to operate on
       the entire working directory while printing file names relative
       to our subdirectory, by passing it the output of the <command
-	role="hg-cmd">hg root</command> command. <!--
-      &interaction.filenames.wdir-relname; --></para>
+	role="hg-cmd">hg root</command> command.</para>
+
+      &interaction.filenames.wdir-relname;
 
   </sect1>
   <sect1>
@@ -139,18 +142,21 @@
 	when you're matching on glob patterns.</para>
 
       <para>The <quote><literal>*</literal></quote> character matches
-	any string, within a single directory. <!--
-	&interaction.filenames.glob.star; --></para>
+	any string, within a single directory.</para>
+
+      &interaction.filenames.glob.star;
 
       <para>The <quote><literal>**</literal></quote> pattern matches
 	any string, and crosses directory boundaries.  It's not a
 	standard Unix glob token, but it's accepted by several popular
-	Unix shells, and is very useful. <!--
-	&interaction.filenames.glob.starstar; --></para>
+	Unix shells, and is very useful.</para>
+
+      &interaction.filenames.glob.starstar;
 
       <para>The <quote><literal>?</literal></quote> pattern matches
-	any single character. <!--
-	&interaction.filenames.glob.question; --></para>
+	any single character.</para>
+
+      &interaction.filenames.glob.question;
 
       <para>The <quote><literal>[</literal></quote> character begins a
 	<emphasis>character class</emphasis>.  This matches any single
@@ -158,19 +164,23 @@
 	<quote><literal>]</literal></quote> character.  A class may
 	contain multiple <emphasis>range</emphasis>s of the form
 	<quote><literal>a-f</literal></quote>, which is shorthand for
-	<quote><literal>abcdef</literal></quote>. <!--
-	&interaction.filenames.glob.range; --> If the first character
-	after the <quote><literal>[</literal></quote> in a character
-	class is a <quote><literal>!</literal></quote>, it
+	<quote><literal>abcdef</literal></quote>.</para>
+
+	&interaction.filenames.glob.range;
+
+      <para>If the first character after the
+	<quote><literal>[</literal></quote> in a character class is a
+	<quote><literal>!</literal></quote>, it
 	<emphasis>negates</emphasis> the class, making it match any
 	single character not in the class.</para>
 
       <para>A <quote><literal>{</literal></quote> begins a group of
 	subpatterns, where the whole group matches if any subpattern
 	in the group matches.  The <quote><literal>,</literal></quote>
-	character separates subpatterns, and <quote><literal>}</literal></quote>
-	ends the group. <!-- &interaction.filenames.glob.group;
-	--></para>
+	character separates subpatterns, and
+	<quote><literal>}</literal></quote> ends the group.</para>
+
+      &interaction.filenames.glob.group;
 
       <sect3>
 	<title>Watch out!</title>
@@ -180,8 +190,9 @@
 	  <quote><literal>*</literal></quote> match-any token, as this
 	  will only match within one directory.  Instead, use the
 	  <quote><literal>**</literal></quote> token.  This small
-	  example illustrates the difference between the two. <!--
-	  &interaction.filenames.glob.star-starstar; --></para>
+	  example illustrates the difference between the two.</para>
+
+	  &interaction.filenames.glob.star-starstar;
 
       </sect3>
     </sect2>
@@ -245,11 +256,15 @@
 
     <para>You can read a <option role="hg-opt-global">-I</option>
       filter as <quote>process only the files that match this
-	filter</quote>. <!-- &interaction.filenames.filter.include;
-      --> The <option role="hg-opt-global">-X</option> filter is best
+	filter</quote>.</para>
+
+    &interaction.filenames.filter.include;
+
+    <para>The <option role="hg-opt-global">-X</option> filter is best
       read as <quote>process only the files that don't match this
-	pattern</quote>. <!-- &interaction.filenames.filter.exclude;
-      --></para>
+	pattern</quote>.</para>
+
+    &interaction.filenames.filter.exclude;
 
   </sect1>
   <sect1>
