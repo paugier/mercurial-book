@@ -1,11 +1,12 @@
-$ \textbf{hg init hook-test}
-$ \textbf{cd hook-test}
-$ \textbf{echo '[hooks]' >> .hg/hgrc}
-$ \textbf{echo 'commit = echo committed $HG_NODE' >> .hg/hgrc}
-$ \textbf{cat .hg/hgrc}
+<screen><prompt>$</prompt> <userinput>hg init hook-test</userinput>
+<prompt>$</prompt> <userinput>cd hook-test</userinput>
+<prompt>$</prompt> <userinput>echo '[hooks]' &gt;&gt; .hg/hgrc</userinput>
+<prompt>$</prompt> <userinput>echo 'commit = echo committed $HG_NODE' &gt;&gt; .hg/hgrc</userinput>
+<prompt>$</prompt> <userinput>cat .hg/hgrc</userinput>
 [hooks]
 commit = echo committed $HG_NODE
-$ \textbf{echo a > a}
-$ \textbf{hg add a}
-$ \textbf{hg commit -m 'testing commit hook'}
+<prompt>$</prompt> <userinput>echo a &gt; a</userinput>
+<prompt>$</prompt> <userinput>hg add a</userinput>
+<prompt>$</prompt> <userinput>hg commit -m 'testing commit hook'</userinput>
 committed 
+</screen>

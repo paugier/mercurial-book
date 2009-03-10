@@ -1,15 +1,15 @@
-$ \textbf{hg qnew second.patch}
-$ \textbf{hg log --style=compact --limit=2}
-2[qtip,second.patch,tip]      2009-01-30 06:34 +0000   bos
+<screen><prompt>$</prompt> <userinput>hg qnew second.patch</userinput>
+<prompt>$</prompt> <userinput>hg log --style=compact --limit=2</userinput>
+2[qtip,second.patch,tip]      2009-03-10 04:38 +0000   bos
   [mq]: second.patch
 
-1[first.patch,qbase]      2009-01-30 06:34 +0000   bos
+1[first.patch,qbase]      2009-03-10 04:38 +0000   bos
   [mq]: first.patch
 
-$ \textbf{echo 'line 4' >> file1}
-$ \textbf{hg qrefresh}
-$ \textbf{hg tip --style=compact --patch}
-2[qtip,second.patch,tip]      2009-01-30 06:34 +0000   bos
+<prompt>$</prompt> <userinput>echo 'line 4' &gt;&gt; file1</userinput>
+<prompt>$</prompt> <userinput>hg qrefresh</userinput>
+<prompt>$</prompt> <userinput>hg tip --style=compact --patch</userinput>
+2[qtip,second.patch,tip]      2009-03-10 04:38 +0000   bos
   [mq]: second.patch
 
 diff -r  -r  file1
@@ -21,8 +21,9 @@ diff -r  -r  file1
  line 3
 +line 4
 
-$ \textbf{hg annotate file1}
+<prompt>$</prompt> <userinput>hg annotate file1</userinput>
 0: line 1
 1: line 2
 1: line 3
 2: line 4
+</screen>

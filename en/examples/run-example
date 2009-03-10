@@ -18,23 +18,23 @@ import sys
 import tempfile
 import time
 
-tex_subs = {
-    '\\': '\\textbackslash{}',
-    '{': '\\{',
-    '}': '\\}',
+xml_subs = {
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;',
     }
 
 def gensubs(s):
     start = 0
     for i, c in enumerate(s):
-        sub = tex_subs.get(c)
+        sub = xml_subs.get(c)
         if sub:
             yield s[start:i]
             start = i + 1
             yield sub
     yield s[start:]
 
-def tex_escape(s):
+def xml_escape(s):
     return ''.join(gensubs(s))
         
 def maybe_unlink(name):
@@ -53,6 +53,10 @@ def find_path_to(program):
             return p
     return None
         
+def result_name(name):
+    dirname, basename = os.path.split(name)
+    return os.path.join(dirname, 'results', basename)
+
 class example:
     shell = '/usr/bin/env bash'
     ps1 = '__run_example_ps1__ '
@@ -231,12 +235,15 @@ class example:
                                 return 1
                             assert os.sep not in out
                             if ofp is not None:
+                                ofp.write('</screen>\n')
                                 ofp.close()
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
                                 read_hint = ofp_basename + ' '
-                                ofp = open(ofp_basename + '.tmp', 'w')
+                                ofp = open(result_name(ofp_basename + '.tmp'),
+                                           'w')
+                                ofp.write('<screen>')
                             else:
                                 ofp = None
                         elif pi == 'ignore':
@@ -249,13 +256,13 @@ class example:
                         # first, print the command we ran
                         if not hunk.startswith('#'):
                             nl = hunk.endswith('\n')
-                            hunk = ('%s \\textbf{%s}' %
+                            hunk = ('<prompt>%s</prompt> <userinput>%s</userinput>' %
                                     (prompts[ps],
-                                     tex_escape(hunk.rstrip('\n'))))
+                                     xml_escape(hunk.rstrip('\n'))))
                             if nl: hunk += '\n'
                         ofp.write(hunk)
                         # then its output
-                        ofp.write(tex_escape(output))
+                        ofp.write(xml_escape(output))
                     ps = newps
                 self.status('\n')
             except:
@@ -268,6 +275,7 @@ class example:
                     ps, output = self.sendreceive('exit\n', read_hint)
                     if ofp is not None:
                         ofp.write(output)
+                        ofp.write('</screen>\n')
                         ofp.close()
                         err |= self.rename_output(ofp_basename, ignore)
                     os.close(self.cfd)
@@ -282,7 +290,7 @@ class example:
                     elif os.WIFSIGNALED(rc):
                         print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
                 else:
-                    open(self.name + '.run', 'w')
+                    open(result_name(self.name + '.run'), 'w')
                 return err
         finally:
             shutil.rmtree(tmpdir)
@@ -301,13 +309,13 @@ class example:
                     return True
             return False
 
-        oldname = base + '.out'
-        tmpname = base + '.tmp'
-        errname = base + '.err'
+        oldname = result_name(base + '.out')
+        tmpname = result_name(base + '.tmp')
+        errname = result_name(base + '.err')
         errfp = open(errname, 'w+')
         for line in open(tmpname):
             errfp.write(mangle_re.sub('', line))
-        os.rename(tmpname, base + '.lxo')
+        os.rename(tmpname, result_name(base + '.lxo'))
         errfp.seek(0)
         try:
             oldfp = open(oldname)
@@ -374,8 +382,7 @@ def main(path='.'):
         names.sort()
         for name in names:
             if name == 'run-example' or name.startswith('.'): continue
-            if name.endswith('.out') or name.endswith('~'): continue
-            if name.endswith('.run'): continue
+            if name.endswith('~'): continue
             pathname = os.path.join(path, name)
             try:
                 st = os.lstat(pathname)
