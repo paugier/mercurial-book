@@ -1,4 +1,4 @@
-import django.newforms as forms
+import django.forms as forms
 from django.db import connection
 from django.http import HttpResponse
 from hgbook.comments.models import Comment, Element
