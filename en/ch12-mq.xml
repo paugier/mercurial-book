@@ -1,10 +1,10 @@
 <!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
 
-<chapter id="chap:mq">
+<chapter id="chap.mq">
   <?dbhtml filename="managing-change-with-mercurial-queues.html"?>
   <title>Managing change with Mercurial Queues</title>
 
-  <sect1 id="sec:mq:patch-mgmt">
+  <sect1 id="sec.mq.patch-mgmt">
     <title>The patch management problem</title>
 
     <para>Here is a common scenario: you need to install a software
@@ -37,7 +37,7 @@
     <para>When you have few changes to maintain, it is easy to manage
       a single patch using the standard <command>diff</command> and
       <command>patch</command> programs (see section <xref
-	linkend="sec:mq:patch"/> for a discussion of these
+	linkend="sec.mq.patch"/> for a discussion of these
       tools). Once the number of changes grows, it starts to make
       sense to maintain patches as discrete <quote>chunks of
 	work,</quote> so that for example a single patch will contain
@@ -61,7 +61,7 @@
       simplifies the patch management problem.</para>
 
   </sect1>
-  <sect1 id="sec:mq:history">
+  <sect1 id="sec.mq.history">
     <title>The prehistory of Mercurial Queues</title>
 
     <para>During the late 1990s, several Linux kernel developers
@@ -76,7 +76,7 @@
       successfully using these scripts to manage hundreds (sometimes
       thousands) of patches on top of the Linux kernel.</para>
 
-    <sect2 id="sec:mq:quilt">
+    <sect2 id="sec.mq.quilt">
       <title>A patchwork quilt</title>
 
       <para>In early 2003, Andreas Gruenbacher and Martin Quinson
@@ -120,7 +120,7 @@
 	Subversion working copy.</para>
 
     </sect2>
-    <sect2 id="sec:mq:quilt-mq">
+    <sect2 id="sec.mq.quilt-mq">
       <title>From patchwork quilt to Mercurial Queues</title>
 
       <para>In mid-2005, Chris Mason took the features of quilt and
@@ -183,7 +183,7 @@
       And so on.</para>
 
   </sect1>
-  <sect1 id="sec:mq:patch">
+  <sect1 id="sec.mq.patch">
     <title>Understanding patches</title>
 
     <para>Because MQ doesn't hide its patch-oriented nature, it is
@@ -241,12 +241,12 @@
       represented by one deletion and one insertion.</para>
 
     <para>We will return to some of the more subtle aspects of patches
-      later (in section <xref linkend="sec:mq:adv-patch"/>), but you
+      later (in section <xref linkend="sec.mq.adv-patch"/>), but you
       should have
       enough information now to use MQ.</para>
 
   </sect1>
-  <sect1 id="sec:mq:start">
+  <sect1 id="sec.mq.start">
     <title>Getting started with Mercurial Queues</title>
 
     <para>Because MQ is implemented as an extension, you must
@@ -400,12 +400,12 @@
 	but the patch no longer has a corresponding changeset in the
 	repository, and the working directory does not contain the
 	changes made by the patch.  Figure <xref
-	  linkend="fig:mq:stack"/> illustrates
+	  linkend="fig.mq.stack"/> illustrates
 	the difference between applied and tracked patches.</para>
 
-      <informalfigure id="fig:mq:stack">
+      <informalfigure id="fig.mq.stack">
 	<mediaobject><imageobject><imagedata
-				    fileref="mq-stack"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/mq-stack.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Applied and
 	      unapplied patches in the MQ patch
 	      stack</para></caption></mediaobject>
@@ -440,7 +440,7 @@
 	  role="hg-ext-mq-cmd-qpop-opt">-a</option> option to <command
 	  role="hg-ext-mq">qpop</command> causes it to pop all applied
 	patches.  (For some more ways to push and pop many patches,
-	see section <xref linkend="sec:mq:perf"/>
+	see section <xref linkend="sec.mq.perf"/>
 	below.)</para>
 
 &interaction.mq.tutorial.qpush-a;
@@ -501,7 +501,7 @@
 
     </sect2>
   </sect1>
-  <sect1 id="sec:mq:adv-patch">
+  <sect1 id="sec.mq.adv-patch">
     <title>More about patches</title>
 
     <para>MQ uses the GNU <command>patch</command> command to apply
@@ -700,7 +700,7 @@
 	and no longer does because you've changed the underlying code
 	that your patches are based on, Mercurial Queues can help; see
 	section <xref
-	  linkend="sec:mq:merge"/> for details.</para>
+	  linkend="sec.mq.merge"/> for details.</para>
 
       <para>Unfortunately, there aren't any great techniques for
 	dealing with rejected hunks.  Most often, you'll need to view
@@ -747,7 +747,7 @@
 
     </sect2>
   </sect1>
-  <sect1 id="sec:mq:perf">
+  <sect1 id="sec.mq.perf">
     <title>Getting the best performance out of MQ</title>
 
     <para>MQ is very efficient at handling a large number of patches.
@@ -801,7 +801,7 @@
       is zero, the second is one, and so on.</para>
 
   </sect1>
-  <sect1 id="sec:mq:merge">
+  <sect1 id="sec.mq.merge">
     <title>Updating your patches when the underlying code
       changes</title>
 
@@ -945,7 +945,7 @@
 	<programlisting>hg email qbase:qtip
 	</programlisting>
 	<para>  (Don't know what <quote>patchbombing</quote> is?  See
-	  section <xref linkend="sec:hgext:patchbomb"/>.)</para>
+	  section <xref linkend="sec.hgext.patchbomb"/>.)</para>
       </listitem>
       <listitem><para>Need to see all of the patches since
 	  <literal>foo.patch</literal> that have touched files in a
@@ -987,7 +987,7 @@
 	  that represents the patch after the pop/push will have a
 	  <emphasis>different identity</emphasis> than the changeset
 	  that represented the hash beforehand.  See section <xref
-	    linkend="sec:mqref:cmd:qpush"/> for
+	    linkend="sec.mqref.cmd.qpush"/> for
 	  information as to why this is.</para>
       </listitem>
       <listitem><para>It's not a good idea to <command
@@ -1000,7 +1000,7 @@
       </listitem></itemizedlist>
 
   </sect1>
-  <sect1 id="sec:mq:repo">
+  <sect1 id="sec.mq.repo">
     <title>Managing patches in a repository</title>
 
     <para>Because MQ's <filename role="special"
@@ -1108,7 +1108,7 @@
 
     </sect2>
   </sect1>
-  <sect1 id="sec:mq:tools">
+  <sect1 id="sec.mq.tools">
     <title>Third party tools for working with patches</title>
 
     <para>Once you've been working with patches for a while, you'll
@@ -1140,7 +1140,7 @@
       invocation of <command>filterdiff</command> can generate a
       smaller patch that only touches files whose names match a
       particular glob pattern.  See section <xref
-	linkend="mq-collab:tips:interdiff"/> for another
+	linkend="mq-collab.tips.interdiff"/> for another
       example.</para>
 
   </sect1>
@@ -1177,7 +1177,7 @@
 
     <para>For this reason, it is very much worth investing a little
       time to learn how to use some of the third-party tools I
-      described in section <xref linkend="sec:mq:tools"/>,
+      described in section <xref linkend="sec.mq.tools"/>,
       particularly
       <command>diffstat</command> and <command>filterdiff</command>.
       The former will give you a quick idea of what changes your patch
@@ -1226,7 +1226,7 @@
       &interaction.mq.tarball.repush;
 
     </sect2>
-    <sect2 id="sec:mq:combine">
+    <sect2 id="sec.mq.combine">
       <title>Combining entire patches</title>
 
       <para>MQ provides a command, <command
@@ -1299,7 +1299,7 @@
 
       <para>Once you have this hunk, you can concatenate it onto the
 	end of your destination patch and continue with the remainder
-	of section <xref linkend="sec:mq:combine"/>.</para>
+	of section <xref linkend="sec.mq.combine"/>.</para>
 
     </sect2>
   </sect1>

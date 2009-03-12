@@ -1,6 +1,6 @@
 <!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
 
-<chapter id="chap:concepts">
+<chapter id="chap.concepts">
   <?dbhtml filename="behind-the-scenes.html"?>
   <title>Behind the scenes</title>
 
@@ -47,11 +47,11 @@
 	file.  The correspondence between a file in the working
 	directory and the filelog that tracks its history in the
 	repository is illustrated in figure <xref
-	  linkend="fig:concepts:filelog"/>.</para>
+	  linkend="fig.concepts.filelog"/>.</para>
 
-      <informalfigure id="fig:concepts:filelog">
+      <informalfigure id="fig.concepts.filelog">
 	<mediaobject><imageobject><imagedata
-				    fileref="filelog"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/filelog.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject>
 	  <caption><para>Relationships between files in working
 	      directory and filelogs in
@@ -97,11 +97,11 @@
 	manifest.  A revision of the manifest stores a pointer to a
 	single revision of each filelog tracked when that changeset
 	was created.  These relationships are illustrated in figure
-	<xref linkend="fig:concepts:metadata"/>.</para>
+	<xref linkend="fig.concepts.metadata"/>.</para>
 
-      <informalfigure id="fig:concepts:metadata">
+      <informalfigure id="fig.concepts.metadata">
 	<mediaobject><imageobject><imagedata
-				    fileref="metadata"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/metadata.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Metadata
 	      relationships</para></caption>
 	</mediaobject>
@@ -145,7 +145,7 @@
 	doesn't need to treat text as special.</para>
 
     </sect2>
-    <sect2 id="sec:concepts:txn">
+    <sect2 id="sec.concepts.txn">
       <title>Safe operation</title>
 
       <para>Mercurial only ever <emphasis>appends</emphasis> data to
@@ -184,9 +184,9 @@
 	file accumulates, the more revisions you must read, hence the
 	longer it takes to reconstruct a particular revision.</para>
 
-      <informalfigure id="fig:concepts:snapshot">
+      <informalfigure id="fig.concepts.snapshot">
 	<mediaobject><imageobject><imagedata
-				    fileref="snapshot"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/snapshot.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Snapshot of
 	      a revlog, with incremental
 	      deltas</para></caption></mediaobject>
@@ -201,7 +201,7 @@
 	quickly.  This approach works so well that it has since been
 	copied by several other revision control systems.</para>
 
-      <para>Figure <xref linkend="fig:concepts:snapshot"/> illustrates
+      <para>Figure <xref linkend="fig.concepts.snapshot"/> illustrates
 	the idea.  In an entry in a revlog's index file, Mercurial
 	stores the range of entries from the data file that it must
 	read to reconstruct a particular revision.</para>
@@ -273,7 +273,7 @@
       <quote>there is no parent here</quote>.  This hash is simply a
       string of zeroes.</para>
 
-    <para>In figure <xref linkend="fig:concepts:revlog"/>, you can see
+    <para>In figure <xref linkend="fig.concepts.revlog"/>, you can see
       an example of the conceptual structure of a revlog.  Filelogs,
       manifests, and changelogs all have this same structure; they
       differ only in the kind of data stored in each delta or
@@ -288,9 +288,9 @@
       revision that represents a merge between branches has two normal
       revision IDs in its parent slots.</para>
 
-    <informalfigure id="fig:concepts:revlog">
+    <informalfigure id="fig.concepts.revlog">
       <mediaobject><imageobject><imagedata
-				  fileref="revlog"/></imageobject><textobject><phrase>XXX 
+				  fileref="images/revlog.png"/></imageobject><textobject><phrase>XXX 
 	    add text</phrase></textobject></mediaobject>
     </informalfigure>
 
@@ -337,23 +337,23 @@
 	dirstate as <emphasis>the parents of a new
 	  changeset</emphasis> when you perform a commit.</para>
 
-      <informalfigure id="fig:concepts:wdir">
+      <informalfigure id="fig.concepts.wdir">
 	<mediaobject><imageobject><imagedata
-				    fileref="wdir"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/wdir.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>The working
 	      directory can have two
 	      parents</para></caption></mediaobject>
       </informalfigure>
 
-      <para>Figure <xref linkend="fig:concepts:wdir"/> shows the
+      <para>Figure <xref linkend="fig.concepts.wdir"/> shows the
 	normal state of the working directory, where it has a single
 	changeset as parent.  That changeset is the
 	<emphasis>tip</emphasis>, the newest changeset in the
 	repository that has no children.</para>
 
-      <informalfigure id="fig:concepts:wdir-after-commit">
+      <informalfigure id="fig.concepts.wdir-after-commit">
 	<mediaobject><imageobject><imagedata
-				    fileref="wdir-after-commit"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/wdir-after-commit.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>The working
 	      directory gains new parents after a
 	      commit</para></caption></mediaobject>
@@ -370,7 +370,7 @@
       <para>After a commit, Mercurial will update the parents of the
 	working directory, so that the first parent is the ID of the
 	new changeset, and the second is the null ID.  This is shown
-	in figure <xref linkend="fig:concepts:wdir-after-commit"/>.
+	in figure <xref linkend="fig.concepts.wdir-after-commit"/>.
 	Mercurial
 	doesn't touch any of the files in the working directory when
 	you commit; it just modifies the dirstate to note its new
@@ -389,11 +389,11 @@
 	interested in, and then examine the files in the working
 	directory directly to see their contents as they were when you
 	committed that changeset.  The effect of this is shown in
-	figure <xref linkend="fig:concepts:wdir-pre-branch"/>.</para>
+	figure <xref linkend="fig.concepts.wdir-pre-branch"/>.</para>
 
-      <informalfigure id="fig:concepts:wdir-pre-branch">
+      <informalfigure id="fig.concepts.wdir-pre-branch">
 	<mediaobject><imageobject><imagedata
-				    fileref="wdir-pre-branch"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/wdir-pre-branch.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>The working
 	      directory, updated to an older
 	      changeset</para></caption></mediaobject>
@@ -408,11 +408,11 @@
 	contains two changesets that have no children; we call these
 	<emphasis>heads</emphasis>.  You can see the structure that
 	this creates in figure <xref
-	  linkend="fig:concepts:wdir-branch"/>.</para>
+	  linkend="fig.concepts.wdir-branch"/>.</para>
 
-      <informalfigure id="fig:concepts:wdir-branch">
+      <informalfigure id="fig.concepts.wdir-branch">
 	<mediaobject><imageobject><imagedata
-				    fileref="wdir-branch"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/wdir-branch.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>After a
 	      commit made while synced to an older
 	      changeset</para></caption></mediaobject>
@@ -449,11 +449,11 @@
 	command, Mercurial leaves the first parent of the working
 	directory unchanged, and sets the second parent to the
 	changeset you're merging with, as shown in figure <xref
-	  linkend="fig:concepts:wdir-merge"/>.</para>
+	  linkend="fig.concepts.wdir-merge"/>.</para>
 
-      <informalfigure id="fig:concepts:wdir-merge">
+      <informalfigure id="fig.concepts.wdir-merge">
 	<mediaobject><imageobject><imagedata
-				    fileref="wdir-merge"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/wdir-merge.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Merging two
 	      heads</para></caption></mediaobject>
       </informalfigure>
@@ -582,7 +582,7 @@
 
       <para>Appending to files isn't the whole story when it comes to
 	guaranteeing that a reader won't see a partial write.  If you
-	recall figure <xref linkend="fig:concepts:metadata"/>,
+	recall figure <xref linkend="fig.concepts.metadata"/>,
 	revisions in the
 	changelog point to revisions in the manifest, and revisions in
 	the manifest point to revisions in filelogs.  This hierarchy

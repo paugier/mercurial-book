@@ -1,6 +1,6 @@
 <!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
 
-<chapter id="chap:hook">
+<chapter id="chap.hook">
   <?dbhtml filename="handling-repository-events-with-hooks.html"?>
   <title>Handling repository events with hooks</title>
 
@@ -19,7 +19,7 @@
 
     <para>Here is a brief list of the hooks that Mercurial supports.
       We will revisit each of these hooks in more detail later, in
-      section <xref linkend="sec:hook:ref"/>.</para>
+      section <xref linkend="sec.hook.ref"/>.</para>
 
     <itemizedlist>
       <listitem><para><literal role="hook">changegroup</literal>: This
@@ -343,7 +343,7 @@
 
     </sect2>
   </sect1>
-  <sect1 id="sec:hook:simple">
+  <sect1 id="sec.hook.simple">
     <title>A short tutorial on using hooks</title>
 
     <para>It is easy to write a Mercurial hook.  Let's start with a
@@ -400,11 +400,11 @@
 	message that contains the hook name and extension, so using a
 	descriptive extension could give you an immediate hint as to
 	why the hook failed (see section <xref
-	  linkend="sec:hook:perm"/> for an example).
+	  linkend="sec.hook.perm"/> for an example).
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:perm">
+    <sect2 id="sec.hook.perm">
       <title>Controlling whether an activity can proceed</title>
 
       <para>In our earlier examples, we used the <literal
@@ -459,7 +459,7 @@
       message before it calls each hook.
     </para>
 
-    <sect2 id="sec:hook:lang">
+    <sect2 id="sec.hook.lang">
       <title>Choosing how your hook should run</title>
 
       <para>You can write a hook either as a normal
@@ -490,7 +490,7 @@
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:param">
+    <sect2 id="sec.hook.param">
       <title>Hook parameters</title>
 
       <para>Mercurial calls each hook with a set of well-defined
@@ -888,7 +888,7 @@
 	  </para>
 	</listitem></itemizedlist>
 
-      <sect3 id="sec:hook:bugzilla:config">
+      <sect3 id="sec.hook.bugzilla.config">
 	<title>Configuring the <literal role="hook">bugzilla</literal>
 	  hook</title>
 
@@ -1101,7 +1101,7 @@
 	</para>
 
 	<para>Recall from section <xref
-	    linkend="sec:hook:bugzilla:config"/> above that the user
+	    linkend="sec.hook.bugzilla.config"/> above that the user
 	  that runs the Mercurial process on the server is also the
 	  one that will run the <filename>processmail</filename>
 	  script.  The <filename>processmail</filename> script
@@ -1259,7 +1259,7 @@
 	      out email about changes that remote users pushed into
 	      this repository via a server, for example.  See section
 	      <xref
-		linkend="sec:hook:sources"/> for the sources you can
+		linkend="sec.hook.sources"/> for the sources you can
 	      specify here.
 	    </para>
 	  </listitem></itemizedlist>
@@ -1318,7 +1318,7 @@
       </sect3>
     </sect2>
   </sect1>
-  <sect1 id="sec:hook:ref">
+  <sect1 id="sec.hook.ref">
     <title>Information for writers of hooks</title>
 
     <sect2>
@@ -1426,7 +1426,7 @@
 	transferred to or from.
       </para>
 
-      <sect3 id="sec:hook:sources">
+      <sect3 id="sec.hook.sources">
 	<title>Sources of changesets</title>
 
 	<para>Mercurial will tell a hook what means are, or were, used
@@ -1458,7 +1458,7 @@
 	  </listitem></itemizedlist>
 
       </sect3>
-      <sect3 id="sec:hook:url">
+      <sect3 id="sec.hook.url">
 	<title>Where changes are going&emdash;remote repository
 	  URLs</title>
 
@@ -1500,7 +1500,7 @@
   <sect1>
     <title>Hook reference</title>
 
-    <sect2 id="sec:hook:changegroup">
+    <sect2 id="sec.hook.changegroup">
       <title><literal role="hook">changegroup</literal>&emdash;after
 	remote changesets added</title>
 
@@ -1535,26 +1535,26 @@
 	</listitem>
 	<listitem><para><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
-	      linkend="sec:hook:sources"/> for details.
+	      linkend="sec.hook.sources"/> for details.
 	  </para>
 	</listitem>
 	<listitem><para><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
-	      linkend="sec:hook:url"/> for more
+	      linkend="sec.hook.url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">incoming</literal> (section
-	<xref linkend="sec:hook:incoming"/>), <literal
+	<xref linkend="sec.hook.incoming"/>), <literal
 	  role="hook">prechangegroup</literal> (section <xref
-	  linkend="sec:hook:prechangegroup"/>), <literal
+	  linkend="sec.hook.prechangegroup"/>), <literal
 	  role="hook">pretxnchangegroup</literal> (section <xref
-	  linkend="sec:hook:pretxnchangegroup"/>)
+	  linkend="sec.hook.pretxnchangegroup"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:commit">
+    <sect2 id="sec.hook.commit">
       <title><literal role="hook">commit</literal>&emdash;after a new
 	changeset is created</title>
 
@@ -1580,13 +1580,13 @@
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">precommit</literal>
-	(section <xref linkend="sec:hook:precommit"/>), <literal
+	(section <xref linkend="sec.hook.precommit"/>), <literal
 	  role="hook">pretxncommit</literal> (section <xref
-	  linkend="sec:hook:pretxncommit"/>)
+	  linkend="sec.hook.pretxncommit"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:incoming">
+    <sect2 id="sec.hook.incoming">
       <title><literal role="hook">incoming</literal>&emdash;after one
 	remote changeset is added</title>
 
@@ -1599,7 +1599,7 @@
 
       <para>You can use this hook for the same purposes as the
 	<literal role="hook">changegroup</literal> hook (section <xref
-	  linkend="sec:hook:changegroup"/>); it's simply
+	  linkend="sec.hook.changegroup"/>); it's simply
 	more convenient sometimes to run a hook once per group of
 	changesets, while other times it's handier once per changeset.
       </para>
@@ -1613,26 +1613,26 @@
 	</listitem>
 	<listitem><para><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
-	      linkend="sec:hook:sources"/> for details.
+	      linkend="sec.hook.sources"/> for details.
 	  </para>
 	</listitem>
 	<listitem><para><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
-	      linkend="sec:hook:url"/> for more
+	      linkend="sec.hook.url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">changegroup</literal>
-	(section <xref linkend="sec:hook:changegroup"/>) <literal
+	(section <xref linkend="sec.hook.changegroup"/>) <literal
 	  role="hook">prechangegroup</literal> (section <xref
-	  linkend="sec:hook:prechangegroup"/>), <literal
+	  linkend="sec.hook.prechangegroup"/>), <literal
 	  role="hook">pretxnchangegroup</literal> (section <xref
-	  linkend="sec:hook:pretxnchangegroup"/>)
+	  linkend="sec.hook.pretxnchangegroup"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:outgoing">
+    <sect2 id="sec.hook.outgoing">
       <title><literal role="hook">outgoing</literal>&emdash;after
 	changesets are propagated</title>
 
@@ -1656,7 +1656,7 @@
 	</listitem>
 	<listitem><para><literal>source</literal>: A string.  The
 	    source of the of the operation (see section <xref
-	      linkend="sec:hook:sources"/>).  If a remote
+	      linkend="sec.hook.sources"/>).  If a remote
 	    client pulled changes from this repository,
 	    <literal>source</literal> will be
 	    <literal>serve</literal>.  If the client that obtained
@@ -1669,17 +1669,17 @@
 	</listitem>
 	<listitem><para><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
-	      linkend="sec:hook:url"/> for more
+	      linkend="sec.hook.url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">preoutgoing</literal>
-	(section <xref linkend="sec:hook:preoutgoing"/>)
+	(section <xref linkend="sec.hook.preoutgoing"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:prechangegroup">
+    <sect2 id="sec.hook.prechangegroup">
       <title><literal
 	  role="hook">prechangegroup</literal>&emdash;before starting
 	to add remote changesets</title>
@@ -1706,26 +1706,26 @@
       <itemizedlist>
 	<listitem><para><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
-	      linkend="sec:hook:sources"/> for details.
+	      linkend="sec.hook.sources"/> for details.
 	  </para>
 	</listitem>
 	<listitem><para><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
-	      linkend="sec:hook:url"/> for more
+	      linkend="sec.hook.url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">changegroup</literal>
-	(section <xref linkend="sec:hook:changegroup"/>), <literal
+	(section <xref linkend="sec.hook.changegroup"/>), <literal
 	  role="hook">incoming</literal> (section <xref
-	  linkend="sec:hook:incoming"/>), , <literal
+	  linkend="sec.hook.incoming"/>), , <literal
 	  role="hook">pretxnchangegroup</literal> (section <xref
-	  linkend="sec:hook:pretxnchangegroup"/>)
+	  linkend="sec.hook.pretxnchangegroup"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:precommit">
+    <sect2 id="sec.hook.precommit">
       <title><literal role="hook">precommit</literal>&emdash;before
 	starting to commit a changeset</title>
 
@@ -1759,13 +1759,13 @@
       </para>
 
       <para>See also: <literal role="hook">commit</literal> (section
-	<xref linkend="sec:hook:commit"/>), <literal
+	<xref linkend="sec.hook.commit"/>), <literal
 	  role="hook">pretxncommit</literal> (section <xref
-	  linkend="sec:hook:pretxncommit"/>)
+	  linkend="sec.hook.pretxncommit"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:preoutgoing">
+    <sect2 id="sec.hook.preoutgoing">
       <title><literal role="hook">preoutgoing</literal>&emdash;before
 	starting to propagate changesets</title>
 
@@ -1783,27 +1783,27 @@
 	<listitem><para><literal>source</literal>: A string.  The
 	    source of the operation that is attempting to obtain
 	    changes from this repository (see section <xref
-	      linkend="sec:hook:sources"/>).  See the documentation
+	      linkend="sec.hook.sources"/>).  See the documentation
 	    for the <literal>source</literal> parameter to the
 	    <literal role="hook">outgoing</literal> hook, in section
-	    <xref linkend="sec:hook:outgoing"/>, for possible values
+	    <xref linkend="sec.hook.outgoing"/>, for possible values
 	    of
 	    this parameter.
 	  </para>
 	</listitem>
 	<listitem><para><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
-	      linkend="sec:hook:url"/> for more
+	      linkend="sec.hook.url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">outgoing</literal> (section
-	<xref linkend="sec:hook:outgoing"/>)
+	<xref linkend="sec.hook.outgoing"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:pretag">
+    <sect2 id="sec.hook.pretag">
       <title><literal role="hook">pretag</literal>&emdash;before
 	tagging a changeset</title>
 
@@ -1834,15 +1834,15 @@
       <para>If the tag to be created is revision-controlled, the
 	<literal role="hook">precommit</literal> and <literal
 	  role="hook">pretxncommit</literal> hooks (sections <xref
-	  linkend="sec:hook:commit"/> and <xref
-	  linkend="sec:hook:pretxncommit"/>) will also be run.
+	  linkend="sec.hook.commit"/> and <xref
+	  linkend="sec.hook.pretxncommit"/>) will also be run.
       </para>
 
       <para>See also: <literal role="hook">tag</literal> (section
-	<xref linkend="sec:hook:tag"/>)
+	<xref linkend="sec.hook.tag"/>)
       </para>
     </sect2>
-    <sect2 id="sec:hook:pretxnchangegroup">
+    <sect2 id="sec.hook.pretxnchangegroup">
       <title><literal
 	  role="hook">pretxnchangegroup</literal>&emdash;before
 	completing addition of remote changesets</title>
@@ -1889,26 +1889,26 @@
 	</listitem>
 	<listitem><para><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
-	      linkend="sec:hook:sources"/> for details.
+	      linkend="sec.hook.sources"/> for details.
 	  </para>
 	</listitem>
 	<listitem><para><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
-	      linkend="sec:hook:url"/> for more
+	      linkend="sec.hook.url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">changegroup</literal>
-	(section <xref linkend="sec:hook:changegroup"/>), <literal
+	(section <xref linkend="sec.hook.changegroup"/>), <literal
 	  role="hook">incoming</literal> (section <xref
-	  linkend="sec:hook:incoming"/>), <literal
+	  linkend="sec.hook.incoming"/>), <literal
 	  role="hook">prechangegroup</literal> (section <xref
-	  linkend="sec:hook:prechangegroup"/>)
+	  linkend="sec.hook.prechangegroup"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:pretxncommit">
+    <sect2 id="sec.hook.pretxncommit">
       <title><literal role="hook">pretxncommit</literal>&emdash;before
 	completing commit of new changeset</title>
 
@@ -1951,11 +1951,11 @@
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">precommit</literal>
-	(section <xref linkend="sec:hook:precommit"/>)
+	(section <xref linkend="sec.hook.precommit"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:preupdate">
+    <sect2 id="sec.hook.preupdate">
       <title><literal role="hook">preupdate</literal>&emdash;before
 	updating or merging working directory</title>
 
@@ -1983,11 +1983,11 @@
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">update</literal> (section
-	<xref linkend="sec:hook:update"/>)
+	<xref linkend="sec.hook.update"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:tag">
+    <sect2 id="sec.hook.tag">
       <title><literal role="hook">tag</literal>&emdash;after tagging a
 	changeset</title>
 
@@ -2016,15 +2016,15 @@
 
       <para>If the created tag is revision-controlled, the <literal
 	  role="hook">commit</literal> hook (section <xref
-	  linkend="sec:hook:commit"/>) is run before this hook.
+	  linkend="sec.hook.commit"/>) is run before this hook.
       </para>
 
       <para>See also: <literal role="hook">pretag</literal> (section
-	<xref linkend="sec:hook:pretag"/>)
+	<xref linkend="sec.hook.pretag"/>)
       </para>
 
     </sect2>
-    <sect2 id="sec:hook:update">
+    <sect2 id="sec.hook.update">
       <title><literal role="hook">update</literal>&emdash;after
 	updating or merging working directory</title>
 
@@ -2054,7 +2054,7 @@
 	</listitem></itemizedlist>
 
       <para>See also: <literal role="hook">preupdate</literal>
-	(section <xref linkend="sec:hook:preupdate"/>)
+	(section <xref linkend="sec.hook.preupdate"/>)
       </para>
 
     </sect2>

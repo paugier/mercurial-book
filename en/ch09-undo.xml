@@ -1,6 +1,6 @@
 <!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
 
-<chapter id="chap:undo">
+<chapter id="chap.undo">
   <?dbhtml filename="finding-and-fixing-mistakes.html"?>
   <title>Finding and fixing mistakes</title>
 
@@ -27,17 +27,17 @@
 	less annoying.</para>
 
     </sect2>
-    <sect2 id="sec:undo:rollback">
+    <sect2 id="sec.undo.rollback">
       <title>Rolling back a transaction</title>
 
-      <para>In section <xref linkend="sec:concepts:txn"/>, I mentioned
+      <para>In section <xref linkend="sec.concepts.txn"/>, I mentioned
 	that Mercurial treats each modification of a repository as a
 	<emphasis>transaction</emphasis>.  Every time you commit a
 	changeset or pull changes from another repository, Mercurial
 	remembers what you did.  You can undo, or <emphasis>roll
 	  back</emphasis>, exactly one of these actions using the
 	<command role="hg-cmd">hg rollback</command> command.  (See
-	section <xref linkend="sec:undo:rollback-after-push"/> for an
+	section <xref linkend="sec.undo.rollback-after-push"/> for an
 	important caveat about the use of this command.)</para>
 
       <para>Here's a mistake that I often find myself making:
@@ -111,7 +111,7 @@
 	need to undo this mistake.</para>
 
     </sect2>
-    <sect2 id="sec:undo:rollback-after-push">
+    <sect2 id="sec.undo.rollback-after-push">
       <title>Rolling back is useless once you've pushed</title>
 
       <para>The value of the <command role="hg-cmd">hg
@@ -214,7 +214,7 @@
 	  the file to its unmodified contents.</para>
       </listitem></itemizedlist>
 
-    <sect2 id="sec:undo:mgmt">
+    <sect2 id="sec.undo.mgmt">
       <title>File management errors</title>
 
       <para>The <command role="hg-cmd">hg revert</command> command is
@@ -306,7 +306,7 @@
       modifying or erasing it.  It's the right tool to use if you're
       fixing bugs, but not if you're trying to undo some change that
       has catastrophic consequences.  To deal with those, see section
-      <xref linkend="sec:undo:aaaiiieee"/>.</para>
+      <xref linkend="sec.undo.aaaiiieee"/>.</para>
 
     <sect2>
       <title>Backing out a changeset</title>
@@ -354,13 +354,13 @@
 	that <command role="hg-cmd">hg backout</command> has created
 	is a child of the changeset we backed out.  It's easier to see
 	this in figure <xref
-	  linkend="fig:undo:backout"/>, which presents a graphical
+	  linkend="fig.undo.backout"/>, which presents a graphical
 	view of the change history.  As you can see, the history is
 	nice and linear.</para>
 
-      <informalfigure id="fig:undo:backout">
+      <informalfigure id="fig.undo.backout">
 	<mediaobject><imageobject><imagedata
-				    fileref="undo-simple"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/undo-simple.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Backing out
 	      a change using the <command role="hg-cmd">hg
 		backout</command>
@@ -393,7 +393,7 @@
       &interaction.backout.non-tip.cat;
 
       <para>As the graphical history in figure <xref
-	  linkend="fig:undo:backout-non-tip"/> illustrates, Mercurial
+	  linkend="fig.undo.backout-non-tip"/> illustrates, Mercurial
 	actually commits <emphasis>two</emphasis> changes in this kind
 	of situation (the box-shaped nodes are the ones that Mercurial
 	commits automatically).  Before Mercurial begins the backout
@@ -406,9 +406,9 @@
       <para>% TODO: to me it looks like mercurial doesn't commit the
 	second merge automatically!</para>
 
-      <informalfigure id="fig:undo:backout-non-tip">
+      <informalfigure id="fig.undo.backout-non-tip">
 	<mediaobject><imageobject><imagedata
-				    fileref="undo-non-tip"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/undo-non-tip.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Automated
 	      backout of a non-tip change using the <command
 		role="hg-cmd">hg backout</command>
@@ -465,15 +465,15 @@
 
       <para>Again, it's easier to see what has happened by looking at
 	a graph of the revision history, in figure <xref
-	  linkend="fig:undo:backout-manual"/>.  This makes it clear
+	  linkend="fig.undo.backout-manual"/>.  This makes it clear
 	that when we use <command role="hg-cmd">hg backout</command>
 	to back out a change other than the tip, Mercurial adds a new
 	head to the repository (the change it committed is
 	box-shaped).</para>
 
-      <informalfigure id="fig:undo:backout-manual">
+      <informalfigure id="fig.undo.backout-manual">
 	<mediaobject><imageobject><imagedata
-				    fileref="undo-manual"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/undo-manual.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Backing out
 	      a change using the <command role="hg-cmd">hg
 		backout</command>
@@ -509,11 +509,11 @@
 
       <para>Afterwards, the graphical history of our repository looks
 	like figure
-	<xref linkend="fig:undo:backout-manual-merge"/>.</para>
+	<xref linkend="fig.undo.backout-manual-merge"/>.</para>
 
-      <informalfigure id="fig:undo:backout-manual-merge">
+      <informalfigure id="fig.undo.backout-manual-merge">
 	<mediaobject><imageobject><imagedata
-				    fileref="undo-manual-merge"/></imageobject><textobject><phrase>XXX 
+				    fileref="images/undo-manual-merge.png"/></imageobject><textobject><phrase>XXX 
 	      add text</phrase></textobject><caption><para>Manually
 	      merging a backout change</para></caption></mediaobject>
 	
@@ -584,7 +584,7 @@
 	are likely to have <quote>broken the context</quote> that
 	<command>patch</command> uses to determine whether it can
 	apply a patch (if this sounds like gibberish, see <xref
-	  linkend="sec:mq:patch"/> for a
+	  linkend="sec.mq.patch"/> for a
 	discussion of the <command>patch</command> command).  Also,
 	Mercurial's merge machinery will handle files and directories
 	being renamed, permission changes, and modifications to binary
@@ -593,7 +593,7 @@
 
     </sect2>
   </sect1>
-  <sect1 id="sec:undo:aaaiiieee">
+  <sect1 id="sec.undo.aaaiiieee">
     <title>Changes that should never have been</title>
 
     <para>Most of the time, the <command role="hg-cmd">hg
@@ -623,7 +623,7 @@
       been pushed or pulled into another repository.  That's when you
       can safely use the <command role="hg-cmd">hg rollback</command>
       command, as I detailed in section <xref
-	linkend="sec:undo:rollback"/>.</para>
+	linkend="sec.undo.rollback"/>.</para>
 
     <para>After you've pushed a bad change to another repository, you
       <emphasis>could</emphasis> still use <command role="hg-cmd">hg
@@ -664,7 +664,7 @@
 	central repository.</para>
 
       <para>By configuring some hooks on that repository to validate
-	incoming changesets (see chapter <xref linkend="chap:hook"/>),
+	incoming changesets (see chapter <xref linkend="chap.hook"/>),
 	you can
 	automatically prevent some kinds of bad changeset from being
 	pushed to the central repository at all.  With such a
@@ -679,7 +679,7 @@
 
     </sect2>
   </sect1>
-  <sect1 id="sec:undo:bisect">
+  <sect1 id="sec.undo.bisect">
     <title>Finding the source of a bug</title>
 
     <para>While it's all very well to be able to back out a changeset
