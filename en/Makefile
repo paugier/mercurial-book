@@ -126,21 +126,21 @@ hg-version = $(shell hg version -q | \
 
 all: web
 
-../xsl/system-xsl: $(system-xsl-dir)
+../stylesheets/system-xsl: $(system-xsl-dir)
 	ln -s $< $@
 
 web: websup html
 
-html: ../xsl/system-xsl $(xml-src-files) valid
-	xsltproc $(xsltproc-opts) -o html/read/x ../xsl/chunk-stylesheet.xsl 00book.xml
+html: ../stylesheets/system-xsl $(xml-src-files) valid
+	xsltproc $(xsltproc-opts) -o html/read/x ../stylesheets/chunk-stylesheet.xsl 00book.xml
 	for i in html/read/*.html; do \
 	  gzip -9 -c $$i > $$i.gz; \
 	done
 
 websup: $(extras-web)
-	mkdir -p $(obj-websup)/figs
-	cp ../xsl/system-xsl/images/*.png $(obj-websup)/figs
-	cp -f ../web/icons/*.png $(obj-websup)/figs
+	mkdir -p $(obj-websup)/images
+	cp ../stylesheets/system-xsl/images/*.png $(obj-websup)/images
+	cp -f ../web/icons/*.png $(obj-websup)/images
 
 web: websup
 
