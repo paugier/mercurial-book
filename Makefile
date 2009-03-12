@@ -140,12 +140,12 @@ html:
 else
 html: build/$(LINGUA)/html/index.html
 
-build/$(LINGUA)/html/index.html: build/$(LINGUA)/source/hgbook.xml stylesheets/html.xsl stylesheets/$(LINGUA)/html.xsl
+build/$(LINGUA)/html/index.html: build/$(LINGUA)/source/hgbook.xml xsl/html.xsl xsl/$(LINGUA)/html.xsl
 	mkdir -p build/$(LINGUA)/html/images
 	cp en/images/*.png build/$(LINGUA)/html/images
-	cp stylesheets/hgbook.css build/$(LINGUA)/html
+	cp web/styles.css build/$(LINGUA)/html/hgbook.css
 	xsltproc --output build/$(LINGUA)/html/ \
-	    stylesheets/$(LINGUA)/html.xsl build/$(LINGUA)/source/hgbook.xml
+	    xsl/$(LINGUA)/html.xsl build/$(LINGUA)/source/hgbook.xml
 endif
 
 ifndef LINGUA
@@ -156,12 +156,12 @@ html-single:
 else
 html-single: build/$(LINGUA)/html-single/hgbook.html
 
-build/$(LINGUA)/html-single/hgbook.html: build/$(LINGUA)/source/hgbook.xml stylesheets/html-single.xsl stylesheets/$(LINGUA)/html-single.xsl
+build/$(LINGUA)/html-single/hgbook.html: build/$(LINGUA)/source/hgbook.xml xsl/html-single.xsl xsl/$(LINGUA)/html-single.xsl
 	mkdir -p build/$(LINGUA)/html-single/images
 	cp en/images/*.png build/$(LINGUA)/html-single/images
-	cp stylesheets/hgbook.css build/$(LINGUA)/html-single
+	cp web/styles.css build/$(LINGUA)/html-single/hgbook.css
 	xsltproc --output build/$(LINGUA)/html-single/hgbook.html \
-	    stylesheets/$(LINGUA)/html-single.xsl build/$(LINGUA)/source/hgbook.xml
+	    xsl/$(LINGUA)/html-single.xsl build/$(LINGUA)/source/hgbook.xml
 endif
 
 ifndef LINGUA
@@ -172,7 +172,7 @@ pdf:
 else
 pdf: build/$(LINGUA)/pdf/hgbook.pdf
 
-build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo.xsl stylesheets/$(LINGUA)/fo.xsl
+build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml xsl/fo.xsl xsl/$(LINGUA)/fo.xsl
 	mkdir -p build/$(LINGUA)/pdf
 	java -classpath tools/fop/lib/saxon65.jar:tools/fop/lib/saxon65-dbxsl.jar:tools/fop/lib/xml-commons-resolver-1.2.jar:tools/fop/conf \
 	    com.icl.saxon.StyleSheet \
@@ -181,7 +181,7 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	    -r org.apache.xml.resolver.tools.CatalogResolver \
 	    -o build/$(LINGUA)/source/hgbook.fo \
 	    build/$(LINGUA)/source/hgbook.xml \
-	    stylesheets/$(LINGUA)/fo.xsl \
+	    xsl/$(LINGUA)/fo.xsl \
 	    fop1.extensions=1
 
 	(cd build/$(LINGUA)/source && ../../../tools/fop/fop.sh hgbook.fo ../pdf/hgbook.pdf)
