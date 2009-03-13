@@ -53,7 +53,30 @@ help:
 	@echo "  make clean        # Remove the build files."
 
 clean:
-	@rm -fr build po/*.mo
+	@rm -fr build po/*.mo hello en/hello en/html en/.validated-00book.xml \
+          stylesheets/system-xsl en/images/*-tmp.svg \
+          en/images/feature-branches.png \
+          en/images/filelog.png \
+          en/images/feature-branches.png \
+          en/images/filelog.png \
+          en/images/metadata.png \
+          en/images/mq-stack.png \
+          en/images/revlog.png \
+          en/images/snapshot.png \
+          en/images/tour-history.png \
+          en/images/tour-merge-conflict.png \
+          en/images/tour-merge-merge.png \
+          en/images/tour-merge-pull.png \
+          en/images/tour-merge-sep-repos.png \
+          en/images/undo-manual-merge.png \
+          en/images/undo-manual.png \
+          en/images/undo-non-tip.png \
+          en/images/undo-simple.png \
+          en/images/wdir-after-commit.png \
+          en/images/wdir-branch.png \
+          en/images/wdir-merge.png \
+          en/images/wdir-pre-branch.png \
+          en/images/wdir.png
 
 all:
 ifdef LINGUA
@@ -187,8 +210,9 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	(cd build/$(LINGUA)/source && ../../../tools/fop/fop.sh hgbook.fo ../pdf/hgbook.pdf)
 endif
 
-en/images/%.png: en/images/%.svg
-	inkscape -D -d 120 -e $@ $<
+en/images/%.png: en/images/%.svg en/fixsvg
+	en/fixsvg $<
+	inkscape -D -d 120 -e $@ $<-tmp.svg
 
 en/images/%.svg: en/images/%.dot
 	dot -Tsvg -o $@ $<
