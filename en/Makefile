@@ -129,7 +129,7 @@ all: web
 ../xsl/system-xsl: $(system-xsl-dir)
 	ln -s $< $@
 
-web: websup html
+web: ../xsl/system-xsl websup html
 
 html: ../xsl/system-xsl $(xml-src-files) valid
 	xsltproc $(xsltproc-opts) -o html/read/x ../xsl/chunk-stylesheet.xsl 00book.xml
