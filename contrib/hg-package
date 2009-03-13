@@ -1,0 +1,54 @@
+#!/bin/sh
+
+build_dir=`dirname "$0"`/../build
+rev_id=`hg parents --template '{date|shortdate}' | sed 's/-//g'`
+
+for l in en zh; do
+  (cd ${build_dir}/${l};
+
+  f='html'
+  if [ -f "${f}/index.html" ] ; then
+     d=hgbook-${l}-${f}
+     rm -fr ${d} && cp -r ${f} ${d} && tar czf ../${d}-${rev_id}.tar.gz ${d}
+  fi
+
+  f='html-single'
+  if [ -f "${f}/hgbook.html" ] ; then
+     d=hgbook-${l}-${f}
+     rm -fr ${d} && cp -r ${f} ${d} && tar czf ../${d}-${rev_id}.tar.gz ${d}
+  fi
+
+  if [ -f "pdf/hgbook.pdf" ] ; then
+     cp pdf/hgbook.pdf ../hgbook-${l}-${rev_id}.pdf
+     gzip -f9 ../hgbook-${l}-${rev_id}.pdf
+  fi
+  )
+done
+
+upload_pass=$1
+upload_user=$2
+
+if [ "${upload_user}x" == "x" ]; then
+  upload_user="dongsheng.song"
+fi
+
+if [ "${upload_pass}x" != "x" ]; then
+  (
+  cd ${build_dir}
+  curl -O http://support.googlecode.com/svn/trunk/scripts/googlecode_upload.py
+
+  for l in en zh; do
+    python googlecode_upload.py -u "dongsheng.song" -w "$1" \
+      -p "i18n-zh" -l "Type-Docs,hgbook" \
+      -s "Distributed revision control with Mercurial - ${l} - pdf" \
+      hgbook-${l}-${rev_id}.pdf.gz
+
+    for f in html html-single; do
+      python googlecode_upload.py -u "dongsheng.song" -w "$1" \
+        -p "i18n-zh" -l "Type-Docs,hgbook" \
+        -s "Distributed revision control with Mercurial - ${l} - ${f}" \
+        hgbook-${l}-${f}-${rev_id}.tar.gz
+    done
+  done
+  )
+fi
