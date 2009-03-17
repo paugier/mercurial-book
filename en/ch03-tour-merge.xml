@@ -37,7 +37,7 @@
     <para>We should now have two copies of
       <filename>hello.c</filename> with different contents.  The
       histories of the two repositories have also diverged, as
-      illustrated in figure <xref
+      illustrated in figure <xref endterm="fig.tour-merge.sep-repos.caption"
 	linkend="fig.tour-merge.sep-repos"/>.</para>
 
     &interaction.tour.merge.cat;
@@ -46,7 +46,8 @@
       <mediaobject>
 	<imageobject><imagedata fileref="images/tour-merge-sep-repos.png"/></imageobject>
 	<textobject><phrase>XXX add text</phrase></textobject>
-	<caption><para>Divergent recent histories of the <filename
+	<caption><para id="fig.tour-merge.sep-repos.caption">Divergent recent
+	  histories of the <filename
 	      class="directory">my-hello</filename> and <filename
 	      class="directory">my-new-hello</filename>
 	    repositories</para></caption>
@@ -72,23 +73,24 @@
 	head.</para>
 
       <informalfigure id="fig.tour-merge.pull">
-	<mediaobject><imageobject><imagedata
-				    fileref="images/tour-merge-pull.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject>
-	  <caption><para>Repository contents after pulling from
-	      <filename class="directory">my-hello</filename> into
-	      <filename
-		class="directory">my-new-hello</filename></para></caption>
+	<mediaobject>
+	  <imageobject><imagedata fileref="images/tour-merge-pull.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	  <caption><para id="fig.tour-merge.pull.caption">Repository contents after
+	    pulling from <filename class="directory">my-hello</filename> into
+	    <filename class="directory">my-new-hello</filename></para></caption>
 	</mediaobject>
       </informalfigure>
 
-      <para>In figure <xref linkend="fig.tour-merge.pull"/>, you can
+      <para>In figure <xref endterm="fig.tour-merge.pull.caption"
+        linkend="fig.tour-merge.pull"/>, you can
 	see the effect of the pull from <filename
 	  class="directory">my-hello</filename> into <filename
 	  class="directory">my-new-hello</filename>.  The history that
 	was already present in <filename
 	  class="directory">my-new-hello</filename> is untouched, but
 	a new revision has been added.  By referring to figure <xref
+	  endterm="fig.tour-merge.sep-repos.caption" 
 	  linkend="fig.tour-merge.sep-repos"/>, we can see that the
 	<emphasis>changeset ID</emphasis> remains the same in the new
 	repository, but the <emphasis>revision number</emphasis> has
@@ -119,12 +121,11 @@
       &interaction.tour.merge.merge;
 
       <informalfigure id="fig.tour-merge.merge">
-
-	<mediaobject><imageobject><imagedata
-				    fileref="images/tour-merge-merge.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject>
-	  <caption><para>Working directory and repository during
-	      merge, and following commit</para></caption>
+	<mediaobject>
+	  <imageobject><imagedata fileref="images/tour-merge-merge.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	  <caption><para id="fig.tour-merge.merge.caption">Working directory and
+	      repository during merge, and following commit</para></caption>
 	</mediaobject>
       </informalfigure>
 
@@ -154,7 +155,7 @@
 
       &interaction.tour.merge.tip;
 
-      <para>In figure <xref
+      <para>In figure <xref endterm="fig.tour-merge.merge.caption"
 	  linkend="fig.tour-merge.merge"/>, you can see a
 	representation of what happens to the working directory during
 	the merge, and how this affects the repository when the commit
@@ -174,16 +175,18 @@
       to decide how to reconcile the different changes into something
       coherent.</para>
 
-    <informalfigure>
-
-      <mediaobject id="fig.tour-merge.conflict">
-	<imageobject><imagedata fileref="images/tour-merge-conflict.png"/></imageobject>
-	<textobject><phrase>XXX add text</phrase></textobject>
-	<caption><para>Conflicting changes to a
-	    document</para></caption>      </mediaobject>
+    <informalfigure id="fig.tour-merge.conflict">
+      <mediaobject>
+        <imageobject><imagedata fileref="images/tour-merge-conflict.png"/>
+        </imageobject>
+        <textobject><phrase>XXX add text</phrase></textobject>
+        <caption><para id="fig.tour-merge.conflict.caption">Conflicting
+          changes to a document</para></caption>
+      </mediaobject>
     </informalfigure>
 
-    <para>Figure <xref linkend="fig.tour-merge.conflict"/> illustrates
+    <para>Figure <xref endterm="fig.tour-merge.conflict.caption"
+      linkend="fig.tour-merge.conflict"/> illustrates
       an instance of two conflicting changes to a document.  We
       started with a single version of the file; then we made some
       changes; while someone else made different changes to the same
@@ -213,7 +216,8 @@
 	<command>kdiff3</command>, which I'll use to describe the
 	features that are common to graphical file merging tools.  You
 	can see a screenshot of <command>kdiff3</command> in action in
-	figure <xref linkend="fig.tour-merge.kdiff3"/>.  The kind of
+	figure <xref endterm="fig.tour-merge.kdiff3.caption"
+	linkend="fig.tour-merge.kdiff3"/>.  The kind of
 	merge it is performing is called a <emphasis>three-way
 	  merge</emphasis>, because there are three different versions
 	of the file of interest to us.  The tool thus splits the upper
@@ -244,12 +248,14 @@
 	corresponding sections of their respective files.</para>
 
       <informalfigure id="fig.tour-merge.kdiff3">
-	<mediaobject><imageobject><imagedata width="100%"
-				    fileref="images/kdiff3.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject>
-	  <caption><para>Using <command>kdiff3</command> to merge
-	      versions of a file</para></caption>
-	</mediaobject>
+        <mediaobject>
+          <imageobject><imagedata width="100%" fileref="images/kdiff3.png"/>
+          </imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+          <caption><para id="fig.tour-merge.kdiff3.caption">Using
+            <command>kdiff3</command> to merge versions of a file</para>
+          </caption>
+        </mediaobject>
       </informalfigure>
 
       <para>For each conflicting portion of the file, we can choose to
@@ -270,7 +276,8 @@
       <title>A worked example</title>
 
       <para>In this example, we will reproduce the file modification
-	history of figure <xref linkend="fig.tour-merge.conflict"/>
+	history of figure <xref endterm="fig.tour-merge.conflict.caption"
+	linkend="fig.tour-merge.conflict"/>
 	above.  Let's begin by creating a repository with a base
 	version of our document.</para>
 

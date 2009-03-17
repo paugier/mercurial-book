@@ -354,18 +354,21 @@
 	that <command role="hg-cmd">hg backout</command> has created
 	is a child of the changeset we backed out.  It's easier to see
 	this in figure <xref
-	  linkend="fig.undo.backout"/>, which presents a graphical
+	  endterm="fig.undo.backout.caption" linkend="fig.undo.backout"/>,
+	which presents a graphical
 	view of the change history.  As you can see, the history is
 	nice and linear.</para>
 
       <informalfigure id="fig.undo.backout">
-	<mediaobject><imageobject><imagedata
-				    fileref="images/undo-simple.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject><caption><para>Backing out
-	      a change using the <command role="hg-cmd">hg
-		backout</command>
-	      command</para></caption></mediaobject>
-	
+        <mediaobject>
+          <imageobject><imagedata fileref="images/undo-simple.png"/>
+          </imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+          <caption><para id="fig.undo.backout.caption">Backing out
+            a change using the 
+            <command role="hg-cmd">hg backout</command>
+            command</para></caption>
+      </mediaobject>
       </informalfigure>
 
     </sect2>
@@ -393,6 +396,7 @@
       &interaction.backout.non-tip.cat;
 
       <para>As the graphical history in figure <xref
+	  endterm="fig.undo.backout-non-tip.caption"
 	  linkend="fig.undo.backout-non-tip"/> illustrates, Mercurial
 	actually commits <emphasis>two</emphasis> changes in this kind
 	of situation (the box-shaped nodes are the ones that Mercurial
@@ -407,12 +411,14 @@
 	second merge automatically!</para>
 
       <informalfigure id="fig.undo.backout-non-tip">
-	<mediaobject><imageobject><imagedata
-				    fileref="images/undo-non-tip.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject><caption><para>Automated
-	      backout of a non-tip change using the <command
-		role="hg-cmd">hg backout</command>
-	      command</para></caption></mediaobject>
+        <mediaobject>
+          <imageobject><imagedata fileref="images/undo-non-tip.png"/>
+          </imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+          <caption><para id="fig.undo.backout-non-tip.caption">Automated
+            backout of a non-tip change using the
+            <command role="hg-cmd">hg backout</command> command</para></caption>
+        </mediaobject>
       </informalfigure>
 
       <para>The result is that you end up <quote>back where you
@@ -465,6 +471,7 @@
 
       <para>Again, it's easier to see what has happened by looking at
 	a graph of the revision history, in figure <xref
+	  endterm="fig.undo.backout-manual.caption"
 	  linkend="fig.undo.backout-manual"/>.  This makes it clear
 	that when we use <command role="hg-cmd">hg backout</command>
 	to back out a change other than the tip, Mercurial adds a new
@@ -472,13 +479,14 @@
 	box-shaped).</para>
 
       <informalfigure id="fig.undo.backout-manual">
-	<mediaobject><imageobject><imagedata
-				    fileref="images/undo-manual.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject><caption><para>Backing out
-	      a change using the <command role="hg-cmd">hg
-		backout</command>
-	      command</para></caption></mediaobject>
-	
+        <mediaobject>
+          <imageobject><imagedata fileref="images/undo-manual.png"/>
+          </imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+          <caption><para id="fig.undo.backout-manual.caption">Backing out a
+            change using the <command role="hg-cmd">hg backout</command>
+            command</para></caption>
+        </mediaobject>
       </informalfigure>
 
       <para>After the <command role="hg-cmd">hg backout</command>
@@ -509,14 +517,17 @@
 
       <para>Afterwards, the graphical history of our repository looks
 	like figure
-	<xref linkend="fig.undo.backout-manual-merge"/>.</para>
+	<xref endterm="fig.undo.backout-manual-merge.caption"
+	  linkend="fig.undo.backout-manual-merge"/>.</para>
 
       <informalfigure id="fig.undo.backout-manual-merge">
-	<mediaobject><imageobject><imagedata
-				    fileref="images/undo-manual-merge.png"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject><caption><para>Manually
-	      merging a backout change</para></caption></mediaobject>
-	
+        <mediaobject>
+          <imageobject><imagedata fileref="images/undo-manual-merge.png"/>
+          </imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+          <caption><para id="fig.undo.backout-manual-merge.caption">Manually
+            merging a backout change</para></caption>
+        </mediaobject>
       </informalfigure>
 
     </sect2>
