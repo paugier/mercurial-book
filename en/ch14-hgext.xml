@@ -166,11 +166,10 @@
     <orderedlist>
       <listitem><para>Clone the Python <literal>inotify</literal>
 	  binding repository.  Build and install it.</para>
-	<programlisting>
-	  hg clone http://hg.kublai.com/python/inotify cd inotify
-	  python setup.py build --force sudo python setup.py install
-	  --skip-build
-	</programlisting>
+	<programlisting>hg clone http://hg.kublai.com/python/inotify
+cd inotify
+python setup.py build --force
+sudo python setup.py install --skip-build</programlisting>
       </listitem>
       <listitem><para>Clone the <filename
 	    class="directory">crew</filename> Mercurial repository.
@@ -178,12 +177,9 @@
 	  repository so that Mercurial Queues will be able to apply
 	  patches to your cope of the <filename
 	    class="directory">crew</filename> repository.</para>
-	<programlisting>
-	  hg clone http://hg.intevation.org/mercurial/crew hg clone
-	  crew inotify hg clone
-	  http://hg.kublai.com/mercurial/patches/inotify
-	  inotify/.hg/patches
-	</programlisting>
+	<programlisting>hg clone http://hg.intevation.org/mercurial/crew
+hg clone crew inotify
+hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches</programlisting>
       </listitem>
       <listitem><para>Make sure that you have the Mercurial Queues
 	  extension, <literal role="hg-ext">mq</literal>, enabled.  If
@@ -197,9 +193,8 @@
 	  using the <option role="hg-ext-mq-cmd-qpush-opt">hg
 	    -a</option> option to the <command
 	    role="hg-ext-mq">qpush</command> command.</para>
-	<programlisting>
-	  cd inotify hg qpush -a
-	</programlisting>
+	<programlisting>cd inotify
+hg qpush -a</programlisting>
       </listitem>
       <listitem><para>  If you get an error message from <command
 	    role="hg-ext-mq">qpush</command>, you should not continue.
@@ -207,16 +202,14 @@
       </listitem>
       <listitem><para>Build and install the patched version of
 	  Mercurial.</para>
-	<programlisting>
-	  python setup.py build --force sudo python setup.py install
-	  --skip-build
-	</programlisting>
+	<programlisting>python setup.py build --force
+sudo python setup.py install --skip-build</programlisting>
       </listitem>
     </orderedlist>
     <para>Once you've build a suitably patched version of Mercurial,
       all you need to do to enable the <literal
 	role="hg-ext">inotify</literal> extension is add an entry to
-      your <filename role="special"> /.hgrc</filename>.</para>
+      your <filename role="special">~/.hgrc</filename>.</para>
     <programlisting>[extensions] inotify =</programlisting>
     <para>When the <literal role="hg-ext">inotify</literal> extension
       is enabled, Mercurial will automatically and transparently start
@@ -280,9 +273,10 @@
     <para>The <literal role="hg-ext">extdiff</literal> extension is
       bundled with Mercurial, so it's easy to set up.  In the <literal
 	role="rc-extensions">extensions</literal> section of your
-      <filename role="special"> /.hgrc</filename>, simply add a
+      <filename role="special">~/.hgrc</filename>, simply add a
       one-line entry to enable the extension.</para>
-    <programlisting>[extensions] extdiff =</programlisting>
+    <programlisting>[extensions]
+extdiff =</programlisting>
     <para>This introduces a command named <command
 	role="hg-ext-extdiff">extdiff</command>, which by default uses
       your system's <command>diff</command> command to generate a
@@ -372,15 +366,16 @@
 	<emphasis>new</emphasis> commands that will invoke your diff
 	viewer with exactly the right options.</para>
 
-      <para>All you need to do is edit your <filename role="special">
-	  /.hgrc</filename>, and add a section named <literal
-	  role="rc-extdiff">extdiff</literal>.  Inside this section,
-	you can define multiple commands.  Here's how to add a
-	<literal>kdiff3</literal> command.  Once you've defined this,
-	you can type <quote><literal>hg kdiff3</literal></quote> and
-	the <literal role="hg-ext">extdiff</literal> extension will
-	run <command>kdiff3</command> for you.</para>
-      <programlisting>[extdiff] cmd.kdiff3 =</programlisting>
+      <para>All you need to do is edit your <filename
+	  role="special">~/.hgrc</filename>, and add a section named
+	<literal role="rc-extdiff">extdiff</literal>.  Inside this
+	section, you can define multiple commands.  Here's how to add
+	a <literal>kdiff3</literal> command.  Once you've defined
+	this, you can type <quote><literal>hg kdiff3</literal></quote>
+	and the <literal role="hg-ext">extdiff</literal> extension
+	will run <command>kdiff3</command> for you.</para>
+      <programlisting>[extdiff]
+cmd.kdiff3 =</programlisting>
       <para>If you leave the right hand side of the definition empty,
 	as above, the <literal role="hg-ext">extdiff</literal>
 	extension uses the name of the command you defined as the name
@@ -388,7 +383,8 @@
 	be the same.  Here, we define a command named
 	<quote><literal>hg wibble</literal></quote>, which runs
 	<command>kdiff3</command>.</para>
-      <programlisting>[extdiff] cmd.wibble = kdiff3</programlisting>
+      <programlisting>[extdiff]
+ cmd.wibble = kdiff3</programlisting>
 
       <para>You can also specify the default options that you want to
 	invoke your diff viewing program with.  The prefix to use is
@@ -397,8 +393,9 @@
 	defines a <quote><literal>hg vimdiff</literal></quote> command
 	that runs the <command>vim</command> editor's
 	<literal>DirDiff</literal> extension.</para>
-      <programlisting>[extdiff] cmd.vimdiff = vim opts.vimdiff = -f
-	'+next' '+execute "DirDiff" argv(0) argv(1)'</programlisting>
+      <programlisting>[extdiff]
+ cmd.vimdiff = vim
+opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'</programlisting>
 
     </sect2>
   </sect1>
@@ -433,7 +430,8 @@
 	role="hg-ext">patchbomb</literal> extension takes just one or
       two lines in your <filename role="special">
 	/.hgrc</filename>.</para>
-    <programlisting>[extensions] patchbomb =</programlisting>
+    <programlisting>[extensions]
+patchbomb =</programlisting>
     <para>Once you've enabled the extension, you will have a new
       command available, named <command
 	role="hg-ext-patchbomb">email</command>.</para>
