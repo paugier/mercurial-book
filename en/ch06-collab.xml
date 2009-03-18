@@ -592,7 +592,8 @@
 	<listitem><para>If you have a high tolerance for pain, you can
 	    use the Cygwin port of OpenSSH.</para>
 	</listitem></itemizedlist>
-      <para>In either case, you'll need to edit your \hgini\ file to
+      <para>In either case, you'll need to edit your <filename
+      role="special">hg.ini</filename> file to
 	tell Mercurial where to find the actual client command.  For
 	example, if you're using PuTTY, you'll need to use the
 	<command>plink</command> command as a command-line ssh
@@ -604,7 +605,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	<para>  The path to <command>plink</command> shouldn't contain
 	  any whitespace characters, or Mercurial may not be able to
 	  run it correctly (so putting it in <filename
-	    class="directory">C:\\Program Files</filename> is probably
+	    class="directory">C:\Program Files</filename> is probably
 	  not a good idea).</para>
       </note>
 
@@ -781,7 +782,9 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	your server, the next step is to ensure that Mercurial runs on
 	the server.  The following command should run
 	successfully:</para>
+
       <programlisting>ssh myserver hg version</programlisting>
+
       <para>If you see an error message instead of normal <command
 	  role="hg-cmd">hg version</command> output, this is usually
 	because you haven't installed Mercurial to <filename
@@ -838,7 +841,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
       <para>Both <command>ssh</command> and <command>plink</command>
 	accept a <option role="cmd-opt-ssh">-C</option> option which
 	turns on compression.  You can easily edit your <filename
-	  role="special"> /.hgrc</filename>\ to enable compression for
+	  role="special">~/.hgrc</filename> to enable compression for
 	all of Mercurial's uses of the ssh protocol.</para>
       <programlisting>[ui]
 ssh = ssh -C</programlisting>
@@ -925,8 +928,7 @@ ssh = ssh -C</programlisting>
 	directory, from which they can serve up web pages.  A file
 	named <filename>foo</filename> in this directory will be
 	accessible at a URL of the form
-	<literal>http://www.example.com/\
-	  {</literal>username/foo}.</para>
+	<literal>http://www.example.com/username/foo</literal>.</para>
 
       <para>To get started, find the <filename
 	  role="special">hgweb.cgi</filename> script that should be
@@ -1006,13 +1008,6 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
 	&ch06-apache-config.lst;
 
-	<programlisting>&lt;Directory /home/*/public_html&gt;
-	  AllowOverride FileInfo AuthConfig Limit Options MultiViews
-	  Indexes SymLinksIfOwnerMatch IncludesNoExec &lt;Limit GET
-	  POST OPTIONS&gt; Order allow,deny Allow from all
-	  &lt;/Limit&gt; &lt;LimitExcept GET POST OPTIONS&gt; Order
-	  deny,allow Deny from all &lt;/LimitExcept&gt;
-	  &lt;/Directory&gt;</programlisting>
 	<para>If you find a similar-looking
 	  <literal>Directory</literal> group in your Apache
 	  configuration, the directive to look at inside it is
@@ -1078,8 +1073,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  <literal>mod_userdir</literal>, both of which were disabled
 	  by default on my system.  I then added a few lines to the
 	  end of the config file, to configure these modules.</para>
-	<programlisting>userdir.path = "public_html" cgi.assign = (
-	  ".cgi" =&gt; "" )</programlisting>
+	<programlisting>userdir.path = "public_html"
+cgi.assign = (".cgi" =&gt; "" )</programlisting>
 	<para>With this done, <literal>lighttpd</literal> ran
 	  immediately for me.  If I had configured
 	  <literal>lighttpd</literal> before Apache, I'd almost
@@ -1114,8 +1109,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
       <para>You'll need to copy this script into your <filename
 	  class="directory">public_html</filename> directory, and
 	ensure that it's executable.</para>
-      <programlisting>cp .../hgwebdir.cgi ~/public_html chmod 755
-	~/public_html ~/public_html/hgwebdir.cgi</programlisting>
+      <programlisting>cp .../hgwebdir.cgi ~/public_html
+chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
       <para>With basic configuration out of the way, try to visit
 	<ulink url="http://myhostname/
 	  myuser/hgwebdir.cgi">http://myhostname/
@@ -1141,8 +1136,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	publish <emphasis>every</emphasis> repository under the
 	directories you name.  The section should look like
 	this:</para>
-      <programlisting>[collections] /my/root =
-	/my/root</programlisting>
+      <programlisting>[collections]
+/my/root = /my/root</programlisting>
       <para>Mercurial interprets this by looking at the directory name
 	on the <emphasis>right</emphasis> hand side of the
 	<quote><literal>=</literal></quote> sign; finding repositories
@@ -1201,8 +1196,9 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  to publish a specific list of repositories.  To do so,
 	  create a <literal>paths</literal> section, with contents of
 	  the following form.</para>
-	<programlisting>[paths] repo1 = /my/path/to/some/repo repo2 =
-	  /some/path/to/another</programlisting>
+	<programlisting>[paths]
+repo1 = /my/path/to/some/repo
+repo2 = /some/path/to/another</programlisting>
 	<para>In this case, the virtual path (the component that will
 	  appear in a URL) is on the left hand side of each
 	  definition, while the path to the repository is on the
@@ -1236,7 +1232,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	you'll need to add an <envar
 	  role="rc-item-web">allow_archive</envar> item to the
 	<literal role="rc-web">web</literal> section of your <filename
-	  role="special"> /.hgrc</filename>.</para>
+	  role="special">~/.hgrc</filename>.</para>
 
     </sect2>
     <sect2>
@@ -1279,8 +1275,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	    <envar role="rc-item-web">allow_archive</envar> entry at
 	    all, this feature will be disabled.  Here is an example of
 	    how to enable all three supported formats.</para>
-	  <programlisting>[web] allow_archive = bz2 gz
-	    zip</programlisting>
+	  <programlisting>[web]
+allow_archive = bz2 gz zip</programlisting>
 	</listitem>
 	<listitem><para><envar role="rc-item-web">allowpull</envar>:
 	    Boolean.  Determines whether the web interface allows
@@ -1298,9 +1294,9 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	    address of a person or mailing list.  It often makes sense
 	    to place this entry in a repository's own <filename
 	      role="special">.hg/hgrc</filename> file, but it can make
-	    sense to use in a global <filename role="special">
-	      /.hgrc</filename>\ if every repository has a single
-	    maintainer.</para>
+	    sense to use in a global <filename
+	      role="special">~/.hgrc</filename> if every repository
+	    has a single maintainer.</para>
 	</listitem>
 	<listitem><para><envar role="rc-item-web">maxchanges</envar>:
 	    Integer.  The default maximum number of changesets to
@@ -1325,7 +1321,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	    <xref linkend="chap:template"/> for details.
 	    Here, you can see how to enable the
 	    <literal>gitweb</literal> style.</para>
-	  <programlisting>[web] style = gitweb</programlisting>
+	  <programlisting>[web]
+style = gitweb</programlisting>
 	</listitem>
 	<listitem><para><envar role="rc-item-web">templates</envar>:
 	    Path.  The directory in which to search for template
@@ -1337,7 +1334,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	configuration items in a <literal role="rc-web">web</literal>
 	section of the <filename
 	  role="special">hgweb.config</filename> file instead of a
-	<filename role="special"> /.hgrc</filename>\ file, for
+	<filename role="special">~/.hgrc</filename> file, for
 	convenience.  These items are <envar
 	  role="rc-item-web">motd</envar> and <envar
 	  role="rc-item-web">style</envar>.</para>
@@ -1348,8 +1345,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	<para>A few <literal role="rc-web">web</literal> configuration
 	  items ought to be placed in a repository's local <filename
 	    role="special">.hg/hgrc</filename>, rather than a user's
-	  or global <filename role="special">
-	    /.hgrc</filename>.</para>
+	  or global <filename role="special">~/.hgrc</filename>.</para>
 	<itemizedlist>
 	  <listitem><para><envar
 		role="rc-item-web">description</envar>: String.  A
@@ -1369,7 +1365,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
 	<para>Some of the items in the <literal
 	    role="rc-web">web</literal> section of a <filename
-	    role="special"> /.hgrc</filename>\ file are only for use
+	    role="special">~/.hgrc</filename> file are only for use
 	  with the <command role="hg-cmd">hg serve</command>
 	  command.</para>
 	<itemizedlist>
@@ -1403,8 +1399,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
       </sect3>
       <sect3>
-	<title>Choosing the right <filename role="special">
-	    /.hgrc</filename>\ file to add <literal
+	<title>Choosing the right <filename
+	    role="special">~/.hgrc</filename> file to add <literal
 	    role="rc-web">web</literal> items to</title>
 
 	<para>It is important to remember that a web server like
@@ -1415,16 +1411,15 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  under that user ID.</para>
 
 	<para>If you add <literal role="rc-web">web</literal> items to
-	  your own personal <filename role="special">
-	    /.hgrc</filename>\ file, CGI scripts won't read that
-	  <filename role="special"> /.hgrc</filename>\ file.  Those
+	  your own personal <filename role="special">~/.hgrc</filename> file, CGI scripts won't read that
+	  <filename role="special">~/.hgrc</filename> file.  Those
 	  settings will thus only affect the behaviour of the <command
 	    role="hg-cmd">hg serve</command> command when you run it.
 	  To cause CGI scripts to see your settings, either create a
-	  <filename role="special"> /.hgrc</filename>\ file in the
+	  <filename role="special">~/.hgrc</filename> file in the
 	  home directory of the user ID that runs your web server, or
 	  add those settings to a system-wide <filename
-	    role="special"> /.hgrc</filename>\ file.</para>
+	    role="special">~/.hgrc</filename> file.</para>
 
 
       </sect3>

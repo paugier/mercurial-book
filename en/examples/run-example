@@ -7,6 +7,7 @@
 import cStringIO
 import errno
 import getopt
+import glob
 import os
 import pty
 import re
@@ -54,15 +55,30 @@ def find_path_to(program):
     return None
         
 def result_name(name):
-    return os.path.join('results', name.replace(os.sep, '-'))
+    return os.path.normpath(os.path.join('results', name.replace(os.sep, '-')))
+
+def wopen(name):
+    path = os.path.dirname(name)
+    if path:
+        try:
+            os.makedirs(path)
+        except OSError, err:
+            if err.errno != errno.EEXIST:
+                raise
+    return open(name, 'w')
 
 class example:
     entities = dict.fromkeys(l.rstrip() for l in open('auto-snippets.xml'))
 
     def __init__(self, name, verbose, keep_change):
-        self.name = name
+        self.name = os.path.normpath(name)
         self.verbose = verbose
         self.keep_change = keep_change
+        
+    def status(self, s):
+        sys.stdout.write(s)
+        if not s.endswith('\n'):
+            sys.stdout.flush()
 
     def rename_output(self, base, ignore=[]):
         mangle_re = re.compile('(?:' + '|'.join(ignore) + ')')
@@ -97,7 +113,7 @@ class example:
             os.unlink(errname)
             return False
         else:
-            print >> sys.stderr, '\nOutput of %s has changed!' % baseq
+            print >> sys.stderr, '\nOutput of %s has changed!' % base
             if self.keep_change:
                 os.rename(errname, oldname)
                 return False
@@ -105,18 +121,9 @@ class example:
                 os.system('diff -u %s %s 1>&2' % (oldname, errname))
             return True
 
-def wopen(name):
-    path = os.path.dirname(name)
-    if path:
-        try:
-            os.makedirs(path)
-        except OSError, err:
-            if err.errno != errno.EEXIST:
-                raise
-    return open(name, 'w')
-
 class static_example(example):
     def run(self):
+        self.status('running %s\n' % self.name)
         s = open(self.name).read().rstrip()
         s = s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
         ofp = wopen(result_name(self.name + '.tmp'))
@@ -152,11 +159,6 @@ class shell_example(example):
                 yield cfp.getvalue()
                 cfp.seek(0)
                 cfp.truncate()
-        
-    def status(self, s):
-        sys.stdout.write(s)
-        if not s.endswith('\n'):
-            sys.stdout.flush()
 
     def send(self, s):
         if self.verbose:
