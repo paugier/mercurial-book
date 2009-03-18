@@ -35,7 +35,7 @@ image-png := $(filter %.png,$(image-sources))
 
 image-html := $(image-dot:%.dot=%.png) $(image-svg:%.svg=%.png) $(image-png)
 
-example-sources := \
+example-sources-by-name := \
 	backout \
 	bisect \
 	branching \
@@ -66,6 +66,10 @@ example-sources := \
 	template.svnstyle \
 	tour \
 	tour-merge-conflict
+
+example-sources := \
+	$(example-sources-by-name:%=examples/%) \
+	$(wildcard examples/ch*/*)
 
 obj-web := html
 obj-websup := html/support
@@ -162,11 +166,10 @@ valid: .validated-00book.xml
 
 examples: $(example-prereqs) examples/.run
 
-examples/.run: $(example-sources:%=examples/%.run)
-	touch examples/.run
+examples/.run: $(example-sources)
+	cd examples && ./run-example
 
 examples/%.run: examples/% examples/run-example
-	cd examples && ./run-example $(notdir $<)
 
 clean:
 	-rm -rf dist html $(image-dot:%.dot=%.pdf) $(image-dot:%.dot=%.png) \

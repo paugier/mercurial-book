@@ -256,7 +256,8 @@
 	role="home">~/.hgrc</filename> file, and add the lines
       below.</para>
 
-    <programlisting>[extensions] hgext.mq =</programlisting>
+    <programlisting>[extensions]
+hgext.mq =</programlisting>
 
     <para>Once the extension is enabled, it will make a number of new
       commands available.  To verify that the extension is working,
@@ -870,11 +871,9 @@
 	      role="hg-opt-update">-C</option></command> to override
 	  the patches you have pushed.</para>
       </listitem>
-      <listitem><para>Merge all patches using
-	  \hgcmdargs{qpush}{<option role="hg-ext-mq-cmd-qpush-opt">hg
-	    -m</option> <option role="hg-ext-mq-cmd-qpush-opt">hg
-	    -a</option>}.  The <option
-	    role="hg-ext-mq-cmd-qpush-opt">hg -m</option> option to
+      <listitem><para>Merge all patches using <command>hg qpush -m
+	    -a</command>.  The <option
+	    role="hg-ext-mq-cmd-qpush-opt">-m</option> option to
 	  <command role="hg-ext-mq">qpush</command> tells MQ to
 	  perform a three-way merge if the patch fails to
 	  apply.</para>
@@ -931,10 +930,8 @@
       changeset ID will also accept the name of an applied patch.  MQ
       augments the tags normally in the repository with an eponymous
       one for each applied patch.  In addition, the special tags
-      \index{tags!special tag
-      names!<literal>qbase</literal>}<literal>qbase</literal> and
-      \index{tags!special tag
-      names!<literal>qtip</literal>}<literal>qtip</literal> identify
+      <literal role="tag">qbase</literal> and
+      <literal role="tag">qtip</literal> identify
       the <quote>bottom-most</quote> and topmost applied patches,
       respectively.</para>
 
@@ -943,17 +940,14 @@
     <itemizedlist>
       <listitem><para>Want to patchbomb a mailing list with your
 	  latest series of changes?</para>
-	<programlisting>hg email qbase:qtip
-	</programlisting>
+	<programlisting>hg email qbase:qtip</programlisting>
 	<para>  (Don't know what <quote>patchbombing</quote> is?  See
 	  section <xref linkend="sec.hgext.patchbomb"/>.)</para>
       </listitem>
       <listitem><para>Need to see all of the patches since
 	  <literal>foo.patch</literal> that have touched files in a
 	  subdirectory of your tree?</para>
-	<programlisting>
-	  hg log -r foo.patch:qtip <emphasis>subdir</emphasis>
-	</programlisting>
+	<programlisting>hg log -r foo.patch:qtip subdir</programlisting>
       </listitem>
     </itemizedlist>
 
@@ -1081,8 +1075,7 @@
 	snippet in your <filename
 	  role="home">~/.bashrc</filename>.</para>
 
-      <programlisting>alias mq=`hg -R $(hg
-	root)/.hg/patches'</programlisting>
+      <programlisting>alias mq=`hg -R $(hg root)/.hg/patches'</programlisting>
 
       <para>You can then issue commands of the form <command>mq
 	  pull</command> from the main repository.</para>

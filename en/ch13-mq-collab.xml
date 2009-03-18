@@ -460,8 +460,9 @@
 	  role="hg-ext">extdiff</literal> extension in the usual way,
 	by adding a line to the <literal
 	  role="rc-extensions">extensions</literal> section of your
-	<filename role="special"> /.hgrc</filename>.</para>
-      <programlisting>[extensions] extdiff =</programlisting>
+	<filename role="special">~/.hgrc</filename>.</para>
+      <programlisting>[extensions]
+extdiff =</programlisting>
       <para>The <command>interdiff</command> command expects to be
 	passed the names of two files, but the <literal
 	  role="hg-ext">extdiff</literal> extension passes the program
@@ -477,22 +478,20 @@
       <para>With the <filename role="special">hg-interdiff</filename>
 	program in your shell's search path, you can run it as
 	follows, from inside an MQ patch directory:</para>
-      <programlisting>hg extdiff -p hg-interdiff -r A:B
-	my-change.patch</programlisting>
+      <programlisting>hg extdiff -p hg-interdiff -r A:B my-change.patch</programlisting>
       <para>Since you'll probably want to use this long-winded command
 	a lot, you can get <literal role="hg-ext">hgext</literal> to
 	make it available as a normal Mercurial command, again by
-	editing your <filename role="special">
-	  /.hgrc</filename>.</para>
-      <programlisting>[extdiff] cmd.interdiff =
-	hg-interdiff</programlisting>
+	editing your <filename
+	  role="special">~/.hgrc</filename>.</para>
+      <programlisting>[extdiff]
+cmd.interdiff = hg-interdiff</programlisting>
       <para>This directs <literal role="hg-ext">hgext</literal> to
 	make an <literal>interdiff</literal> command available, so you
 	can now shorten the previous invocation of <command
 	  role="hg-ext-extdiff">extdiff</command> to something a
 	little more wieldy.</para>
-      <programlisting>hg interdiff -r A:B
-	my-change.patch</programlisting>
+      <programlisting>hg interdiff -r A:B my-change.patch</programlisting>
 
       <note>
 	<para>  The <command>interdiff</command> command works well

@@ -115,7 +115,7 @@
       <para>In some cases, you may be exposed to hooks that you did
 	not install yourself.  If you work with Mercurial on an
 	unfamiliar system, Mercurial will run hooks defined in that
-	system's global <filename role="special"> /.hgrc</filename>\
+	system's global <filename role="special">~/.hgrc</filename>
 	file.
       </para>
 
@@ -175,8 +175,7 @@
       <para>In a corporate intranet, this is somewhat easier to
 	control, as you can for example provide a
 	<quote>standard</quote> installation of Mercurial on an NFS
-	filesystem, and use a site-wide <filename role="special">
-	  /.hgrc</filename>\ file to define hooks that all users will
+	filesystem, and use a site-wide <filename role="special">~/.hgrc</filename> file to define hooks that all users will
 	see.  However, this too has its limits; see below.
       </para>
 
@@ -190,7 +189,7 @@
       </para>
 
       <para>If you deploy a system- or site-wide <filename
-	  role="special"> /.hgrc</filename>\ file that defines some
+	  role="special">~/.hgrc</filename> file that defines some
 	hooks, you should thus understand that your users can disable
 	or override those hooks.
       </para>
@@ -203,7 +202,7 @@
 	want others to be able to work around.  For example, you may
 	have a requirement that every changeset must pass a rigorous
 	set of tests.  Defining this requirement via a hook in a
-	site-wide <filename role="special"> /.hgrc</filename>\ won't
+	site-wide <filename role="special">~/.hgrc</filename> won't
 	work for remote users on laptops, and of course local users
 	can subvert it at will by overriding the hook.
       </para>
@@ -359,7 +358,7 @@
 
     <para>You add an entry to the <literal
 	role="rc-hooks">hooks</literal> section of your <filename
-	role="special"> /.hgrc</filename>.  On the left is the name of
+	role="special">~/.hgrc</filename>.  On the left is the name of
       the event to trigger on; on the right is the action to take.  As
       you can see, you can run an arbitrary shell command in a hook.
       Mercurial passes extra information to the hook using environment
@@ -533,7 +532,7 @@
       <title>Writing an external hook</title>
 
       <para>When you define an external hook in your <filename
-	  role="special"> /.hgrc</filename>\ and the hook is run, its
+	  role="special">~/.hgrc</filename> and the hook is run, its
 	value is passed to your shell, which interprets it.  This
 	means that you can use normal shell constructs in the body of
 	the hook.
@@ -561,7 +560,7 @@
     <sect2>
       <title>Telling Mercurial to use an in-process hook</title>
 
-      <para>The <filename role="special"> /.hgrc</filename>\ syntax
+      <para>The <filename role="special">~/.hgrc</filename> syntax
 	for defining an in-process hook is slightly different than for
 	an executable hook.  The value of the hook must start with the
 	text <quote><literal>python:</literal></quote>, and continue
@@ -575,12 +574,12 @@
 	  work</quote>.
       </para>
 
-      <para>The following <filename role="special"> /.hgrc</filename>\
+      <para>The following <filename role="special">~/.hgrc</filename>
 	example snippet illustrates the syntax and meaning of the
 	notions we just described.
       </para>
-      <programlisting>[hooks] commit.example =
-	python:mymodule.submodule.myhook</programlisting>
+      <programlisting>[hooks]
+commit.example = python:mymodule.submodule.myhook</programlisting>
       <para>When Mercurial runs the <literal>commit.example</literal>
 	hook, it imports <literal>mymodule.submodule</literal>, looks
 	for the callable object named <literal>myhook</literal>, and
@@ -595,7 +594,7 @@
 	the basic shape of the hook API:
       </para>
       <programlisting>def myhook(ui, repo, **kwargs):
-	pass</programlisting>
+    pass</programlisting>
       <para>The first argument to a Python hook is always a <literal
 	  role="py-mod-mercurial.ui">ui</literal> object.  The second
 	is a repository object; at the moment, it is always an
@@ -745,8 +744,8 @@
 	  changeset, and roll back a group of changesets if they
 	  modify <quote>forbidden</quote> files.  Example:
 	</para>
-	<programlisting>[hooks] pretxnchangegroup.acl =
-	  python:hgext.acl.hook</programlisting>
+	<programlisting>[hooks]
+pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 
 	<para>The <literal role="hg-ext">acl</literal> extension is
 	  configured using three sections.
@@ -813,8 +812,10 @@
 	  to any file or directory except <filename
 	    class="directory">source/sensitive</filename>.
 	</para>
-	<programlisting>[acl.allow] docs/** = docwriter [acl.deny]
-	  source/sensitive/** = intern</programlisting>
+	<programlisting>[acl.allow]
+docs/** = docwriter
+[acl.deny]
+source/sensitive/** = intern</programlisting>
 
       </sect3>
       <sect3>
@@ -827,9 +828,10 @@
 	  possible) to pass in the <option
 	    role="hg-opt-global">--debug</option> option, don't forget
 	  that you can enable debugging output in your <filename
-	    role="special"> /.hgrc</filename>:
+	    role="special">~/.hgrc</filename>:
 	</para>
-	<programlisting>[ui] debug = true</programlisting>
+	<programlisting>[ui]
+debug = true</programlisting>
 	<para>With this enabled, the <literal
 	    role="hg-ext">acl</literal> hook will print enough
 	  information to let you figure out why it is allowing or
@@ -893,12 +895,12 @@
 	  hook</title>
 
 	<para>You should configure this hook in your server's
-	  <filename role="special"> /.hgrc</filename>\ as an <literal
+	  <filename role="special">~/.hgrc</filename> as an <literal
 	    role="hook">incoming</literal> hook, for example as
 	  follows:
 	</para>
-	<programlisting>[hooks] incoming.bugzilla =
-	  python:hgext.bugzilla.hook</programlisting>
+	<programlisting>[hooks]
+incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 
 	<para>Because of the specialised nature of this hook, and
 	  because Bugzilla was not written with this kind of
@@ -915,7 +917,7 @@
 
 	<para>Configuration information for this hook lives in the
 	  <literal role="rc-bugzilla">bugzilla</literal> section of
-	  your <filename role="special"> /.hgrc</filename>.
+	  your <filename role="special">~/.hgrc</filename>.
 	</para>
 	<itemizedlist>
 	  <listitem><para><envar
@@ -950,7 +952,7 @@
 	      password for the user you configured above.  This is
 	      stored as plain text, so you should make sure that
 	      unauthorised users cannot read the <filename
-		role="special"> /.hgrc</filename>\ file where you
+		role="special">~/.hgrc</filename> file where you
 	      store this information.
 	    </para>
 	  </listitem>
@@ -1005,8 +1007,8 @@
 	  email address on the left, and a Bugzilla user name on the
 	  right.
 	</para>
-	<programlisting>[usermap] jane.user@example.com =
-	  jane</programlisting>
+	<programlisting>[usermap]
+jane.user@example.com = jane</programlisting>
 	<para>You can either keep the <literal
 	    role="rc-usermap">usermap</literal> data in a normal
 	  <filename role="special">~/.hgrc</filename>, or tell the
@@ -1017,18 +1019,17 @@
 	  a user-modifiable repository.  This makes it possible to let
 	  your users maintain their own <envar
 	    role="rc-item-bugzilla">usermap</envar> entries.  The main
-	  <filename role="special"> /.hgrc</filename>\ file might look
+	  <filename role="special">~/.hgrc</filename> file might look
 	  like this:
 	</para>
-	<programlisting># regular hgrc file refers to external usermap
-	  file [bugzilla] usermap =
-	  /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
+	<programlisting># regular hgrc file refers to external usermap file
+[bugzilla]
+usermap = /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
 	<para>While the <filename>usermap</filename> file that it
 	  refers to might look like this:
 	</para>
-	<programlisting># bugzilla-usermap.conf - inside a hg
-	  repository [usermap] stephanie@example.com =
-	  steph</programlisting>
+	<programlisting># bugzilla-usermap.conf - inside a hg repository
+[usermap] stephanie@example.com = steph</programlisting>
 
       </sect3>
       <sect3>
@@ -1036,7 +1037,7 @@
 
 	<para>You can configure the text that this hook adds as a
 	  comment; you specify it in the form of a Mercurial template.
-	  Several <filename role="special"> /.hgrc</filename>\ entries
+	  Several <filename role="special">~/.hgrc</filename> entries
 	  (still in the <literal role="rc-bugzilla">bugzilla</literal>
 	  section) control this behaviour.
 	</para>
@@ -1068,27 +1069,20 @@
 	<para>In addition, you can add a <envar
 	    role="rc-item-web">baseurl</envar> item to the <literal
 	    role="rc-web">web</literal> section of your <filename
-	    role="special"> /.hgrc</filename>.  The <literal
+	    role="special">~/.hgrc</filename>.  The <literal
 	    role="hg-ext">bugzilla</literal> hook will make this
 	  available when expanding a template, as the base string to
 	  use when constructing a URL that will let users browse from
 	  a Bugzilla comment to view a changeset.  Example:
 	</para>
-	<programlisting>[web] baseurl =
-	  http://hg.domain.com/</programlisting>
+	<programlisting>[web]
+baseurl = http://hg.domain.com/</programlisting>
 
 	<para>Here is an example set of <literal
 	    role="hg-ext">bugzilla</literal> hook config information.
 	</para>
-	<programlisting>[bugzilla] host = bugzilla.example.com
-	  password = mypassword version = 2.16 # server-side repos
-	  live in /home/hg/repos, so strip 4 leading # separators
-	  strip = 4 hgweb = http://hg.example.com/ usermap =
-	  /home/hg/repos/notify/bugzilla.conf template = Changeset
-	  {node|short}, made by {author} in the {webroot} repo, refers
-	  to this bug.\\nFor complete details, see
-	  {hgweb}{webroot}?cmd=changeset;node={node|short}\\nChangeset
-	  description:\\n\\t{desc|tabindent}</programlisting>
+
+	&ch10-bugzilla-config.lst;
 
       </sect3>
       <sect3>
@@ -1116,9 +1110,8 @@
 	  <command>sudo</command> command.  Here is an example entry
 	  for a <filename>sudoers</filename> file.
 	</para>
-	<programlisting>hg_user = (httpd_user) NOPASSWD:
-	  /var/www/html/bugzilla/processmail-wrapper
-	  %s</programlisting>
+	<programlisting>hg_user = (httpd_user)
+NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s</programlisting>
 	<para>This allows the <literal>hg_user</literal> user to run a
 	  <filename>processmail-wrapper</filename> program under the
 	  identity of <literal>httpd_user</literal>.
@@ -1131,8 +1124,8 @@
 	  <filename>sudoers</filename> file.  The contents of the
 	  wrapper script are simple:
 	</para>
-	<programlisting>#!/bin/sh cd `dirname $0` &amp;&amp;
-	  ./processmail "$1" nobody@example.com</programlisting>
+	<programlisting>#!/bin/sh
+cd `dirname $0` &amp;&amp; ./processmail "$1" nobody@example.com</programlisting>
 	<para>It doesn't seem to matter what email address you pass to
 	  <filename>processmail</filename>.
 	</para>
@@ -1143,8 +1136,7 @@
 	  push changes to the server.  The error message will look
 	  like this:
 	</para>
-	<programlisting>cannot find bugzilla user id for
-	  john.q.public@example.com</programlisting>
+	<programlisting>cannot find bugzilla user id for john.q.public@example.com</programlisting>
 	<para>What this means is that the committer's address,
 	  <literal>john.q.public@example.com</literal>, is not a valid
 	  Bugzilla user name, nor does it have an entry in your
@@ -1189,14 +1181,15 @@
 	  changesets (all those that arrived in a single pull or
 	  push).
 	</para>
-	<programlisting>[hooks] # send one email per group of changes
-	  changegroup.notify = python:hgext.notify.hook # send one
-	  email per change incoming.notify =
-	  python:hgext.notify.hook</programlisting>
+	<programlisting>[hooks]
+# send one email per group of changes
+changegroup.notify = python:hgext.notify.hook
+# send one email per change
+incoming.notify = python:hgext.notify.hook</programlisting>
 
 	<para>Configuration information for this hook lives in the
 	  <literal role="rc-notify">notify</literal> section of a
-	  <filename role="special"> /.hgrc</filename>\ file.
+	  <filename role="special">~/.hgrc</filename> file.
 	</para>
 	<itemizedlist>
 	  <listitem><para><envar role="rc-item-notify">test</envar>:
@@ -1214,7 +1207,7 @@
 	  <listitem><para><envar role="rc-item-notify">config</envar>:
 	      The path to a configuration file that contains
 	      subscription information.  This is kept separate from
-	      the main <filename role="special"> /.hgrc</filename>\ so
+	      the main <filename role="special">~/.hgrc</filename> so
 	      that you can maintain it in a repository of its own.
 	      People can then clone that repository, update their
 	      subscriptions, and push the changes back to your server.
@@ -1273,35 +1266,14 @@
 	<para>Here is an example set of <literal
 	    role="hg-ext">notify</literal> configuration information.
 	</para>
-	<programlisting>
-	  [notify] # really send email test = false # subscriber data
-	  lives in the notify repo config =
-	  /home/hg/repos/notify/notify.conf # repos live in
-	  /home/hg/repos on server, so strip 4 "/" chars strip = 4
-	  template = X-Hg-Repo: {webroot} Subject: {webroot}:
-	  {desc|firstline|strip} From: {author} changeset {node|short}
-	  in {root} details:
-	  {baseurl}{webroot}?cmd=changeset;node={node|short}
-	  description: {desc|tabindent|strip} [web] baseurl =
-	  http://hg.example.com/
-	</programlisting>
+
+	&ch10-notify-config.lst;
 
 	<para>This will produce a message that looks like the
 	  following:
 	</para>
-	<programlisting>
-	  X-Hg-Repo: tests/slave Subject: tests/slave: Handle error
-	  case when slave has no buffers Date: Wed,  2 Aug 2006
-	  15:25:46 -0700 (PDT) changeset 3cba9bfe74b5 in
-	  /home/hg/repos/tests/slave details:
-	  http://hg.example.com/tests/slave?cmd=changeset;node=3cba9bfe74b5 
-	  description: Handle error case when slave has no buffers
-	  diffs (54 lines): diff -r 9d95df7cf2ad -r 3cba9bfe74b5
-	  include/tests.h --- a/include/tests.h      Wed Aug 02
-	  15:19:52 2006 -0700 +++ b/include/tests.h      Wed Aug 02
-	  15:25:26 2006 -0700 @@ -212,6 +212,15 @@ static __inline__
-	  void test_headers(void *h) [...snip...]
-	</programlisting>
+
+	&ch10-notify-config-mail.lst;
 
       </sect3>
       <sect3>
@@ -1327,9 +1299,7 @@
       <para>An in-process hook is called with arguments of the
 	following form:
       </para>
-      <programlisting>
-	def myhook(ui, repo, **kwargs): pass
-      </programlisting>
+      <programlisting>def myhook(ui, repo, **kwargs): pass</programlisting>
       <para>The <literal>ui</literal> parameter is a <literal
 	  role="py-mod-mercurial.ui">ui</literal> object. The
 	<literal>repo</literal> parameter is a <literal
@@ -1373,7 +1343,7 @@
       <para>Note that changeset IDs are passed into Python hooks as
 	hexadecimal strings, not the binary hashes that Mercurial's
 	APIs normally use.  To convert a hash from hex to binary, use
-	the \pymodfunc{mercurial.node}{bin} function.
+	the <literal>bin</literal> function.
       </para>
 
     </sect2>
@@ -1526,9 +1496,8 @@
 	<listitem><para><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the first changeset in the group that was
 	    added.  All changesets between this and
-	    \index{tags!<literal>tip</literal>}<literal>tip</literal>,
-	    inclusive, were added by a single <command
-	      role="hg-cmd">hg pull</command>, <command
+	    <literal role="tag">tip</literal>, inclusive, were added by a single
+	    <command role="hg-cmd">hg pull</command>, <command
 	      role="hg-cmd">hg push</command> or <command
 	      role="hg-cmd">hg unbundle</command>.
 	  </para>
@@ -1880,7 +1849,7 @@
 	<listitem><para><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the first changeset in the group that was
 	    added.  All changesets between this and
-	    \index{tags!<literal>tip</literal>}<literal>tip</literal>,
+	    <literal role="tag">tip</literal>,
 	    inclusive, were added by a single <command
 	      role="hg-cmd">hg pull</command>, <command
 	      role="hg-cmd">hg push</command> or <command

@@ -44,11 +44,12 @@
       <title>Setting a default style</title>
 
       <para>You can modify the output style that Mercurial will use
-	for every command by editing your <filename role="special">
-	  /.hgrc</filename>\ file, naming the style you would prefer
-	to use.</para>
+	for every command by editing your <filename
+	  role="special">~/.hgrc</filename> file, naming the style
+	you would prefer to use.</para>
 
-      <programlisting>[ui] style = compact</programlisting>
+      <programlisting>[ui]
+style = compact</programlisting>
 
       <para>If you write a style of your own, you can use it by either
 	providing the path to your style file, or copying your style
@@ -212,27 +213,27 @@
       single replacement, as described below.</para>
 
     <itemizedlist>
-      <listitem><para><literal>\textbackslash\textbackslash</literal>:
+      <listitem><para><literal>\</literal>:
 	  Backslash, <quote><literal>\</literal></quote>, ASCII
 	  134.</para>
       </listitem>
-      <listitem><para><literal>\textbackslash n</literal>: Newline,
+      <listitem><para><literal>\n</literal>: Newline,
 	  ASCII 12.</para>
       </listitem>
-      <listitem><para><literal>\textbackslash r</literal>: Carriage
+      <listitem><para><literal>\r</literal>: Carriage
 	  return, ASCII 15.</para>
       </listitem>
-      <listitem><para><literal>\textbackslash t</literal>: Tab, ASCII
+      <listitem><para><literal>\t</literal>: Tab, ASCII
 	  11.</para>
       </listitem>
-      <listitem><para><literal>\textbackslash v</literal>: Vertical
+      <listitem><para><literal>\v</literal>: Vertical
 	  tab, ASCII 13.</para>
       </listitem>
-      <listitem><para><literal>\textbackslash {</literal>: Open curly
+      <listitem><para><literal>{</literal>: Open curly
 	  brace, <quote><literal>{</literal></quote>, ASCII
 	  173.</para>
       </listitem>
-      <listitem><para><literal>\textbackslash }</literal>: Close curly
+      <listitem><para><literal>}</literal>: Close curly
 	  brace, <quote><literal>}</literal></quote>, ASCII
 	  175.</para>
       </listitem></itemizedlist>
@@ -548,24 +549,19 @@
       <itemizedlist>
 	<listitem><para>The first component is simply Mercurial's way
 	    of saying <quote>I am giving up</quote>.</para>
-	  <programlisting>___abort___: broken.style:1: parse
-	    error</programlisting>
+	  <programlisting>___abort___: broken.style:1: parse error</programlisting>
 	</listitem>
 	<listitem><para>Next comes the name of the style file that
 	    contains the error.</para>
-	  <programlisting>
-	    abort: ___broken.style___:1: parse error
-	  </programlisting>
+	  <programlisting>abort: ___broken.style___:1: parse error</programlisting>
 	</listitem>
 	<listitem><para>Following the file name is the line number
 	    where the error was encountered.</para>
-	  <programlisting>abort: broken.style:___1___: parse
-	    error</programlisting>
+	  <programlisting>abort: broken.style:___1___: parse error</programlisting>
 	</listitem>
 	<listitem><para>Finally, a description of what went
 	    wrong.</para>
-	  <programlisting>abort: broken.style:1: ___parse
-	    error___</programlisting>
+	  <programlisting>abort: broken.style:1: ___parse error___</programlisting>
 	</listitem>
 	<listitem><para>The description of the problem is not always
 	    clear (as in this case), but even when it is cryptic, it
