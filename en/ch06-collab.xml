@@ -536,8 +536,8 @@
 	</listitem>
 	<listitem><para>The <quote>:22</quote> identifies the port
 	    number to connect to the server on.  The default port is
-	    22, so you only need to specify this part if you're
-	    <emphasis>not</emphasis> using port 22.</para>
+	    22, so you only need to specify a colon and port number if
+	    you're <emphasis>not</emphasis> using port 22.</para>
 	</listitem>
 	<listitem><para>The remainder of the URL is the local path to
 	    the repository on the server.</para>
@@ -597,8 +597,8 @@
 	example, if you're using PuTTY, you'll need to use the
 	<command>plink</command> command as a command-line ssh
 	client.</para>
-      <programlisting>[ui] ssh = C:/path/to/plink.exe -ssh -i
-	"C:/path/to/my/private/key"</programlisting>
+      <programlisting>[ui]
+ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 
       <note>
 	<para>  The path to <command>plink</command> shouldn't contain
@@ -840,15 +840,17 @@
 	turns on compression.  You can easily edit your <filename
 	  role="special"> /.hgrc</filename>\ to enable compression for
 	all of Mercurial's uses of the ssh protocol.</para>
-      <programlisting>[ui] ssh = ssh -C</programlisting>
+      <programlisting>[ui]
+ssh = ssh -C</programlisting>
 
       <para>If you use <command>ssh</command>, you can configure it to
 	always use compression when talking to your server.  To do
 	this, edit your <filename
 	  role="special">.ssh/config</filename> file (which may not
 	yet exist), as follows.</para>
-      <programlisting>Host hg Compression yes HostName
-	hg.example.com</programlisting>
+      <programlisting>Host hg
+  Compression yes
+  HostName hg.example.com</programlisting>
       <para>This defines an alias, <literal>hg</literal>.  When you
 	use it on the <command>ssh</command> command line or in a
 	Mercurial <literal>ssh</literal>-protocol URL, it will cause
@@ -936,8 +938,8 @@
       <para>You'll need to copy this script into your <filename
 	  class="directory">public_html</filename> directory, and
 	ensure that it's executable.</para>
-      <programlisting>cp .../hgweb.cgi ~/public_html chmod 755
-	~/public_html/hgweb.cgi</programlisting>
+      <programlisting>cp .../hgweb.cgi ~/public_html
+chmod 755 ~/public_html/hgweb.cgi</programlisting>
       <para>The <literal>755</literal> argument to
 	<command>chmod</command> is a little more general than just
 	making the script executable: it ensures that the script is
@@ -986,9 +988,9 @@
 	    class="directory">public_html</filename> directory, and
 	  read files under the latter too.  Here's a quick recipe to
 	  help you to make your permissions more appropriate.</para>
-	<programlisting>chmod 755 ~ find ~/public_html -type d -print0
-	  | xargs -0r chmod 755 find ~/public_html -type f -print0 |
-	  xargs -0r chmod 644</programlisting>
+	<programlisting>chmod 755 ~
+find ~/public_html -type d -print0 | xargs -0r chmod 755
+find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
 	<para>The other possibility with permissions is that you might
 	  get a completely empty window when you try to load the
@@ -1001,6 +1003,9 @@
 	  of CGI programs in your per-user web directory.  Here's
 	  Apache's default per-user configuration from my Fedora
 	  system.</para>
+
+	&ch06-apache-config.lst;
+
 	<programlisting>&lt;Directory /home/*/public_html&gt;
 	  AllowOverride FileInfo AuthConfig Limit Options MultiViews
 	  Indexes SymLinksIfOwnerMatch IncludesNoExec &lt;Limit GET
