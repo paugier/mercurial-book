@@ -146,6 +146,9 @@ websup: $(extras-web)
 	cp ../xsl/system-xsl/images/*.png $(obj-websup)/figs
 	cp -f ../web/icons/*.png $(obj-websup)/figs
 
+all-ids.dat: ../xsl/all-ids.xsl $(xml-src-files)
+	$(xsltproc) $(xsltproc-opts) -o $@ ../xsl/all-ids.xsl 00book.xml
+
 web: websup
 
 valid: .validated-00book.xml
