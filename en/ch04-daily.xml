@@ -7,14 +7,14 @@
   <sect1>
     <title>Telling Mercurial which files to track</title>
 
-    <para>Mercurial does not work with files in your repository unless
+    <para id="x_1a3">Mercurial does not work with files in your repository unless
       you tell it to manage them.  The <command role="hg-cmd">hg
 	status</command> command will tell you which files Mercurial
       doesn't know about; it uses a
       <quote><literal>?</literal></quote> to display such
       files.</para>
 
-    <para>To tell Mercurial to track a file, use the <command
+    <para id="x_1a4">To tell Mercurial to track a file, use the <command
 	role="hg-cmd">hg add</command> command.  Once you have added a
       file, the entry in the output of <command role="hg-cmd">hg
 	status</command> for that file changes from
@@ -23,7 +23,7 @@
 
       &interaction.daily.files.add;
 
-    <para>After you run a <command role="hg-cmd">hg commit</command>,
+    <para id="x_1a5">After you run a <command role="hg-cmd">hg commit</command>,
       the files that you added before the commit will no longer be
       listed in the output of <command role="hg-cmd">hg
 	status</command>.  The reason for this is that <command
@@ -35,7 +35,7 @@
       is tracking, but that have not changed.  (You can still get this
       information; we'll return to this later.)</para>
 
-    <para>Once you add a file, Mercurial doesn't do anything with it
+    <para id="x_1a6">Once you add a file, Mercurial doesn't do anything with it
       immediately.  Instead, it will take a snapshot of the file's
       state the next time you perform a commit.  It will then continue
       to track the changes you make to the file every time you commit,
@@ -44,24 +44,24 @@
     <sect2>
       <title>Explicit versus implicit file naming</title>
 
-      <para>A useful behaviour that Mercurial has is that if you pass
+      <para id="x_1a7">A useful behaviour that Mercurial has is that if you pass
 	the name of a directory to a command, every Mercurial command
 	will treat this as <quote>I want to operate on every file in
 	  this directory and its subdirectories</quote>.</para>
 
       &interaction.daily.files.add-dir;
 
-      <para>Notice in this example that Mercurial printed the names of
+      <para id="x_1a8">Notice in this example that Mercurial printed the names of
 	the files it added, whereas it didn't do so when we added the
 	file named <filename>a</filename> in the earlier
 	example.</para>
 
-      <para>What's going on is that in the former case, we explicitly
+      <para id="x_1a9">What's going on is that in the former case, we explicitly
 	named the file to add on the command line, so the assumption
 	that Mercurial makes in such cases is that you know what you
 	were doing, and it doesn't print any output.</para>
 
-      <para>However, when we <emphasis>imply</emphasis> the names of
+      <para id="x_1aa">However, when we <emphasis>imply</emphasis> the names of
 	files by giving the name of a directory, Mercurial takes the
 	extra step of printing the name of each file that it does
 	something with.  This makes it more clear what is happening,
@@ -72,7 +72,7 @@
     <sect2>
       <title>Aside: Mercurial tracks files, not directories</title>
 
-      <para>Mercurial does not track directory information.  Instead,
+      <para id="x_1ab">Mercurial does not track directory information.  Instead,
 	it tracks the path to a file.  Before creating a file, it
 	first creates any missing directory components of the path.
 	After it deletes a file, it then deletes any empty directories
@@ -81,14 +81,14 @@
 	consequence: it is not possible to represent a completely
 	empty directory in Mercurial.</para>
 
-      <para>Empty directories are rarely useful, and there are
+      <para id="x_1ac">Empty directories are rarely useful, and there are
 	unintrusive workarounds that you can use to achieve an
 	appropriate effect.  The developers of Mercurial thus felt
 	that the complexity that would be required to manage empty
 	directories was not worth the limited benefit this feature
 	would bring.</para>
 
-      <para>If you need an empty directory in your repository, there
+      <para id="x_1ad">If you need an empty directory in your repository, there
 	are a few ways to achieve this. One is to create a directory,
 	then <command role="hg-cmd">hg add</command> a
 	<quote>hidden</quote> file to that directory.  On Unix-like
@@ -99,7 +99,7 @@
 
 &interaction.daily.files.hidden;
 
-      <para>Another way to tackle a need for an empty directory is to
+      <para id="x_1ae">Another way to tackle a need for an empty directory is to
 	simply create one in your automated build scripts before they
 	will need it.</para>
 
@@ -108,7 +108,7 @@
   <sect1>
     <title>How to stop tracking a file</title>
 
-    <para>Once you decide that a file no longer belongs in your
+    <para id="x_1af">Once you decide that a file no longer belongs in your
       repository, use the <command role="hg-cmd">hg remove</command>
       command; this deletes the file, and tells Mercurial to stop
       tracking it.  A removed file is represented in the output of
@@ -117,7 +117,7 @@
 
     &interaction.daily.files.remove;
 
-    <para>After you <command role="hg-cmd">hg remove</command> a file,
+    <para id="x_1b0">After you <command role="hg-cmd">hg remove</command> a file,
       Mercurial will no longer track changes to that file, even if you
       recreate a file with the same name in your working directory.
       If you do recreate a file with the same name and want Mercurial
@@ -128,19 +128,19 @@
     <sect2>
       <title>Removing a file does not affect its history</title>
 
-      <para>It is important to understand that removing a file has
+      <para id="x_1b1">It is important to understand that removing a file has
 	only two effects.</para>
       <itemizedlist>
-	<listitem><para>It removes the current version of the file
+	<listitem><para id="x_1b2">It removes the current version of the file
 	    from the working directory.</para>
 	</listitem>
-	<listitem><para>It stops Mercurial from tracking changes to
+	<listitem><para id="x_1b3">It stops Mercurial from tracking changes to
 	    the file, from the time of the next commit.</para>
 	</listitem></itemizedlist>
-      <para>Removing a file <emphasis>does not</emphasis> in any way
+      <para id="x_1b4">Removing a file <emphasis>does not</emphasis> in any way
 	alter the <emphasis>history</emphasis> of the file.</para>
 
-      <para>If you update the working directory to a changeset in
+      <para id="x_1b5">If you update the working directory to a changeset in
 	which a file that you have removed was still tracked, it will
 	reappear in the working directory, with the contents it had
 	when you committed that changeset.  If you then update the
@@ -152,7 +152,7 @@
     <sect2>
       <title>Missing files</title>
 
-      <para>Mercurial considers a file that you have deleted, but not
+      <para id="x_1b6">Mercurial considers a file that you have deleted, but not
 	used <command role="hg-cmd">hg remove</command> to delete, to
 	be <emphasis>missing</emphasis>.  A missing file is
 	represented with <quote><literal>!</literal></quote> in the
@@ -162,7 +162,7 @@
 
       &interaction.daily.files.missing;
 
-      <para>If your repository contains a file that <command
+      <para id="x_1b7">If your repository contains a file that <command
 	  role="hg-cmd">hg status</command> reports as missing, and
 	you want the file to stay gone, you can run <command
 	  role="hg-cmd">hg remove <option
@@ -172,7 +172,7 @@
 
       &interaction.daily.files.remove-after;
 
-      <para>On the other hand, if you deleted the missing file by
+      <para id="x_1b8">On the other hand, if you deleted the missing file by
 	accident, give <command role="hg-cmd">hg revert</command> the
 	name of the file to recover.  It will reappear, in unmodified
 	form.</para>
@@ -184,7 +184,7 @@
       <title>Aside: why tell Mercurial explicitly to remove a
 	file?</title>
 
-      <para>You might wonder why Mercurial requires you to explicitly
+      <para id="x_1b9">You might wonder why Mercurial requires you to explicitly
 	tell it that you are deleting a file.  Early during the
 	development of Mercurial, it let you delete a file however you
 	pleased; Mercurial would notice the absence of the file
@@ -198,13 +198,13 @@
       <title>Useful shorthand&emdash;adding and removing files in one
 	step</title>
 
-      <para>Mercurial offers a combination command, <command
+      <para id="x_1ba">Mercurial offers a combination command, <command
 	  role="hg-cmd">hg addremove</command>, that adds untracked
 	files and marks missing files as removed.</para>
 
       &interaction.daily.files.addremove;
 
-      <para>The <command role="hg-cmd">hg commit</command> command
+      <para id="x_1bb">The <command role="hg-cmd">hg commit</command> command
 	also provides a <option role="hg-opt-commit">-A</option>
 	option that performs this same add-and-remove, immediately
 	followed by a commit.</para>
@@ -216,7 +216,7 @@
   <sect1>
     <title>Copying files</title>
 
-    <para>Mercurial provides a <command role="hg-cmd">hg
+    <para id="x_1bc">Mercurial provides a <command role="hg-cmd">hg
 	copy</command> command that lets you make a new copy of a
       file.  When you copy a file using this command, Mercurial makes
       a record of the fact that the new file is a copy of the original
@@ -226,32 +226,32 @@
     <sect2>
       <title>The results of copying during a merge</title>
 
-      <para>What happens during a merge is that changes
+      <para id="x_1bd">What happens during a merge is that changes
 	<quote>follow</quote> a copy.  To best illustrate what this
 	means, let's create an example.  We'll start with the usual
 	tiny repository that contains a single file.</para>
 
       &interaction.daily.copy.init;
 
-      <para>We need to do some work in
+      <para id="x_1be">We need to do some work in
 	parallel, so that we'll have something to merge.  So let's
 	clone our repository.</para>
 
       &interaction.daily.copy.clone;
 
-      <para>Back in our initial repository, let's use the <command
+      <para id="x_1bf">Back in our initial repository, let's use the <command
 	  role="hg-cmd">hg copy</command> command to make a copy of
 	the first file we created.</para>
 
       &interaction.daily.copy.copy;
 
-      <para>If we look at the output of the <command role="hg-cmd">hg
+      <para id="x_1c0">If we look at the output of the <command role="hg-cmd">hg
 	  status</command> command afterwards, the copied file looks
 	just like a normal added file.</para>
 
       &interaction.daily.copy.status;
 
-      <para>But if we pass the <option
+      <para id="x_1c1">But if we pass the <option
 	  role="hg-opt-status">-C</option> option to <command
 	  role="hg-cmd">hg status</command>, it prints another line of
 	output: this is the file that our newly-added file was copied
@@ -259,13 +259,13 @@
 
       &interaction.daily.copy.status-copy;
 
-      <para>Now, back in the repository we cloned, let's make a change
+      <para id="x_1c2">Now, back in the repository we cloned, let's make a change
 	in parallel.  We'll add a line of content to the original file
 	that we created.</para>
 
       &interaction.daily.copy.other;
 
-      <para>Now we have a modified <filename>file</filename> in this
+      <para id="x_1c3">Now we have a modified <filename>file</filename> in this
 	repository.  When we pull the changes from the first
 	repository, and merge the two heads, Mercurial will propagate
 	the changes that we made locally to <filename>file</filename>
@@ -277,41 +277,41 @@
     <sect2 id="sec.daily.why-copy">
       <title>Why should changes follow copies?</title>
 
-      <para>This behaviour, of changes to a file propagating out to
+      <para id="x_1c4">This behaviour, of changes to a file propagating out to
 	copies of the file, might seem esoteric, but in most cases
 	it's highly desirable.</para>
 
-      <para>First of all, remember that this propagation
+      <para id="x_1c5">First of all, remember that this propagation
 	<emphasis>only</emphasis> happens when you merge.  So if you
 	<command role="hg-cmd">hg copy</command> a file, and
 	subsequently modify the original file during the normal course
 	of your work, nothing will happen.</para>
 
-      <para>The second thing to know is that modifications will only
+      <para id="x_1c6">The second thing to know is that modifications will only
 	propagate across a copy as long as the repository that you're
 	pulling changes from <emphasis>doesn't know</emphasis> about
 	the copy.</para>
 
-      <para>The reason that Mercurial does this is as follows.  Let's
+      <para id="x_1c7">The reason that Mercurial does this is as follows.  Let's
 	say I make an important bug fix in a source file, and commit
 	my changes. Meanwhile, you've decided to <command
 	  role="hg-cmd">hg copy</command> the file in your repository,
 	without knowing about the bug or having seen the fix, and you
 	have started hacking on your copy of the file.</para>
 
-      <para>If you pulled and merged my changes, and Mercurial
+      <para id="x_1c8">If you pulled and merged my changes, and Mercurial
 	<emphasis>didn't</emphasis> propagate changes across copies,
 	your source file would now contain the bug, and unless you
 	remembered to propagate the bug fix by hand, the bug would
 	<emphasis>remain</emphasis> in your copy of the file.</para>
 
-      <para>By automatically propagating the change that fixed the bug
+      <para id="x_1c9">By automatically propagating the change that fixed the bug
 	from the original file to the copy, Mercurial prevents this
 	class of problem. To my knowledge, Mercurial is the
 	<emphasis>only</emphasis> revision control system that
 	propagates changes across copies like this.</para>
 
-      <para>Once your change history has a record that the copy and
+      <para id="x_1ca">Once your change history has a record that the copy and
 	subsequent merge occurred, there's usually no further need to
 	propagate changes from the original file to the copied file,
 	and that's why Mercurial only propagates changes across copies
@@ -322,7 +322,7 @@
       <title>How to make changes <emphasis>not</emphasis> follow a
 	copy</title>
 
-      <para>If, for some reason, you decide that this business of
+      <para id="x_1cb">If, for some reason, you decide that this business of
 	automatically propagating changes across copies is not for
 	you, simply use your system's normal file copy command (on
 	Unix-like systems, that's <command>cp</command>) to make a
@@ -338,7 +338,7 @@
       <title>Behaviour of the <command role="hg-cmd">hg copy</command>
 	command</title>
 
-      <para>When you use the <command role="hg-cmd">hg copy</command>
+      <para id="x_1cc">When you use the <command role="hg-cmd">hg copy</command>
 	command, Mercurial makes a copy of each source file as it
 	currently stands in the working directory.  This means that if
 	you make some modifications to a file, then <command
@@ -348,7 +348,7 @@
 	behaviour a little counterintuitive, which is why I mention it
 	here.)</para>
 
-      <para>The <command role="hg-cmd">hg copy</command> command acts
+      <para id="x_1cd">The <command role="hg-cmd">hg copy</command> command acts
 	similarly to the Unix <command>cp</command> command (you can
 	use the <command role="hg-cmd">hg cp</command> alias if you
 	prefer).  The last argument is the
@@ -359,23 +359,23 @@
 
       &interaction.daily.copy.simple;
       
-      <para>If the destination is a directory, Mercurial copies its
+      <para id="x_1ce">If the destination is a directory, Mercurial copies its
 	sources into that directory.</para>
 
       &interaction.daily.copy.dir-dest;
 
-      <para>Copying a directory is
+      <para id="x_1cf">Copying a directory is
 	recursive, and preserves the directory structure of the
 	source.</para>
 
       &interaction.daily.copy.dir-src;
 
-      <para>If the source and destination are both directories, the
+      <para id="x_1d0">If the source and destination are both directories, the
 	source tree is recreated in the destination directory.</para>
 
 	&interaction.daily.copy.dir-src-dest;
 
-      <para>As with the <command role="hg-cmd">hg rename</command>
+      <para id="x_1d1">As with the <command role="hg-cmd">hg rename</command>
 	command, if you copy a file manually and then want Mercurial
 	to know that you've copied the file, simply use the <option
 	  role="hg-opt-copy">--after</option> option to <command
@@ -388,7 +388,7 @@
   <sect1>
     <title>Renaming files</title>
 
-    <para>It's rather more common to need to rename a file than to
+    <para id="x_1d2">It's rather more common to need to rename a file than to
       make a copy of it.  The reason I discussed the <command
 	role="hg-cmd">hg copy</command> command before talking about
       renaming files is that Mercurial treats a rename in essentially
@@ -396,19 +396,19 @@
       when you copy a file tells you what to expect when you rename a
       file.</para>
 
-    <para>When you use the <command role="hg-cmd">hg rename</command>
+    <para id="x_1d3">When you use the <command role="hg-cmd">hg rename</command>
       command, Mercurial makes a copy of each source file, then
       deletes it and marks the file as removed.</para>
 
       &interaction.daily.rename.rename;
 
-    <para>The <command role="hg-cmd">hg status</command> command shows
+    <para id="x_1d4">The <command role="hg-cmd">hg status</command> command shows
       the newly copied file as added, and the copied-from file as
       removed.</para>
 
     &interaction.daily.rename.status;
 
-    <para>As with the results of a <command role="hg-cmd">hg
+    <para id="x_1d5">As with the results of a <command role="hg-cmd">hg
 	copy</command>, we must use the <option
 	role="hg-opt-status">-C</option> option to <command
 	role="hg-cmd">hg status</command> to see that the added file
@@ -417,7 +417,7 @@
 
     &interaction.daily.rename.status-copy;
 
-    <para>As with <command role="hg-cmd">hg remove</command> and
+    <para id="x_1d6">As with <command role="hg-cmd">hg remove</command> and
       <command role="hg-cmd">hg copy</command>, you can tell Mercurial
       about a rename after the fact using the <option
 	role="hg-opt-rename">--after</option> option.  In most other
@@ -429,18 +429,18 @@
     <sect2>
       <title>Renaming files and merging changes</title>
 
-      <para>Since Mercurial's rename is implemented as
+      <para id="x_1d7">Since Mercurial's rename is implemented as
 	copy-and-remove, the same propagation of changes happens when
 	you merge after a rename as after a copy.</para>
 
-      <para>If I modify a file, and you rename it to a new name, and
+      <para id="x_1d8">If I modify a file, and you rename it to a new name, and
 	then we merge our respective changes, my modifications to the
 	file under its original name will be propagated into the file
 	under its new name. (This is something you might expect to
 	<quote>simply work,</quote> but not all revision control
 	systems actually do this.)</para>
 
-      <para>Whereas having changes follow a copy is a feature where
+      <para id="x_1d9">Whereas having changes follow a copy is a feature where
 	you can perhaps nod and say <quote>yes, that might be
 	  useful,</quote> it should be clear that having them follow a
 	rename is definitely important.  Without this facility, it
@@ -451,34 +451,34 @@
     <sect2>
       <title>Divergent renames and merging</title>
 
-      <para>The case of diverging names occurs when two developers
+      <para id="x_1da">The case of diverging names occurs when two developers
 	start with a file&emdash;let's call it
 	<filename>foo</filename>&emdash;in their respective
 	repositories.</para>
 
       &interaction.rename.divergent.clone;
 
-      <para>Anne renames the file to <filename>bar</filename>.</para>
+      <para id="x_1db">Anne renames the file to <filename>bar</filename>.</para>
 
       &interaction.rename.divergent.rename.anne;
 
-      <para>Meanwhile, Bob renames it to
+      <para id="x_1dc">Meanwhile, Bob renames it to
 	<filename>quux</filename>.</para>
 
 	&interaction.rename.divergent.rename.bob;
 
-      <para>I like to think of this as a conflict because each
+      <para id="x_1dd">I like to think of this as a conflict because each
 	developer has expressed different intentions about what the
 	file ought to be named.</para>
 
-      <para>What do you think should happen when they merge their
+      <para id="x_1de">What do you think should happen when they merge their
 	work? Mercurial's actual behaviour is that it always preserves
 	<emphasis>both</emphasis> names when it merges changesets that
 	contain divergent renames.</para>
 
       &interaction.rename.divergent.merge;
 
-      <para>Notice that Mercurial does warn about the divergent
+      <para id="x_1df">Notice that Mercurial does warn about the divergent
 	renames, but it leaves it up to you to do something about the
 	divergence after the merge.</para>
 
@@ -486,7 +486,7 @@
     <sect2>
       <title>Convergent renames and merging</title>
 
-      <para>Another kind of rename conflict occurs when two people
+      <para id="x_1e0">Another kind of rename conflict occurs when two people
 	choose to rename different <emphasis>source</emphasis> files
 	to the same <emphasis>destination</emphasis>. In this case,
 	Mercurial runs its normal merge machinery, and lets you guide
@@ -496,7 +496,7 @@
     <sect2>
       <title>Other name-related corner cases</title>
 
-      <para>Mercurial has a longstanding bug in which it fails to
+      <para id="x_1e1">Mercurial has a longstanding bug in which it fails to
 	handle a merge where one side has a file with a given name,
 	while another has a directory with the same name.  This is
 	documented as <ulink role="hg-bug"
@@ -510,10 +510,10 @@
   <sect1>
     <title>Recovering from mistakes</title>
 
-    <para>Mercurial has some useful commands that will help you to
+    <para id="x_1e2">Mercurial has some useful commands that will help you to
       recover from some common mistakes.</para>
 
-    <para>The <command role="hg-cmd">hg revert</command> command lets
+    <para id="x_1e3">The <command role="hg-cmd">hg revert</command> command lets
       you undo changes that you have made to your working directory.
       For example, if you <command role="hg-cmd">hg add</command> a
       file by accident, just run <command role="hg-cmd">hg
@@ -523,13 +523,13 @@
       <command role="hg-cmd">hg revert</command> to get rid of
       erroneous changes to a file.</para>
 
-    <para>It's useful to remember that the <command role="hg-cmd">hg
+    <para id="x_1e4">It's useful to remember that the <command role="hg-cmd">hg
 	revert</command> command is useful for changes that you have
       not yet committed.  Once you've committed a change, if you
       decide it was a mistake, you can still do something about it,
       though your options may be more limited.</para>
 
-    <para>For more information about the <command role="hg-cmd">hg
+    <para id="x_1e5">For more information about the <command role="hg-cmd">hg
 	revert</command> command, and details about how to deal with
       changes you have already committed, see chapter <xref
 	linkend="chap.undo"/>.</para>

@@ -1,4 +1,5 @@
 import MySQLdb as mysql
+import sys
 
 def connect():
     try:

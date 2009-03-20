@@ -8,7 +8,7 @@ import os, sys
 sys.path.append(os.path.dirname(__file__))
 import dbutil
 
-os.system('make -C ../../en ids')
+os.system('make -C ../../en all-ids.dat')
 
 conn = dbutil.connect()
 c = conn.cursor()
