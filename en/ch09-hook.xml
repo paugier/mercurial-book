@@ -4,12 +4,12 @@
   <?dbhtml filename="handling-repository-events-with-hooks.html"?>
   <title>Handling repository events with hooks</title>
 
-  <para>Mercurial offers a powerful mechanism to let you perform
+  <para id="x_1e6">Mercurial offers a powerful mechanism to let you perform
     automated actions in response to events that occur in a
     repository.  In some cases, you can even control Mercurial's
     response to those events.</para>
 
-  <para>The name Mercurial uses for one of these actions is a
+  <para id="x_1e7">The name Mercurial uses for one of these actions is a
     <emphasis>hook</emphasis>. Hooks are called
     <quote>triggers</quote> in some revision control systems, but the
     two names refer to the same idea.</para>
@@ -17,49 +17,49 @@
   <sect1>
     <title>An overview of hooks in Mercurial</title>
 
-    <para>Here is a brief list of the hooks that Mercurial supports.
+    <para id="x_1e8">Here is a brief list of the hooks that Mercurial supports.
       We will revisit each of these hooks in more detail later, in
       section <xref linkend="sec:hook:ref"/>.</para>
 
     <itemizedlist>
-      <listitem><para><literal role="hook">changegroup</literal>: This
+      <listitem><para id="x_1e9"><literal role="hook">changegroup</literal>: This
 	  is run after a group of changesets has been brought into the
 	  repository from elsewhere.</para>
       </listitem>
-      <listitem><para><literal role="hook">commit</literal>: This is
+      <listitem><para id="x_1ea"><literal role="hook">commit</literal>: This is
 	  run after a new changeset has been created in the local
 	  repository.</para>
       </listitem>
-      <listitem><para><literal role="hook">incoming</literal>: This is
+      <listitem><para id="x_1eb"><literal role="hook">incoming</literal>: This is
 	  run once for each new changeset that is brought into the
 	  repository from elsewhere.  Notice the difference from
 	  <literal role="hook">changegroup</literal>, which is run
 	  once per <emphasis>group</emphasis> of changesets brought
 	  in.</para>
       </listitem>
-      <listitem><para><literal role="hook">outgoing</literal>: This is
+      <listitem><para id="x_1ec"><literal role="hook">outgoing</literal>: This is
 	  run after a group of changesets has been transmitted from
 	  this repository.</para>
       </listitem>
-      <listitem><para><literal role="hook">prechangegroup</literal>:
+      <listitem><para id="x_1ed"><literal role="hook">prechangegroup</literal>:
 	  This is run before starting to bring a group of changesets
 	  into the repository.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">precommit</literal>:
+      <listitem><para id="x_1ee"><literal role="hook">precommit</literal>:
 	  Controlling. This is run before starting a commit.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">preoutgoing</literal>:
+      <listitem><para id="x_1ef"><literal role="hook">preoutgoing</literal>:
 	  Controlling. This is run before starting to transmit a group
 	  of changesets from this repository.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">pretag</literal>:
+      <listitem><para id="x_1f0"><literal role="hook">pretag</literal>:
 	  Controlling. This is run before creating a tag.
 	</para>
       </listitem>
-      <listitem><para><literal
+      <listitem><para id="x_1f1"><literal
 	    role="hook">pretxnchangegroup</literal>: Controlling. This
 	  is run after a group of changesets has been brought into the
 	  local repository from another, but before the transaction
@@ -67,27 +67,27 @@
 	  repository.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">pretxncommit</literal>:
+      <listitem><para id="x_1f2"><literal role="hook">pretxncommit</literal>:
 	  Controlling. This is run after a new changeset has been
 	  created in the local repository, but before the transaction
 	  completes that will make it permanent.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">preupdate</literal>:
+      <listitem><para id="x_1f3"><literal role="hook">preupdate</literal>:
 	  Controlling. This is run before starting an update or merge
 	  of the working directory.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">tag</literal>: This is run
+      <listitem><para id="x_1f4"><literal role="hook">tag</literal>: This is run
 	  after a tag is created.
 	</para>
       </listitem>
-      <listitem><para><literal role="hook">update</literal>: This is
+      <listitem><para id="x_1f5"><literal role="hook">update</literal>: This is
 	  run after an update or merge of the working directory has
 	  finished.
 	</para>
       </listitem></itemizedlist>
-    <para>Each of the hooks whose description begins with the word
+    <para id="x_1f6">Each of the hooks whose description begins with the word
       <quote>Controlling</quote> has the ability to determine whether
       an activity can proceed.  If the hook succeeds, the activity may
       proceed; if it fails, the activity is either not permitted or
@@ -101,7 +101,7 @@
     <sect2>
       <title>Hooks are run with your privileges</title>
 
-      <para>When you run a Mercurial command in a repository, and the
+      <para id="x_1f7">When you run a Mercurial command in a repository, and the
 	command causes a hook to run, that hook runs on
 	<emphasis>your</emphasis> system, under
 	<emphasis>your</emphasis> user account, with
@@ -112,14 +112,14 @@
 	it does.
       </para>
 
-      <para>In some cases, you may be exposed to hooks that you did
+      <para id="x_1f8">In some cases, you may be exposed to hooks that you did
 	not install yourself.  If you work with Mercurial on an
 	unfamiliar system, Mercurial will run hooks defined in that
 	system's global <filename role="special">~/.hgrc</filename>
 	file.
       </para>
 
-      <para>If you are working with a repository owned by another
+      <para id="x_1f9">If you are working with a repository owned by another
 	user, Mercurial can run hooks defined in that user's
 	repository, but it will still run them as <quote>you</quote>.
 	For example, if you <command role="hg-cmd">hg pull</command>
@@ -131,7 +131,7 @@
       </para>
 
       <note>
-	<para>  This only applies if you are pulling from a repository
+	<para id="x_1fa">  This only applies if you are pulling from a repository
 	  on a local or network filesystem.  If you're pulling over
 	  http or ssh, any <literal role="hook">outgoing</literal>
 	  hook will run under whatever account is executing the server
@@ -139,7 +139,7 @@
 	</para>
       </note>
 
-      <para>XXX To see what hooks are defined in a repository, use the
+      <para id="x_1fb">XXX To see what hooks are defined in a repository, use the
 	<command role="hg-cmd">hg config hooks</command> command.  If
 	you are working in one repository, but talking to another that
 	you do not own (e.g. using <command role="hg-cmd">hg
@@ -152,27 +152,27 @@
     <sect2>
       <title>Hooks do not propagate</title>
 
-      <para>In Mercurial, hooks are not revision controlled, and do
+      <para id="x_1fc">In Mercurial, hooks are not revision controlled, and do
 	not propagate when you clone, or pull from, a repository.  The
 	reason for this is simple: a hook is a completely arbitrary
 	piece of executable code.  It runs under your user identity,
 	with your privilege level, on your machine.
       </para>
 
-      <para>It would be extremely reckless for any distributed
+      <para id="x_1fd">It would be extremely reckless for any distributed
 	revision control system to implement revision-controlled
 	hooks, as this would offer an easily exploitable way to
 	subvert the accounts of users of the revision control system.
       </para>
 
-      <para>Since Mercurial does not propagate hooks, if you are
+      <para id="x_1fe">Since Mercurial does not propagate hooks, if you are
 	collaborating with other people on a common project, you
 	should not assume that they are using the same Mercurial hooks
 	as you are, or that theirs are correctly configured.  You
 	should document the hooks you expect people to use.
       </para>
 
-      <para>In a corporate intranet, this is somewhat easier to
+      <para id="x_1ff">In a corporate intranet, this is somewhat easier to
 	control, as you can for example provide a
 	<quote>standard</quote> installation of Mercurial on an NFS
 	filesystem, and use a site-wide <filename role="special">~/.hgrc</filename> file to define hooks that all users will
@@ -183,12 +183,12 @@
     <sect2>
       <title>Hooks can be overridden</title>
 
-      <para>Mercurial allows you to override a hook definition by
+      <para id="x_200">Mercurial allows you to override a hook definition by
 	redefining the hook.  You can disable it by setting its value
 	to the empty string, or change its behaviour as you wish.
       </para>
 
-      <para>If you deploy a system- or site-wide <filename
+      <para id="x_201">If you deploy a system- or site-wide <filename
 	  role="special">~/.hgrc</filename> file that defines some
 	hooks, you should thus understand that your users can disable
 	or override those hooks.
@@ -198,7 +198,7 @@
     <sect2>
       <title>Ensuring that critical hooks are run</title>
 
-      <para>Sometimes you may want to enforce a policy that you do not
+      <para id="x_202">Sometimes you may want to enforce a policy that you do not
 	want others to be able to work around.  For example, you may
 	have a requirement that every changeset must pass a rigorous
 	set of tests.  Defining this requirement via a hook in a
@@ -207,13 +207,13 @@
 	can subvert it at will by overriding the hook.
       </para>
 
-      <para>Instead, you can set up your policies for use of Mercurial
+      <para id="x_203">Instead, you can set up your policies for use of Mercurial
 	so that people are expected to propagate changes through a
 	well-known <quote>canonical</quote> server that you have
 	locked down and configured appropriately.
       </para>
 
-      <para>One way to do this is via a combination of social
+      <para id="x_204">One way to do this is via a combination of social
 	engineering and technology.  Set up a restricted-access
 	account; users can push changes over the network to
 	repositories managed by this account, but they cannot log into
@@ -222,7 +222,7 @@
 	they want.
       </para>
 
-      <para>When someone pushes a changeset to the server that
+      <para id="x_205">When someone pushes a changeset to the server that
 	everyone pulls from, the server will test the changeset before
 	it accepts it as permanent, and reject it if it fails to pass
 	the test suite.  If people only pull changes from this
@@ -236,19 +236,19 @@
     <title>Care with <literal>pretxn</literal> hooks in a
       shared-access repository</title>
 
-    <para>If you want to use hooks to do some automated work in a
+    <para id="x_206">If you want to use hooks to do some automated work in a
       repository that a number of people have shared access to, you
       need to be careful in how you do this.
     </para>
 
-    <para>Mercurial only locks a repository when it is writing to the
+    <para id="x_207">Mercurial only locks a repository when it is writing to the
       repository, and only the parts of Mercurial that write to the
       repository pay attention to locks.  Write locks are necessary to
       prevent multiple simultaneous writers from scribbling on each
       other's work, corrupting the repository.
     </para>
 
-    <para>Because Mercurial is careful with the order in which it
+    <para id="x_208">Because Mercurial is careful with the order in which it
       reads and writes data, it does not need to acquire a lock when
       it wants to read data from the repository.  The parts of
       Mercurial that read from the repository never pay attention to
@@ -256,14 +256,14 @@
       performance and concurrency.
     </para>
 
-    <para>With great performance comes a trade-off, though, one which
+    <para id="x_209">With great performance comes a trade-off, though, one which
       has the potential to cause you trouble unless you're aware of
       it.  To describe this requires a little detail about how
       Mercurial adds changesets to a repository and reads those
       changes.
     </para>
 
-    <para>When Mercurial <emphasis>writes</emphasis> metadata, it
+    <para id="x_20a">When Mercurial <emphasis>writes</emphasis> metadata, it
       writes it straight into the destination file.  It writes file
       data first, then manifest data (which contains pointers to the
       new file data), then changelog data (which contains pointers to
@@ -274,13 +274,13 @@
       before the transaction began.
     </para>
 
-    <para>When Mercurial <emphasis>reads</emphasis> metadata, it reads
+    <para id="x_20b">When Mercurial <emphasis>reads</emphasis> metadata, it reads
       the changelog first, then everything else.  Since a reader will
       only access parts of the manifest or file metadata that it can
       see in the changelog, it can never see partially written data.
     </para>
 
-    <para>Some controlling hooks (<literal
+    <para id="x_20c">Some controlling hooks (<literal
 	role="hook">pretxncommit</literal> and <literal
 	role="hook">pretxnchangegroup</literal>) run when a
       transaction is almost complete. All of the metadata has been
@@ -288,7 +288,7 @@
       cause the newly-written data to disappear.
     </para>
 
-    <para>If one of these hooks runs for long, it opens a window of
+    <para id="x_20d">If one of these hooks runs for long, it opens a window of
       time during which a reader can see the metadata for changesets
       that are not yet permanent, and should not be thought of as
       <quote>really there</quote>.  The longer the hook runs, the
@@ -298,7 +298,7 @@
     <sect2>
       <title>The problem illustrated</title>
 
-      <para>In principle, a good use for the <literal
+      <para id="x_20e">In principle, a good use for the <literal
 	  role="hook">pretxnchangegroup</literal> hook would be to
 	automatically build and test incoming changes before they are
 	accepted into a central repository.  This could let you
@@ -309,7 +309,7 @@
 	potentially breaking their build.
       </para>
 
-      <para>The safest technological answer to this challenge is to
+      <para id="x_20f">The safest technological answer to this challenge is to
 	set up such a <quote>gatekeeper</quote> repository as
 	<emphasis>unidirectional</emphasis>.  Let it take changes
 	pushed in from the outside, but do not allow anyone to pull
@@ -321,7 +321,7 @@
 	<emphasis>can</emphasis> pull from.
       </para>
 
-      <para>In practice, putting a centralised bottleneck like this in
+      <para id="x_210">In practice, putting a centralised bottleneck like this in
 	place is not often a good idea, and transaction visibility has
 	nothing to do with the problem.  As the size of a
 	project&emdash;and the time it takes to build and
@@ -332,7 +332,7 @@
 	involved.
       </para>
 
-      <para>An approach that scales better is to get people to build
+      <para id="x_211">An approach that scales better is to get people to build
 	and test before they push, then run automated builds and tests
 	centrally <emphasis>after</emphasis> a push, to be sure all is
 	well.  The advantage of this approach is that it does not
@@ -345,18 +345,18 @@
   <sect1 id="sec:hook:simple">
     <title>A short tutorial on using hooks</title>
 
-    <para>It is easy to write a Mercurial hook.  Let's start with a
+    <para id="x_212">It is easy to write a Mercurial hook.  Let's start with a
       hook that runs when you finish a <command role="hg-cmd">hg
 	commit</command>, and simply prints the hash of the changeset
       you just created.  The hook is called <literal
 	role="hook">commit</literal>.
     </para>
 
-    <para>All hooks follow the pattern in this example.</para>
+    <para id="x_213">All hooks follow the pattern in this example.</para>
 
 &interaction.hook.simple.init;
 
-    <para>You add an entry to the <literal
+    <para id="x_214">You add an entry to the <literal
 	role="rc-hooks">hooks</literal> section of your <filename
 	role="special">~/.hgrc</filename>.  On the left is the name of
       the event to trigger on; on the right is the action to take.  As
@@ -368,12 +368,12 @@
     <sect2>
       <title>Performing multiple actions per event</title>
 
-      <para>Quite often, you will want to define more than one hook
+      <para id="x_215">Quite often, you will want to define more than one hook
 	for a particular kind of event, as shown below.</para>
 
 &interaction.hook.simple.ext;
 
-      <para>Mercurial lets you do this by adding an
+      <para id="x_216">Mercurial lets you do this by adding an
 	<emphasis>extension</emphasis> to the end of a hook's name.
 	You extend a hook's name by giving the name of the hook,
 	followed by a full stop (the
@@ -384,7 +384,7 @@
 	<literal>commit</literal> event occurs.
       </para>
 
-      <para>To give a well-defined order of execution when there are
+      <para id="x_217">To give a well-defined order of execution when there are
 	multiple hooks defined for an event, Mercurial sorts hooks by
 	extension, and executes the hook commands in this sorted
 	order.  In the above example, it will execute
@@ -393,7 +393,7 @@
 	before both.
       </para>
 
-      <para>It is a good idea to use a somewhat descriptive extension
+      <para id="x_218">It is a good idea to use a somewhat descriptive extension
 	when you define a new hook.  This will help you to remember
 	what the hook was for.  If the hook fails, you'll get an error
 	message that contains the hook name and extension, so using a
@@ -406,20 +406,20 @@
     <sect2 id="sec:hook:perm">
       <title>Controlling whether an activity can proceed</title>
 
-      <para>In our earlier examples, we used the <literal
+      <para id="x_219">In our earlier examples, we used the <literal
 	  role="hook">commit</literal> hook, which is run after a
 	commit has completed.  This is one of several Mercurial hooks
 	that run after an activity finishes.  Such hooks have no way
 	of influencing the activity itself.
       </para>
 
-      <para>Mercurial defines a number of events that occur before an
+      <para id="x_21a">Mercurial defines a number of events that occur before an
 	activity starts; or after it starts, but before it finishes.
 	Hooks that trigger on these events have the added ability to
 	choose whether the activity can continue, or will abort.
       </para>
 
-      <para>The <literal role="hook">pretxncommit</literal> hook runs
+      <para id="x_21b">The <literal role="hook">pretxncommit</literal> hook runs
 	after a commit has all but completed.  In other words, the
 	metadata representing the changeset has been written out to
 	disk, but the transaction has not yet been allowed to
@@ -428,7 +428,7 @@
 	complete, or must be rolled back.
       </para>
 
-      <para>If the <literal role="hook">pretxncommit</literal> hook
+      <para id="x_21c">If the <literal role="hook">pretxncommit</literal> hook
 	exits with a status code of zero, the transaction is allowed
 	to complete; the commit finishes; and the <literal
 	  role="hook">commit</literal> hook is run.  If the <literal
@@ -440,7 +440,7 @@
 
 &interaction.hook.simple.pretxncommit;
 
-      <para>The hook in the example above checks that a commit comment
+      <para id="x_21d">The hook in the example above checks that a commit comment
 	contains a bug ID.  If it does, the commit can complete.  If
 	not, the commit is rolled back.
       </para>
@@ -450,7 +450,7 @@
   <sect1>
     <title>Writing your own hooks</title>
 
-    <para>When you are writing a hook, you might find it useful to run
+    <para id="x_21e">When you are writing a hook, you might find it useful to run
       Mercurial either with the <option
 	role="hg-opt-global">-v</option> option, or the <envar
 	role="rc-item-ui">verbose</envar> config item set to
@@ -461,19 +461,19 @@
     <sect2 id="sec:hook:lang">
       <title>Choosing how your hook should run</title>
 
-      <para>You can write a hook either as a normal
+      <para id="x_21f">You can write a hook either as a normal
 	program&emdash;typically a shell script&emdash;or as a Python
 	function that is executed within the Mercurial process.
       </para>
 
-      <para>Writing a hook as an external program has the advantage
+      <para id="x_220">Writing a hook as an external program has the advantage
 	that it requires no knowledge of Mercurial's internals.  You
 	can call normal Mercurial commands to get any added
 	information you need.  The trade-off is that external hooks
 	are slower than in-process hooks.
       </para>
 
-      <para>An in-process Python hook has complete access to the
+      <para id="x_221">An in-process Python hook has complete access to the
 	Mercurial API, and does not <quote>shell out</quote> to
 	another process, so it is inherently faster than an external
 	hook.  It is also easier to obtain much of the information
@@ -481,7 +481,7 @@
 	running Mercurial commands.
       </para>
 
-      <para>If you are comfortable with Python, or require high
+      <para id="x_222">If you are comfortable with Python, or require high
 	performance, writing your hooks in Python may be a good
 	choice.  However, when you have a straightforward hook to
 	write and you don't need to care about performance (probably
@@ -492,13 +492,13 @@
     <sect2 id="sec:hook:param">
       <title>Hook parameters</title>
 
-      <para>Mercurial calls each hook with a set of well-defined
+      <para id="x_223">Mercurial calls each hook with a set of well-defined
 	parameters.  In Python, a parameter is passed as a keyword
 	argument to your hook function.  For an external program, a
 	parameter is passed as an environment variable.
       </para>
 
-      <para>Whether your hook is written in Python or as a shell
+      <para id="x_224">Whether your hook is written in Python or as a shell
 	script, the hook-specific parameter names and values will be
 	the same.  A boolean parameter will be represented as a
 	boolean value in Python, but as the number 1 (for
@@ -514,7 +514,7 @@
     <sect2>
       <title>Hook return values and activity control</title>
 
-      <para>A hook that executes successfully must exit with a status
+      <para id="x_225">A hook that executes successfully must exit with a status
 	of zero if external, or return boolean <quote>false</quote> if
 	in-process.  Failure is indicated with a non-zero exit status
 	from an external hook, or an in-process hook returning boolean
@@ -522,7 +522,7 @@
 	exception, the hook is considered to have failed.
       </para>
 
-      <para>For a hook that controls whether an activity can proceed,
+      <para id="x_226">For a hook that controls whether an activity can proceed,
 	zero/false means <quote>allow</quote>, while
 	non-zero/true/exception means <quote>deny</quote>.
       </para>
@@ -531,23 +531,23 @@
     <sect2>
       <title>Writing an external hook</title>
 
-      <para>When you define an external hook in your <filename
+      <para id="x_227">When you define an external hook in your <filename
 	  role="special">~/.hgrc</filename> and the hook is run, its
 	value is passed to your shell, which interprets it.  This
 	means that you can use normal shell constructs in the body of
 	the hook.
       </para>
 
-      <para>An executable hook is always run with its current
+      <para id="x_228">An executable hook is always run with its current
 	directory set to a repository's root directory.
       </para>
 
-      <para>Each hook parameter is passed in as an environment
+      <para id="x_229">Each hook parameter is passed in as an environment
 	variable; the name is upper-cased, and prefixed with the
 	string <quote><literal>HG_</literal></quote>.
       </para>
 
-      <para>With the exception of hook parameters, Mercurial does not
+      <para id="x_22a">With the exception of hook parameters, Mercurial does not
 	set or modify any environment variables when running a hook.
 	This is useful to remember if you are writing a site-wide hook
 	that may be run by a number of different users with differing
@@ -560,7 +560,7 @@
     <sect2>
       <title>Telling Mercurial to use an in-process hook</title>
 
-      <para>The <filename role="special">~/.hgrc</filename> syntax
+      <para id="x_22b">The <filename role="special">~/.hgrc</filename> syntax
 	for defining an in-process hook is slightly different than for
 	an executable hook.  The value of the hook must start with the
 	text <quote><literal>python:</literal></quote>, and continue
@@ -568,19 +568,19 @@
 	the hook's value.
       </para>
 
-      <para>The module in which a hook lives is automatically imported
+      <para id="x_22c">The module in which a hook lives is automatically imported
 	when a hook is run.  So long as you have the module name and
 	<envar>PYTHONPATH</envar> right, it should <quote>just
 	  work</quote>.
       </para>
 
-      <para>The following <filename role="special">~/.hgrc</filename>
+      <para id="x_22d">The following <filename role="special">~/.hgrc</filename>
 	example snippet illustrates the syntax and meaning of the
 	notions we just described.
       </para>
       <programlisting>[hooks]
 commit.example = python:mymodule.submodule.myhook</programlisting>
-      <para>When Mercurial runs the <literal>commit.example</literal>
+      <para id="x_22e">When Mercurial runs the <literal>commit.example</literal>
 	hook, it imports <literal>mymodule.submodule</literal>, looks
 	for the callable object named <literal>myhook</literal>, and
 	calls it.
@@ -590,12 +590,12 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
     <sect2>
       <title>Writing an in-process hook</title>
 
-      <para>The simplest in-process hook does nothing, but illustrates
+      <para id="x_22f">The simplest in-process hook does nothing, but illustrates
 	the basic shape of the hook API:
       </para>
       <programlisting>def myhook(ui, repo, **kwargs):
     pass</programlisting>
-      <para>The first argument to a Python hook is always a <literal
+      <para id="x_230">The first argument to a Python hook is always a <literal
 	  role="py-mod-mercurial.ui">ui</literal> object.  The second
 	is a repository object; at the moment, it is always an
 	instance of <literal
@@ -615,7 +615,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
     <sect2>
       <title>Writing meaningful commit messages</title>
 
-      <para>It's hard to imagine a useful commit message being very
+      <para id="x_231">It's hard to imagine a useful commit message being very
 	short. The simple <literal role="hook">pretxncommit</literal>
 	hook of the example below will prevent you from committing a
 	changeset with a message that is less than ten bytes long.
@@ -627,7 +627,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
     <sect2>
       <title>Checking for trailing whitespace</title>
 
-      <para>An interesting use of a commit-related hook is to help you
+      <para id="x_232">An interesting use of a commit-related hook is to help you
 	to write cleaner code.  A simple example of <quote>cleaner
 	  code</quote> is the dictum that a change should not add any
 	new lines of text that contain <quote>trailing
@@ -638,7 +638,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	prefer to get rid of it.
       </para>
 
-      <para>You can use either the <literal
+      <para id="x_233">You can use either the <literal
 	  role="hook">precommit</literal> or <literal
 	  role="hook">pretxncommit</literal> hook to tell whether you
 	have a trailing whitespace problem.  If you use the <literal
@@ -654,7 +654,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	seem right.
       </para>
 
-      <para>Should you choose the <literal
+      <para id="x_234">Should you choose the <literal
 	  role="hook">pretxncommit</literal> hook, the check won't
 	occur until just before the transaction for the commit
 	completes.  This will allow you to check for problems only the
@@ -667,7 +667,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 
 &interaction.hook.ws.simple;
 
-      <para>In this example, we introduce a simple <literal
+      <para id="x_235">In this example, we introduce a simple <literal
 	  role="hook">pretxncommit</literal> hook that checks for
 	trailing whitespace.  This hook is short, but not very
 	helpful.  It exits with an error status if a change adds a
@@ -678,7 +678,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	trailing whitespace cause problems.
       </para>
 
-      <para>The above version is much more complex, but also more
+      <para id="x_236">The above version is much more complex, but also more
 	useful.  It parses a unified diff to see if any lines add
 	trailing whitespace, and prints the name of the file and the
 	line number of each such occurrence.  Even better, if the
@@ -692,7 +692,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 
 &interaction.hook.ws.better;
 
-      <para>As a final aside, note in the example above the use of
+      <para id="x_237">As a final aside, note in the example above the use of
 	<command>perl</command>'s in-place editing feature to get rid
 	of trailing whitespace from a file.  This is concise and
 	useful enough that I will reproduce it here.
@@ -704,7 +704,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
   <sect1>
     <title>Bundled hooks</title>
 
-    <para>Mercurial ships with several bundled hooks.  You can find
+    <para id="x_238">Mercurial ships with several bundled hooks.  You can find
       them in the <filename class="directory">hgext</filename>
       directory of a Mercurial source tree.  If you are using a
       Mercurial binary package, the hooks will be located in the
@@ -716,7 +716,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
       <title><literal role="hg-ext">acl</literal>&emdash;access
 	control for parts of a repository</title>
 
-      <para>The <literal role="hg-ext">acl</literal> extension lets
+      <para id="x_239">The <literal role="hg-ext">acl</literal> extension lets
 	you control which remote users are allowed to push changesets
 	to a networked server.  You can protect any portion of a
 	repository (including the entire repo), so that a specific
@@ -724,7 +724,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	portion.
       </para>
 
-      <para>This extension implements access control based on the
+      <para id="x_23a">This extension implements access control based on the
 	identity of the user performing a push,
 	<emphasis>not</emphasis> on who committed the changesets
 	they're pushing.  It makes sense to use this hook only if you
@@ -737,7 +737,7 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	<title>Configuring the <literal role="hook">acl</literal>
 	  hook</title>
 
-	<para>In order to manage incoming changesets, the <literal
+	<para id="x_23b">In order to manage incoming changesets, the <literal
 	    role="hg-ext">acl</literal> hook must be used as a
 	  <literal role="hook">pretxnchangegroup</literal> hook.  This
 	  lets it see which files are modified by each incoming
@@ -747,18 +747,18 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	<programlisting>[hooks]
 pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 
-	<para>The <literal role="hg-ext">acl</literal> extension is
+	<para id="x_23c">The <literal role="hg-ext">acl</literal> extension is
 	  configured using three sections.
 	</para>
 
-	<para>The <literal role="rc-acl">acl</literal> section has
+	<para id="x_23d">The <literal role="rc-acl">acl</literal> section has
 	  only one entry, <envar role="rc-item-acl">sources</envar>,
 	  which lists the sources of incoming changesets that the hook
 	  should pay attention to.  You don't normally need to
 	  configure this section.
 	</para>
 	<itemizedlist>
-	  <listitem><para><envar role="rc-item-acl">serve</envar>:
+	  <listitem><para id="x_23e"><envar role="rc-item-acl">serve</envar>:
 	      Control incoming changesets that are arriving from a
 	      remote repository over http or ssh.  This is the default
 	      value of <envar role="rc-item-acl">sources</envar>, and
@@ -766,23 +766,23 @@ pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 	      configuration item.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-acl">pull</envar>:
+	  <listitem><para id="x_23f"><envar role="rc-item-acl">pull</envar>:
 	      Control incoming changesets that are arriving via a pull
 	      from a local repository.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-acl">push</envar>:
+	  <listitem><para id="x_240"><envar role="rc-item-acl">push</envar>:
 	      Control incoming changesets that are arriving via a push
 	      from a local repository.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-acl">bundle</envar>:
+	  <listitem><para id="x_241"><envar role="rc-item-acl">bundle</envar>:
 	      Control incoming changesets that are arriving from
 	      another repository via a bundle.
 	    </para>
 	  </listitem></itemizedlist>
 
-	<para>The <literal role="rc-acl.allow">acl.allow</literal>
+	<para id="x_242">The <literal role="rc-acl.allow">acl.allow</literal>
 	  section controls the users that are allowed to add
 	  changesets to the repository.  If this section is not
 	  present, all users that are not explicitly denied are
@@ -791,13 +791,13 @@ pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 	  that all users are denied).
 	</para>
 
-	<para>The <literal role="rc-acl.deny">acl.deny</literal>
+	<para id="x_243">The <literal role="rc-acl.deny">acl.deny</literal>
 	  section determines which users are denied from adding
 	  changesets to the repository.  If this section is not
 	  present or is empty, no users are denied.
 	</para>
 
-	<para>The syntaxes for the <literal
+	<para id="x_244">The syntaxes for the <literal
 	    role="rc-acl.allow">acl.allow</literal> and <literal
 	    role="rc-acl.deny">acl.deny</literal> sections are
 	  identical.  On the left of each entry is a glob pattern that
@@ -805,7 +805,7 @@ pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 	  repository; on the right, a user name.
 	</para>
 
-	<para>In the following example, the user
+	<para id="x_245">In the following example, the user
 	  <literal>docwriter</literal> can only push changes to the
 	  <filename class="directory">docs</filename> subtree of the
 	  repository, while <literal>intern</literal> can push changes
@@ -821,7 +821,7 @@ source/sensitive/** = intern</programlisting>
       <sect3>
 	<title>Testing and troubleshooting</title>
 
-	<para>If you want to test the <literal
+	<para id="x_246">If you want to test the <literal
 	    role="hg-ext">acl</literal> hook, run it with Mercurial's
 	  debugging output enabled.  Since you'll probably be running
 	  it on a server where it's not convenient (or sometimes
@@ -832,7 +832,7 @@ source/sensitive/** = intern</programlisting>
 	</para>
 	<programlisting>[ui]
 debug = true</programlisting>
-	<para>With this enabled, the <literal
+	<para id="x_247">With this enabled, the <literal
 	    role="hg-ext">acl</literal> hook will print enough
 	  information to let you figure out why it is allowing or
 	  forbidding pushes from specific users.
@@ -845,14 +845,14 @@ debug = true</programlisting>
 	  role="hg-ext">bugzilla</literal>&emdash;integration with
 	Bugzilla</title>
 
-      <para>The <literal role="hg-ext">bugzilla</literal> extension
+      <para id="x_248">The <literal role="hg-ext">bugzilla</literal> extension
 	adds a comment to a Bugzilla bug whenever it finds a reference
 	to that bug ID in a commit comment.  You can install this hook
 	on a shared server, so that any time a remote user pushes
 	changes to this server, the hook gets run.
       </para>
 
-      <para>It adds a comment to the bug that looks like this (you can
+      <para id="x_249">It adds a comment to the bug that looks like this (you can
 	configure the contents of the comment&emdash;see below):
       </para>
       <programlisting>Changeset aad8b264143a, made by Joe User
@@ -861,19 +861,19 @@ debug = true</programlisting>
 	http://hg.domain.com/frobnitz?cmd=changeset;node=aad8b264143a
 	Changeset description: Fix bug 10483 by guarding against some
 	NULL pointers</programlisting>
-      <para>The value of this hook is that it automates the process of
+      <para id="x_24a">The value of this hook is that it automates the process of
 	updating a bug any time a changeset refers to it.  If you
 	configure the hook properly, it makes it easy for people to
 	browse straight from a Bugzilla bug to a changeset that refers
 	to that bug.
       </para>
 
-      <para>You can use the code in this hook as a starting point for
+      <para id="x_24b">You can use the code in this hook as a starting point for
 	some more exotic Bugzilla integration recipes.  Here are a few
 	possibilities:
       </para>
       <itemizedlist>
-	<listitem><para>Require that every changeset pushed to the
+	<listitem><para id="x_24c">Require that every changeset pushed to the
 	    server have a valid bug ID in its commit comment.  In this
 	    case, you'd want to configure the hook as a <literal
 	      role="hook">pretxncommit</literal> hook.  This would
@@ -881,7 +881,7 @@ debug = true</programlisting>
 	    IDs.
 	  </para>
 	</listitem>
-	<listitem><para>Allow incoming changesets to automatically
+	<listitem><para id="x_24d">Allow incoming changesets to automatically
 	    modify the <emphasis>state</emphasis> of a bug, as well as
 	    simply adding a comment.  For example, the hook could
 	    recognise the string <quote>fixed bug 31337</quote> as
@@ -894,7 +894,7 @@ debug = true</programlisting>
 	<title>Configuring the <literal role="hook">bugzilla</literal>
 	  hook</title>
 
-	<para>You should configure this hook in your server's
+	<para id="x_24e">You should configure this hook in your server's
 	  <filename role="special">~/.hgrc</filename> as an <literal
 	    role="hook">incoming</literal> hook, for example as
 	  follows:
@@ -902,25 +902,25 @@ debug = true</programlisting>
 	<programlisting>[hooks]
 incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 
-	<para>Because of the specialised nature of this hook, and
+	<para id="x_24f">Because of the specialised nature of this hook, and
 	  because Bugzilla was not written with this kind of
 	  integration in mind, configuring this hook is a somewhat
 	  involved process.
 	</para>
 
-	<para>Before you begin, you must install the MySQL bindings
+	<para id="x_250">Before you begin, you must install the MySQL bindings
 	  for Python on the host(s) where you'll be running the hook.
 	  If this is not available as a binary package for your
 	  system, you can download it from
 	  <citation>web:mysql-python</citation>.
 	</para>
 
-	<para>Configuration information for this hook lives in the
+	<para id="x_251">Configuration information for this hook lives in the
 	  <literal role="rc-bugzilla">bugzilla</literal> section of
 	  your <filename role="special">~/.hgrc</filename>.
 	</para>
 	<itemizedlist>
-	  <listitem><para><envar
+	  <listitem><para id="x_252"><envar
 		role="rc-item-bugzilla">version</envar>: The version
 	      of Bugzilla installed on the server.  The database
 	      schema that Bugzilla uses changes occasionally, so this
@@ -929,14 +929,14 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 	      <literal>2.16</literal>.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-bugzilla">host</envar>:
+	  <listitem><para id="x_253"><envar role="rc-item-bugzilla">host</envar>:
 	      The hostname of the MySQL server that stores your
 	      Bugzilla data.  The database must be configured to allow
 	      connections from whatever host you are running the
 	      <literal role="hook">bugzilla</literal> hook on.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-bugzilla">user</envar>:
+	  <listitem><para id="x_254"><envar role="rc-item-bugzilla">user</envar>:
 	      The username with which to connect to the MySQL server.
 	      The database must be configured to allow this user to
 	      connect from whatever host you are running the <literal
@@ -947,7 +947,7 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 	      MySQL database.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar
+	  <listitem><para id="x_255"><envar
 		role="rc-item-bugzilla">password</envar>: The MySQL
 	      password for the user you configured above.  This is
 	      stored as plain text, so you should make sure that
@@ -956,14 +956,14 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 	      store this information.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-bugzilla">db</envar>:
+	  <listitem><para id="x_256"><envar role="rc-item-bugzilla">db</envar>:
 	      The name of the Bugzilla database on the MySQL server.
 	      The default value of this item is
 	      <literal>bugs</literal>, which is the standard name of
 	      the MySQL database where Bugzilla stores its data.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar
+	  <listitem><para id="x_257"><envar
 		role="rc-item-bugzilla">notify</envar>: If you want
 	      Bugzilla to send out a notification email to subscribers
 	      after this hook has added a comment to a bug, you will
@@ -976,7 +976,7 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 	    <programlisting>cd /var/www/html/bugzilla &amp;&amp;
 	      ./processmail %s nobody@nowhere.com</programlisting>
 	  </listitem>
-	  <listitem><para>  The Bugzilla
+	  <listitem><para id="x_258">  The Bugzilla
 	      <literal>processmail</literal> program expects to be
 	      given a bug ID (the hook replaces
 	      <quote><literal>%s</literal></quote> with the bug ID)
@@ -993,7 +993,7 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
       <sect3>
 	<title>Mapping committer names to Bugzilla user names</title>
 
-	<para>By default, the <literal
+	<para id="x_259">By default, the <literal
 	    role="hg-ext">bugzilla</literal> hook tries to use the
 	  email address of a changeset's committer as the Bugzilla
 	  user name with which to update a bug.  If this does not suit
@@ -1002,14 +1002,14 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 	    role="rc-usermap">usermap</literal> section.
 	</para>
 
-	<para>Each item in the <literal
+	<para id="x_25a">Each item in the <literal
 	    role="rc-usermap">usermap</literal> section contains an
 	  email address on the left, and a Bugzilla user name on the
 	  right.
 	</para>
 	<programlisting>[usermap]
 jane.user@example.com = jane</programlisting>
-	<para>You can either keep the <literal
+	<para id="x_25b">You can either keep the <literal
 	    role="rc-usermap">usermap</literal> data in a normal
 	  <filename role="special">~/.hgrc</filename>, or tell the
 	  <literal role="hg-ext">bugzilla</literal> hook to read the
@@ -1025,7 +1025,7 @@ jane.user@example.com = jane</programlisting>
 	<programlisting># regular hgrc file refers to external usermap file
 [bugzilla]
 usermap = /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
-	<para>While the <filename>usermap</filename> file that it
+	<para id="x_25c">While the <filename>usermap</filename> file that it
 	  refers to might look like this:
 	</para>
 	<programlisting># bugzilla-usermap.conf - inside a hg repository
@@ -1035,14 +1035,14 @@ usermap = /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
       <sect3>
 	<title>Configuring the text that gets added to a bug</title>
 
-	<para>You can configure the text that this hook adds as a
+	<para id="x_25d">You can configure the text that this hook adds as a
 	  comment; you specify it in the form of a Mercurial template.
 	  Several <filename role="special">~/.hgrc</filename> entries
 	  (still in the <literal role="rc-bugzilla">bugzilla</literal>
 	  section) control this behaviour.
 	</para>
 	<itemizedlist>
-	  <listitem><para><literal>strip</literal>: The number of
+	  <listitem><para id="x_25e"><literal>strip</literal>: The number of
 	      leading path elements to strip from a repository's path
 	      name to construct a partial path for a URL. For example,
 	      if the repositories on your server live under <filename
@@ -1056,7 +1056,7 @@ usermap = /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
 	      expanding a template, as <literal>webroot</literal>.
 	    </para>
 	  </listitem>
-	  <listitem><para><literal>template</literal>: The text of the
+	  <listitem><para id="x_25f"><literal>template</literal>: The text of the
 	      template to use.  In addition to the usual
 	      changeset-related variables, this template can use
 	      <literal>hgweb</literal> (the value of the
@@ -1066,7 +1066,7 @@ usermap = /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
 	    </para>
 	  </listitem></itemizedlist>
 
-	<para>In addition, you can add a <envar
+	<para id="x_260">In addition, you can add a <envar
 	    role="rc-item-web">baseurl</envar> item to the <literal
 	    role="rc-web">web</literal> section of your <filename
 	    role="special">~/.hgrc</filename>.  The <literal
@@ -1078,7 +1078,7 @@ usermap = /home/hg/repos/userdata/bugzilla-usermap.conf</programlisting>
 	<programlisting>[web]
 baseurl = http://hg.domain.com/</programlisting>
 
-	<para>Here is an example set of <literal
+	<para id="x_261">Here is an example set of <literal
 	    role="hg-ext">bugzilla</literal> hook config information.
 	</para>
 
@@ -1088,13 +1088,13 @@ baseurl = http://hg.domain.com/</programlisting>
       <sect3>
 	<title>Testing and troubleshooting</title>
 
-	<para>The most common problems with configuring the <literal
+	<para id="x_262">The most common problems with configuring the <literal
 	    role="hg-ext">bugzilla</literal> hook relate to running
 	  Bugzilla's <filename>processmail</filename> script and
 	  mapping committer names to user names.
 	</para>
 
-	<para>Recall from section <xref
+	<para id="x_263">Recall from section <xref
 	    linkend="sec:hook:bugzilla:config"/> above that the user
 	  that runs the Mercurial process on the server is also the
 	  one that will run the <filename>processmail</filename>
@@ -1105,19 +1105,19 @@ baseurl = http://hg.domain.com/</programlisting>
 	  under.
 	</para>
 
-	<para>You can cause <filename>processmail</filename> to be run
+	<para id="x_264">You can cause <filename>processmail</filename> to be run
 	  with the suitable user's identity using the
 	  <command>sudo</command> command.  Here is an example entry
 	  for a <filename>sudoers</filename> file.
 	</para>
 	<programlisting>hg_user = (httpd_user)
 NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s</programlisting>
-	<para>This allows the <literal>hg_user</literal> user to run a
+	<para id="x_265">This allows the <literal>hg_user</literal> user to run a
 	  <filename>processmail-wrapper</filename> program under the
 	  identity of <literal>httpd_user</literal>.
 	</para>
 
-	<para>This indirection through a wrapper script is necessary,
+	<para id="x_266">This indirection through a wrapper script is necessary,
 	  because <filename>processmail</filename> expects to be run
 	  with its current directory set to wherever you installed
 	  Bugzilla; you can't specify that kind of constraint in a
@@ -1126,18 +1126,18 @@ NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s</programlisting>
 	</para>
 	<programlisting>#!/bin/sh
 cd `dirname $0` &amp;&amp; ./processmail "$1" nobody@example.com</programlisting>
-	<para>It doesn't seem to matter what email address you pass to
+	<para id="x_267">It doesn't seem to matter what email address you pass to
 	  <filename>processmail</filename>.
 	</para>
 
-	<para>If your <literal role="rc-usermap">usermap</literal> is
+	<para id="x_268">If your <literal role="rc-usermap">usermap</literal> is
 	  not set up correctly, users will see an error message from
 	  the <literal role="hg-ext">bugzilla</literal> hook when they
 	  push changes to the server.  The error message will look
 	  like this:
 	</para>
 	<programlisting>cannot find bugzilla user id for john.q.public@example.com</programlisting>
-	<para>What this means is that the committer's address,
+	<para id="x_269">What this means is that the committer's address,
 	  <literal>john.q.public@example.com</literal>, is not a valid
 	  Bugzilla user name, nor does it have an entry in your
 	  <literal role="rc-usermap">usermap</literal> that maps it to
@@ -1150,7 +1150,7 @@ cd `dirname $0` &amp;&amp; ./processmail "$1" nobody@example.com</programlisting
       <title><literal role="hg-ext">notify</literal>&emdash;send email
 	notifications</title>
 
-      <para>Although Mercurial's built-in web server provides RSS
+      <para id="x_26a">Although Mercurial's built-in web server provides RSS
 	feeds of changes in every repository, many people prefer to
 	receive change notifications via email.  The <literal
 	  role="hg-ext">notify</literal> hook lets you send out
@@ -1158,13 +1158,13 @@ cd `dirname $0` &amp;&amp; ./processmail "$1" nobody@example.com</programlisting
 	arrive that those subscribers are interested in.
       </para>
 
-      <para>As with the <literal role="hg-ext">bugzilla</literal>
+      <para id="x_26b">As with the <literal role="hg-ext">bugzilla</literal>
 	hook, the <literal role="hg-ext">notify</literal> hook is
 	template-driven, so you can customise the contents of the
 	notification messages that it sends.
       </para>
 
-      <para>By default, the <literal role="hg-ext">notify</literal>
+      <para id="x_26c">By default, the <literal role="hg-ext">notify</literal>
 	hook includes a diff of every changeset that it sends out; you
 	can limit the size of the diff, or turn this feature off
 	entirely.  It is useful for letting subscribers review changes
@@ -1175,7 +1175,7 @@ cd `dirname $0` &amp;&amp; ./processmail "$1" nobody@example.com</programlisting
 	<title>Configuring the <literal role="hg-ext">notify</literal>
 	  hook</title>
 
-	<para>You can set up the <literal
+	<para id="x_26d">You can set up the <literal
 	    role="hg-ext">notify</literal> hook to send one email
 	  message per incoming changeset, or one per incoming group of
 	  changesets (all those that arrived in a single pull or
@@ -1187,12 +1187,12 @@ changegroup.notify = python:hgext.notify.hook
 # send one email per change
 incoming.notify = python:hgext.notify.hook</programlisting>
 
-	<para>Configuration information for this hook lives in the
+	<para id="x_26e">Configuration information for this hook lives in the
 	  <literal role="rc-notify">notify</literal> section of a
 	  <filename role="special">~/.hgrc</filename> file.
 	</para>
 	<itemizedlist>
-	  <listitem><para><envar role="rc-item-notify">test</envar>:
+	  <listitem><para id="x_26f"><envar role="rc-item-notify">test</envar>:
 	      By default, this hook does not send out email at all;
 	      instead, it prints the message that it
 	      <emphasis>would</emphasis> send.  Set this item to
@@ -1204,7 +1204,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      notifications while you debug your configuration.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-notify">config</envar>:
+	  <listitem><para id="x_270"><envar role="rc-item-notify">config</envar>:
 	      The path to a configuration file that contains
 	      subscription information.  This is kept separate from
 	      the main <filename role="special">~/.hgrc</filename> so
@@ -1213,7 +1213,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      subscriptions, and push the changes back to your server.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-notify">strip</envar>:
+	  <listitem><para id="x_271"><envar role="rc-item-notify">strip</envar>:
 	      The number of leading path separator characters to strip
 	      from a repository's path, when deciding whether a
 	      repository has subscribers.  For example, if the
@@ -1230,13 +1230,13 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      match subscribers against that.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar
+	  <listitem><para id="x_272"><envar
 		role="rc-item-notify">template</envar>: The template
 	      text to use when sending messages.  This specifies both
 	      the contents of the message header and its body.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar
+	  <listitem><para id="x_273"><envar
 		role="rc-item-notify">maxdiff</envar>: The maximum
 	      number of lines of diff data to append to the end of a
 	      message.  If a diff is longer than this, it is
@@ -1245,7 +1245,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      emails.
 	    </para>
 	  </listitem>
-	  <listitem><para><envar
+	  <listitem><para id="x_274"><envar
 		role="rc-item-notify">sources</envar>: A list of
 	      sources of changesets to consider.  This lets you limit
 	      <literal role="hg-ext">notify</literal> to only sending
@@ -1257,19 +1257,19 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	    </para>
 	  </listitem></itemizedlist>
 
-	<para>If you set the <envar role="rc-item-web">baseurl</envar>
+	<para id="x_275">If you set the <envar role="rc-item-web">baseurl</envar>
 	  item in the <literal role="rc-web">web</literal> section,
 	  you can use it in a template; it will be available as
 	  <literal>webroot</literal>.
 	</para>
 
-	<para>Here is an example set of <literal
+	<para id="x_276">Here is an example set of <literal
 	    role="hg-ext">notify</literal> configuration information.
 	</para>
 
 	&ch10-notify-config.lst;
 
-	<para>This will produce a message that looks like the
+	<para id="x_277">This will produce a message that looks like the
 	  following:
 	</para>
 
@@ -1279,7 +1279,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <sect3>
 	<title>Testing and troubleshooting</title>
 
-	<para>Do not forget that by default, the <literal
+	<para id="x_278">Do not forget that by default, the <literal
 		role="hg-ext">notify</literal> extension <emphasis>will not
 	  send any mail</emphasis> until you explicitly configure it to do so,
 	  by setting <envar role="rc-item-notify">test</envar> to
@@ -1296,11 +1296,11 @@ incoming.notify = python:hgext.notify.hook</programlisting>
     <sect2>
       <title>In-process hook execution</title>
 
-      <para>An in-process hook is called with arguments of the
+      <para id="x_279">An in-process hook is called with arguments of the
 	following form:
       </para>
       <programlisting>def myhook(ui, repo, **kwargs): pass</programlisting>
-      <para>The <literal>ui</literal> parameter is a <literal
+      <para id="x_27a">The <literal>ui</literal> parameter is a <literal
 	  role="py-mod-mercurial.ui">ui</literal> object. The
 	<literal>repo</literal> parameter is a <literal
 	  role="py-mod-mercurial.localrepo">localrepository</literal>
@@ -1309,38 +1309,38 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	being invoked, with the following common features:
       </para>
       <itemizedlist>
-	<listitem><para>If a parameter is named
+	<listitem><para id="x_27b">If a parameter is named
 	    <literal>node</literal> or <literal>parentN</literal>, it
 	    will contain a hexadecimal changeset ID. The empty string
 	    is used to represent <quote>null changeset ID</quote>
 	    instead of a string of zeroes.
 	  </para>
 	</listitem>
-	<listitem><para>If a parameter is named
+	<listitem><para id="x_27c">If a parameter is named
 	    <literal>url</literal>, it will contain the URL of a
 	    remote repository, if that can be determined.
 	  </para>
 	</listitem>
-	<listitem><para>Boolean-valued parameters are represented as
+	<listitem><para id="x_27d">Boolean-valued parameters are represented as
 	    Python <literal>bool</literal> objects.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>An in-process hook is called without a change to the
+      <para id="x_27e">An in-process hook is called without a change to the
 	process's working directory (unlike external hooks, which are
 	run in the root of the repository).  It must not change the
 	process's working directory, or it will cause any calls it
 	makes into the Mercurial API to fail.
       </para>
 
-      <para>If a hook returns a boolean <quote>false</quote> value, it
+      <para id="x_27f">If a hook returns a boolean <quote>false</quote> value, it
 	is considered to have succeeded.  If it returns a boolean
 	<quote>true</quote> value or raises an exception, it is
 	considered to have failed.  A useful way to think of the
 	calling convention is <quote>tell me if you fail</quote>.
       </para>
 
-      <para>Note that changeset IDs are passed into Python hooks as
+      <para id="x_280">Note that changeset IDs are passed into Python hooks as
 	hexadecimal strings, not the binary hashes that Mercurial's
 	APIs normally use.  To convert a hash from hex to binary, use
 	the <literal>bin</literal> function.
@@ -1350,7 +1350,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
     <sect2>
       <title>External hook execution</title>
 
-      <para>An external hook is passed to the shell of the user
+      <para id="x_281">An external hook is passed to the shell of the user
 	running Mercurial. Features of that shell, such as variable
 	substitution and command redirection, are available.  The hook
 	is run in the root directory of the repository (unlike
@@ -1358,7 +1358,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	Mercurial was run in).
       </para>
 
-      <para>Hook parameters are passed to the hook as environment
+      <para id="x_282">Hook parameters are passed to the hook as environment
 	variables.  Each environment variable's name is converted in
 	upper case and prefixed with the string
 	<quote><literal>HG_</literal></quote>.  For example, if the
@@ -1367,7 +1367,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	parameter will be <quote><literal>HG_NODE</literal></quote>.
       </para>
 
-      <para>A boolean parameter is represented as the string
+      <para id="x_283">A boolean parameter is represented as the string
 	<quote><literal>1</literal></quote> for <quote>true</quote>,
 	<quote><literal>0</literal></quote> for <quote>false</quote>.
 	If an environment variable is named <envar>HG_NODE</envar>,
@@ -1379,7 +1379,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	URL of a remote repository, if that can be determined.
       </para>
 
-      <para>If a hook exits with a status of zero, it is considered to
+      <para id="x_284">If a hook exits with a status of zero, it is considered to
 	have succeeded.  If it exits with a non-zero status, it is
 	considered to have failed.
       </para>
@@ -1388,7 +1388,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
     <sect2>
       <title>Finding out where changesets come from</title>
 
-      <para>A hook that involves the transfer of changesets between a
+      <para id="x_285">A hook that involves the transfer of changesets between a
 	local repository and another may be able to find out
 	information about the <quote>far side</quote>.  Mercurial
 	knows <emphasis>how</emphasis> changes are being transferred,
@@ -1399,7 +1399,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <sect3 id="sec:hook:sources">
 	<title>Sources of changesets</title>
 
-	<para>Mercurial will tell a hook what means are, or were, used
+	<para id="x_286">Mercurial will tell a hook what means are, or were, used
 	  to transfer changesets between repositories.  This is
 	  provided by Mercurial in a Python parameter named
 	  <literal>source</literal>, or an environment variable named
@@ -1407,22 +1407,22 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	</para>
 
 	<itemizedlist>
-	  <listitem><para><literal>serve</literal>: Changesets are
+	  <listitem><para id="x_287"><literal>serve</literal>: Changesets are
 	      transferred to or from a remote repository over http or
 	      ssh.
 	    </para>
 	  </listitem>
-	  <listitem><para><literal>pull</literal>: Changesets are
+	  <listitem><para id="x_288"><literal>pull</literal>: Changesets are
 	      being transferred via a pull from one repository into
 	      another.
 	    </para>
 	  </listitem>
-	  <listitem><para><literal>push</literal>: Changesets are
+	  <listitem><para id="x_289"><literal>push</literal>: Changesets are
 	      being transferred via a push from one repository into
 	      another.
 	    </para>
 	  </listitem>
-	  <listitem><para><literal>bundle</literal>: Changesets are
+	  <listitem><para id="x_28a"><literal>bundle</literal>: Changesets are
 	      being transferred to or from a bundle.
 	    </para>
 	  </listitem></itemizedlist>
@@ -1432,7 +1432,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	<title>Where changes are going&emdash;remote repository
 	  URLs</title>
 
-	<para>When possible, Mercurial will tell a hook the location
+	<para id="x_28b">When possible, Mercurial will tell a hook the location
 	  of the <quote>far side</quote> of an activity that transfers
 	  changeset data between repositories.  This is provided by
 	  Mercurial in a Python parameter named
@@ -1440,26 +1440,26 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  <envar>HG_URL</envar>.
 	</para>
 
-	<para>This information is not always known.  If a hook is
+	<para id="x_28c">This information is not always known.  If a hook is
 	  invoked in a repository that is being served via http or
 	  ssh, Mercurial cannot tell where the remote repository is,
 	  but it may know where the client is connecting from.  In
 	  such cases, the URL will take one of the following forms:
 	</para>
 	<itemizedlist>
-	  <listitem><para><literal>remote:ssh:1.2.3.4</literal>&emdash;remote 
+	  <listitem><para id="x_28d"><literal>remote:ssh:1.2.3.4</literal>&emdash;remote 
 	      ssh client, at the IP address
 	      <literal>1.2.3.4</literal>.
 	    </para>
 	  </listitem>
-	  <listitem><para><literal>remote:http:1.2.3.4</literal>&emdash;remote 
+	  <listitem><para id="x_28e"><literal>remote:http:1.2.3.4</literal>&emdash;remote 
 	      http client, at the IP address
 	      <literal>1.2.3.4</literal>.  If the client is using SSL,
 	      this will be of the form
 	      <literal>remote:https:1.2.3.4</literal>.
 	    </para>
 	  </listitem>
-	  <listitem><para>Empty&emdash;no information could be
+	  <listitem><para id="x_28f">Empty&emdash;no information could be
 	      discovered about the remote client.
 	    </para>
 	  </listitem></itemizedlist>
@@ -1474,7 +1474,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">changegroup</literal>&emdash;after
 	remote changesets added</title>
 
-      <para>This hook is run after a group of pre-existing changesets
+      <para id="x_290">This hook is run after a group of pre-existing changesets
 	has been added to the repository, for example via a <command
 	  role="hg-cmd">hg pull</command> or <command role="hg-cmd">hg
 	  unbundle</command>.  This hook is run once per operation
@@ -1484,16 +1484,16 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	arrive in a group.
       </para>
 
-      <para>Some possible uses for this hook include kicking off an
+      <para id="x_291">Some possible uses for this hook include kicking off an
 	automated build or test of the added changesets, updating a
 	bug database, or notifying subscribers that a repository
 	contains new changes.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_292">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_293"><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the first changeset in the group that was
 	    added.  All changesets between this and
 	    <literal role="tag">tip</literal>, inclusive, were added by a single
@@ -1502,19 +1502,19 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      role="hg-cmd">hg unbundle</command>.
 	  </para>
 	</listitem>
-	<listitem><para><literal>source</literal>: A string.  The
+	<listitem><para id="x_294"><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
 	      linkend="sec:hook:sources"/> for details.
 	  </para>
 	</listitem>
-	<listitem><para><literal>url</literal>: A URL.  The location
+	<listitem><para id="x_295"><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
 	      linkend="sec:hook:url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">incoming</literal> (section
+      <para id="x_296">See also: <literal role="hook">incoming</literal> (section
 	<xref linkend="sec:hook:incoming"/>), <literal
 	  role="hook">prechangegroup</literal> (section <xref
 	  linkend="sec:hook:prechangegroup"/>), <literal
@@ -1527,28 +1527,28 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">commit</literal>&emdash;after a new
 	changeset is created</title>
 
-      <para>This hook is run after a new changeset has been created.
+      <para id="x_297">This hook is run after a new changeset has been created.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_298">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_299"><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the newly committed changeset.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent1</literal>: A changeset ID.
+	<listitem><para id="x_29a"><literal>parent1</literal>: A changeset ID.
 	    The changeset ID of the first parent of the newly
 	    committed changeset.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent2</literal>: A changeset ID.
+	<listitem><para id="x_29b"><literal>parent2</literal>: A changeset ID.
 	    The changeset ID of the second parent of the newly
 	    committed changeset.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">precommit</literal>
+      <para id="x_29c">See also: <literal role="hook">precommit</literal>
 	(section <xref linkend="sec:hook:precommit"/>), <literal
 	  role="hook">pretxncommit</literal> (section <xref
 	  linkend="sec:hook:pretxncommit"/>)
@@ -1559,40 +1559,40 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">incoming</literal>&emdash;after one
 	remote changeset is added</title>
 
-      <para>This hook is run after a pre-existing changeset has been
+      <para id="x_29d">This hook is run after a pre-existing changeset has been
 	added to the repository, for example via a <command
 	  role="hg-cmd">hg push</command>.  If a group of changesets
 	was added in a single operation, this hook is called once for
 	each added changeset.
       </para>
 
-      <para>You can use this hook for the same purposes as the
+      <para id="x_29e">You can use this hook for the same purposes as the
 	<literal role="hook">changegroup</literal> hook (section <xref
 	  linkend="sec:hook:changegroup"/>); it's simply
 	more convenient sometimes to run a hook once per group of
 	changesets, while other times it's handier once per changeset.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_29f">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_2a0"><literal>node</literal>: A changeset ID.  The
 	    ID of the newly added changeset.
 	  </para>
 	</listitem>
-	<listitem><para><literal>source</literal>: A string.  The
+	<listitem><para id="x_2a1"><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
 	      linkend="sec:hook:sources"/> for details.
 	  </para>
 	</listitem>
-	<listitem><para><literal>url</literal>: A URL.  The location
+	<listitem><para id="x_2a2"><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
 	      linkend="sec:hook:url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">changegroup</literal>
+      <para id="x_2a3">See also: <literal role="hook">changegroup</literal>
 	(section <xref linkend="sec:hook:changegroup"/>) <literal
 	  role="hook">prechangegroup</literal> (section <xref
 	  linkend="sec:hook:prechangegroup"/>), <literal
@@ -1605,25 +1605,25 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">outgoing</literal>&emdash;after
 	changesets are propagated</title>
 
-      <para>This hook is run after a group of changesets has been
+      <para id="x_2a4">This hook is run after a group of changesets has been
 	propagated out of this repository, for example by a <command
 	  role="hg-cmd">hg push</command> or <command role="hg-cmd">hg
 	  bundle</command> command.
       </para>
 
-      <para>One possible use for this hook is to notify administrators
+      <para id="x_2a5">One possible use for this hook is to notify administrators
 	that changes have been pulled.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2a6">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_2a7"><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the first changeset of the group that was
 	    sent.
 	  </para>
 	</listitem>
-	<listitem><para><literal>source</literal>: A string.  The
+	<listitem><para id="x_2a8"><literal>source</literal>: A string.  The
 	    source of the of the operation (see section <xref
 	      linkend="sec:hook:sources"/>).  If a remote
 	    client pulled changes from this repository,
@@ -1636,14 +1636,14 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	    client performed.
 	  </para>
 	</listitem>
-	<listitem><para><literal>url</literal>: A URL.  The location
+	<listitem><para id="x_2a9"><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
 	      linkend="sec:hook:url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">preoutgoing</literal>
+      <para id="x_2aa">See also: <literal role="hook">preoutgoing</literal>
 	(section <xref linkend="sec:hook:preoutgoing"/>)
       </para>
 
@@ -1653,39 +1653,39 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">prechangegroup</literal>&emdash;before starting
 	to add remote changesets</title>
 
-      <para>This controlling hook is run before Mercurial begins to
+      <para id="x_2ab">This controlling hook is run before Mercurial begins to
 	add a group of changesets from another repository.
       </para>
 
-      <para>This hook does not have any information about the
+      <para id="x_2ac">This hook does not have any information about the
 	changesets to be added, because it is run before transmission
 	of those changesets is allowed to begin.  If this hook fails,
 	the changesets will not be transmitted.
       </para>
 
-      <para>One use for this hook is to prevent external changes from
+      <para id="x_2ad">One use for this hook is to prevent external changes from
 	being added to a repository.  For example, you could use this
 	to <quote>freeze</quote> a server-hosted branch temporarily or
 	permanently so that users cannot push to it, while still
 	allowing a local administrator to modify the repository.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2ae">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>source</literal>: A string.  The
+	<listitem><para id="x_2af"><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
 	      linkend="sec:hook:sources"/> for details.
 	  </para>
 	</listitem>
-	<listitem><para><literal>url</literal>: A URL.  The location
+	<listitem><para id="x_2b0"><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
 	      linkend="sec:hook:url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">changegroup</literal>
+      <para id="x_2b1">See also: <literal role="hook">changegroup</literal>
 	(section <xref linkend="sec:hook:changegroup"/>), <literal
 	  role="hook">incoming</literal> (section <xref
 	  linkend="sec:hook:incoming"/>), , <literal
@@ -1698,36 +1698,36 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">precommit</literal>&emdash;before
 	starting to commit a changeset</title>
 
-      <para>This hook is run before Mercurial begins to commit a new
+      <para id="x_2b2">This hook is run before Mercurial begins to commit a new
 	changeset. It is run before Mercurial has any of the metadata
 	for the commit, such as the files to be committed, the commit
 	message, or the commit date.
       </para>
 
-      <para>One use for this hook is to disable the ability to commit
+      <para id="x_2b3">One use for this hook is to disable the ability to commit
 	new changesets, while still allowing incoming changesets.
 	Another is to run a build or test, and only allow the commit
 	to begin if the build or test succeeds.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2b4">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>parent1</literal>: A changeset ID.
+	<listitem><para id="x_2b5"><literal>parent1</literal>: A changeset ID.
 	    The changeset ID of the first parent of the working
 	    directory.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent2</literal>: A changeset ID.
+	<listitem><para id="x_2b6"><literal>parent2</literal>: A changeset ID.
 	    The changeset ID of the second parent of the working
 	    directory.
 	  </para>
 	</listitem></itemizedlist>
-      <para>If the commit proceeds, the parents of the working
+      <para id="x_2b7">If the commit proceeds, the parents of the working
 	directory will become the parents of the new changeset.
       </para>
 
-      <para>See also: <literal role="hook">commit</literal> (section
+      <para id="x_2b8">See also: <literal role="hook">commit</literal> (section
 	<xref linkend="sec:hook:commit"/>), <literal
 	  role="hook">pretxncommit</literal> (section <xref
 	  linkend="sec:hook:pretxncommit"/>)
@@ -1738,18 +1738,18 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">preoutgoing</literal>&emdash;before
 	starting to propagate changesets</title>
 
-      <para>This hook is invoked before Mercurial knows the identities
+      <para id="x_2b9">This hook is invoked before Mercurial knows the identities
 	of the changesets to be transmitted.
       </para>
 
-      <para>One use for this hook is to prevent changes from being
+      <para id="x_2ba">One use for this hook is to prevent changes from being
 	transmitted to another repository.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2bb">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>source</literal>: A string.  The
+	<listitem><para id="x_2bc"><literal>source</literal>: A string.  The
 	    source of the operation that is attempting to obtain
 	    changes from this repository (see section <xref
 	      linkend="sec:hook:sources"/>).  See the documentation
@@ -1760,14 +1760,14 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	    this parameter.
 	  </para>
 	</listitem>
-	<listitem><para><literal>url</literal>: A URL.  The location
+	<listitem><para id="x_2bd"><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
 	      linkend="sec:hook:url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">outgoing</literal> (section
+      <para id="x_2be">See also: <literal role="hook">outgoing</literal> (section
 	<xref linkend="sec:hook:outgoing"/>)
       </para>
 
@@ -1776,38 +1776,38 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">pretag</literal>&emdash;before
 	tagging a changeset</title>
 
-      <para>This controlling hook is run before a tag is created.  If
+      <para id="x_2bf">This controlling hook is run before a tag is created.  If
 	the hook succeeds, creation of the tag proceeds.  If the hook
 	fails, the tag is not created.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2c0">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>local</literal>: A boolean.  Whether
+	<listitem><para id="x_2c1"><literal>local</literal>: A boolean.  Whether
 	    the tag is local to this repository instance (i.e. stored
 	    in <filename role="special">.hg/localtags</filename>) or
 	    managed by Mercurial (stored in <filename
 	      role="special">.hgtags</filename>).
 	  </para>
 	</listitem>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_2c2"><literal>node</literal>: A changeset ID.  The
 	    ID of the changeset to be tagged.
 	  </para>
 	</listitem>
-	<listitem><para><literal>tag</literal>: A string.  The name of
+	<listitem><para id="x_2c3"><literal>tag</literal>: A string.  The name of
 	    the tag to be created.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>If the tag to be created is revision-controlled, the
+      <para id="x_2c4">If the tag to be created is revision-controlled, the
 	<literal role="hook">precommit</literal> and <literal
 	  role="hook">pretxncommit</literal> hooks (sections <xref
 	  linkend="sec:hook:commit"/> and <xref
 	  linkend="sec:hook:pretxncommit"/>) will also be run.
       </para>
 
-      <para>See also: <literal role="hook">tag</literal> (section
+      <para id="x_2c5">See also: <literal role="hook">tag</literal> (section
 	<xref linkend="sec:hook:tag"/>)
       </para>
     </sect2>
@@ -1816,7 +1816,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">pretxnchangegroup</literal>&emdash;before
 	completing addition of remote changesets</title>
 
-      <para>This controlling hook is run before a
+      <para id="x_2c6">This controlling hook is run before a
 	transaction&emdash;that manages the addition of a group of new
 	changesets from outside the repository&emdash;completes.  If
 	the hook succeeds, the transaction completes, and all of the
@@ -1825,28 +1825,28 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	the changesets is erased.
       </para>
 
-      <para>This hook can access the metadata associated with the
+      <para id="x_2c7">This hook can access the metadata associated with the
 	almost-added changesets, but it should not do anything
 	permanent with this data. It must also not modify the working
 	directory.
       </para>
 
-      <para>While this hook is running, if other Mercurial processes
+      <para id="x_2c8">While this hook is running, if other Mercurial processes
 	access this repository, they will be able to see the
 	almost-added changesets as if they are permanent.  This may
 	lead to race conditions if you do not take steps to avoid
 	them.
       </para>
 
-      <para>This hook can be used to automatically vet a group of
+      <para id="x_2c9">This hook can be used to automatically vet a group of
 	changesets.  If the hook fails, all of the changesets are
 	<quote>rejected</quote> when the transaction rolls back.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2ca">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_2cb"><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the first changeset in the group that was
 	    added.  All changesets between this and
 	    <literal role="tag">tip</literal>,
@@ -1856,19 +1856,19 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      role="hg-cmd">hg unbundle</command>.
 	  </para>
 	</listitem>
-	<listitem><para><literal>source</literal>: A string.  The
+	<listitem><para id="x_2cc"><literal>source</literal>: A string.  The
 	    source of these changes.  See section <xref
 	      linkend="sec:hook:sources"/> for details.
 	  </para>
 	</listitem>
-	<listitem><para><literal>url</literal>: A URL.  The location
+	<listitem><para id="x_2cd"><literal>url</literal>: A URL.  The location
 	    of the remote repository, if known.  See section <xref
 	      linkend="sec:hook:url"/> for more
 	    information.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">changegroup</literal>
+      <para id="x_2ce">See also: <literal role="hook">changegroup</literal>
 	(section <xref linkend="sec:hook:changegroup"/>), <literal
 	  role="hook">incoming</literal> (section <xref
 	  linkend="sec:hook:incoming"/>), <literal
@@ -1881,7 +1881,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">pretxncommit</literal>&emdash;before
 	completing commit of new changeset</title>
 
-      <para>This controlling hook is run before a
+      <para id="x_2cf">This controlling hook is run before a
 	transaction&emdash;that manages a new commit&emdash;completes.
 	If the hook succeeds, the transaction completes and the
 	changeset becomes permanent within this repository.  If the
@@ -1889,37 +1889,37 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	data is erased.
       </para>
 
-      <para>This hook can access the metadata associated with the
+      <para id="x_2d0">This hook can access the metadata associated with the
 	almost-new changeset, but it should not do anything permanent
 	with this data.  It must also not modify the working
 	directory.
       </para>
 
-      <para>While this hook is running, if other Mercurial processes
+      <para id="x_2d1">While this hook is running, if other Mercurial processes
 	access this repository, they will be able to see the
 	almost-new changeset as if it is permanent.  This may lead to
 	race conditions if you do not take steps to avoid them.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2d2">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_2d3"><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the newly committed changeset.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent1</literal>: A changeset ID.
+	<listitem><para id="x_2d4"><literal>parent1</literal>: A changeset ID.
 	    The changeset ID of the first parent of the newly
 	    committed changeset.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent2</literal>: A changeset ID.
+	<listitem><para id="x_2d5"><literal>parent2</literal>: A changeset ID.
 	    The changeset ID of the second parent of the newly
 	    committed changeset.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">precommit</literal>
+      <para id="x_2d6">See also: <literal role="hook">precommit</literal>
 	(section <xref linkend="sec:hook:precommit"/>)
       </para>
 
@@ -1928,30 +1928,30 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">preupdate</literal>&emdash;before
 	updating or merging working directory</title>
 
-      <para>This controlling hook is run before an update or merge of
+      <para id="x_2d7">This controlling hook is run before an update or merge of
 	the working directory begins.  It is run only if Mercurial's
 	normal pre-update checks determine that the update or merge
 	can proceed.  If the hook succeeds, the update or merge may
 	proceed; if it fails, the update or merge does not start.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2d8">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>parent1</literal>: A changeset ID.
+	<listitem><para id="x_2d9"><literal>parent1</literal>: A changeset ID.
 	    The ID of the parent that the working directory is to be
 	    updated to.  If the working directory is being merged, it
 	    will not change this parent.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent2</literal>: A changeset ID.
+	<listitem><para id="x_2da"><literal>parent2</literal>: A changeset ID.
 	    Only set if the working directory is being merged.  The ID
 	    of the revision that the working directory is being merged
 	    with.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">update</literal> (section
+      <para id="x_2db">See also: <literal role="hook">update</literal> (section
 	<xref linkend="sec:hook:update"/>)
       </para>
 
@@ -1960,13 +1960,13 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">tag</literal>&emdash;after tagging a
 	changeset</title>
 
-      <para>This hook is run after a tag has been created.
+      <para id="x_2dc">This hook is run after a tag has been created.
       </para>
 
-      <para>Parameters to this hook:
+      <para id="x_2dd">Parameters to this hook:
       </para>
       <itemizedlist>
-	<listitem><para><literal>local</literal>: A boolean.  Whether
+	<listitem><para id="x_2de"><literal>local</literal>: A boolean.  Whether
 	    the new tag is local to this repository instance (i.e.
 	    stored in <filename
 	      role="special">.hg/localtags</filename>) or managed by
@@ -1974,21 +1974,21 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      role="special">.hgtags</filename>).
 	  </para>
 	</listitem>
-	<listitem><para><literal>node</literal>: A changeset ID.  The
+	<listitem><para id="x_2df"><literal>node</literal>: A changeset ID.  The
 	    ID of the changeset that was tagged.
 	  </para>
 	</listitem>
-	<listitem><para><literal>tag</literal>: A string.  The name of
+	<listitem><para id="x_2e0"><literal>tag</literal>: A string.  The name of
 	    the tag that was created.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>If the created tag is revision-controlled, the <literal
+      <para id="x_2e1">If the created tag is revision-controlled, the <literal
 	  role="hook">commit</literal> hook (section <xref
 	  linkend="sec:hook:commit"/>) is run before this hook.
       </para>
 
-      <para>See also: <literal role="hook">pretag</literal> (section
+      <para id="x_2e2">See also: <literal role="hook">pretag</literal> (section
 	<xref linkend="sec:hook:pretag"/>)
       </para>
 
@@ -1997,7 +1997,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <title><literal role="hook">update</literal>&emdash;after
 	updating or merging working directory</title>
 
-      <para>This hook is run after an update or merge of the working
+      <para id="x_2e3">This hook is run after an update or merge of the working
 	directory completes.  Since a merge can fail (if the external
 	<command>hgmerge</command> command fails to resolve conflicts
 	in a file), this hook communicates whether the update or merge
@@ -2005,24 +2005,24 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       </para>
 
       <itemizedlist>
-	<listitem><para><literal>error</literal>: A boolean.
+	<listitem><para id="x_2e4"><literal>error</literal>: A boolean.
 	    Indicates whether the update or merge completed
 	    successfully.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent1</literal>: A changeset ID.
+	<listitem><para id="x_2e5"><literal>parent1</literal>: A changeset ID.
 	    The ID of the parent that the working directory was
 	    updated to.  If the working directory was merged, it will
 	    not have changed this parent.
 	  </para>
 	</listitem>
-	<listitem><para><literal>parent2</literal>: A changeset ID.
+	<listitem><para id="x_2e6"><literal>parent2</literal>: A changeset ID.
 	    Only set if the working directory was merged.  The ID of
 	    the revision that the working directory was merged with.
 	  </para>
 	</listitem></itemizedlist>
 
-      <para>See also: <literal role="hook">preupdate</literal>
+      <para id="x_2e7">See also: <literal role="hook">preupdate</literal>
 	(section <xref linkend="sec:hook:preupdate"/>)
       </para>
 

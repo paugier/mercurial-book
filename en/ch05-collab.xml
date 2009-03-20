@@ -4,7 +4,7 @@
   <?dbhtml filename="collaborating-with-other-people.html"?>
   <title>Collaborating with other people</title>
 
-  <para>As a completely decentralised tool, Mercurial doesn't impose
+  <para id="x_44a">As a completely decentralised tool, Mercurial doesn't impose
     any policy on how people ought to work with each other.  However,
     if you're new to distributed revision control, it helps to have
     some tools and examples in mind when you're thinking about
@@ -13,15 +13,15 @@
   <sect1>
     <title>Mercurial's web interface</title>
 
-    <para>Mercurial has a powerful web interface that provides several
+    <para id="x_44b">Mercurial has a powerful web interface that provides several
       useful capabilities.</para>
 
-    <para>For interactive use, the web interface lets you browse a
+    <para id="x_44c">For interactive use, the web interface lets you browse a
       single repository or a collection of repositories.  You can view
       the history of a repository, examine each change (comments and
       diffs), and view the contents of each directory and file.</para>
 
-    <para>Also for human consumption, the web interface provides an
+    <para id="x_44d">Also for human consumption, the web interface provides an
       RSS feed of the changes in a repository.  This lets you
       <quote>subscribe</quote> to a repository using your favourite
       feed reader, and be automatically notified of activity in that
@@ -31,18 +31,18 @@
       configuration on the part of whoever is serving the
       repository.</para>
 
-    <para>The web interface also lets remote users clone a repository,
+    <para id="x_44e">The web interface also lets remote users clone a repository,
       pull changes from it, and (when the server is configured to
       permit it) push changes back to it.  Mercurial's HTTP tunneling
       protocol aggressively compresses data, so that it works
       efficiently even over low-bandwidth network connections.</para>
 
-    <para>The easiest way to get started with the web interface is to
+    <para id="x_44f">The easiest way to get started with the web interface is to
       use your web browser to visit an existing repository, such as
       the master Mercurial repository at <ulink
 	url="http://www.selenic.com/repo/hg?style=gitweb">http://www.selenic.com/repo/hg?style=gitweb</ulink>.</para>
 
-    <para>If you're interested in providing a web interface to your
+    <para id="x_450">If you're interested in providing a web interface to your
       own repositories, Mercurial provides two ways to do this.  The
       first is using the <command role="hg-cmd">hg serve</command>
       command, which is best suited to short-term
@@ -59,7 +59,7 @@
   <sect1>
     <title>Collaboration models</title>
 
-    <para>With a suitably flexible tool, making decisions about
+    <para id="x_451">With a suitably flexible tool, making decisions about
       workflow is much more of a social engineering challenge than a
       technical one. Mercurial imposes few limitations on how you can
       structure the flow of work in a project, so it's up to you and
@@ -69,13 +69,13 @@
     <sect2>
       <title>Factors to keep in mind</title>
 
-      <para>The most important aspect of any model that you must keep
+      <para id="x_452">The most important aspect of any model that you must keep
 	in mind is how well it matches the needs and capabilities of
 	the people who will be using it.  This might seem
 	self-evident; even so, you still can't afford to forget it for
 	a moment.</para>
 
-      <para>I once put together a workflow model that seemed to make
+      <para id="x_453">I once put together a workflow model that seemed to make
 	perfect sense to me, but that caused a considerable amount of
 	consternation and strife within my development team.  In spite
 	of my attempts to explain why we needed a complex set of
@@ -85,7 +85,7 @@
 	operating under, or face the consequences of those constraints
 	in the details of the model that I was advocating.</para>
 
-      <para>Don't sweep foreseeable social or technical problems under
+      <para id="x_454">Don't sweep foreseeable social or technical problems under
 	the rug. Whatever scheme you put into effect, you should plan
 	for mistakes and problem scenarios.  Consider adding automated
 	machinery to prevent, or quickly recover from, trouble that
@@ -101,12 +101,12 @@
     <sect2>
       <title>Informal anarchy</title>
 
-      <para>I wouldn't suggest an <quote>anything goes</quote>
+      <para id="x_455">I wouldn't suggest an <quote>anything goes</quote>
 	approach as something sustainable, but it's a model that's
 	easy to grasp, and it works perfectly well in a few unusual
 	situations.</para>
 
-      <para>As one example, many projects have a loose-knit group of
+      <para id="x_456">As one example, many projects have a loose-knit group of
 	collaborators who rarely physically meet each other.  Some
 	groups like to overcome the isolation of working at a distance
 	by organising occasional <quote>sprints</quote>.  In a sprint,
@@ -115,7 +115,7 @@
 	place) and spend several days more or less locked in there,
 	hacking intensely on a handful of projects.</para>
 
-      <para>A sprint is the perfect place to use the <command
+      <para id="x_457">A sprint is the perfect place to use the <command
 	  role="hg-cmd">hg serve</command> command, since <command
 	  role="hg-cmd">hg serve</command> does not require any fancy
 	server infrastructure.  You can get started with <command
@@ -129,7 +129,7 @@
 	they can pull a bugfix from you and verify it; or they can
 	clone a branch containing a new feature and try it out.</para>
 
-      <para>The charm, and the problem, with doing things in an ad hoc
+      <para id="x_458">The charm, and the problem, with doing things in an ad hoc
 	fashion like this is that only people who know about your
 	changes, and where they are, can see them.  Such an informal
 	approach simply doesn't scale beyond a handful people, because
@@ -140,18 +140,18 @@
     <sect2>
       <title>A single central repository</title>
 
-      <para>For smaller projects migrating from a centralised revision
+      <para id="x_459">For smaller projects migrating from a centralised revision
 	control tool, perhaps the easiest way to get started is to
 	have changes flow through a single shared central repository.
 	This is also the most common <quote>building block</quote> for
 	more ambitious workflow schemes.</para>
 
-      <para>Contributors start by cloning a copy of this repository.
+      <para id="x_45a">Contributors start by cloning a copy of this repository.
 	They can pull changes from it whenever they need to, and some
 	(perhaps all) developers have permission to push a change back
 	when they're ready for other people to see it.</para>
 
-      <para>Under this model, it can still often make sense for people
+      <para id="x_45b">Under this model, it can still often make sense for people
 	to pull changes directly from each other, without going
 	through the central repository.  Consider a case in which I
 	have a tentative bug fix, but I am worried that if I were to
@@ -162,7 +162,7 @@
 	lets us put off publishing the potentially unsafe change until
 	it has had a little testing.</para>
 
-      <para>In this kind of scenario, people usually use the
+      <para id="x_45c">In this kind of scenario, people usually use the
 	<command>ssh</command> protocol to securely push changes to
 	the central repository, as documented in section <xref
 	  linkend="sec:collab:ssh"/>.  It's also
@@ -177,7 +177,7 @@
     <sect2>
       <title>Working with multiple branches</title>
 
-      <para>Projects of any significant size naturally tend to make
+      <para id="x_45d">Projects of any significant size naturally tend to make
 	progress on several fronts simultaneously.  In the case of
 	software, it's common for a project to go through periodic
 	official releases.  A release might then go into
@@ -190,7 +190,7 @@
 	different directions in which development is
 	proceeding.</para>
 
-      <para>Mercurial is particularly well suited to managing a number
+      <para id="x_45e">Mercurial is particularly well suited to managing a number
 	of simultaneous, but not identical, branches.  Each
 	<quote>development direction</quote> can live in its own
 	central repository, and you can merge changes from one to
@@ -199,27 +199,27 @@
 	branch will never affect a stable branch unless someone
 	explicitly merges those changes in.</para>
 
-      <para>Here's an example of how this can work in practice.  Let's
+      <para id="x_45f">Here's an example of how this can work in practice.  Let's
 	say you have one <quote>main branch</quote> on a central
 	server.</para>
 
       &interaction.branching.init;
 
-      <para>People clone it, make changes locally, test them, and push
+      <para id="x_460">People clone it, make changes locally, test them, and push
 	them back.</para>
 
-      <para>Once the main branch reaches a release milestone, you can
+      <para id="x_461">Once the main branch reaches a release milestone, you can
 	use the <command role="hg-cmd">hg tag</command> command to
 	give a permanent name to the milestone revision.</para>
 
 	&interaction.branching.tag;
 
-      <para>Let's say some ongoing
+      <para id="x_462">Let's say some ongoing
 	development occurs on the main branch.</para>
 
       &interaction.branching.main;
 
-      <para>Using the tag that was recorded at the milestone, people
+      <para id="x_463">Using the tag that was recorded at the milestone, people
 	who clone that repository at any time in the future can use
 	<command role="hg-cmd">hg update</command> to get a copy of
 	the working directory exactly as it was when that tagged
@@ -227,26 +227,26 @@
 
       &interaction.branching.update;
 
-      <para>In addition, immediately after the main branch is tagged,
+      <para id="x_464">In addition, immediately after the main branch is tagged,
 	someone can then clone the main branch on the server to a new
 	<quote>stable</quote> branch, also on the server.</para>
 
       &interaction.branching.clone;
 
-      <para>Someone who needs to make a change to the stable branch
+      <para id="x_465">Someone who needs to make a change to the stable branch
 	can then clone <emphasis>that</emphasis> repository, make
 	their changes, commit, and push their changes back there.</para>
 
       &interaction.branching.stable;
 
-      <para>Because Mercurial repositories are independent, and
+      <para id="x_466">Because Mercurial repositories are independent, and
 	Mercurial doesn't move changes around automatically, the
 	stable and main branches are <emphasis>isolated</emphasis>
 	from each other.  The changes that you made on the main branch
 	don't <quote>leak</quote> to the stable branch, and vice
 	versa.</para>
 
-      <para>You'll often want all of your bugfixes on the stable
+      <para id="x_467">You'll often want all of your bugfixes on the stable
 	branch to show up on the main branch, too.  Rather than
 	rewrite a bugfix on the main branch, you can simply pull and
 	merge changes from the stable to the main branch, and
@@ -254,7 +254,7 @@
 
 	&interaction.branching.merge;
 
-      <para>The main branch will still contain changes that are not on
+      <para id="x_468">The main branch will still contain changes that are not on
 	the stable branch, but it will also contain all of the
 	bugfixes from the stable branch.  The stable branch remains
 	unaffected by these changes.</para>
@@ -263,7 +263,7 @@
     <sect2>
       <title>Feature branches</title>
 
-      <para>For larger projects, an effective way to manage change is
+      <para id="x_469">For larger projects, an effective way to manage change is
 	to break up a team into smaller groups.  Each group has a
 	shared branch of its own, cloned from a single
 	<quote>master</quote> branch used by the entire project.
@@ -273,11 +273,11 @@
       <informalfigure id="fig:collab:feature-branches">
 	<mediaobject><imageobject><imagedata
 				    fileref="feature-branches"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject><caption><para>Feature
+	      add text</phrase></textobject><caption><para id="x_46a">Feature
 	      branches</para></caption></mediaobject>
       </informalfigure>
 
-      <para>When a particular feature is deemed to be in suitable
+      <para id="x_46b">When a particular feature is deemed to be in suitable
 	shape, someone on that feature team pulls and merges from the
 	master branch into the feature branch, then pushes back up to
 	the master branch.</para>
@@ -286,12 +286,12 @@
     <sect2>
       <title>The release train</title>
 
-      <para>Some projects are organised on a <quote>train</quote>
+      <para id="x_46c">Some projects are organised on a <quote>train</quote>
 	basis: a release is scheduled to happen every few months, and
 	whatever features are ready when the <quote>train</quote> is
 	ready to leave are allowed in.</para>
 
-      <para>This model resembles working with feature branches.  The
+      <para id="x_46d">This model resembles working with feature branches.  The
 	difference is that when a feature branch misses a train,
 	someone on the feature team pulls and merges the changes that
 	went out on that train release into the feature branch, and
@@ -302,7 +302,7 @@
     <sect2>
       <title>The Linux kernel model</title>
 
-      <para>The development of the Linux kernel has a shallow
+      <para id="x_46e">The development of the Linux kernel has a shallow
 	hierarchical structure, surrounded by a cloud of apparent
 	chaos.  Because most Linux developers use
 	<command>git</command>, a distributed revision control tool
@@ -310,14 +310,14 @@
 	describe the way work flows in that environment; if you like
 	the ideas, the approach translates well across tools.</para>
 
-      <para>At the center of the community sits Linus Torvalds, the
+      <para id="x_46f">At the center of the community sits Linus Torvalds, the
 	creator of Linux.  He publishes a single source repository
 	that is considered the <quote>authoritative</quote> current
 	tree by the entire developer community. Anyone can clone
 	Linus's tree, but he is very choosy about whose trees he pulls
 	from.</para>
 
-      <para>Linus has a number of <quote>trusted lieutenants</quote>.
+      <para id="x_470">Linus has a number of <quote>trusted lieutenants</quote>.
 	As a general rule, he pulls whatever changes they publish, in
 	most cases without even reviewing those changes.  Some of
 	those lieutenants are generally agreed to be
@@ -329,7 +329,7 @@
 	If the maintainer reviews their changes and agrees to take
 	them, they'll pass them along to Linus in due course.</para>
 
-      <para>Individual lieutenants have their own approaches to
+      <para id="x_471">Individual lieutenants have their own approaches to
 	reviewing, accepting, and publishing changes; and for deciding
 	when to feed them to Linus.  In addition, there are several
 	well known branches that people use for different purposes.
@@ -340,14 +340,14 @@
 	that they are about to feed upstream; and so on.  Others just
 	publish a single tree.</para>
 
-      <para>This model has two notable features.  The first is that
+      <para id="x_472">This model has two notable features.  The first is that
 	it's <quote>pull only</quote>.  You have to ask, convince, or
 	beg another developer to take a change from you, because there
 	are almost no trees to which more than one person can push,
 	and there's no way to push changes into a tree that someone
 	else controls.</para>
 
-      <para>The second is that it's based on reputation and acclaim.
+      <para id="x_473">The second is that it's based on reputation and acclaim.
 	If you're an unknown, Linus will probably ignore changes from
 	you without even responding.  But a subsystem maintainer will
 	probably review them, and will likely take them if they pass
@@ -358,14 +358,14 @@
 	Linus hasn't yet accepted, people with similar interests may
 	pull your changes regularly to keep up with your work.</para>
 
-      <para>Reputation and acclaim don't necessarily cross subsystem
+      <para id="x_474">Reputation and acclaim don't necessarily cross subsystem
 	or <quote>people</quote> boundaries.  If you're a respected
 	but specialised storage hacker, and you try to fix a
 	networking bug, that change will receive a level of scrutiny
 	from a network maintainer comparable to a change from a
 	complete stranger.</para>
 
-      <para>To people who come from more orderly project backgrounds,
+      <para id="x_475">To people who come from more orderly project backgrounds,
 	the comparatively chaotic Linux kernel development process
 	often seems completely insane.  It's subject to the whims of
 	individuals; people make sweeping changes whenever they deem
@@ -377,13 +377,13 @@
     <sect2>
       <title>Pull-only versus shared-push collaboration</title>
 
-      <para>A perpetual source of heat in the open source community is
+      <para id="x_476">A perpetual source of heat in the open source community is
 	whether a development model in which people only ever pull
 	changes from others is <quote>better than</quote> one in which
 	multiple people can push changes to a shared
 	repository.</para>
 
-      <para>Typically, the backers of the shared-push model use tools
+      <para id="x_477">Typically, the backers of the shared-push model use tools
 	that actively enforce this approach.  If you're using a
 	centralised revision control tool such as Subversion, there's
 	no way to make a choice over which model you'll use: the tool
@@ -391,7 +391,7 @@
 	you'll have to roll your own approach on top (such as applying
 	a patch by hand).</para>
 
-      <para>A good distributed revision control tool, such as
+      <para id="x_478">A good distributed revision control tool, such as
 	Mercurial, will support both models.  You and your
 	collaborators can then structure how you work together based
 	on your own needs and preferences, not on what contortions
@@ -401,7 +401,7 @@
     <sect2>
       <title>Where collaboration meets branch management</title>
 
-      <para>Once you and your team set up some shared repositories and
+      <para id="x_479">Once you and your team set up some shared repositories and
 	start propagating changes back and forth between local and
 	shared repos, you begin to face a related, but slightly
 	different challenge: that of managing the multiple directions
@@ -415,7 +415,7 @@
   <sect1>
     <title>The technical side of sharing</title>
 
-    <para>The remainder of this chapter is devoted to the question of
+    <para id="x_47a">The remainder of this chapter is devoted to the question of
       serving data to your collaborators.</para>
 
   </sect1>
@@ -423,12 +423,12 @@
     <title>Informal sharing with <command role="hg-cmd">hg
 	serve</command></title>
 
-    <para>Mercurial's <command role="hg-cmd">hg serve</command>
+    <para id="x_47b">Mercurial's <command role="hg-cmd">hg serve</command>
       command is wonderfully suited to small, tight-knit, and
       fast-paced group environments.  It also provides a great way to
       get a feel for using Mercurial commands over a network.</para>
 
-    <para>Run <command role="hg-cmd">hg serve</command> inside a
+    <para id="x_47c">Run <command role="hg-cmd">hg serve</command> inside a
       repository, and in under a second it will bring up a specialised
       HTTP server; this will accept connections from any client, and
       serve up data for that repository until you terminate it.
@@ -439,24 +439,24 @@
       on a laptop is likely to look something like
       <literal>http://my-laptop.local:8000/</literal>.</para>
 
-    <para>The <command role="hg-cmd">hg serve</command> command is
+    <para id="x_47d">The <command role="hg-cmd">hg serve</command> command is
       <emphasis>not</emphasis> a general-purpose web server. It can do
       only two things:</para>
     <itemizedlist>
-      <listitem><para>Allow people to browse the history of the
+      <listitem><para id="x_47e">Allow people to browse the history of the
 	  repository it's serving, from their normal web
 	  browsers.</para>
       </listitem>
-      <listitem><para>Speak Mercurial's wire protocol, so that people
+      <listitem><para id="x_47f">Speak Mercurial's wire protocol, so that people
 	  can <command role="hg-cmd">hg clone</command> or <command
 	    role="hg-cmd">hg pull</command> changes from that
 	  repository.</para>
       </listitem></itemizedlist>
-    <para>In particular, <command role="hg-cmd">hg serve</command>
+    <para id="x_480">In particular, <command role="hg-cmd">hg serve</command>
       won't allow remote users to <emphasis>modify</emphasis> your
       repository.  It's intended for read-only use.</para>
 
-    <para>If you're getting started with Mercurial, there's nothing to
+    <para id="x_481">If you're getting started with Mercurial, there's nothing to
       prevent you from using <command role="hg-cmd">hg serve</command>
       to serve up a repository on your own computer, then use commands
       like <command role="hg-cmd">hg clone</command>, <command
@@ -468,13 +468,13 @@
     <sect2>
       <title>A few things to keep in mind</title>
 
-      <para>Because it provides unauthenticated read access to all
+      <para id="x_482">Because it provides unauthenticated read access to all
 	clients, you should only use <command role="hg-cmd">hg
 	  serve</command> in an environment where you either don't
 	care, or have complete control over, who can access your
 	network and pull data from your repository.</para>
 
-      <para>The <command role="hg-cmd">hg serve</command> command
+      <para id="x_483">The <command role="hg-cmd">hg serve</command> command
 	knows nothing about any firewall software you might have
 	installed on your system or network.  It cannot detect or
 	control your firewall software.  If other people are unable to
@@ -483,13 +483,13 @@
 	(<emphasis>after</emphasis> you make sure that they're using
 	the correct URL) is check your firewall configuration.</para>
 
-      <para>By default, <command role="hg-cmd">hg serve</command>
+      <para id="x_484">By default, <command role="hg-cmd">hg serve</command>
 	listens for incoming connections on port 8000.  If another
 	process is already listening on the port you want to use, you
 	can specify a different port to listen on using the <option
 	  role="hg-opt-serve">-p</option> option.</para>
 
-      <para>Normally, when <command role="hg-cmd">hg serve</command>
+      <para id="x_485">Normally, when <command role="hg-cmd">hg serve</command>
 	starts, it prints no output, which can be a bit unnerving.  If
 	you'd like to confirm that it is indeed running correctly, and
 	find out what URL you should send to your collaborators, start
@@ -501,56 +501,56 @@
   <sect1 id="sec:collab:ssh">
     <title>Using the Secure Shell (ssh) protocol</title>
 
-    <para>You can pull and push changes securely over a network
+    <para id="x_486">You can pull and push changes securely over a network
       connection using the Secure Shell (<literal>ssh</literal>)
       protocol.  To use this successfully, you may have to do a little
       bit of configuration on the client or server sides.</para>
 
-    <para>If you're not familiar with ssh, it's a network protocol
+    <para id="x_487">If you're not familiar with ssh, it's a network protocol
       that lets you securely communicate with another computer.  To
       use it with Mercurial, you'll be setting up one or more user
       accounts on a server so that remote users can log in and execute
       commands.</para>
 
-    <para>(If you <emphasis>are</emphasis> familiar with ssh, you'll
+    <para id="x_488">(If you <emphasis>are</emphasis> familiar with ssh, you'll
       probably find some of the material that follows to be elementary
       in nature.)</para>
 
     <sect2>
       <title>How to read and write ssh URLs</title>
 
-      <para>An ssh URL tends to look like this:</para>
+      <para id="x_489">An ssh URL tends to look like this:</para>
       <programlisting>ssh://bos@hg.serpentine.com:22/hg/hgbook</programlisting>
       <orderedlist>
-	<listitem><para>The <quote><literal>ssh://</literal></quote>
+	<listitem><para id="x_48a">The <quote><literal>ssh://</literal></quote>
 	    part tells Mercurial to use the ssh protocol.</para>
 	</listitem>
-	<listitem><para>The <quote><literal>bos@</literal></quote>
+	<listitem><para id="x_48b">The <quote><literal>bos@</literal></quote>
 	    component indicates what username to log into the server
 	    as.  You can leave this out if the remote username is the
 	    same as your local username.</para>
 	</listitem>
-	<listitem><para>The
+	<listitem><para id="x_48c">The
 	    <quote><literal>hg.serpentine.com</literal></quote> gives
 	    the hostname of the server to log into.</para>
 	</listitem>
-	<listitem><para>The <quote>:22</quote> identifies the port
+	<listitem><para id="x_48d">The <quote>:22</quote> identifies the port
 	    number to connect to the server on.  The default port is
 	    22, so you only need to specify a colon and port number if
 	    you're <emphasis>not</emphasis> using port 22.</para>
 	</listitem>
-	<listitem><para>The remainder of the URL is the local path to
+	<listitem><para id="x_48e">The remainder of the URL is the local path to
 	    the repository on the server.</para>
 	</listitem></orderedlist>
 
-      <para>There's plenty of scope for confusion with the path
+      <para id="x_48f">There's plenty of scope for confusion with the path
 	component of ssh URLs, as there is no standard way for tools
 	to interpret it.  Some programs behave differently than others
 	when dealing with these paths. This isn't an ideal situation,
 	but it's unlikely to change.  Please read the following
 	paragraphs carefully.</para>
 
-      <para>Mercurial treats the path to a repository on the server as
+      <para id="x_490">Mercurial treats the path to a repository on the server as
 	relative to the remote user's home directory.  For example, if
 	user <literal>foo</literal> on the server has a home directory
 	of <filename class="directory">/home/foo</filename>, then an
@@ -559,13 +559,13 @@
 	refers to the directory <filename
 	  class="directory">/home/foo/bar</filename>.</para>
 
-      <para>If you want to specify a path relative to another user's
+      <para id="x_491">If you want to specify a path relative to another user's
 	home directory, you can use a path that starts with a tilde
 	character followed by the user's name (let's call them
 	<literal>otheruser</literal>), like this.</para>
       <programlisting>ssh://server/~otheruser/hg/repo</programlisting>
 
-      <para>And if you really want to specify an
+      <para id="x_492">And if you really want to specify an
 	<emphasis>absolute</emphasis> path on the server, begin the
 	path component with two slashes, as in this example.</para>
       <programlisting>ssh://server//absolute/path</programlisting>
@@ -574,7 +574,7 @@
     <sect2>
       <title>Finding an ssh client for your system</title>
 
-      <para>Almost every Unix-like system comes with OpenSSH
+      <para id="x_493">Almost every Unix-like system comes with OpenSSH
 	preinstalled.  If you're using such a system, run
 	<literal>which ssh</literal> to find out if the
 	<command>ssh</command> command is installed (it's usually in
@@ -582,17 +582,17 @@
 	unlikely event that it isn't present, take a look at your
 	system documentation to figure out how to install it.</para>
 
-      <para>On Windows, you'll first need to download a suitable ssh
+      <para id="x_494">On Windows, you'll first need to download a suitable ssh
 	client.  There are two alternatives.</para>
       <itemizedlist>
-	<listitem><para>Simon Tatham's excellent PuTTY package
+	<listitem><para id="x_495">Simon Tatham's excellent PuTTY package
 	    <citation>web:putty</citation> provides a complete suite
 	    of ssh client commands.</para>
 	</listitem>
-	<listitem><para>If you have a high tolerance for pain, you can
+	<listitem><para id="x_496">If you have a high tolerance for pain, you can
 	    use the Cygwin port of OpenSSH.</para>
 	</listitem></itemizedlist>
-      <para>In either case, you'll need to edit your <filename
+      <para id="x_497">In either case, you'll need to edit your <filename
       role="special">hg.ini</filename> file to
 	tell Mercurial where to find the actual client command.  For
 	example, if you're using PuTTY, you'll need to use the
@@ -602,7 +602,7 @@
 ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 
       <note>
-	<para>  The path to <command>plink</command> shouldn't contain
+	<para id="x_498">  The path to <command>plink</command> shouldn't contain
 	  any whitespace characters, or Mercurial may not be able to
 	  run it correctly (so putting it in <filename
 	    class="directory">C:\Program Files</filename> is probably
@@ -613,7 +613,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
     <sect2>
       <title>Generating a key pair</title>
 
-      <para>To avoid the need to repetitively type a password every
+      <para id="x_499">To avoid the need to repetitively type a password every
 	time you need to use your ssh client, I recommend generating a
 	key pair.  On a Unix-like system, the
 	<command>ssh-keygen</command> command will do the trick. On
@@ -621,13 +621,13 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	<command>puttygen</command> command is what you'll
 	need.</para>
 
-      <para>When you generate a key pair, it's usually
+      <para id="x_49a">When you generate a key pair, it's usually
 	<emphasis>highly</emphasis> advisable to protect it with a
 	passphrase.  (The only time that you might not want to do this
 	is when you're using the ssh protocol for automated tasks on a
 	secure network.)</para>
 
-      <para>Simply generating a key pair isn't enough, however.
+      <para id="x_49b">Simply generating a key pair isn't enough, however.
 	You'll need to add the public key to the set of authorised
 	keys for whatever user you're logging in remotely as.  For
 	servers using OpenSSH (the vast majority), this will mean
@@ -636,7 +636,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	  role="special" class="directory">.ssh</filename>
 	directory.</para>
 
-      <para>On a Unix-like system, your public key will have a
+      <para id="x_49c">On a Unix-like system, your public key will have a
 	<filename>.pub</filename> extension.  If you're using
 	<command>puttygen</command> on Windows, you can save the
 	public key to a file of your choosing, or paste it from the
@@ -647,7 +647,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
     <sect2>
       <title>Using an authentication agent</title>
 
-      <para>An authentication agent is a daemon that stores
+      <para id="x_49d">An authentication agent is a daemon that stores
 	passphrases in memory (so it will forget passphrases if you
 	log out and log back in again). An ssh client will notice if
 	it's running, and query it for a passphrase.  If there's no
@@ -656,14 +656,14 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	every time Mercurial tries to communicate with a server on
 	your behalf (e.g. whenever you pull or push changes).</para>
 
-      <para>The downside of storing passphrases in an agent is that
+      <para id="x_49e">The downside of storing passphrases in an agent is that
 	it's possible for a well-prepared attacker to recover the
 	plain text of your passphrases, in some cases even if your
 	system has been power-cycled. You should make your own
 	judgment as to whether this is an acceptable risk.  It
 	certainly saves a lot of repeated typing.</para>
 
-      <para>On Unix-like systems, the agent is called
+      <para id="x_49f">On Unix-like systems, the agent is called
 	<command>ssh-agent</command>, and it's often run automatically
 	for you when you log in.  You'll need to use the
 	<command>ssh-add</command> command to add passphrases to the
@@ -676,7 +676,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
     <sect2>
       <title>Configuring the server side properly</title>
 
-      <para>Because ssh can be fiddly to set up if you're new to it,
+      <para id="x_4a0">Because ssh can be fiddly to set up if you're new to it,
 	there's a variety of things that can go wrong.  Add Mercurial
 	on top, and there's plenty more scope for head-scratching.
 	Most of these potential problems occur on the server side, not
@@ -684,7 +684,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	configuration working, it will usually continue to work
 	indefinitely.</para>
 
-      <para>Before you try using Mercurial to talk to an ssh server,
+      <para id="x_4a1">Before you try using Mercurial to talk to an ssh server,
 	it's best to make sure that you can use the normal
 	<command>ssh</command> or <command>putty</command> command to
 	talk to the server first.  If you run into problems with using
@@ -695,29 +695,29 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	<emphasis>before</emphasis> you worry about whether there's a
 	problem with Mercurial.</para>
 
-      <para>The first thing to be sure of on the server side is that
+      <para id="x_4a2">The first thing to be sure of on the server side is that
 	you can actually log in from another machine at all.  If you
 	can't use <command>ssh</command> or <command>putty</command>
 	to log in, the error message you get may give you a few hints
 	as to what's wrong.  The most common problems are as
 	follows.</para>
       <itemizedlist>
-	<listitem><para>If you get a <quote>connection refused</quote>
+	<listitem><para id="x_4a3">If you get a <quote>connection refused</quote>
 	    error, either there isn't an SSH daemon running on the
 	    server at all, or it's inaccessible due to firewall
 	    configuration.</para>
 	</listitem>
-	<listitem><para>If you get a <quote>no route to host</quote>
+	<listitem><para id="x_4a4">If you get a <quote>no route to host</quote>
 	    error, you either have an incorrect address for the server
 	    or a seriously locked down firewall that won't admit its
 	    existence at all.</para>
 	</listitem>
-	<listitem><para>If you get a <quote>permission denied</quote>
+	<listitem><para id="x_4a5">If you get a <quote>permission denied</quote>
 	    error, you may have mistyped the username on the server,
 	    or you could have mistyped your key's passphrase or the
 	    remote user's password.</para>
 	</listitem></itemizedlist>
-      <para>In summary, if you're having trouble talking to the
+      <para id="x_4a6">In summary, if you're having trouble talking to the
 	server's ssh daemon, first make sure that one is running at
 	all.  On many systems it will be installed, but disabled, by
 	default.  Once you're done with this step, you should then
@@ -727,23 +727,23 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	for misconfiguration until you've checked these two
 	first.</para>
 
-      <para>If you're using an authentication agent on the client side
+      <para id="x_4a7">If you're using an authentication agent on the client side
 	to store passphrases for your keys, you ought to be able to
 	log into the server without being prompted for a passphrase or
 	a password.  If you're prompted for a passphrase, there are a
 	few possible culprits.</para>
       <itemizedlist>
-	<listitem><para>You might have forgotten to use
+	<listitem><para id="x_4a8">You might have forgotten to use
 	    <command>ssh-add</command> or <command>pageant</command>
 	    to store the passphrase.</para>
 	</listitem>
-	<listitem><para>You might have stored the passphrase for the
+	<listitem><para id="x_4a9">You might have stored the passphrase for the
 	    wrong key.</para>
 	</listitem></itemizedlist>
-      <para>If you're being prompted for the remote user's password,
+      <para id="x_4aa">If you're being prompted for the remote user's password,
 	there are another few possible problems to check.</para>
       <itemizedlist>
-	<listitem><para>Either the user's home directory or their
+	<listitem><para id="x_4ab">Either the user's home directory or their
 	    <filename role="special" class="directory">.ssh</filename>
 	    directory might have excessively liberal permissions.  As
 	    a result, the ssh daemon will not trust or read their
@@ -752,19 +752,19 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	      role="special" class="directory">.ssh</filename>
 	    directory will often cause this symptom.</para>
 	</listitem>
-	<listitem><para>The user's <filename
+	<listitem><para id="x_4ac">The user's <filename
 	      role="special">authorized_keys</filename> file may have
 	    a problem. If anyone other than the user owns or can write
 	    to that file, the ssh daemon will not trust or read
 	    it.</para>
 	</listitem></itemizedlist>
 
-      <para>In the ideal world, you should be able to run the
+      <para id="x_4ad">In the ideal world, you should be able to run the
 	following command successfully, and it should print exactly
 	one line of output, the current date and time.</para>
       <programlisting>ssh myserver date</programlisting>
 
-      <para>If, on your server, you have login scripts that print
+      <para id="x_4ae">If, on your server, you have login scripts that print
 	banners or other junk even when running non-interactive
 	commands like this, you should fix them before you continue,
 	so that they only print output if they're run interactively.
@@ -778,43 +778,43 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	shell is to check the return code from the command
 	<literal>tty -s</literal>.)</para>
 
-      <para>Once you've verified that plain old ssh is working with
+      <para id="x_4af">Once you've verified that plain old ssh is working with
 	your server, the next step is to ensure that Mercurial runs on
 	the server.  The following command should run
 	successfully:</para>
 
       <programlisting>ssh myserver hg version</programlisting>
 
-      <para>If you see an error message instead of normal <command
+      <para id="x_4b0">If you see an error message instead of normal <command
 	  role="hg-cmd">hg version</command> output, this is usually
 	because you haven't installed Mercurial to <filename
 	  class="directory">/usr/bin</filename>.  Don't worry if this
 	is the case; you don't need to do that.  But you should check
 	for a few possible problems.</para>
       <itemizedlist>
-	<listitem><para>Is Mercurial really installed on the server at
+	<listitem><para id="x_4b1">Is Mercurial really installed on the server at
 	    all?  I know this sounds trivial, but it's worth
 	    checking!</para>
 	</listitem>
-	<listitem><para>Maybe your shell's search path (usually set
+	<listitem><para id="x_4b2">Maybe your shell's search path (usually set
 	    via the <envar>PATH</envar> environment variable) is
 	    simply misconfigured.</para>
 	</listitem>
-	<listitem><para>Perhaps your <envar>PATH</envar> environment
+	<listitem><para id="x_4b3">Perhaps your <envar>PATH</envar> environment
 	    variable is only being set to point to the location of the
 	    <command>hg</command> executable if the login session is
 	    interactive.  This can happen if you're setting the path
 	    in the wrong shell login script.  See your shell's
 	    documentation for details.</para>
 	</listitem>
-	<listitem><para>The <envar>PYTHONPATH</envar> environment
+	<listitem><para id="x_4b4">The <envar>PYTHONPATH</envar> environment
 	    variable may need to contain the path to the Mercurial
 	    Python modules.  It might not be set at all; it could be
 	    incorrect; or it may be set only if the login is
 	    interactive.</para>
 	</listitem></itemizedlist>
 
-      <para>If you can run <command role="hg-cmd">hg version</command>
+      <para id="x_4b5">If you can run <command role="hg-cmd">hg version</command>
 	over an ssh connection, well done! You've got the server and
 	client sorted out.  You should now be able to use Mercurial to
 	access repositories hosted by that username on that server.
@@ -826,19 +826,19 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
     <sect2>
       <title>Using compression with ssh</title>
 
-      <para>Mercurial does not compress data when it uses the ssh
+      <para id="x_4b6">Mercurial does not compress data when it uses the ssh
 	protocol, because the ssh protocol can transparently compress
 	data.  However, the default behaviour of ssh clients is
 	<emphasis>not</emphasis> to request compression.</para>
 
-      <para>Over any network other than a fast LAN (even a wireless
+      <para id="x_4b7">Over any network other than a fast LAN (even a wireless
 	network), using compression is likely to significantly speed
 	up Mercurial's network operations.  For example, over a WAN,
 	someone measured compression as reducing the amount of time
 	required to clone a particularly large repository from 51
 	minutes to 17 minutes.</para>
 
-      <para>Both <command>ssh</command> and <command>plink</command>
+      <para id="x_4b8">Both <command>ssh</command> and <command>plink</command>
 	accept a <option role="cmd-opt-ssh">-C</option> option which
 	turns on compression.  You can easily edit your <filename
 	  role="special">~/.hgrc</filename> to enable compression for
@@ -846,7 +846,7 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
       <programlisting>[ui]
 ssh = ssh -C</programlisting>
 
-      <para>If you use <command>ssh</command>, you can configure it to
+      <para id="x_4b9">If you use <command>ssh</command>, you can configure it to
 	always use compression when talking to your server.  To do
 	this, edit your <filename
 	  role="special">.ssh/config</filename> file (which may not
@@ -854,7 +854,7 @@ ssh = ssh -C</programlisting>
       <programlisting>Host hg
   Compression yes
   HostName hg.example.com</programlisting>
-      <para>This defines an alias, <literal>hg</literal>.  When you
+      <para id="x_4ba">This defines an alias, <literal>hg</literal>.  When you
 	use it on the <command>ssh</command> command line or in a
 	Mercurial <literal>ssh</literal>-protocol URL, it will cause
 	<command>ssh</command> to connect to
@@ -867,17 +867,17 @@ ssh = ssh -C</programlisting>
   <sect1 id="sec:collab:cgi">
     <title>Serving over HTTP using CGI</title>
 
-    <para>Depending on how ambitious you are, configuring Mercurial's
+    <para id="x_4bb">Depending on how ambitious you are, configuring Mercurial's
       CGI interface can take anything from a few moments to several
       hours.</para>
 
-    <para>We'll begin with the simplest of examples, and work our way
+    <para id="x_4bc">We'll begin with the simplest of examples, and work our way
       towards a more complex configuration.  Even for the most basic
       case, you're almost certainly going to need to read and modify
       your web server's configuration.</para>
 
     <note>
-      <para>  Configuring a web server is a complex, fiddly, and
+      <para id="x_4bd">  Configuring a web server is a complex, fiddly, and
 	highly system-dependent activity.  I can't possibly give you
 	instructions that will cover anything like all of the cases
 	you will encounter. Please use your discretion and judgment in
@@ -889,25 +889,25 @@ ssh = ssh -C</programlisting>
     <sect2>
       <title>Web server configuration checklist</title>
 
-      <para>Before you continue, do take a few moments to check a few
+      <para id="x_4be">Before you continue, do take a few moments to check a few
 	aspects of your system's setup.</para>
 
       <orderedlist>
-	<listitem><para>Do you have a web server installed at all?
+	<listitem><para id="x_4bf">Do you have a web server installed at all?
 	    Mac OS X ships with Apache, but many other systems may not
 	    have a web server installed.</para>
 	</listitem>
-	<listitem><para>If you have a web server installed, is it
+	<listitem><para id="x_4c0">If you have a web server installed, is it
 	    actually running?  On most systems, even if one is
 	    present, it will be disabled by default.</para>
 	</listitem>
-	<listitem><para>Is your server configured to allow you to run
+	<listitem><para id="x_4c1">Is your server configured to allow you to run
 	    CGI programs in the directory where you plan to do so?
 	    Most servers default to explicitly disabling the ability
 	    to run CGI programs.</para>
 	</listitem></orderedlist>
 
-      <para>If you don't have a web server installed, and don't have
+      <para id="x_4c2">If you don't have a web server installed, and don't have
 	substantial experience configuring Apache, you should consider
 	using the <literal>lighttpd</literal> web server instead of
 	Apache.  Apache has a well-deserved reputation for baroque and
@@ -922,7 +922,7 @@ ssh = ssh -C</programlisting>
     <sect2>
       <title>Basic CGI configuration</title>
 
-      <para>On Unix-like systems, it's common for users to have a
+      <para id="x_4c3">On Unix-like systems, it's common for users to have a
 	subdirectory named something like <filename
 	  class="directory">public_html</filename> in their home
 	directory, from which they can serve up web pages.  A file
@@ -930,19 +930,19 @@ ssh = ssh -C</programlisting>
 	accessible at a URL of the form
 	<literal>http://www.example.com/username/foo</literal>.</para>
 
-      <para>To get started, find the <filename
+      <para id="x_4c4">To get started, find the <filename
 	  role="special">hgweb.cgi</filename> script that should be
 	present in your Mercurial installation.  If you can't quickly
 	find a local copy on your system, simply download one from the
 	master Mercurial repository at <ulink
 	  url="http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi">http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi</ulink>.</para>
 
-      <para>You'll need to copy this script into your <filename
+      <para id="x_4c5">You'll need to copy this script into your <filename
 	  class="directory">public_html</filename> directory, and
 	ensure that it's executable.</para>
       <programlisting>cp .../hgweb.cgi ~/public_html
 chmod 755 ~/public_html/hgweb.cgi</programlisting>
-      <para>The <literal>755</literal> argument to
+      <para id="x_4c6">The <literal>755</literal> argument to
 	<command>chmod</command> is a little more general than just
 	making the script executable: it ensures that the script is
 	executable by anyone, and that <quote>group</quote> and
@@ -959,7 +959,7 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
 	<title>What could <emphasis>possibly</emphasis> go
 	  wrong?</title>
 
-	<para>Once you've copied the CGI script into place, go into a
+	<para id="x_4c7">Once you've copied the CGI script into place, go into a
 	  web browser, and try to open the URL <ulink
 	    url="http://myhostname/
 	    myuser/hgweb.cgi">http://myhostname/
@@ -973,7 +973,7 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
 	  fresh installation of Apache, and a user account that I
 	  created specially to perform this exercise.</para>
 
-	<para>Your web server may have per-user directories disabled.
+	<para id="x_4c8">Your web server may have per-user directories disabled.
 	  If you're using Apache, search your config file for a
 	  <literal>UserDir</literal> directive.  If there's none
 	  present, per-user directories will be disabled.  If one
@@ -984,7 +984,7 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
 	  directory, for example <filename
 	    class="directory">public_html</filename>.</para>
 
-	<para>Your file access permissions may be too restrictive.
+	<para id="x_4c9">Your file access permissions may be too restrictive.
 	  The web server must be able to traverse your home directory
 	  and directories under your <filename
 	    class="directory">public_html</filename> directory, and
@@ -994,34 +994,34 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
 find ~/public_html -type d -print0 | xargs -0r chmod 755
 find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
-	<para>The other possibility with permissions is that you might
+	<para id="x_4ca">The other possibility with permissions is that you might
 	  get a completely empty window when you try to load the
 	  script.  In this case, it's likely that your access
 	  permissions are <emphasis>too permissive</emphasis>.  Apache's
 	  <literal>suexec</literal> subsystem won't execute a script
 	  that's group- or world-writable, for example.</para>
 
-	<para>Your web server may be configured to disallow execution
+	<para id="x_4cb">Your web server may be configured to disallow execution
 	  of CGI programs in your per-user web directory.  Here's
 	  Apache's default per-user configuration from my Fedora
 	  system.</para>
 
 	&ch06-apache-config.lst;
 
-	<para>If you find a similar-looking
+	<para id="x_4cc">If you find a similar-looking
 	  <literal>Directory</literal> group in your Apache
 	  configuration, the directive to look at inside it is
 	  <literal>Options</literal>. Add <literal>ExecCGI</literal>
 	  to the end of this list if it's missing, and restart the web
 	  server.</para>
 
-	<para>If you find that Apache serves you the text of the CGI
+	<para id="x_4cd">If you find that Apache serves you the text of the CGI
 	  script instead of executing it, you may need to either
 	  uncomment (if already present) or add a directive like
 	  this.</para>
 	<programlisting>AddHandler cgi-script .cgi</programlisting>
 
-	<para>The next possibility is that you might be served with a
+	<para id="x_4ce">The next possibility is that you might be served with a
 	  colourful Python backtrace claiming that it can't import a
 	  <literal>mercurial</literal>-related module.  This is
 	  actually progress!  The server is now capable of executing
@@ -1035,7 +1035,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  directions inside it to correctly set your
 	  <envar>PYTHONPATH</envar> environment variable.</para>
 
-	<para>Finally, you are <emphasis>certain</emphasis> to by
+	<para id="x_4cf">Finally, you are <emphasis>certain</emphasis> to by
 	  served with another colourful Python backtrace: this one
 	  will complain that it can't find <filename
 	    class="directory">/path/to/repository</filename>.  Edit
@@ -1045,7 +1045,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  with the complete path to the repository you want to serve
 	  up.</para>
 
-	<para>At this point, when you try to reload the page, you
+	<para id="x_4d0">At this point, when you try to reload the page, you
 	  should be presented with a nice HTML view of your
 	  repository's history.  Whew!</para>
 
@@ -1053,7 +1053,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
       <sect3>
 	<title>Configuring lighttpd</title>
 
-	<para>To be exhaustive in my experiments, I tried configuring
+	<para id="x_4d1">To be exhaustive in my experiments, I tried configuring
 	  the increasingly popular <literal>lighttpd</literal> web
 	  server to serve the same repository as I described with
 	  Apache above.  I had already overcome all of the problems I
@@ -1063,7 +1063,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	    role="special">hgweb.cgi</filename> script was properly
 	  edited.</para>
 
-	<para>Once I had Apache running, getting
+	<para id="x_4d2">Once I had Apache running, getting
 	  <literal>lighttpd</literal> to serve the repository was a
 	  snap (in other words, even if you're trying to use
 	  <literal>lighttpd</literal>, you should read the Apache
@@ -1075,7 +1075,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  end of the config file, to configure these modules.</para>
 	<programlisting>userdir.path = "public_html"
 cgi.assign = (".cgi" =&gt; "" )</programlisting>
-	<para>With this done, <literal>lighttpd</literal> ran
+	<para id="x_4d3">With this done, <literal>lighttpd</literal> ran
 	  immediately for me.  If I had configured
 	  <literal>lighttpd</literal> before Apache, I'd almost
 	  certainly have run into many of the same system-level
@@ -1090,7 +1090,7 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
     <sect2>
       <title>Sharing multiple repositories with one CGI script</title>
 
-      <para>The <filename role="special">hgweb.cgi</filename> script
+      <para id="x_4d4">The <filename role="special">hgweb.cgi</filename> script
 	only lets you publish a single repository, which is an
 	annoying restriction.  If you want to publish more than one
 	without wracking yourself with multiple copies of the same
@@ -1098,7 +1098,7 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
 	the <filename role="special">hgwebdir.cgi</filename>
 	script.</para>
 
-      <para>The procedure to configure <filename
+      <para id="x_4d5">The procedure to configure <filename
 	  role="special">hgwebdir.cgi</filename> is only a little more
 	involved than for <filename
 	  role="special">hgweb.cgi</filename>.  First, you must obtain
@@ -1106,12 +1106,12 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
 	download a copy from the master Mercurial repository at <ulink
 	  url="http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi">http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi</ulink>.</para>
 
-      <para>You'll need to copy this script into your <filename
+      <para id="x_4d6">You'll need to copy this script into your <filename
 	  class="directory">public_html</filename> directory, and
 	ensure that it's executable.</para>
       <programlisting>cp .../hgwebdir.cgi ~/public_html
 chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
-      <para>With basic configuration out of the way, try to visit
+      <para id="x_4d7">With basic configuration out of the way, try to visit
 	<ulink url="http://myhostname/
 	  myuser/hgwebdir.cgi">http://myhostname/
 	  myuser/hgwebdir.cgi</ulink> in your browser.  It should
@@ -1120,7 +1120,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	potential problems in section <xref
 	  linkend="sec:collab:wtf"/>.</para>
 
-      <para>The <filename role="special">hgwebdir.cgi</filename>
+      <para id="x_4d8">The <filename role="special">hgwebdir.cgi</filename>
 	script relies on an external configuration file.  By default,
 	it searches for a file named <filename
 	  role="special">hgweb.config</filename> in the same directory
@@ -1130,7 +1130,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	<literal>ConfigParser</literal>
 	<citation>web:configparser</citation> module.</para>
 
-      <para>The easiest way to configure <filename
+      <para id="x_4d9">The easiest way to configure <filename
 	  role="special">hgwebdir.cgi</filename> is with a section
 	named <literal>collections</literal>.  This will automatically
 	publish <emphasis>every</emphasis> repository under the
@@ -1138,7 +1138,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	this:</para>
       <programlisting>[collections]
 /my/root = /my/root</programlisting>
-      <para>Mercurial interprets this by looking at the directory name
+      <para id="x_4da">Mercurial interprets this by looking at the directory name
 	on the <emphasis>right</emphasis> hand side of the
 	<quote><literal>=</literal></quote> sign; finding repositories
 	in that directory hierarchy; and using the text on the
@@ -1147,7 +1147,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	remaining component of a path after this stripping has
 	occurred is called a <quote>virtual path</quote>.</para>
 
-      <para>Given the example above, if we have a repository whose
+      <para id="x_4db">Given the example above, if we have a repository whose
 	local path is <filename
 	  class="directory">/my/root/this/repo</filename>, the CGI
 	script will strip the leading <filename
@@ -1161,7 +1161,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	  myuser/hgwebdir.cgi/this/repo">http://myhostname/
 	  myuser/hgwebdir.cgi/this/repo</ulink>.</para>
 
-      <para>If we replace <filename
+      <para id="x_4dc">If we replace <filename
 	  class="directory">/my/root</filename> on the left hand side
 	of this example with <filename
 	  class="directory">/my</filename>, then <filename
@@ -1171,13 +1171,13 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	  class="directory">root/this/repo</filename> instead of
 	<filename class="directory">this/repo</filename>.</para>
 
-      <para>The <filename role="special">hgwebdir.cgi</filename>
+      <para id="x_4dd">The <filename role="special">hgwebdir.cgi</filename>
 	script will recursively search each directory listed in the
 	<literal>collections</literal> section of its configuration
 	file, but it will <literal>not</literal> recurse into the
 	repositories it finds.</para>
 
-      <para>The <literal>collections</literal> mechanism makes it easy
+      <para id="x_4de">The <literal>collections</literal> mechanism makes it easy
 	to publish many repositories in a <quote>fire and
 	  forget</quote> manner.  You only need to set up the CGI
 	script and configuration file one time.  Afterwards, you can
@@ -1190,7 +1190,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	<title>Explicitly specifying which repositories to
 	  publish</title>
 
-	<para>In addition to the <literal>collections</literal>
+	<para id="x_4df">In addition to the <literal>collections</literal>
 	  mechanism, the <filename
 	    role="special">hgwebdir.cgi</filename> script allows you
 	  to publish a specific list of repositories.  To do so,
@@ -1199,20 +1199,20 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	<programlisting>[paths]
 repo1 = /my/path/to/some/repo
 repo2 = /some/path/to/another</programlisting>
-	<para>In this case, the virtual path (the component that will
+	<para id="x_4e0">In this case, the virtual path (the component that will
 	  appear in a URL) is on the left hand side of each
 	  definition, while the path to the repository is on the
 	  right.  Notice that there does not need to be any
 	  relationship between the virtual path you choose and the
 	  location of a repository in your filesystem.</para>
 
-	<para>If you wish, you can use both the
+	<para id="x_4e1">If you wish, you can use both the
 	  <literal>collections</literal> and <literal>paths</literal>
 	  mechanisms simultaneously in a single configuration
 	  file.</para>
 
 	<note>
-	  <para>  If multiple repositories have the same virtual path,
+	  <para id="x_4e2">  If multiple repositories have the same virtual path,
 	    <filename role="special">hgwebdir.cgi</filename> will not
 	    report an error.  Instead, it will behave
 	    unpredictably.</para>
@@ -1223,12 +1223,12 @@ repo2 = /some/path/to/another</programlisting>
     <sect2>
       <title>Downloading source archives</title>
 
-      <para>Mercurial's web interface lets users download an archive
+      <para id="x_4e3">Mercurial's web interface lets users download an archive
 	of any revision.  This archive will contain a snapshot of the
 	working directory as of that revision, but it will not contain
 	a copy of the repository data.</para>
 
-      <para>By default, this feature is not enabled.  To enable it,
+      <para id="x_4e4">By default, this feature is not enabled.  To enable it,
 	you'll need to add an <envar
 	  role="rc-item-web">allow_archive</envar> item to the
 	<literal role="rc-web">web</literal> section of your <filename
@@ -1238,7 +1238,7 @@ repo2 = /some/path/to/another</programlisting>
     <sect2>
       <title>Web configuration options</title>
 
-      <para>Mercurial's web interfaces (the <command role="hg-cmd">hg
+      <para id="x_4e5">Mercurial's web interfaces (the <command role="hg-cmd">hg
 	  serve</command> command, and the <filename
 	  role="special">hgweb.cgi</filename> and <filename
 	  role="special">hgwebdir.cgi</filename> scripts) have a
@@ -1246,7 +1246,7 @@ repo2 = /some/path/to/another</programlisting>
 	belong in a section named <literal
 	  role="rc-web">web</literal>.</para>
       <itemizedlist>
-	<listitem><para><envar
+	<listitem><para id="x_4e6"><envar
 	      role="rc-item-web">allow_archive</envar>: Determines
 	    which (if any) archive download mechanisms Mercurial
 	    supports.  If you enable this feature, users of the web
@@ -1255,30 +1255,30 @@ repo2 = /some/path/to/another</programlisting>
 	    archive feature, this item must take the form of a
 	    sequence of words drawn from the list below.</para>
 	  <itemizedlist>
-	    <listitem><para><literal>bz2</literal>: A
+	    <listitem><para id="x_4e7"><literal>bz2</literal>: A
 		<command>tar</command> archive, compressed using
 		<literal>bzip2</literal> compression.  This has the
 		best compression ratio, but uses the most CPU time on
 		the server.</para>
 	    </listitem>
-	    <listitem><para><literal>gz</literal>: A
+	    <listitem><para id="x_4e8"><literal>gz</literal>: A
 		<command>tar</command> archive, compressed using
 		<literal>gzip</literal> compression.</para>
 	    </listitem>
-	    <listitem><para><literal>zip</literal>: A
+	    <listitem><para id="x_4e9"><literal>zip</literal>: A
 		<command>zip</command> archive, compressed using LZW
 		compression.  This format has the worst compression
 		ratio, but is widely used in the Windows world.</para>
 	    </listitem>
 	  </itemizedlist>
-	  <para>  If you provide an empty list, or don't have an
+	  <para id="x_4ea">  If you provide an empty list, or don't have an
 	    <envar role="rc-item-web">allow_archive</envar> entry at
 	    all, this feature will be disabled.  Here is an example of
 	    how to enable all three supported formats.</para>
 	  <programlisting>[web]
 allow_archive = bz2 gz zip</programlisting>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">allowpull</envar>:
+	<listitem><para id="x_4eb"><envar role="rc-item-web">allowpull</envar>:
 	    Boolean.  Determines whether the web interface allows
 	    remote users to <command role="hg-cmd">hg pull</command>
 	    and <command role="hg-cmd">hg clone</command> this
@@ -1287,7 +1287,7 @@ allow_archive = bz2 gz zip</programlisting>
 	    <quote>human-oriented</quote> portion of the web interface
 	    is available.</para>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">contact</envar>:
+	<listitem><para id="x_4ec"><envar role="rc-item-web">contact</envar>:
 	    String.  A free-form (but preferably brief) string
 	    identifying the person or group in charge of the
 	    repository.  This often contains the name and email
@@ -1298,21 +1298,21 @@ allow_archive = bz2 gz zip</programlisting>
 	      role="special">~/.hgrc</filename> if every repository
 	    has a single maintainer.</para>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">maxchanges</envar>:
+	<listitem><para id="x_4ed"><envar role="rc-item-web">maxchanges</envar>:
 	    Integer.  The default maximum number of changesets to
 	    display in a single page of output.</para>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">maxfiles</envar>:
+	<listitem><para id="x_4ee"><envar role="rc-item-web">maxfiles</envar>:
 	    Integer.  The default maximum number of modified files to
 	    display in a single page of output.</para>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">stripes</envar>:
+	<listitem><para id="x_4ef"><envar role="rc-item-web">stripes</envar>:
 	    Integer.  If the web interface displays alternating
 	    <quote>stripes</quote> to make it easier to visually align
 	    rows when you are looking at a table, this number controls
 	    the number of rows in each stripe.</para>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">style</envar>:
+	<listitem><para id="x_4f0"><envar role="rc-item-web">style</envar>:
 	    Controls the template Mercurial uses to display the web
 	    interface.  Mercurial ships with two web templates, named
 	    <literal>default</literal> and <literal>gitweb</literal>
@@ -1324,12 +1324,12 @@ allow_archive = bz2 gz zip</programlisting>
 	  <programlisting>[web]
 style = gitweb</programlisting>
 	</listitem>
-	<listitem><para><envar role="rc-item-web">templates</envar>:
+	<listitem><para id="x_4f1"><envar role="rc-item-web">templates</envar>:
 	    Path.  The directory in which to search for template
 	    files.  By default, Mercurial searches in the directory in
 	    which it was installed.</para>
 	</listitem></itemizedlist>
-      <para>If you are using <filename
+      <para id="x_4f2">If you are using <filename
 	  role="special">hgwebdir.cgi</filename>, you can place a few
 	configuration items in a <literal role="rc-web">web</literal>
 	section of the <filename
@@ -1342,17 +1342,17 @@ style = gitweb</programlisting>
       <sect3>
 	<title>Options specific to an individual repository</title>
 
-	<para>A few <literal role="rc-web">web</literal> configuration
+	<para id="x_4f3">A few <literal role="rc-web">web</literal> configuration
 	  items ought to be placed in a repository's local <filename
 	    role="special">.hg/hgrc</filename>, rather than a user's
 	  or global <filename role="special">~/.hgrc</filename>.</para>
 	<itemizedlist>
-	  <listitem><para><envar
+	  <listitem><para id="x_4f4"><envar
 		role="rc-item-web">description</envar>: String.  A
 	      free-form (but preferably brief) string that describes
 	      the contents or purpose of the repository.</para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-web">name</envar>:
+	  <listitem><para id="x_4f5"><envar role="rc-item-web">name</envar>:
 	      String.  The name to use for the repository in the web
 	      interface.  This overrides the default name, which is
 	      the last component of the repository's path.</para>
@@ -1363,13 +1363,13 @@ style = gitweb</programlisting>
 	<title>Options specific to the <command role="hg-cmd">hg
 	    serve</command> command</title>
 
-	<para>Some of the items in the <literal
+	<para id="x_4f6">Some of the items in the <literal
 	    role="rc-web">web</literal> section of a <filename
 	    role="special">~/.hgrc</filename> file are only for use
 	  with the <command role="hg-cmd">hg serve</command>
 	  command.</para>
 	<itemizedlist>
-	  <listitem><para><envar role="rc-item-web">accesslog</envar>:
+	  <listitem><para id="x_4f7"><envar role="rc-item-web">accesslog</envar>:
 	      Path.  The name of a file into which to write an access
 	      log.  By default, the <command role="hg-cmd">hg
 		serve</command> command writes this information to
@@ -1377,22 +1377,22 @@ style = gitweb</programlisting>
 	      in the standard <quote>combined</quote> file format used
 	      by almost all web servers.</para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-web">address</envar>:
+	  <listitem><para id="x_4f8"><envar role="rc-item-web">address</envar>:
 	      String.  The local address on which the server should
 	      listen for incoming connections.  By default, the server
 	      listens on all addresses.</para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-web">errorlog</envar>:
+	  <listitem><para id="x_4f9"><envar role="rc-item-web">errorlog</envar>:
 	      Path.  The name of a file into which to write an error
 	      log.  By default, the <command role="hg-cmd">hg
 		serve</command> command writes this information to
 	      standard error, not to a file.</para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-web">ipv6</envar>:
+	  <listitem><para id="x_4fa"><envar role="rc-item-web">ipv6</envar>:
 	      Boolean.  Whether to use the IPv6 protocol. By default,
 	      IPv6 is not used.</para>
 	  </listitem>
-	  <listitem><para><envar role="rc-item-web">port</envar>:
+	  <listitem><para id="x_4fb"><envar role="rc-item-web">port</envar>:
 	      Integer.  The TCP port number on which the server should
 	      listen.  The default port number used is 8000.</para>
 	  </listitem></itemizedlist>
@@ -1403,14 +1403,14 @@ style = gitweb</programlisting>
 	    role="special">~/.hgrc</filename> file to add <literal
 	    role="rc-web">web</literal> items to</title>
 
-	<para>It is important to remember that a web server like
+	<para id="x_4fc">It is important to remember that a web server like
 	  Apache or <literal>lighttpd</literal> will run under a user
 	  ID that is different to yours. CGI scripts run by your
 	  server, such as <filename
 	    role="special">hgweb.cgi</filename>, will usually also run
 	  under that user ID.</para>
 
-	<para>If you add <literal role="rc-web">web</literal> items to
+	<para id="x_4fd">If you add <literal role="rc-web">web</literal> items to
 	  your own personal <filename role="special">~/.hgrc</filename> file, CGI scripts won't read that
 	  <filename role="special">~/.hgrc</filename> file.  Those
 	  settings will thus only affect the behaviour of the <command
