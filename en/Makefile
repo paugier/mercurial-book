@@ -1,6 +1,6 @@
 # This makefile requires GNU make.
 
-image-sources := $(wildcard figs/*.dot figs/*.png figs/*.svg)
+image-sources := $(wildcard figs/*.dot figs/*.gif figs/*.png figs/*.svg)
 
 xml-src-files := \
 	00book.xml \
@@ -9,7 +9,7 @@ xml-src-files := \
 
 image-dot := $(filter %.dot,$(image-sources))
 image-svg := $(filter %.svg,$(image-sources))
-image-png := $(filter %.png,$(image-sources))
+image-oth := $(filter %.gif %.png,$(image-sources))
 
 obj-web := html
 obj-websup := $(obj-web)/support
@@ -18,7 +18,7 @@ obj-web-read := $(obj-web)/read
 image-web := \
 	$(image-dot:%.dot=$(obj-web-read)/%.png) \
 	$(image-svg:%.svg=$(obj-web-read)/%.png) \
-	$(image-png:%=$(obj-web-read)/%)
+	$(image-oth:%=$(obj-web-read)/%)
 
 example-sources-by-name := \
 	backout \
@@ -154,6 +154,9 @@ $(obj-web-read)/figs/%.png: figs/%.svg fixsvg
 	./fixsvg $<
 	inkscape -D -e $@ $<-tmp.svg
 	rm $<-tmp.svg
+
+$(obj-web-read)/figs/%.gif: figs/%.gif
+	cp $< $@
 
 $(obj-web-read)/figs/%.png: figs/%.png
 	cp $< $@
