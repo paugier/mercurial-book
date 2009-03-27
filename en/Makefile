@@ -186,6 +186,7 @@ rsync: install
 	rsync -avz --delete dist sp.red-bean.com:public_html/hgbook
 
 vpath %.css ../web
+vpath %.html.in ../web
 vpath %.js ../web/javascript
 
 $(obj-websup)/%.css: %.css
