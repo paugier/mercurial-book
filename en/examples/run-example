@@ -134,7 +134,7 @@ class static_example(example):
         self.rename_output(self.name)
         norm = self.name.replace(os.sep, '-')
         example.entities[
-            '<!ENTITY %s SYSTEM "results/%s.out">' % (norm, norm)] = 1
+            '<!ENTITY %s SYSTEM "results/%s.lxo">' % (norm, norm)] = 1
 
 
 class shell_example(example):
@@ -316,7 +316,7 @@ class shell_example(example):
                                 norm = os.path.normpath(ofp_basename)
                                 example.entities[
                                     '<!ENTITY interaction.%s '
-                                    'SYSTEM "results/%s.out">'
+                                    'SYSTEM "results/%s.lxo">'
                                     % (norm, norm)] = 1
                                 read_hint = ofp_basename + ' '
                                 ofp = wopen(result_name(ofp_basename + '.tmp'))
