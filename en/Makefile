@@ -1,28 +1,6 @@
 # This makefile requires GNU make.
 
-image-sources := \
-	feature-branches.dot \
-	filelog.svg \
-	kdiff3.png \
-	metadata.svg \
-	mq-stack.svg \
-	note.png \
-	revlog.svg \
-	snapshot.svg \
-	tour-history.svg \
-	tour-merge-conflict.svg \
-	tour-merge-merge.svg \
-	tour-merge-pull.svg \
-	tour-merge-sep-repos.svg \
-	undo-manual.dot \
-	undo-manual-merge.dot \
-	undo-non-tip.dot \
-	undo-simple.dot \
-	wdir.svg \
-	wdir-after-commit.svg \
-	wdir-branch.svg \
-	wdir-merge.svg \
-	wdir-pre-branch.svg
+image-sources := $(wildcard figs/*.dot figs/*.png figs/*.svg)
 
 xml-src-files := \
 	00book.xml \
@@ -33,7 +11,14 @@ image-dot := $(filter %.dot,$(image-sources))
 image-svg := $(filter %.svg,$(image-sources))
 image-png := $(filter %.png,$(image-sources))
 
-image-html := $(image-dot:%.dot=%.png) $(image-svg:%.svg=%.png) $(image-png)
+obj-web := html
+obj-websup := $(obj-web)/support
+obj-web-read := $(obj-web)/read
+
+image-web := \
+	$(image-dot:%.dot=$(obj-web-read)/%.png) \
+	$(image-svg:%.svg=$(obj-web-read)/%.png) \
+	$(image-png:%=$(obj-web-read)/%)
 
 example-sources-by-name := \
 	backout \
@@ -70,9 +55,6 @@ example-sources-by-name := \
 example-sources := \
 	$(example-sources-by-name:%=examples/%) \
 	$(wildcard examples/ch*/*)
-
-obj-web := html
-obj-websup := html/support
 
 extras-web-base := \
 	$(obj-web)/index.html \
@@ -135,14 +117,16 @@ all: web
 
 web: ../xsl/system-xsl websup html
 
-html: ../xsl/system-xsl $(xml-src-files) valid
-	xsltproc $(xsltproc-opts) -o html/read/x ../xsl/chunk-stylesheet.xsl 00book.xml
-	for i in html/read/*.html; do \
+html: $(obj-web-read)/index.html
+
+$(obj-web-read)/index.html: ../xsl/system-xsl .validated-00book.xml
+	xsltproc $(xsltproc-opts) -o $(obj-web-read)/x ../xsl/chunk-stylesheet.xsl 00book.xml
+	for i in $(obj-web-read)/*.html; do \
 	  gzip -9 -c $$i > $$i.gz; \
 	done
 
-websup: $(extras-web)
-	mkdir -p $(obj-websup)/figs
+websup: $(extras-web) $(image-web)
+	mkdir -p $(obj-websup)/figs $(obj-web-read)/figs
 	cp ../xsl/system-xsl/images/*.png $(obj-websup)/figs
 	cp -f ../web/icons/*.png $(obj-websup)/figs
 
@@ -159,12 +143,23 @@ valid: .validated-00book.xml
 
 # Produce 90dpi PNGs for the web.
 
-%.png: %.svg fixsvg
+$(obj-web-read)/figs/%.png: $(obj-web-read)/figs/%.svg fixsvg
+	mkdir -p $(dir $@)
 	./fixsvg $<
 	inkscape -D -e $@ $<-tmp.svg
 	rm $<-tmp.svg
 
-%.svg: %.dot
+$(obj-web-read)/figs/%.png: figs/%.svg fixsvg
+	mkdir -p $(dir $@)
+	./fixsvg $<
+	inkscape -D -e $@ $<-tmp.svg
+	rm $<-tmp.svg
+
+$(obj-web-read)/figs/%.png: figs/%.png
+	cp $< $@
+
+$(obj-web-read)/figs/%.svg: figs/%.dot
+	mkdir -p $(dir $@)
 	dot -Tsvg -o $@ $<
 
 examples: $(example-prereqs) examples/.run
