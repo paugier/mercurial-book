@@ -52,7 +52,7 @@ def fixup(s):
 total = 0
 for r in c.fetchall():
     r = r[0].decode('utf-8')
-    if r in ("Bryan O'Sullivan", 'John Goerzen', 'Don Stewart'):
+    if r in ("Bryan O'Sullivan",):
         continue
     total += 1
     m = mappings.get(r.lower())
