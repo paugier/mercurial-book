@@ -30,15 +30,15 @@
     <sect2 id="sec:undo:rollback">
       <title>Rolling back a transaction</title>
 
-      <para id="x_d4">In section <xref linkend="sec:concepts:txn"/>, I mentioned
-	that Mercurial treats each modification of a repository as a
-	<emphasis>transaction</emphasis>.  Every time you commit a
-	changeset or pull changes from another repository, Mercurial
-	remembers what you did.  You can undo, or <emphasis>roll
-	  back</emphasis>, exactly one of these actions using the
-	<command role="hg-cmd">hg rollback</command> command.  (See
-	section <xref linkend="sec:undo:rollback-after-push"/> for an
-	important caveat about the use of this command.)</para>
+      <para id="x_d4">In <xref linkend="sec:concepts:txn"/>, I
+	mentioned that Mercurial treats each modification of a
+	repository as a <emphasis>transaction</emphasis>.  Every time
+	you commit a changeset or pull changes from another
+	repository, Mercurial remembers what you did.  You can undo,
+	or <emphasis>roll back</emphasis>, exactly one of these
+	actions using the <command role="hg-cmd">hg rollback</command>
+	command.  (See <xref linkend="sec:undo:rollback-after-push"/>
+	for an important caveat about the use of this command.)</para>
 
       <para id="x_d5">Here's a mistake that I often find myself making:
 	committing a change in which I've created a new file, but
@@ -300,12 +300,12 @@
       an entire changeset automatically, and building blocks that let
       you reverse part of a changeset by hand.</para>
 
-    <para id="x_f6">Before you read this section, here's something to keep in
-      mind: the <command role="hg-cmd">hg backout</command> command
-      undoes changes by <emphasis>adding</emphasis> history, not by
-      modifying or erasing it.  It's the right tool to use if you're
-      fixing bugs, but not if you're trying to undo some change that
-      has catastrophic consequences.  To deal with those, see section
+    <para id="x_f6">Before you read this section, here's something to
+      keep in mind: the <command role="hg-cmd">hg backout</command>
+      command undoes changes by <emphasis>adding</emphasis> history,
+      not by modifying or erasing it.  It's the right tool to use if
+      you're fixing bugs, but not if you're trying to undo some change
+      that has catastrophic consequences.  To deal with those, see
       <xref linkend="sec:undo:aaaiiieee"/>.</para>
 
     <sect2>
@@ -353,10 +353,9 @@
 	&interaction.backout.simple.log; Notice that the new changeset
 	that <command role="hg-cmd">hg backout</command> has created
 	is a child of the changeset we backed out.  It's easier to see
-	this in figure <xref
-	  linkend="fig:undo:backout"/>, which presents a graphical
-	view of the change history.  As you can see, the history is
-	nice and linear.</para>
+	this in <xref linkend="fig:undo:backout"/>, which presents a
+	graphical view of the change history.  As you can see, the
+	history is nice and linear.</para>
 
       <figure id="fig:undo:backout">
 	<title>Backing out a change using the <command
@@ -391,7 +390,7 @@
 
       &interaction.backout.non-tip.cat;
 
-      <para id="x_100">As the graphical history in figure <xref
+      <para id="x_100">As the graphical history in <xref
 	  linkend="fig:undo:backout-non-tip"/> illustrates, Mercurial
 	actually commits <emphasis>two</emphasis> changes in this kind
 	of situation (the box-shaped nodes are the ones that Mercurial
@@ -463,7 +462,7 @@
       &interaction.backout.manual.log;
 
       <para id="x_108">Again, it's easier to see what has happened by looking at
-	a graph of the revision history, in figure <xref
+	a graph of the revision history, in <xref
 	  linkend="fig:undo:backout-manual"/>.  This makes it clear
 	that when we use <command role="hg-cmd">hg backout</command>
 	to back out a change other than the tip, Mercurial adds a new
@@ -505,8 +504,8 @@
 
       &interaction.backout.manual.merge;
 
-      <para id="x_10e">Afterwards, the graphical history of our repository looks
-	like figure
+      <para id="x_10e">Afterwards, the graphical history of our
+	repository looks like
 	<xref linkend="fig:undo:backout-manual-merge"/>.</para>
 
       <figure id="fig:undo:backout-manual-merge">
@@ -614,14 +613,14 @@
       that you want to pull a brown paper bag over your head), let me
       first discuss some approaches that probably won't work.</para>
 
-    <para id="x_11e">Since Mercurial treats history as accumulative&emdash;every
-      change builds on top of all changes that preceded it&emdash;you
-      generally can't just make disastrous changes disappear.  The one
-      exception is when you've just committed a change, and it hasn't
-      been pushed or pulled into another repository.  That's when you
-      can safely use the <command role="hg-cmd">hg rollback</command>
-      command, as I detailed in section <xref
-	linkend="sec:undo:rollback"/>.</para>
+    <para id="x_11e">Since Mercurial treats history as
+      accumulative&emdash;every change builds on top of all changes
+      that preceded it&emdash;you generally can't just make disastrous
+      changes disappear.  The one exception is when you've just
+      committed a change, and it hasn't been pushed or pulled into
+      another repository.  That's when you can safely use the <command
+	role="hg-cmd">hg rollback</command> command, as I detailed in
+      <xref linkend="sec:undo:rollback"/>.</para>
 
     <para id="x_11f">After you've pushed a bad change to another repository, you
       <emphasis>could</emphasis> still use <command role="hg-cmd">hg

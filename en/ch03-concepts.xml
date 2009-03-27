@@ -46,7 +46,7 @@
 	are combined in a single <quote><literal>.i</literal></quote>
 	file.  The correspondence between a file in the working
 	directory and the filelog that tracks its history in the
-	repository is illustrated in figure <xref
+	repository is illustrated in <xref
 	  linkend="fig:concepts:filelog"/>.</para>
 
       <figure id="fig:concepts:filelog">
@@ -96,7 +96,7 @@
 	changelog contains a pointer to a single revision of the
 	manifest.  A revision of the manifest stores a pointer to a
 	single revision of each filelog tracked when that changeset
-	was created.  These relationships are illustrated in figure
+	was created.  These relationships are illustrated in
 	<xref linkend="fig:concepts:metadata"/>.</para>
 
       <figure id="fig:concepts:metadata">
@@ -201,7 +201,7 @@
 	quickly.  This approach works so well that it has since been
 	copied by several other revision control systems.</para>
 
-      <para id="x_2fd">Figure <xref linkend="fig:concepts:snapshot"/> illustrates
+      <para id="x_2fd"><xref linkend="fig:concepts:snapshot"/> illustrates
 	the idea.  In an entry in a revlog's index file, Mercurial
 	stores the range of entries from the data file that it must
 	read to reconstruct a particular revision.</para>
@@ -273,7 +273,7 @@
       <quote>there is no parent here</quote>.  This hash is simply a
       string of zeroes.</para>
 
-    <para id="x_305">In figure <xref linkend="fig:concepts:revlog"/>, you can see
+    <para id="x_305">In <xref linkend="fig:concepts:revlog"/>, you can see
       an example of the conceptual structure of a revlog.  Filelogs,
       manifests, and changelogs all have this same structure; they
       differ only in the kind of data stored in each delta or
@@ -347,7 +347,7 @@
 	</mediaobject>
       </figure>
 
-      <para id="x_30d">Figure <xref linkend="fig:concepts:wdir"/> shows the
+      <para id="x_30d"><xref linkend="fig:concepts:wdir"/> shows the
 	normal state of the working directory, where it has a single
 	changeset as parent.  That changeset is the
 	<emphasis>tip</emphasis>, the newest changeset in the
@@ -370,11 +370,11 @@
 	the new changeset will have the parents of the working
 	directory as its parents.</para>
 
-      <para id="x_310">After a commit, Mercurial will update the parents of the
-	working directory, so that the first parent is the ID of the
-	new changeset, and the second is the null ID.  This is shown
-	in figure <xref linkend="fig:concepts:wdir-after-commit"/>.
-	Mercurial
+      <para id="x_310">After a commit, Mercurial will update the
+	parents of the working directory, so that the first parent is
+	the ID of the new changeset, and the second is the null ID.
+	This is shown in <xref
+	  linkend="fig:concepts:wdir-after-commit"/>. Mercurial
 	doesn't touch any of the files in the working directory when
 	you commit; it just modifies the dirstate to note its new
 	parents.</para>
@@ -392,7 +392,7 @@
 	interested in, and then examine the files in the working
 	directory directly to see their contents as they were when you
 	committed that changeset.  The effect of this is shown in
-	figure <xref linkend="fig:concepts:wdir-pre-branch"/>.</para>
+	<xref linkend="fig:concepts:wdir-pre-branch"/>.</para>
 
       <figure id="fig:concepts:wdir-pre-branch">
 	<title>The working directory, updated to an older
@@ -403,15 +403,15 @@
 	</mediaobject>
       </figure>
 
-      <para id="x_313">Having updated the working directory to an older
-	changeset, what happens if you make some changes, and then
-	commit?  Mercurial behaves in the same way as I outlined
+      <para id="x_313">Having updated the working directory to an
+	older changeset, what happens if you make some changes, and
+	then commit?  Mercurial behaves in the same way as I outlined
 	above.  The parents of the working directory become the
 	parents of the new changeset.  This new changeset has no
 	children, so it becomes the new tip.  And the repository now
 	contains two changesets that have no children; we call these
 	<emphasis>heads</emphasis>.  You can see the structure that
-	this creates in figure <xref
+	this creates in <xref
 	  linkend="fig:concepts:wdir-branch"/>.</para>
 
       <figure id="fig:concepts:wdir-branch">
@@ -450,10 +450,10 @@
     <sect2>
       <title>Merging heads</title>
 
-      <para id="x_317">When you run the <command role="hg-cmd">hg merge</command>
-	command, Mercurial leaves the first parent of the working
-	directory unchanged, and sets the second parent to the
-	changeset you're merging with, as shown in figure <xref
+      <para id="x_317">When you run the <command role="hg-cmd">hg
+	  merge</command> command, Mercurial leaves the first parent
+	of the working directory unchanged, and sets the second parent
+	to the changeset you're merging with, as shown in <xref
 	  linkend="fig:concepts:wdir-merge"/>.</para>
 
       <figure id="fig:concepts:wdir-merge">
@@ -588,13 +588,13 @@
     <sect2>
       <title>Read/write ordering and atomicity</title>
 
-      <para id="x_32a">Appending to files isn't the whole story when it comes to
-	guaranteeing that a reader won't see a partial write.  If you
-	recall figure <xref linkend="fig:concepts:metadata"/>,
-	revisions in the
-	changelog point to revisions in the manifest, and revisions in
-	the manifest point to revisions in filelogs.  This hierarchy
-	is deliberate.</para>
+      <para id="x_32a">Appending to files isn't the whole story when
+	it comes to guaranteeing that a reader won't see a partial
+	write.  If you recall <xref linkend="fig:concepts:metadata"/>,
+	revisions in
+	the changelog point to revisions in the manifest, and
+	revisions in the manifest point to revisions in filelogs.
+	This hierarchy is deliberate.</para>
 
       <para id="x_32b">A writer starts a transaction by writing filelog and
 	manifest data, and doesn't write any changelog data until

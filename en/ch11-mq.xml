@@ -36,7 +36,7 @@
 
     <para id="x_3b0">When you have few changes to maintain, it is easy to manage
       a single patch using the standard <command>diff</command> and
-      <command>patch</command> programs (see section <xref
+      <command>patch</command> programs (see <xref
 	linkend="sec:mq:patch"/> for a discussion of these
       tools). Once the number of changes grows, it starts to make
       sense to maintain patches as discrete <quote>chunks of
@@ -241,7 +241,7 @@
       represented by one deletion and one insertion.</para>
 
     <para id="x_3c9">We will return to some of the more subtle aspects of patches
-      later (in section <xref linkend="sec:mq:adv-patch"/>), but you
+      later (in <xref linkend="sec:mq:adv-patch"/>), but you
       should have
       enough information now to use MQ.</para>
 
@@ -400,17 +400,18 @@ hgext.mq =</programlisting>
 	<emphasis>knows about</emphasis>, or manages, a popped patch,
 	but the patch no longer has a corresponding changeset in the
 	repository, and the working directory does not contain the
-	changes made by the patch.  Figure <xref
+	changes made by the patch.  <xref
 	  linkend="fig:mq:stack"/> illustrates
 	the difference between applied and tracked patches.</para>
 
-      <informalfigure id="fig:mq:stack">
-	<mediaobject><imageobject><imagedata
-				    fileref="mq-stack"/></imageobject><textobject><phrase>XXX 
-	      add text</phrase></textobject><caption><para id="x_3dd">Applied and
-	      unapplied patches in the MQ patch
-	      stack</para></caption></mediaobject>
-      </informalfigure>
+      <figure id="fig:mq:stack">
+	<title>Applied and unapplied patches in the MQ patch
+	  stack</title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="mq-stack"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
 
       <para id="x_3de">You can reapply an unapplied, or popped, patch using the
 	<command role="hg-ext-mq">qpush</command> command.  This
@@ -441,8 +442,7 @@ hgext.mq =</programlisting>
 	  role="hg-ext-mq-cmd-qpop-opt">-a</option> option to <command
 	  role="hg-ext-mq">qpop</command> causes it to pop all applied
 	patches.  (For some more ways to push and pop many patches,
-	see section <xref linkend="sec:mq:perf"/>
-	below.)</para>
+	see <xref linkend="sec:mq:perf"/> below.)</para>
 
 &interaction.mq.tutorial.qpush-a;
 
@@ -700,8 +700,7 @@ hgext.mq =</programlisting>
       <para id="x_3fa">If your patch <emphasis>used to</emphasis> apply cleanly,
 	and no longer does because you've changed the underlying code
 	that your patches are based on, Mercurial Queues can help; see
-	section <xref
-	  linkend="sec:mq:merge"/> for details.</para>
+	<xref linkend="sec:mq:merge"/> for details.</para>
 
       <para id="x_3fb">Unfortunately, there aren't any great techniques for
 	dealing with rejected hunks.  Most often, you'll need to view
@@ -941,7 +940,7 @@ hgext.mq =</programlisting>
 	  latest series of changes?</para>
 	<programlisting>hg email qbase:qtip</programlisting>
 	<para id="x_41c">  (Don't know what <quote>patchbombing</quote> is?  See
-	  section <xref linkend="sec:hgext:patchbomb"/>.)</para>
+	  <xref linkend="sec:hgext:patchbomb"/>.)</para>
       </listitem>
       <listitem><para id="x_41d">Need to see all of the patches since
 	  <literal>foo.patch</literal> that have touched files in a
@@ -980,7 +979,7 @@ hgext.mq =</programlisting>
 	    role="hg-ext-mq">qpush</command> it again, the changeset
 	  that represents the patch after the pop/push will have a
 	  <emphasis>different identity</emphasis> than the changeset
-	  that represented the hash beforehand.  See section <xref
+	  that represented the hash beforehand.  See <xref
 	    linkend="sec:mqref:cmd:qpush"/> for
 	  information as to why this is.</para>
       </listitem>
@@ -1132,7 +1131,7 @@ hgext.mq =</programlisting>
       hundreds of files across dozens of directories, a single
       invocation of <command>filterdiff</command> can generate a
       smaller patch that only touches files whose names match a
-      particular glob pattern.  See section <xref
+      particular glob pattern.  See <xref
 	linkend="mq-collab:tips:interdiff"/> for another
       example.</para>
 
@@ -1170,7 +1169,7 @@ hgext.mq =</programlisting>
 
     <para id="x_436">For this reason, it is very much worth investing a little
       time to learn how to use some of the third-party tools I
-      described in section <xref linkend="sec:mq:tools"/>,
+      described in <xref linkend="sec:mq:tools"/>,
       particularly
       <command>diffstat</command> and <command>filterdiff</command>.
       The former will give you a quick idea of what changes your patch
@@ -1292,7 +1291,7 @@ hgext.mq =</programlisting>
 
       <para id="x_447">Once you have this hunk, you can concatenate it onto the
 	end of your destination patch and continue with the remainder
-	of section <xref linkend="sec:mq:combine"/>.</para>
+	of <xref linkend="sec:mq:combine"/>.</para>
 
     </sect2>
   </sect1>
