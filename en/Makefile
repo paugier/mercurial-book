@@ -119,8 +119,12 @@ web: ../xsl/system-xsl websup html
 
 html: $(obj-web-read)/index.html
 
-$(obj-web-read)/index.html: ../xsl/system-xsl .validated-00book.xml
+../web/index-read.html.in: ../web/genindex.py $(xml-src-files)
+	$<
+
+$(obj-web-read)/index.html: ../xsl/system-xsl .validated-00book.xml ../web/index-read.html.in
 	xsltproc $(xsltproc-opts) -o $(obj-web-read)/x ../xsl/chunk-stylesheet.xsl 00book.xml
+	python ../web/texpand.py ../web/index-read.html.in html/read/index.html
 	for i in $(obj-web-read)/*.html; do \
 	  gzip -9 -c $$i > $$i.gz; \
 	done
