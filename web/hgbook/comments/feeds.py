@@ -8,9 +8,9 @@ class MyAtomFeed(Atom1Feed):
     
 class Comments(Feed):
     feed_type = MyAtomFeed
-    title = 'Real World Haskell: recent comments'
-    subtitle = ('Recent comments on the text of &#8220;Real World '
-                'Haskell&#8221;, from our readers')
+    title = 'Mercurial - The Definitive Guide: recent comments'
+    subtitle = ('Recent comments on the text of &#8220;Mercurial: The '
+                'Definitive Guide&#8221;, from our readers')
     link = '/feeds/comments/'
     author_name = 'Our readers'
 
