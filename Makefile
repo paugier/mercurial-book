@@ -20,26 +20,26 @@ TRANSLATE = PERLLIB=tools/po4a/lib/ tools/po4a/po4a-translate -M UTF-8 \
 rev_id = $(shell hg parents --template '{node|short} ({date|shortdate})')
 
 images := \
-	en/images/feature-branches.png \
-	en/images/filelog.png \
-	en/images/metadata.png \
-	en/images/mq-stack.png \
-	en/images/revlog.png \
-	en/images/snapshot.png \
-	en/images/tour-history.png \
-	en/images/tour-merge-conflict.png \
-	en/images/tour-merge-merge.png \
-	en/images/tour-merge-pull.png \
-	en/images/tour-merge-sep-repos.png \
-	en/images/undo-manual-merge.png \
-	en/images/undo-manual.png \
-	en/images/undo-non-tip.png \
-	en/images/undo-simple.png \
-	en/images/wdir-after-commit.png \
-	en/images/wdir-branch.png \
-	en/images/wdir-merge.png \
-	en/images/wdir.png \
-	en/images/wdir-pre-branch.png
+	en/figs/feature-branches.png \
+	en/figs/filelog.png \
+	en/figs/metadata.png \
+	en/figs/mq-stack.png \
+	en/figs/revlog.png \
+	en/figs/snapshot.png \
+	en/figs/tour-history.png \
+	en/figs/tour-merge-conflict.png \
+	en/figs/tour-merge-merge.png \
+	en/figs/tour-merge-pull.png \
+	en/figs/tour-merge-sep-repos.png \
+	en/figs/undo-manual-merge.png \
+	en/figs/undo-manual.png \
+	en/figs/undo-non-tip.png \
+	en/figs/undo-simple.png \
+	en/figs/wdir-after-commit.png \
+	en/figs/wdir-branch.png \
+	en/figs/wdir-merge.png \
+	en/figs/wdir.png \
+	en/figs/wdir-pre-branch.png
 
 help:
 	@echo "  make html         [LINGUA=en|zh|...]"
@@ -53,30 +53,30 @@ help:
 	@echo "  make clean        # Remove the build files."
 
 clean:
-	@rm -fr build po/*.mo hello en/hello en/html en/.validated-00book.xml \
-          stylesheets/system-xsl en/images/*-tmp.svg \
-          en/images/feature-branches.png \
-          en/images/filelog.png \
-          en/images/feature-branches.png \
-          en/images/filelog.png \
-          en/images/metadata.png \
-          en/images/mq-stack.png \
-          en/images/revlog.png \
-          en/images/snapshot.png \
-          en/images/tour-history.png \
-          en/images/tour-merge-conflict.png \
-          en/images/tour-merge-merge.png \
-          en/images/tour-merge-pull.png \
-          en/images/tour-merge-sep-repos.png \
-          en/images/undo-manual-merge.png \
-          en/images/undo-manual.png \
-          en/images/undo-non-tip.png \
-          en/images/undo-simple.png \
-          en/images/wdir-after-commit.png \
-          en/images/wdir-branch.png \
-          en/images/wdir-merge.png \
-          en/images/wdir-pre-branch.png \
-          en/images/wdir.png
+	@rm -fr build po/*.mo hello en/hello en/html en/.validated-00book.xml en/examples/.run en/examples/results \
+          stylesheets/system-xsl en/figs/*-tmp.svg \
+          en/figs/feature-branches.png \
+          en/figs/filelog.png \
+          en/figs/feature-branches.png \
+          en/figs/filelog.png \
+          en/figs/metadata.png \
+          en/figs/mq-stack.png \
+          en/figs/revlog.png \
+          en/figs/snapshot.png \
+          en/figs/tour-history.png \
+          en/figs/tour-merge-conflict.png \
+          en/figs/tour-merge-merge.png \
+          en/figs/tour-merge-pull.png \
+          en/figs/tour-merge-sep-repos.png \
+          en/figs/undo-manual-merge.png \
+          en/figs/undo-manual.png \
+          en/figs/undo-non-tip.png \
+          en/figs/undo-simple.png \
+          en/figs/wdir-after-commit.png \
+          en/figs/wdir-branch.png \
+          en/figs/wdir-merge.png \
+          en/figs/wdir-pre-branch.png \
+          en/figs/wdir.png
 
 all:
 ifdef LINGUA
@@ -133,23 +133,24 @@ validate: build/$(LINGUA)/source/hgbook.xml
 	xmllint --nonet --noout --postvalid --xinclude $<
 
 ifneq "$(findstring $(LINGUA),$(DBK_LANGUAGES))" ""
-build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(images)
-	mkdir -p build/$(LINGUA)/source
-	cp -r $(LINGUA)/* build/$(LINGUA)/source
-	xmllint --nonet --noent --xinclude --postvalid --output $@.tmp $(LINGUA)/00book.xml
+$(LINGUA)/examples/.run:
+	(cd $(LINGUA)/examples; ./run-example -v -a)
+
+build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(images) $(LINGUA)/examples/.run $(images)
+	mkdir -p build/$(LINGUA)/source/figs
+	cp $(LINGUA)/figs/*.png build/$(LINGUA)/source/figs
+	(cd $(LINGUA); xmllint --nonet --noent --xinclude --postvalid --output ../$@.tmp 00book.xml)
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 else
-build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images)
-	mkdir -p build/$(LINGUA)/source
-	cp -r en/images build/$(LINGUA)/source
-	cp -r en/examples build/$(LINGUA)/source
-	cp en/book-shortcuts.xml build/$(LINGUA)/source
-	for f in en/*.xml; do \
-	  if [ $$f != "en/book-shortcuts.xml" ]; then \
-	    $(TRANSLATE) -m $$f -p po/$(LINGUA).po -l build/$(LINGUA)/source/`basename $$f`; \
-	  fi \
-	done
-	xmllint --nonet --noent --xinclude --postvalid --output $@.tmp build/$(LINGUA)/source/00book.xml
+en/examples/.run:
+	(cd en/examples; ./run-example -v -a)
+
+build/en/source/hgbook.xml:
+	${MAKE} LINGUA=en $@
+
+build/$(LINGUA)/source/hgbook.xml: build/en/source/hgbook.xml po/$(LINGUA).po $(images)
+	mkdir -p build/$(LINGUA)/source/figs
+	$(TRANSLATE) -m build/en/source/hgbook.xml -p po/$(LINGUA).po -l $@.tmp
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 endif
 
@@ -164,8 +165,8 @@ else
 html: build/$(LINGUA)/html/index.html
 
 build/$(LINGUA)/html/index.html: build/$(LINGUA)/source/hgbook.xml stylesheets/html.xsl stylesheets/$(LINGUA)/html.xsl
-	mkdir -p build/$(LINGUA)/html/images
-	cp en/images/*.png build/$(LINGUA)/html/images
+	mkdir -p build/$(LINGUA)/html/figs
+	cp en/figs/*.png build/$(LINGUA)/html/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/html
 	xsltproc --output build/$(LINGUA)/html/ \
 	    stylesheets/$(LINGUA)/html.xsl build/$(LINGUA)/source/hgbook.xml
@@ -180,8 +181,8 @@ else
 html-single: build/$(LINGUA)/html-single/hgbook.html
 
 build/$(LINGUA)/html-single/hgbook.html: build/$(LINGUA)/source/hgbook.xml stylesheets/html-single.xsl stylesheets/$(LINGUA)/html-single.xsl
-	mkdir -p build/$(LINGUA)/html-single/images
-	cp en/images/*.png build/$(LINGUA)/html-single/images
+	mkdir -p build/$(LINGUA)/html-single/figs
+	cp en/figs/*.png build/$(LINGUA)/html-single/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/html-single
 	xsltproc --output build/$(LINGUA)/html-single/hgbook.html \
 	    stylesheets/$(LINGUA)/html-single.xsl build/$(LINGUA)/source/hgbook.xml
@@ -210,9 +211,9 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	(cd build/$(LINGUA)/source && ../../../tools/fop/fop.sh hgbook.fo ../pdf/hgbook.pdf)
 endif
 
-en/images/%.png: en/images/%.svg en/fixsvg
+en/figs/%.png: en/figs/%.svg en/fixsvg
 	en/fixsvg $<
 	inkscape -D -d 120 -e $@ $<-tmp.svg
 
-en/images/%.svg: en/images/%.dot
+en/figs/%.svg: en/figs/%.dot
 	dot -Tsvg -o $@ $<

@@ -1,6 +1,6 @@
 <!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
 
-<chapter id="chap.template">
+<chapter id="chap:template">
   <?dbhtml filename="customizing-the-output-of-mercurial.html"?>
   <title>Customising the output of Mercurial</title>
 
@@ -10,7 +10,7 @@
     command, or to customise the entire appearance of the built-in web
     interface.</para>
 
-  <sect1 id="sec.style">
+  <sect1 id="sec:style">
     <title>Using precanned output styles</title>
 
     <para id="x_579">Packaged with Mercurial are some output styles that you can
@@ -107,7 +107,7 @@ style = compact</programlisting>
       <emphasis>escape sequence</emphasis>, telling Mercurial to print
       a newline at the end of each template item.  If you omit this
       newline, Mercurial will run each piece of output together.  See
-      section <xref linkend="sec.template.escape"/> for more details
+      <xref linkend="sec:template:escape"/> for more details
       of escape sequences.</para>
 
     <para id="x_587">A template that prints a fixed string of text all the time
@@ -121,14 +121,13 @@ style = compact</programlisting>
       been replaced in the output with the description of each
       changeset.  Every time Mercurial finds text enclosed in curly
       braces (<quote><literal>{</literal></quote> and
-      <quote><literal>}</literal></quote>), it will try to replace the braces
-      and text with the expansion of whatever is inside.  To print a
-      literal curly brace, you must escape it, as described in section
-      <xref
-	linkend="sec.template.escape"/>.</para>
+      <quote><literal>}</literal></quote>), it will try to replace the
+      braces and text with the expansion of whatever is inside.  To
+      print a literal curly brace, you must escape it, as described in
+      <xref linkend="sec:template:escape"/>.</para>
 
   </sect1>
-  <sect1 id="sec.template.keyword">
+  <sect1 id="sec:template:keyword">
     <title>Common template keywords</title>
 
     <para id="x_589">You can start writing simple templates immediately using the
@@ -149,8 +148,8 @@ style = compact</programlisting>
 	  Date information.  The date when the changeset was
 	  committed.  This is <emphasis>not</emphasis> human-readable;
 	  you must pass it through a filter that will render it
-	  appropriately.  See section <xref
-	    linkend="sec.template.filter"/> for more information
+	  appropriately.  See <xref
+	    linkend="sec:template:filter"/> for more information
 	  on filters. The date is expressed as a pair of numbers.  The
 	  first number is a Unix UTC timestamp (seconds since January
 	  1, 1970); the second is the offset of the committer's
@@ -197,13 +196,12 @@ style = compact</programlisting>
     <para id="x_596">As we noted above, the date keyword does not produce
       human-readable output, so we must treat it specially.  This
       involves using a <emphasis>filter</emphasis>, about which more
-      in section <xref
-	linkend="sec.template.filter"/>.</para>
+      in <xref linkend="sec:template:filter"/>.</para>
 
     &interaction.template.simple.datekeyword;
 
   </sect1>
-  <sect1 id="sec.template.escape">
+  <sect1 id="sec:template:escape">
     <title>Escape sequences</title>
 
     <para id="x_597">Mercurial's templating engine recognises the most commonly
@@ -245,7 +243,7 @@ style = compact</programlisting>
       it.</para>
 
   </sect1>
-  <sect1 id="sec.template.filter">
+  <sect1 id="sec:template:filter">
     <title>Filtering keywords to change their results</title>
 
     <para id="x_5a0">Some of the results of template expansion are not

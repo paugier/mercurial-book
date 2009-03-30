@@ -7,7 +7,7 @@
 from django.template import Context, TemplateDoesNotExist
 from django.template.loader import get_template, get_template_from_string
 from django.core.management import setup_environ
-import rwh.settings as settings
+import hgbook.settings as settings
 import sys
 
 setup_environ(settings)

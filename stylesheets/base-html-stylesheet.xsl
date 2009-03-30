@@ -106,7 +106,7 @@
   </xsl:template>
 
   <xsl:template name="user.footer.content">
-    <div class="rwhfooter">
+    <div class="hgfooter">
       <p><img src="/support/figs/rss.png"/> Want to stay up to date? Subscribe to the comment feed for <a id="chapterfeed" class="feed" href="/feeds/comments/">this chapter</a>, or the <a class="feed" href="/feeds/comments/">entire book</a>.</p>
       <p>Copyright 2006, 2007, 2008, 2009 Bryan O'Sullivan.
       Icons by <a href="mailto:mattahan@gmail.com">Paul Davey</a> aka <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
