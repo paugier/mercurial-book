@@ -1,6 +1,7 @@
 #
 # Makefile for the hgbook, top-level
 #
+include Makefile.vars
 
 FORMATS=html html-single pdf
 
@@ -8,11 +9,11 @@ PO_LANGUAGES := zh
 DBK_LANGUAGES := en
 LANGUAGES := $(DBK_LANGUAGES) $(PO_LANGUAGES)
 
-UPDATEPO = PERLLIB=../tools/po4a/lib/ ../tools/po4a/po4a-updatepo -M UTF-8 \
+UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
 	   -f docbook -o doctype='docbook' -o includeexternal \
 	   -o nodefault='<programlisting> <screen>' \
 	   -o untranslated='<programlisting> <screen>'
-TRANSLATE = PERLLIB=tools/po4a/lib/ tools/po4a/po4a-translate -M UTF-8 \
+TRANSLATE = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-translate -M UTF-8 \
 	   -f docbook -o doctype='docbook' \
 	   -k 0
 
@@ -150,6 +151,7 @@ build/en/source/hgbook.xml:
 
 build/$(LINGUA)/source/hgbook.xml: build/en/source/hgbook.xml po/$(LINGUA).po $(images)
 	mkdir -p build/$(LINGUA)/source/figs
+	cp en/figs/*.png build/$(LINGUA)/source/figs
 	$(TRANSLATE) -m build/en/source/hgbook.xml -p po/$(LINGUA).po -l $@.tmp
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 endif
@@ -198,7 +200,7 @@ pdf: build/$(LINGUA)/pdf/hgbook.pdf
 
 build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo.xsl stylesheets/$(LINGUA)/fo.xsl
 	mkdir -p build/$(LINGUA)/pdf
-	java -classpath tools/fop/lib/saxon65.jar:tools/fop/lib/saxon65-dbxsl.jar:tools/fop/lib/xml-commons-resolver-1.2.jar:tools/fop/conf \
+	java -classpath $(JAVA_SHARE)/saxon65.jar:$(JAVA_SHARE)/saxon65-dbxsl.jar:$(JAVA_SHARE)/xml-commons-resolver-1.2.jar:$(JAVA_SHARE) \
 	    com.icl.saxon.StyleSheet \
 	    -x org.apache.xml.resolver.tools.ResolvingXMLReader \
 	    -y org.apache.xml.resolver.tools.ResolvingXMLReader \
@@ -208,7 +210,7 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	    stylesheets/$(LINGUA)/fo.xsl \
 	    fop1.extensions=1
 
-	(cd build/$(LINGUA)/source && ../../../tools/fop/fop.sh hgbook.fo ../pdf/hgbook.pdf)
+	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh hgbook.fo ../pdf/hgbook.pdf)
 endif
 
 en/figs/%.png: en/figs/%.svg en/fixsvg
