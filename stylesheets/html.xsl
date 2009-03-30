@@ -15,8 +15,10 @@
 
   <xsl:param name="admon.graphics" select="1" />
   <xsl:param name="admon.graphics.extension">.png</xsl:param>
+  <xsl:param name="admon.graphics.path">figs/</xsl:param>
   <xsl:param name="callout.graphics" select="1" />
   <xsl:param name="callout.graphics.extension">.png</xsl:param>
+  <xsl:param name="callout.graphics.path">images/callouts/</xsl:param>
 
   <xsl:param name="section.autolabel" select="1" />
   <xsl:param name="section.label.includes.component.label">1</xsl:param>
