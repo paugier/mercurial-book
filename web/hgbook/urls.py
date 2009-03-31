@@ -1,6 +1,9 @@
 import os
 from django.conf.urls.defaults import *
 import hgbook.comments.feeds as feeds
+from django.contrib import admin
+
+admin.autodiscover()
 
 feeds = {
     'comments': feeds.Comments,
@@ -18,5 +21,5 @@ urlpatterns = patterns('',
     #    sys.modules[__name__].__file__) + '/../../en/html'),
 
     # Uncomment this for admin:
-    (r'^admin/', include('django.contrib.admin.urls')),
+    (r'^admin/(.*)', admin.site.root),
 )
