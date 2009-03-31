@@ -210,7 +210,7 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	    stylesheets/$(LINGUA)/fo.xsl \
 	    fop1.extensions=1
 
-	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh hgbook.fo ../pdf/hgbook.pdf)
+	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh -c $(FOP_HOME)/conf/userconfig.xml hgbook.fo ../pdf/hgbook.pdf)
 endif
 
 en/figs/%.png: en/figs/%.svg en/fixsvg
