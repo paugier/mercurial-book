@@ -175,7 +175,7 @@ $(obj-web-read)/figs/%.svg: figs/%.dot
 examples: $(example-prereqs) examples/.run
 
 examples/.run: $(example-sources)
-	cd examples && ./run-example
+	cd examples && ./run-example -a
 
 examples/%.run: examples/% examples/run-example
 
