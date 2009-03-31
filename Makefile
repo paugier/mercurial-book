@@ -3,18 +3,18 @@
 #
 include Makefile.vars
 
-FORMATS=html html-single pdf
+FORMATS=html html-single pdf epub
 
 PO_LANGUAGES := zh
 DBK_LANGUAGES := en
 LANGUAGES := $(DBK_LANGUAGES) $(PO_LANGUAGES)
 
 UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
-	   -f docbook -o doctype='docbook' -o includeexternal \
-	   -o nodefault='<programlisting> <screen>' \
-	   -o untranslated='<programlisting> <screen>'
+	   -f docbook -o doctype=docbook -o includeexternal \
+	   -o nodefault="<programlisting> <screen>" \
+	   -o untranslated="<programlisting> <screen>"
 TRANSLATE = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-translate -M UTF-8 \
-	   -f docbook -o doctype='docbook' \
+	   -f docbook -o doctype=docbook \
 	   -k 0
 
 #rev_id = $(shell hg parents --template '{node|short} ({date|isodate})')
@@ -43,6 +43,7 @@ images := \
 	en/figs/wdir-pre-branch.png
 
 help:
+	@echo "  make epub         [LINGUA=en|zh|...]"
 	@echo "  make html         [LINGUA=en|zh|...]"
 	@echo "  make html-single  [LINGUA=en|zh|...]"
 	@echo "  make pdf          [LINGUA=en|zh|...]"
@@ -119,7 +120,11 @@ updatepo:
 else
 updatepo:
 ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
-	(cd po && $(UPDATEPO) -m ../en/00book.xml -p $(LINGUA).po)
+	(cd po; \
+	$(UPDATEPO) -m ../en/00book.xml -p $(LINGUA).po; \
+	cat $(LINGUA).po | sed 's/&emdash;/—/' > $(LINGUA).po.tmp; \
+	mv $(LINGUA).po.tmp $(LINGUA).po \
+	)
 	$(MAKE) tidypo LINGUA=$(LINGUA)
 endif
 endif
@@ -140,6 +145,7 @@ $(LINGUA)/examples/.run:
 build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(images) $(LINGUA)/examples/.run $(images)
 	mkdir -p build/$(LINGUA)/source/figs
 	cp $(LINGUA)/figs/*.png build/$(LINGUA)/source/figs
+	cp stylesheets/hgbook.css build/$(LINGUA)/source
 	(cd $(LINGUA); xmllint --nonet --noent --xinclude --postvalid --output ../$@.tmp 00book.xml)
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 else
@@ -152,10 +158,24 @@ build/en/source/hgbook.xml:
 build/$(LINGUA)/source/hgbook.xml: build/en/source/hgbook.xml po/$(LINGUA).po $(images)
 	mkdir -p build/$(LINGUA)/source/figs
 	cp en/figs/*.png build/$(LINGUA)/source/figs
+	cp stylesheets/hgbook.css build/$(LINGUA)/source
 	$(TRANSLATE) -m build/en/source/hgbook.xml -p po/$(LINGUA).po -l $@.tmp
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 endif
 
+endif
+
+ifndef LINGUA
+epub:
+	for l in $(LANGUAGES); do \
+	    $(MAKE) $@ LINGUA=$$l; \
+	done
+else
+epub: build/$(LINGUA)/epub/hgbook.epub
+
+build/$(LINGUA)/epub/hgbook.epub: build/$(LINGUA)/source/hgbook.xml
+	mkdir -p build/$(LINGUA)/epub
+	(cd build/$(LINGUA)/source; $(DB2EPUB) -c hgbook.css -v hgbook.xml; mv hgbook.epub ../epub)
 endif
 
 ifndef LINGUA
