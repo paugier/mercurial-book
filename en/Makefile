@@ -120,7 +120,7 @@ web: ../xsl/system-xsl websup html
 html: $(obj-web-read)/index.html
 
 ../web/index-read.html.in: ../web/genindex.py $(xml-src-files)
-	$<
+	cd ../web && ./genindex.py
 
 $(obj-web-read)/index.html: ../xsl/system-xsl .validated-00book.xml ../web/index-read.html.in
 	xsltproc $(xsltproc-opts) -o $(obj-web-read)/x ../xsl/chunk-stylesheet.xsl 00book.xml
@@ -144,7 +144,7 @@ web: websup
 
 valid: .validated-00book.xml
 
-.validated-00book.xml: $(xml-src-files)
+.validated-00book.xml: $(xml-src-files) examples/.run
 	$(xmllint) --path '$(dtd-dir):$(xml-path)' $(xmllint-opts) $<
 	touch $@
 
