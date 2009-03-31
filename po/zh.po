@@ -5,9 +5,6 @@
 # Authors:
 # Dongsheng Song <dongsheng.song@gmail.com>, 2009
 #
-# Update to new pot:
-#    msgmerge --update zh.po hgbook.pot
-#
 # Check translation:
 #    msgfmt --statistics -c -o zh.mo zh.po
 #
@@ -23,6 +20,7 @@
 # checkout          检出
 # remove            移除(从版本库删除)
 # delete            删除(只从文件系统删除)
+# filelog           文件日志
 # patchset          补丁集
 # pushing to        推到
 # pulling from      拉自，抓取
@@ -30,10 +28,12 @@
 # repository        版本库
 # revert            恢复
 # revision          版本
+# revlog            版本日志
 # tag               标签
 # tip               顶点
 # undo              撤销
 # unversioned       未版本控制
+# updated           更新到，同步到(适用于旧版本)
 # versioned         受版本控制
 # working copy      工作副本
 # ...
@@ -42,7 +42,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hgbook 1.2\n"
 "POT-Creation-Date: 2009-03-30 21:36+0800\n"
-"PO-Revision-Date: 2009-03-20 17:12+0800\n"
+"PO-Revision-Date: 2009-03-31 10:12+0800\n"
 "Last-Translator: \n"
 "Language-Team: Simplified Chinese <i18n-zh@googlegroups.com >\n"
 "MIME-Version: 1.0\n"
@@ -1909,7 +1909,7 @@ msgstr ""
 #. type: Content of: <book><preface><sect1><sect2><sect3><title>
 #: ../en/ch00-preface.xml:276
 msgid "The forking non-problem"
-msgstr ""
+msgstr "分叉不是问题"
 
 #. type: Content of: <book><preface><sect1><sect2><sect3><para>
 #: ../en/ch00-preface.xml:278
@@ -2919,7 +2919,7 @@ msgstr ""
 msgid ""
 "Graphical history of the <filename class=\"directory\">hello</filename> "
 "repository"
-msgstr ""
+msgstr "版本库 <filename class=\"directory\">hello</filename> 的历史图"
 
 #. type: Content of: <book><chapter><sect1><figure>
 #: ../en/ch01-tour-basic.xml:260 ../en/ch02-tour-merge.xml:50
@@ -3760,6 +3760,8 @@ msgid ""
 "filename> and <filename class=\"directory\">my-new-hello</filename> "
 "repositories"
 msgstr ""
+"<filename class=\"directory\">my-hello</filename> 与 <filename class="
+"\"directory\">my-new-hello</filename> 最新的历史分叉"
 
 #. type: Content of: <book><chapter><sect1><figure><mediaobject>
 #: ../en/ch02-tour-merge.xml:51
@@ -3803,6 +3805,8 @@ msgid ""
 "Repository contents after pulling from <filename class=\"directory\">my-"
 "hello</filename> into <filename class=\"directory\">my-new-hello</filename>"
 msgstr ""
+"从 <filename class=\"directory\">my-hello</filename> 拉到 <filename class="
+"\"directory\">my-new-hello</filename> 之后版本库的内容"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure>
 #: ../en/ch02-tour-merge.xml:78 ../en/ch02-tour-merge.xml:125
@@ -3863,7 +3867,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch02-tour-merge.xml:123
 msgid "Working directory and repository during merge, and following commit"
-msgstr ""
+msgstr "在合并期间，以及提交之后的工作目录与版本库"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch02-tour-merge.xml:126
@@ -3930,7 +3934,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><figure><title>
 #: ../en/ch02-tour-merge.xml:180
 msgid "Conflicting changes to a document"
-msgstr ""
+msgstr "冲突的修改"
 
 #. type: Content of: <book><chapter><sect1><figure><mediaobject>
 #: ../en/ch02-tour-merge.xml:182
@@ -4029,7 +4033,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch02-tour-merge.xml:248
 msgid "Using <command>kdiff3</command> to merge versions of a file"
-msgstr ""
+msgstr "使用 <command>kdiff3</command> 合并文件的不同版本"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch02-tour-merge.xml:251
@@ -4276,7 +4280,7 @@ msgstr ""
 #: ../en/ch03-concepts.xml:53
 msgid ""
 "Relationships between files in working directory and filelogs in repository"
-msgstr ""
+msgstr "工作目录中的文件与版本库中的文件日志之间的关系"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:56
@@ -4341,7 +4345,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:103
 msgid "Metadata relationships"
-msgstr ""
+msgstr "元数据之间的关系"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:105
@@ -4452,7 +4456,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:188
 msgid "Snapshot of a revlog, with incremental deltas"
-msgstr ""
+msgstr "版本日志的快照，以及增量差异"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:190
@@ -4482,7 +4486,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><sect3><title>
 #: ../en/ch03-concepts.xml:210
 msgid "Aside: the influence of video compression"
-msgstr ""
+msgstr "旁白: 视频压缩的影响"
 
 #. type: Content of: <book><chapter><sect1><sect2><sect3><para>
 #: ../en/ch03-concepts.xml:212
@@ -4589,7 +4593,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><figure><title>
 #: ../en/ch03-concepts.xml:292
 msgid "The conceptual structure of a revlog"
-msgstr ""
+msgstr "版本日志的设计结构"
 
 #. type: Content of: <book><chapter><sect1><figure><mediaobject>
 #: ../en/ch03-concepts.xml:294
@@ -4659,7 +4663,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:343
 msgid "The working directory can have two parents"
-msgstr ""
+msgstr "工作目录可以有两个父亲"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:345
@@ -4678,7 +4682,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:357
 msgid "The working directory gains new parents after a commit"
-msgstr ""
+msgstr "提交之后，工作目录的父亲就改变了"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:360
@@ -4727,7 +4731,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:398
 msgid "The working directory, updated to an older changeset"
-msgstr ""
+msgstr "同步到旧修改集的工作目录"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:401
@@ -4750,7 +4754,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:418
 msgid "After a commit made while synced to an older changeset"
-msgstr ""
+msgstr "对同步到旧修改集的工作目录提交之后"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:421
@@ -4799,7 +4803,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch03-concepts.xml:460
 msgid "Merging two heads"
-msgstr ""
+msgstr "合并两个顶点"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch03-concepts.xml:462
@@ -9384,7 +9388,7 @@ msgstr ""
 msgid ""
 "Backing out a change using the <command role=\"hg-cmd\">hg backout</command> "
 "command"
-msgstr ""
+msgstr "使用 <command role=\"hg-cmd\">hg backout</command> 恢复一个修改"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch08-undo.xml:364
@@ -9444,7 +9448,7 @@ msgstr ""
 msgid ""
 "Automated backout of a non-tip change using the <command role=\"hg-cmd\">hg "
 "backout</command> command"
-msgstr ""
+msgstr "使用 <command role=\"hg-cmd\">hg backout</command> 自动恢复非顶点的修改"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch08-undo.xml:411
@@ -9565,7 +9569,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch08-undo.xml:512
 msgid "Manually merging a backout change"
-msgstr ""
+msgstr "手工合并恢复修改"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch08-undo.xml:514
@@ -12519,11 +12523,12 @@ msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch09-hook.xml:1922
-#, fuzzy
 msgid ""
 "See also: <literal role=\"hook\">precommit</literal> (<xref linkend=\"sec:"
 "hook:precommit\"/>)"
-msgstr "<literal role=\"hook\">precommit</literal>&emdash;提交修改集之前"
+msgstr ""
+"参见: <literal role=\"hook\">precommit</literal> (<xref linkend=\"sec:hook:"
+"precommit\"/>)"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch09-hook.xml:1929
@@ -12606,11 +12611,12 @@ msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch09-hook.xml:1992
-#, fuzzy
 msgid ""
 "See also: <literal role=\"hook\">pretag</literal> (<xref linkend=\"sec:hook:"
 "pretag\"/>)"
-msgstr "<literal role=\"hook\">pretag</literal>&emdash;创建标签之前"
+msgstr ""
+"参见: <literal role=\"hook\">pretag</literal> (<xref linkend=\"sec:hook:pretag"
+"\"/>)"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch09-hook.xml:1998
@@ -14091,7 +14097,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><figure><title>
 #: ../en/ch11-mq.xml:408
 msgid "Applied and unapplied patches in the MQ patch stack"
-msgstr ""
+msgstr "在 MQ 补丁堆栈中应用和撤销补丁"
 
 #. type: Content of: <book><chapter><sect1><sect2><figure><mediaobject>
 #: ../en/ch11-mq.xml:411
