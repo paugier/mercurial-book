@@ -110,7 +110,7 @@ hg-id = $(shell hg parents --template '{node|short}, dated {date|isodate},\n')
 hg-version = $(shell hg version -q | \
 		     sed 's,.*(version \(unknown\|[a-f0-9+]*\)),\1,')
 
-all: web
+all: web complete.xml
 
 ../xsl/system-xsl: $(system-xsl-dir)
 	ln -s $< $@
@@ -133,6 +133,9 @@ websup: $(extras-web) $(image-web)
 	mkdir -p $(obj-websup)/figs $(obj-web-read)/figs
 	cp ../xsl/system-xsl/images/*.png $(obj-websup)/figs
 	cp -f ../web/icons/*.png $(obj-websup)/figs
+
+complete.xml: .validated-00book.xml
+	$(xsltproc) $(xsltproc-opts) -o $@ ../xsl/dtd-profile.xsl 00book.xml
 
 all-ids.dat: ../xsl/all-ids.xsl $(xml-src-files)
 	$(xsltproc) $(xsltproc-opts) -o $@ ../xsl/all-ids.xsl 00book.xml
