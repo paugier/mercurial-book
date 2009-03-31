@@ -27,11 +27,18 @@ for l in en zh; do
      cp pdf/hgbook.pdf ../hgbook-${l}-${rev_id}.pdf
      gzip -f9 ../hgbook-${l}-${rev_id}.pdf
   fi
+
+  if [ -f "epub/hgbook.epub" ] ; then
+     cp epub/hgbook.epub ../hgbook-${l}-${rev_id}.epub
+  fi
   )
 done
 
 upload_pass=$1
 upload_user=$2
+
+# echo "upload_pass: ${upload_pass}"
+# echo "upload_user: ${upload_user}"
 
 if [ "${upload_user}x" == "x" ]; then
   upload_user="dongsheng.song"
@@ -46,17 +53,24 @@ if [ "${upload_pass}x" != "x" ]; then
   fi
 
   for l in en zh; do
+    if [ -f "hgbook-${l}-${rev_id}.epub" ] ; then
+      python googlecode_upload.py --user="${upload_user}" --password="${upload_pass}" \
+          -p "i18n-zh" -l "Type-Docs,book,hgbook,hg,mercurial,ebook" \
+          -s "Distributed revision control with Mercurial - ${l} - ePub" \
+          hgbook-${l}-${rev_id}.epub
+    fi
+
     if [ -f "hgbook-${l}-${rev_id}.pdf.gz" ] ; then
-      python googlecode_upload.py -u "dongsheng.song" -w "$1" \
-          -p "i18n-zh" -l "Type-Docs,hgbook" \
+      python googlecode_upload.py --user="${upload_user}" --password="${upload_pass}" \
+          -p "i18n-zh" -l "Type-Docs,book,hgbook,hg,mercurial" \
           -s "Distributed revision control with Mercurial - ${l} - pdf" \
           hgbook-${l}-${rev_id}.pdf.gz
     fi
 
     for f in html html-single; do
-      if [ -f "hgbook-${l}-${rev_id}.pdf.gz" ] ; then
-        python googlecode_upload.py -u "dongsheng.song" -w "$1" \
-            -p "i18n-zh" -l "Type-Docs,hgbook" \
+      if [ -f "hgbook-${l}-${f}-${rev_id}.tar.gz" ] ; then
+        python googlecode_upload.py --user="${upload_user}" --password="${upload_pass}" \
+            -p "i18n-zh" -l "Type-Docs,book,hgbook,hg,mercurial" \
             -s "Distributed revision control with Mercurial - ${l} - ${f}" \
             hgbook-${l}-${f}-${rev_id}.tar.gz
       fi

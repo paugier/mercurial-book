@@ -159,7 +159,7 @@ build/$(LINGUA)/source/hgbook.xml: build/en/source/hgbook.xml po/$(LINGUA).po $(
 	mkdir -p build/$(LINGUA)/source/figs
 	cp en/figs/*.png build/$(LINGUA)/source/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
-	$(TRANSLATE) -m build/en/source/hgbook.xml -p po/$(LINGUA).po -l $@.tmp
+	$(TRANSLATE) -m build/en/source/hgbook.xml.tmp -p po/$(LINGUA).po -l $@.tmp
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 endif
 
