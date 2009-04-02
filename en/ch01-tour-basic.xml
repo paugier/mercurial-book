@@ -12,6 +12,26 @@
       using Mercurial on your computer immediately.</para>
 
     <sect2>
+      <title>Windows</title>
+
+      <para id="x_c">The best version of Mercurial for Windows is
+	TortoiseHg, which can be found at <ulink
+	  url="http://bitbucket.org/tortoisehg/stable/wiki/Home">http://bitbucket.org/tortoisehg/stable/wiki/Home</ulink>. 
+	This package has no external dependencies; it <quote>just
+	  works</quote>.  It provides both command line and graphical
+	user interfaces.</para>
+
+    </sect2>
+
+    <sect2>
+      <title>Mac OS X</title>
+
+      <para id="x_a">Lee Cantey publishes an installer of Mercurial
+	for Mac OS X at <ulink
+	  url="http://mercurial.berkwood.com">http://mercurial.berkwood.com</ulink>.</para>
+    </sect2>
+
+    <sect2>
       <title>Linux</title>
 
       <para id="x_2">Because each Linux distribution has its own packaging
@@ -29,18 +49,12 @@
 	<literal>mercurial</literal>.</para>
 
       <itemizedlist>
-	<listitem><para id="x_4">Debian:</para>
+	<listitem><para id="x_4">Ubuntu and Debian:</para>
 	  <programlisting>apt-get install mercurial</programlisting></listitem>
-	<listitem><para id="x_5">Fedora Core:</para>
+	<listitem><para id="x_5">Fedora and OpenSUSE:</para>
 	  <programlisting>yum install mercurial</programlisting></listitem>
 	<listitem><para id="x_6">Gentoo:</para>
 	  <programlisting>emerge mercurial</programlisting></listitem>
-	<listitem><para id="x_7">OpenSUSE:</para>
-	  <programlisting>yum install mercurial</programlisting></listitem>
-	<listitem><para id="x_8">Ubuntu: Ubuntu's Mercurial package is based on
-	    Debian's.  To install it, run the following
-	    command.</para>
-	  <programlisting>apt-get install mercurial</programlisting></listitem>
       </itemizedlist>
 
     </sect2>
@@ -49,49 +63,12 @@
 
       <para id="x_9">SunFreeWare, at <ulink
 	  url="http://www.sunfreeware.com">http://www.sunfreeware.com</ulink>, 
-	is a good source for a large number of pre-built Solaris
-	packages for 32 and 64 bit Intel and Sparc architectures,
-	including current versions of Mercurial.</para>
+	provides prebuilt packages of Mercurial.</para>
 
     </sect2>
-    <sect2>
-      <title>Mac OS X</title>
 
-      <para id="x_a">Lee Cantey publishes an installer of Mercurial for Mac OS
-	X at <ulink
-	  url="http://mercurial.berkwood.com">http://mercurial.berkwood.com</ulink>. 
-	This package works on both Intel- and Power-based Macs. Before
-	you can use it, you must install a compatible version of
-	Universal MacPython <citation>web:macpython</citation>. This
-	is easy to do; simply follow the instructions on Lee's
-	site.</para>
-
-      <para id="x_b">It's also possible to install Mercurial using Fink or
-	MacPorts, two popular free package managers for Mac OS X.  If
-	you have Fink, use <command>sudo apt-get install
-	  mercurial-py25</command>.  If MacPorts, <command>sudo port
-	  install mercurial</command>.</para>
-
-    </sect2>
-    <sect2>
-      <title>Windows</title>
-
-      <para id="x_c">Lee Cantey publishes an installer of Mercurial for Windows
-	at <ulink
-	  url="http://mercurial.berkwood.com">http://mercurial.berkwood.com</ulink>. 
-	This package has no external dependencies; it <quote>just
-	  works</quote>.</para>
-
-      <note>
-	<para id="x_d">  The Windows version of Mercurial does not
-	  automatically convert line endings between Windows and Unix
-	  styles.  If you want to share work with Unix users, you must
-	  do a little additional configuration work. XXX Flesh this
-	  out.</para>
-      </note>
-
-    </sect2>
   </sect1>
+
   <sect1>
     <title>Getting started</title>
 
@@ -150,9 +127,15 @@
 	command to make a copy of a repository, it's best to use a
 	built-in command that Mercurial provides.  This command is
 	called <command role="hg-cmd">hg clone</command>, because it
-	creates an identical copy of an existing repository.</para>
+	makes an identical copy of an existing repository.</para>
 
       &interaction.tour.clone;
+
+      <para>One advantage of using <command role="hg-cmd">hg
+	  clone</command> is that, as we can see above, it lets us clone
+	repositories over the network.  Another is that it remembers
+	where we cloned from, which we'll find useful soon when we
+	want to fetch new changes from another repository.</para>
 
       <para id="x_14">If our clone succeeded, we should now have a local
 	directory called <filename class="directory">hello</filename>.
@@ -163,12 +146,12 @@
       <para id="x_15">These files have the same contents and history in our
 	repository as they do in the repository we cloned.</para>
 
-      <para id="x_16">Every Mercurial repository is complete, self-contained,
-	and independent.  It contains its own private copy of a
-	project's files and history.  A cloned repository remembers
-	the location of the repository it was cloned from, but it does
-	not communicate with that repository, or any other, unless you
-	tell it to.</para>
+      <para id="x_16">Every Mercurial repository is complete,
+	self-contained, and independent.  It contains its own private
+	copy of a project's files and history.  As we just mentioned,
+	a cloned repository remembers the location of the repository
+	it was cloned from, but Mercurial will not communicate with
+	that repository, or any other, unless you tell it to.</para>
 
       <para id="x_17">What this means for now is that we're free to experiment
 	with our repository, safe in the knowledge that it's a private
@@ -211,7 +194,7 @@
     <para id="x_1b">One of the first things we might want to do with a new,
       unfamiliar repository is understand its history.  The <command
 	role="hg-cmd">hg log</command> command gives us a view of
-      history.</para>
+      the history of changes in the repository.</para>
 
     &interaction.tour.log;
 
@@ -223,13 +206,20 @@
 
     <para id="x_1d">The fields in a record of output from <command
 	role="hg-cmd">hg log</command> are as follows.</para>
+
     <itemizedlist>
-      <listitem><para id="x_1e"><literal>changeset</literal>: This field has the
-	  format of a number, followed by a colon, followed by a
-	  hexadecimal string.  These are
-	  <emphasis>identifiers</emphasis> for the changeset.  There
-	  are two identifiers because the number is shorter and easier
-	  to type than the hex string.</para></listitem>
+      <listitem><para id="x_1e"><literal>changeset</literal>: This
+	  field has the format of a number, followed by a colon,
+	  followed by a hexadecimal (or <emphasis>hex</emphasis>)
+	  string.  These are <emphasis>identifiers</emphasis> for the
+	  changeset.  The hex string is a unique identifier: the same
+	  hex string will always refer to the same changeset. The
+	  number is shorter and easier to type than the hex string,
+	  but it isn't unique: the same number in two different clones
+	  of a repository may identify different changesets.  Why
+	  provide the number at all, then?  For local
+	  convenience.</para>
+      </listitem>
       <listitem><para id="x_1f"><literal>user</literal>: The identity of the
 	  person who created the changeset.  This is a free-form
 	  field, but it most often contains a person's name and email
@@ -241,10 +231,19 @@
 	  person who created the changeset.)</para></listitem>
       <listitem><para id="x_21"><literal>summary</literal>: The first line of
 	  the text message that the creator of the changeset entered
-	  to describe the changeset.</para></listitem></itemizedlist>
-    <para id="x_22">The default output printed by <command role="hg-cmd">hg
-	log</command> is purely a summary; it is missing a lot of
-      detail.</para>
+	  to describe the changeset.</para></listitem>
+      <listitem>
+	<para>Some changesets, such as the first in the list above,
+	  have a <literal>tag</literal> field.  A tag is another way
+	  to identify a changeset, by giving it an easy-to-remember
+	  name. (The tag named <literal>tip</literal> is special: it
+	  always refers to the newest change in a repository.)</para>
+      </listitem>
+    </itemizedlist>
+
+    <para id="x_22">The default output printed by <command
+	role="hg-cmd">hg log</command> is purely a summary; it is
+      missing a lot of detail.</para>
 
     <para id="x_23"><xref linkend="fig:tour-basic:history"/> provides
       a graphical representation of the history of the <filename
@@ -286,22 +285,26 @@
 	  log</command> identifies a changeset using both a number and
 	a hexadecimal string.</para>
       <itemizedlist>
-	<listitem><para id="x_27">The revision number is <emphasis>only valid in
-	      that repository</emphasis>,</para></listitem>
-	<listitem><para id="x_28">while the hex string is the
+	<listitem><para id="x_27">The revision number is a handy
+	    notation that is <emphasis>only valid in that
+	      repository</emphasis>.</para></listitem>
+	<listitem><para id="x_28">The hexadecimal string is the
 	    <emphasis>permanent, unchanging identifier</emphasis> that
 	    will always identify that exact changeset in
 	    <emphasis>every</emphasis> copy of the
 	    repository.</para></listitem></itemizedlist>
-      <para id="x_29">This distinction is important.  If you send someone an
-	email talking about <quote>revision 33</quote>, there's a high
-	likelihood that their revision 33 will <emphasis>not be the
-	  same</emphasis> as yours.  The reason for this is that a
-	revision number depends on the order in which changes arrived
-	in a repository, and there is no guarantee that the same
-	changes will happen in the same order in different
-	repositories. Three changes $a,b,c$ can easily appear in one
-	repository as $0,1,2$, while in another as $1,0,2$.</para>
+
+      <para id="x_29">This distinction is important.  If you send
+	someone an email talking about <quote>revision 33</quote>,
+	there's a high likelihood that their revision 33 will
+	<emphasis>not be the same</emphasis> as yours.  The reason for
+	this is that a revision number depends on the order in which
+	changes arrived in a repository, and there is no guarantee
+	that the same changes will happen in the same order in
+	different repositories. Three changes <literal>a,b,c</literal>
+	can easily appear in one repository as
+	<literal>0,1,2</literal>, while in another as
+	<literal>0,2,1</literal>.</para>
 
       <para id="x_2a">Mercurial uses revision numbers purely as a convenient
 	shorthand.  If you need to discuss a changeset with someone,
@@ -317,7 +320,7 @@
 	  log</command> down to a single revision, use the <option
 	  role="hg-opt-log">-r</option> (or <option
 	  role="hg-opt-log">--rev</option>) option.  You can use
-	either a revision number or a long-form changeset identifier,
+	either a revision number or a hexadecimal identifier,
 	and you can provide as many revisions as you want.</para>
 
       &interaction.tour.log-r;
@@ -361,8 +364,12 @@
 
       &interaction.tour.log-vp;
 
+      <para>The <option role="hg-opt-log">-p</option> option is
+	tremendously useful, so it's well worth remembering.</para>
+
     </sect2>
   </sect1>
+
   <sect1>
     <title>All about command options</title>
 
@@ -374,26 +381,42 @@
       dealing with the options that you can pass to commands.  It
       follows the conventions for options that are common to modern
       Linux and Unix systems.</para>
+
     <itemizedlist>
-      <listitem><para id="x_32">Every option has a long name.  For example, as
+      <listitem>
+	<para id="x_32">Every option has a long name.  For example, as
 	  we've already seen, the <command role="hg-cmd">hg
 	    log</command> command accepts a <option
-	    role="hg-opt-log">--rev</option> option.</para></listitem>
-      <listitem><para id="x_33">Most options have short names, too.  Instead of
-	  <option role="hg-opt-log">--rev</option>, we can use <option
-	    role="hg-opt-log">-r</option>.  (The reason that some
-	  options don't have short names is that the options in
-	  question are rarely used.)</para></listitem>
-      <listitem><para id="x_34">Long options start with two dashes (e.g. <option
-	    role="hg-opt-log">--rev</option>), while short options
-	  start with one (e.g. <option
-	    role="hg-opt-log">-r</option>).</para></listitem>
-      <listitem><para id="x_35">Option naming and usage is consistent across
+	    role="hg-opt-log">--rev</option> option.</para>
+      </listitem>
+      <listitem>
+	<para id="x_33">Most options have short names, too.  Instead
+	  of <option role="hg-opt-log">--rev</option>, we can use
+	  <option role="hg-opt-log">-r</option>.  (The reason that
+	  some options don't have short names is that the options in
+	  question are rarely used.)</para>
+      </listitem>
+      <listitem>
+	<para id="x_34">Long options start with two dashes (e.g.
+	  <option role="hg-opt-log">--rev</option>), while short
+	  options start with one (e.g. <option
+	    role="hg-opt-log">-r</option>).</para>
+      </listitem>
+      <listitem>
+	<para id="x_35">Option naming and usage is consistent across
 	  commands.  For example, every command that lets you specify
 	  a changeset ID or revision number accepts both <option
 	    role="hg-opt-log">-r</option> and <option
-	    role="hg-opt-log">--rev</option>
-	  arguments.</para></listitem></itemizedlist>
+	    role="hg-opt-log">--rev</option> arguments.</para>
+      </listitem>
+      <listitem>
+	<para>If you are using short options, you can save typing by
+	  running them together. For example, the command <command
+	    role="hg-cmd">hg log -v -p -r 2</command> can be written
+	  as <command role="hg-cmd">hg log -vpr2</command>.</para>
+      </listitem>
+    </itemizedlist>
+
     <para id="x_36">In the examples throughout this book, I use short options
       instead of long.  This just reflects my own preference, so don't
       read anything significant into it.</para>
@@ -403,6 +426,18 @@
       (or <option role="hg-opt-global">--verbose</option>) option, and
       less when passed <option role="hg-opt-global">-q</option> (or
       <option role="hg-opt-global">--quiet</option>).</para>
+
+    <note>
+      <title>Option naming consistency</title>
+
+      <para>Almost always, Mercurial commands use consistent option
+	names to refer to the same concepts.  For instance, if a
+	command deals with changesets, you'll always identify them
+	with <option role="hg-opt-log">--rev</option> or <option
+	  role="hg-opt-log">-r</option>.  This consistent use of
+	option names makes it easier to remember what options a
+	particular command takes.</para>
+    </note>
 
   </sect1>
   <sect1>
@@ -418,7 +453,14 @@
       the remote repository.  Since we already have a copy of it
       locally, we can just clone that instead.  This is much faster
       than cloning over the network, and cloning a local repository
-      uses less disk space in most cases, too.</para>
+      uses less disk space in most cases, too<footnote>
+	<para>The saving of space arises when source and destination
+	  repositories are on the same filesystem, in which case
+	  Mercurial will use hardlinks to do copy-on-write sharing of
+	  its internal metadata.  If that explanation meant nothing to
+	  you, don't worry: everything happens transparently and
+	  automatically, and you don't need to understand it.</para>
+	</footnote>.</para>
 
     &interaction.tour.reclone;
 
@@ -433,16 +475,14 @@
 
     <para id="x_3b">In our <filename class="directory">my-hello</filename>
       repository, we have a file <filename>hello.c</filename> that
-      contains the classic <quote>hello, world</quote> program. Let's
-      use the ancient and venerable <command>sed</command> command to
-      edit this file so that it prints a second line of output.  (I'm
-      only using <command>sed</command> to do this because it's easy
-      to write a scripted example this way.  Since you're not under
-      the same constraint, you probably won't want to use
-      <command>sed</command>; simply use your preferred text editor to
-      do the same thing.)</para>
+      contains the classic <quote>hello, world</quote> program.</para>
 
-    &interaction.tour.sed;
+    &interaction.tour.cat1;
+
+    <para>Let's edit this file so that it prints a second line of
+      output.</para>
+
+    &interaction.tour.cat2;
 
     <para id="x_3c">Mercurial's <command role="hg-cmd">hg status</command>
       command will tell us what Mercurial knows about the files in the
@@ -465,7 +505,7 @@
       file after we were done; it was able to figure this out
       itself.</para>
 
-    <para id="x_3f">It's a little bit helpful to know that we've modified
+    <para id="x_3f">It's somewhat helpful to know that we've modified
       <filename>hello.c</filename>, but we might prefer to know
       exactly <emphasis>what</emphasis> changes we've made to it.  To
       do this, we use the <command role="hg-cmd">hg diff</command>
@@ -473,6 +513,13 @@
 
     &interaction.tour.diff;
 
+    <tip>
+      <title>Understanding patches</title>
+
+      <para>Remember to take a look at <xref
+	  linkend="sec:mq:patch"/> if you don't know how to read
+	output above.</para>
+    </tip>
   </sect1>
   <sect1>
     <title>Recording changes in a new changeset</title>
@@ -549,10 +596,13 @@
 	    configuration settings.  The initial contents of your
 	    <filename role="special">.hgrc</filename> should look like
 	    this.</para>
+
+	<remark>Figure out what the appropriate directory is on
+	  Windows.</remark>
+
 	<programlisting># This is a Mercurial configuration file.
 [ui]
-username = Firstname Lastname
-&lt;email.address@domain.net&gt;</programlisting>
+username = Firstname Lastname &lt;email.address@domain.net&gt;</programlisting>
 
 	<para id="x_4b">The <quote><literal>[ui]</literal></quote> line begins a
 	  <emphasis>section</emphasis> of the config file, so you can
@@ -571,8 +621,8 @@ username = Firstname Lastname
 
 	<para id="x_4c">You can use any text you like as the value of
 	    the <literal>username</literal> config item, since this
-	    information is for reading by other people, but for
-	    interpreting by Mercurial.  The convention that most
+	    information is for reading by other people, but will not be
+	    interpreted by Mercurial.  The convention that most
 	    people follow is to use their name and email address, as
 	    in the example above.</para>
 	<note>
@@ -600,10 +650,17 @@ username = Firstname Lastname
 
       <para id="x_4f">The editor that the <command role="hg-cmd">hg
 	    commit</command> command drops us into will contain an
-	  empty line, followed by a number of lines starting with
+	  empty line or two, followed by a number of lines starting with
 	  <quote><literal>HG:</literal></quote>.</para>
 
-    <programlisting>XXX fix this XXX</programlisting>
+    <programlisting>
+This is where I type my commit comment.
+
+HG: Enter commit message.  Lines beginning with 'HG:' are removed.
+HG: --
+HG: user: Bryan O'Sullivan &lt;bos@serpentine.com&gt;
+HG: branch 'default'
+HG: changed hello.c</programlisting>
 
       <para id="x_50">Mercurial ignores the lines that start with
 	  <quote><literal>HG:</literal></quote>; it uses them only to
@@ -665,9 +722,18 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
 
       &interaction.tour.tip;
 
-      <para id="x_57">We refer to
-	  the newest revision in the repository as the tip revision,
-	  or simply the tip.</para>
+      <para id="x_57">We refer to the newest revision in the
+	repository as the <emphasis>tip revision</emphasis>, or simply
+	the <emphasis>tip</emphasis>.</para>
+
+      <para>By the way, the <command role="hg-cmd">hg tip</command>
+	command accepts many of the same options as <command
+	  role="hg-cmd">hg log</command>, so <option
+	  role="hg-opt-global">-v</option> above indicates <quote>be
+	  verbose</quote>, <option role="hg-opt-tip">-p</option>
+	specifies <quote>print a patch</quote>.  The use of <option
+	  role="hg-opt-tip">-p</option> to print patches is another
+	example of the consistent naming we mentioned earlier.</para>
     </sect2>
   </sect1>
 
@@ -704,12 +770,13 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
 
       &interaction.tour.incoming;
 
-      <para id="x_5b">(Of course, someone could
-	  cause more changesets to appear in the repository that we
-	  ran <command role="hg-cmd">hg incoming</command> in, before
-	  we get a chance to <command role="hg-cmd">hg pull</command>
-	  the changes, so that we could end up pulling changes that we
-	  didn't expect.)</para>
+      <para id="x_5b">Suppose you're pulling changes from a repository
+      on the network somewhere. While you are looking at the <command
+	  role="hg-cmd">hg incoming</command> output, and before you
+	pull those changes, someone might have committed something in
+	the remote repository. This means that it's possible to pull
+	more changes than you saw when using <command
+	  role="hg-cmd">hg incoming</command>.</para>
 
       <para id="x_5c">Bringing changes into a repository is a simple
 	  matter of running the <command role="hg-cmd">hg
@@ -746,8 +813,8 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
 	can use <command role="hg-cmd">hg update</command> to update
 	the working directory to the state it was in at <emphasis>any
 	  revision</emphasis> in the history of the repository.  If
-	you had the working directory updated to an old revision---to
-	hunt down the origin of a bug, say---and ran a <command
+	you had the working directory updated to an old revision&emdash;to
+	hunt down the origin of a bug, say&emdash;and ran a <command
 	  role="hg-cmd">hg pull</command> which automatically updated
 	the working directory to a new revision, you might not be
 	terribly happy.</para>
@@ -817,14 +884,17 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
 
       &interaction.tour.push;
 
-      <para id="x_69">As with
-	  <command role="hg-cmd">hg pull</command>, the <command
-	    role="hg-cmd">hg push</command> command does not update
-	  the working directory in the repository that it's pushing
-	  changes into. (Unlike <command role="hg-cmd">hg
-	    pull</command>, <command role="hg-cmd">hg push</command>
-	  does not provide a <literal>-u</literal> option that updates
-	  the other repository's working directory.)</para>
+      <para id="x_69">As with <command role="hg-cmd">hg
+	  pull</command>, the <command role="hg-cmd">hg push</command>
+	command does not update the working directory in the
+	repository that it's pushing changes into. Unlike <command
+	  role="hg-cmd">hg pull</command>, <command role="hg-cmd">hg
+	  push</command> does not provide a <literal>-u</literal>
+	option that updates the other repository's working directory.
+	This asymmetry is deliberate: the repository we're pushing to
+	might be on a remote server and shared between several people.
+	If we were to update its working directory while someone was
+	working in it, their work would be disrupted.</para>
 
       <para id="x_6a">What happens if we try to pull or push changes
 	  and the receiving repository already has those changes?

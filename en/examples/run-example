@@ -127,9 +127,11 @@ class static_example(example):
         s = open(self.name).read().rstrip()
         s = s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
         ofp = wopen(result_name(self.name + '.tmp'))
+        ofp.write('<!-- BEGIN %s -->\n' % self.name)
         ofp.write('<programlisting>')
         ofp.write(s)
         ofp.write('</programlisting>\n')
+        ofp.write('<!-- END %s -->\n' % self.name)
         ofp.close()
         self.rename_output(self.name)
         norm = self.name.replace(os.sep, '-')
@@ -309,6 +311,7 @@ class shell_example(example):
                             assert os.sep not in out
                             if ofp is not None:
                                 ofp.write('</screen>\n')
+                                ofp.write('<!-- END %s -->\n' % ofp_basename)
                                 ofp.close()
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
@@ -320,6 +323,7 @@ class shell_example(example):
                                     % (norm, norm)] = 1
                                 read_hint = ofp_basename + ' '
                                 ofp = wopen(result_name(ofp_basename + '.tmp'))
+                                ofp.write('<!-- BEGIN %s -->\n' % ofp_basename)
                                 ofp.write('<screen>')
                             else:
                                 ofp = None
@@ -333,7 +337,8 @@ class shell_example(example):
                         # first, print the command we ran
                         if not hunk.startswith('#'):
                             nl = hunk.endswith('\n')
-                            hunk = ('<prompt>%s</prompt> <userinput>%s</userinput>' %
+                            hunk = ('<prompt>%s</prompt> '
+                                    '<userinput>%s</userinput>' %
                                     (prompts[ps],
                                      xml_escape(hunk.rstrip('\n'))))
                             if nl: hunk += '\n'
@@ -353,6 +358,7 @@ class shell_example(example):
                     if ofp is not None:
                         ofp.write(output)
                         ofp.write('</screen>\n')
+                        ofp.write('<!-- END %s -->\n' % ofp_basename)
                         ofp.close()
                         err |= self.rename_output(ofp_basename, ignore)
                     os.close(self.cfd)
@@ -379,7 +385,7 @@ def print_help(exit, msg=None):
     print >> sys.stderr, 'Options:'
     print >> sys.stderr, '  -a --all       run all examples in this directory'
     print >> sys.stderr, '  -h --help      print this help message'
-    print >> sys.stderr, '     --help      keep new output as desired output'
+    print >> sys.stderr, '     --keep      keep new output as desired output'
     print >> sys.stderr, '  -v --verbose   display extra debug output'
     sys.exit(exit)
 

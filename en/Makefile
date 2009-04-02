@@ -110,7 +110,7 @@ hg-id = $(shell hg parents --template '{node|short}, dated {date|isodate},\n')
 hg-version = $(shell hg version -q | \
 		     sed 's,.*(version \(unknown\|[a-f0-9+]*\)),\1,')
 
-all: web
+all: web complete.xml
 
 ../stylesheets/system-xsl: $(system-xsl-dir)
 	ln -s $< $@
@@ -120,7 +120,7 @@ web: ../stylesheets/system-xsl websup html
 html: $(obj-web-read)/index.html
 
 ../web/index-read.html.in: ../web/genindex.py $(xml-src-files)
-	$<
+	cd ../web && ./genindex.py
 
 $(obj-web-read)/index.html: ../stylesheets/system-xsl .validated-00book.xml ../web/index-read.html.in
 	xsltproc $(xsltproc-opts) -o $(obj-web-read)/x ../stylesheets/chunk-stylesheet.xsl 00book.xml
@@ -134,6 +134,9 @@ websup: $(extras-web) $(image-web)
 	cp ../stylesheets/system-xsl/images/*.png $(obj-websup)/figs
 	cp -f ../web/icons/*.png $(obj-websup)/figs
 
+complete.xml: .validated-00book.xml
+	$(xsltproc) $(xsltproc-opts) -o $@ ../stylesheets/dtd-profile.xsl 00book.xml
+
 all-ids.dat: ../stylesheets/all-ids.xsl $(xml-src-files)
 	$(xsltproc) $(xsltproc-opts) -o $@ ../stylesheets/all-ids.xsl 00book.xml
 
@@ -141,7 +144,7 @@ web: websup
 
 valid: .validated-00book.xml
 
-.validated-00book.xml: $(xml-src-files)
+.validated-00book.xml: $(xml-src-files) examples/.run
 	$(xmllint) --path '$(dtd-dir):$(xml-path)' $(xmllint-opts) $<
 	touch $@
 
@@ -172,7 +175,7 @@ $(obj-web-read)/figs/%.svg: figs/%.dot
 examples: $(example-prereqs) examples/.run
 
 examples/.run: $(example-sources)
-	cd examples && ./run-example
+	cd examples && ./run-example -a
 
 examples/%.run: examples/% examples/run-example
 

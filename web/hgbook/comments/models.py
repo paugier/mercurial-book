@@ -4,10 +4,6 @@ import sha
 mutable = True
 
 class Element(models.Model):
-    class Admin:
-        search_fields = ['id', 'chapter']
-        list_filter = ['chapter', 'title']
-
     id = models.CharField('ID attribute', max_length=64, editable=False,
                           primary_key=True)
     chapter = models.CharField('Chapter ID', max_length=64, editable=False,
@@ -18,20 +14,6 @@ class Element(models.Model):
         return self.id
     
 class Comment(models.Model):
-    class Admin:
-        list_display = ['element', 'submitter_name', 'comment', 'reviewed',
-                        'hidden', 'date']
-        search_fields = ['comment']
-        date_hierarchy = 'date'
-        list_filter = ['date', 'submitter_name']
-        search_fields = ['title', 'submitter_name', 'submitter_url']
-        fields = (
-            (None, {'fields': ('submitter_name', 'element', 'comment')}),
-            ('Review and presentation state',
-             {'fields': ('reviewed', 'hidden')}),
-            ('Other info', {'fields': ('date', 'submitter_url', 'ip')}),
-            )
-            
     element = models.ForeignKey(Element,
         help_text='ID of paragraph that was commented on')
     comment = models.TextField(editable=mutable,
