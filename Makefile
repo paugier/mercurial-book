@@ -14,7 +14,9 @@ UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
 	   -o nodefault="<programlisting> <screen>" \
 	   -o untranslated="<programlisting> <screen>"
 TRANSLATE = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-translate -M UTF-8 \
-	   -f docbook -o doctype=docbook \
+	   -f docbook -o doctype=docbook -o includeexternal \
+	   -o nodefault="<programlisting> <screen>" \
+	   -o untranslated="<programlisting> <screen>" \
 	   -k 0
 
 #rev_id = $(shell hg parents --template '{node|short} ({date|isodate})')
@@ -122,8 +124,6 @@ updatepo:
 ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
 	(cd po; \
 	$(UPDATEPO) -m ../en/00book.xml -p $(LINGUA).po; \
-	cat $(LINGUA).po | sed 's/&emdash;/—/' > $(LINGUA).po.tmp; \
-	mv $(LINGUA).po.tmp $(LINGUA).po \
 	)
 	$(MAKE) tidypo LINGUA=$(LINGUA)
 endif
@@ -142,7 +142,7 @@ ifneq "$(findstring $(LINGUA),$(DBK_LANGUAGES))" ""
 $(LINGUA)/examples/.run:
 	(cd $(LINGUA)/examples; ./run-example -v -a)
 
-build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(images) $(LINGUA)/examples/.run $(images)
+build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(images) $(LINGUA)/examples/.run
 	mkdir -p build/$(LINGUA)/source/figs
 	cp $(LINGUA)/figs/*.png build/$(LINGUA)/source/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
@@ -155,12 +155,14 @@ en/examples/.run:
 build/en/source/hgbook.xml:
 	${MAKE} LINGUA=en $@
 
-build/$(LINGUA)/source/hgbook.xml: build/en/source/hgbook.xml po/$(LINGUA).po $(images)
+build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images)
 	mkdir -p build/$(LINGUA)/source/figs
 	cp en/figs/*.png build/$(LINGUA)/source/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
-	$(TRANSLATE) -m build/en/source/hgbook.xml.tmp -p po/$(LINGUA).po -l $@.tmp
+	$(TRANSLATE) -m en/00book.xml -p po/$(LINGUA).po -l en/hgbook.xml.$(LINGUA)
+	xmllint --nonet --noent --xinclude --postvalid --output $@.tmp en/hgbook.xml.$(LINGUA)
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
+	mv en/hgbook.xml.$(LINGUA) build/$(LINGUA)/source
 endif
 
 endif
@@ -220,7 +222,7 @@ pdf: build/$(LINGUA)/pdf/hgbook.pdf
 
 build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo.xsl stylesheets/$(LINGUA)/fo.xsl
 	mkdir -p build/$(LINGUA)/pdf
-	java -classpath $(JAVA_SHARE)/saxon65.jar:$(JAVA_SHARE)/saxon65-dbxsl.jar:$(JAVA_SHARE)/xml-commons-resolver-1.2.jar:$(JAVA_SHARE) \
+	java -classpath $(JAVA_LIB)/saxon65.jar:$(JAVA_LIB)/saxon65-dbxsl.jar:$(JAVA_LIB)/xml-commons-resolver-1.2.jar:$(JAVA_LIB) \
 	    com.icl.saxon.StyleSheet \
 	    -x org.apache.xml.resolver.tools.ResolvingXMLReader \
 	    -y org.apache.xml.resolver.tools.ResolvingXMLReader \
