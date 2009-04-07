@@ -146,12 +146,17 @@ hg outgoing http://hg.serpentine.com/tutorial/hello
 
 hg push http://hg.serpentine.com/tutorial/hello
 
+#$ name:
+cp hello.c ../new-hello.c
+sed -i '/printf/i\\tprintf("once more, hello.\\n");' ../new-hello.c
+
 #$ name: merge.clone
 
 cd ..
 hg clone hello my-new-hello
 cd my-new-hello
-sed -i '/printf/i\\tprintf("once more, hello.\\n");' hello.c
+# The file new-hello.c is lightly edited.
+cp ../new-hello.c hello.c
 hg commit -m 'A new hello for a new day.'
 
 #$ name: merge.dummy2
