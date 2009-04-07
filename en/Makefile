@@ -112,18 +112,18 @@ hg-version = $(shell hg version -q | \
 
 all: web complete.xml
 
-../xsl/system-xsl: $(system-xsl-dir)
+../stylesheets/system-xsl: $(system-xsl-dir)
 	ln -s $< $@
 
-web: ../xsl/system-xsl websup html
+web: ../stylesheets/system-xsl websup html
 
 html: $(obj-web-read)/index.html
 
 ../web/index-read.html.in: ../web/genindex.py $(xml-src-files)
 	cd ../web && ./genindex.py
 
-$(obj-web-read)/index.html: ../xsl/system-xsl .validated-00book.xml ../web/index-read.html.in
-	xsltproc $(xsltproc-opts) -o $(obj-web-read)/x ../xsl/chunk-stylesheet.xsl 00book.xml
+$(obj-web-read)/index.html: ../stylesheets/system-xsl .validated-00book.xml ../web/index-read.html.in
+	xsltproc $(xsltproc-opts) -o $(obj-web-read)/x ../stylesheets/chunk-stylesheet.xsl 00book.xml
 	python ../web/texpand.py ../web/index-read.html.in html/read/index.html
 	for i in $(obj-web-read)/*.html; do \
 	  gzip -9 -c $$i > $$i.gz; \
@@ -131,14 +131,14 @@ $(obj-web-read)/index.html: ../xsl/system-xsl .validated-00book.xml ../web/index
 
 websup: $(extras-web) $(image-web)
 	mkdir -p $(obj-websup)/figs $(obj-web-read)/figs
-	cp ../xsl/system-xsl/images/*.png $(obj-websup)/figs
+	cp ../stylesheets/system-xsl/images/*.png $(obj-websup)/figs
 	cp -f ../web/icons/*.png $(obj-websup)/figs
 
 complete.xml: .validated-00book.xml
-	$(xsltproc) $(xsltproc-opts) -o $@ ../xsl/dtd-profile.xsl 00book.xml
+	$(xsltproc) $(xsltproc-opts) -o $@ ../stylesheets/dtd-profile.xsl 00book.xml
 
-all-ids.dat: ../xsl/all-ids.xsl $(xml-src-files)
-	$(xsltproc) $(xsltproc-opts) -o $@ ../xsl/all-ids.xsl 00book.xml
+all-ids.dat: ../stylesheets/all-ids.xsl $(xml-src-files)
+	$(xsltproc) $(xsltproc-opts) -o $@ ../stylesheets/all-ids.xsl 00book.xml
 
 web: websup
 
