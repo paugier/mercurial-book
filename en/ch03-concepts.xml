@@ -4,14 +4,16 @@
   <?dbhtml filename="behind-the-scenes.html"?>
   <title>Behind the scenes</title>
 
-  <para id="x_2e8">Unlike many revision control systems, the concepts upon which
-    Mercurial is built are simple enough that it's easy to understand
-    how the software really works.  Knowing this certainly isn't
-    necessary, but I find it useful to have a <quote>mental
-      model</quote> of what's going on.</para>
+  <para id="x_2e8">Unlike many revision control systems, the concepts
+    upon which Mercurial is built are simple enough that it's easy to
+    understand how the software really works.  Knowing these details
+    certainly isn't necessary, so it is certainly safe to skip this
+    chapter.  However, I think you will get more out of the software
+    with a <quote>mental model</quote> of what's going on.</para>
 
-  <para id="x_2e9">This understanding gives me confidence that Mercurial has been
-    carefully designed to be both <emphasis>safe</emphasis> and
+  <para id="x_2e9">Being able to understand what's going on behind the
+    scenes gives me confidence that Mercurial has been carefully
+    designed to be both <emphasis>safe</emphasis> and
     <emphasis>efficient</emphasis>.  And just as importantly, if it's
     easy for me to retain a good idea of what the software is doing
     when I perform a revision control task, I'm less likely to be
@@ -436,19 +438,19 @@
 	  a new head, because your working directory isn't synced to
 	  whatever the current tip is.</para>
 
-	<para id="x_316">  I put the word <quote>error</quote> in quotes because
-	  all that you need to do to rectify this situation is
-	  <command role="hg-cmd">hg merge</command>, then <command
-	    role="hg-cmd">hg commit</command>.  In other words, this
-	  almost never has negative consequences; it just surprises
-	  people.  I'll discuss other ways to avoid this behaviour,
-	  and why Mercurial behaves in this initially surprising way,
-	  later on.</para>
+	<para id="x_316">  I put the word <quote>error</quote> in
+	  quotes because all that you need to do to rectify this
+	  situation is <command role="hg-cmd">hg merge</command>, then
+	  <command role="hg-cmd">hg commit</command>.  In other words,
+	  this almost never has negative consequences; it's just
+	  something of a surprise for newcomers.  I'll discuss other
+	  ways to avoid this behaviour, and why Mercurial behaves in
+	  this initially surprising way, later on.</para>
       </note>
 
     </sect2>
     <sect2>
-      <title>Merging heads</title>
+      <title>Merging changes</title>
 
       <para id="x_317">When you run the <command role="hg-cmd">hg
 	  merge</command> command, Mercurial leaves the first parent
@@ -518,7 +520,25 @@
 	merge immediately becomes overwhelming.</para>
 
     </sect2>
+
+    <sect2>
+      <title>Merging and renames</title>
+
+      <para>A surprising number of revision control systems pay little
+	or no attention to a file's <emphasis>name</emphasis> over
+	time.  For instance, it used to be common that if a file got
+	renamed on one side of a merge, the changes from the other
+	side would be silently dropped.</para>
+
+      <para>Mercurial records metadata when you tell it to perform a
+	rename or copy. It uses this metadata during a merge to do the
+	right thing in the case of a merge.  For instance, if I rename
+	a file, and you edit it without renaming it, when we merge our
+	work the file will be renamed and have your edits
+	applied.</para>
+    </sect2>
   </sect1>
+
   <sect1>
     <title>Other interesting design features</title>
 
@@ -575,8 +595,8 @@
 	  compression package).  This combination of algorithm and
 	  compression of the entire stream (instead of a revision at a
 	  time) substantially reduces the number of bytes to be
-	  transferred, yielding better network performance over almost
-	  all kinds of network.</para>
+	  transferred, yielding better network performance over most
+	  kinds of network.</para>
 
 	<para id="x_329">(If the connection is over <command>ssh</command>,
 	  Mercurial <emphasis>doesn't</emphasis> recompress the
