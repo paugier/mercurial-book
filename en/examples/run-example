@@ -317,6 +317,7 @@ class shell_example(example):
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
                                 norm = os.path.normpath(ofp_basename)
+                                norm = norm.replace(os.sep, '-')
                                 example.entities[
                                     '<!ENTITY interaction.%s '
                                     'SYSTEM "results/%s.lxo">'
@@ -345,7 +346,7 @@ class shell_example(example):
                         ofp.write(hunk)
                         # then its output
                         ofp.write(xml_escape(output))
-                    ps = newps
+                        ps = newps
                 self.status('\n')
             except:
                 print >> sys.stderr, '(killed)'
