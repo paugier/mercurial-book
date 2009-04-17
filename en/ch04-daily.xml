@@ -357,7 +357,7 @@
 	<emphasis>destination</emphasis>, and all others are
 	<emphasis>sources</emphasis>.</para>
 
-      <para>If you pass <command role="hg-cmd">hg copy</command> a
+      <para id="x_685">If you pass <command role="hg-cmd">hg copy</command> a
 	single file as the source, and the destination does not exist,
 	it creates a new file with that name.</para>
 
@@ -430,7 +430,7 @@
       similar to the <command role="hg-cmd">hg copy</command>
       command.</para>
 
-    <para>If you're familiar with the Unix command line, you'll be
+    <para id="x_686">If you're familiar with the Unix command line, you'll be
       glad to know that <command role="hg-cmd">hg rename</command>
       command can be invoked as <command role="hg-cmd">hg
 	mv</command>.</para>
@@ -550,37 +550,37 @@
   <sect1>
     <title>Dealing with tricky merges</title>
 
-    <para>In a complicated or large project, it's not unusual for a
+    <para id="x_687">In a complicated or large project, it's not unusual for a
       merge of two changesets to result in some headaches.  Suppose
       there's a big source file that's been extensively edited by each
       side of a merge: this is almost inevitably going to result in
       conflicts, some of which can take a few tries to sort
       out.</para>
 
-    <para>Let's develop a simple case of this and see how to deal with
+    <para id="x_688">Let's develop a simple case of this and see how to deal with
       it.  We'll start off with a repository containing one file, and
       clone it twice.</para>
 
     &interaction.ch04-resolve.init;
 
-    <para>In one clone, we'll modify the file in one way.</para>
+    <para id="x_689">In one clone, we'll modify the file in one way.</para>
 
     &interaction.ch04-resolve.left;
 
-    <para>In another, we'll modify the file differently.</para>
+    <para id="x_68a">In another, we'll modify the file differently.</para>
 
     &interaction.ch04-resolve.right;
 
-    <para>Next, we'll pull each set of changes into our original
+    <para id="x_68b">Next, we'll pull each set of changes into our original
       repo.</para>
 
     &interaction.ch04-resolve.pull;
 
-    <para>We expect our repository to now contain two heads.</para>
+    <para id="x_68c">We expect our repository to now contain two heads.</para>
 
     &interaction.ch04-resolve.heads;
 
-    <para>Normally, if we run <command role="hg-cmd">hg
+    <para id="x_68d">Normally, if we run <command role="hg-cmd">hg
 	merge</command> at this point, it will drop us into a GUI that
       will let us manually resolve the conflicting edits to
       <filename>myfile.txt</filename>.  However, to simplify things
@@ -589,24 +589,24 @@
 
     &interaction.ch04-resolve.export;
 
-    <para>We've told Mercurial's merge machinery to run the command
+    <para id="x_68e">We've told Mercurial's merge machinery to run the command
       <command>false</command> (which, as we desire, fails
       immediately) if it detects a merge that it can't sort out
       automatically.</para>
 
-    <para>If we now fire up <command role="hg-cmd">hg
+    <para id="x_68f">If we now fire up <command role="hg-cmd">hg
 	merge</command>, it should grind to a halt and report a
 	failure.</para>
 
     &interaction.ch04-resolve.merge;
 
-    <para>Even if we don't notice that the merge failed, Mercurial
+    <para id="x_690">Even if we don't notice that the merge failed, Mercurial
       will prevent us from accidentally committing the result of a
       failed merge.</para>
 
     &interaction.ch04-resolve.cifail;
 
-    <para>When <command role="hg-cmd">hg commit</command> fails in
+    <para id="x_691">When <command role="hg-cmd">hg commit</command> fails in
       this case, it suggests that we use the unfamiliar <command
 	role="hg-cmd">hg resolve</command> command.  As usual,
 	<command role="hg-cmd">hg help resolve</command> will print a
@@ -615,35 +615,35 @@
     <sect2>
       <title>File resolution states</title>
 
-      <para>When a merge occurs, most files will usually remain
+      <para id="x_692">When a merge occurs, most files will usually remain
 	unmodified.  For each file where Mercurial has to do
 	something, it tracks the state of the file.</para>
 
       <itemizedlist>
 	<listitem>
-	  <para>A <emphasis>resolved</emphasis> file has been
+	  <para id="x_693">A <emphasis>resolved</emphasis> file has been
 	    successfully merged, either automatically by Mercurial or
 	    manually with human intervention.</para>
 	</listitem>
 	<listitem>
-	  <para>An <emphasis>unresolved</emphasis> file was not merged
+	  <para id="x_694">An <emphasis>unresolved</emphasis> file was not merged
 	    successfully, and needs more attention.</para>
 	</listitem>
       </itemizedlist>
 
-      <para>If Mercurial sees <emphasis>any</emphasis> file in the
+      <para id="x_695">If Mercurial sees <emphasis>any</emphasis> file in the
 	unresolved state after a merge, it considers the merge to have
 	failed.  Fortunately, we do not need to restart the entire
 	merge from scratch.</para>
 
-      <para>The <option role="hg-opt-resolve">--list</option> or
+      <para id="x_696">The <option role="hg-opt-resolve">--list</option> or
 	<option role="hg-opt-resolve">-l</option> option to <command
 	  role="hg-cmd">hg resolve</command> prints out the state of
 	each merged file.</para>
 
       &interaction.ch04-resolve.list;
 
-      <para>In the output from <command role="hg-cmd">hg
+      <para id="x_697">In the output from <command role="hg-cmd">hg
 	  resolve</command>, a resolved file is marked with
 	<literal>R</literal>, while an unresolved file is marked with
 	<literal>U</literal>.  If any files are listed with
@@ -654,7 +654,7 @@
     <sect2>
       <title>Resolving a file merge</title>
 
-      <para>We have several options to move a file from the unresolved
+      <para id="x_698">We have several options to move a file from the unresolved
 	into the resolved state.  By far the most common is to rerun
 	<command role="hg-cmd">hg resolve</command>.  If we pass the
 	names of individual files or directories, it will retry the
@@ -664,7 +664,7 @@
 	will retry the merges of <emphasis>all</emphasis> unresolved
 	files.</para>
 
-      <para>Mercurial also lets us modify the resolution state of a
+      <para id="x_699">Mercurial also lets us modify the resolution state of a
 	file directly.  We can manually mark a file as resolved using
 	the <option role="hg-opt-resolve">--mark</option> option, or
 	as unresolved using the <option
