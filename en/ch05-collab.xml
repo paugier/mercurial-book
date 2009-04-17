@@ -19,10 +19,12 @@
     <para id="x_44c">For interactive use, the web interface lets you browse a
       single repository or a collection of repositories.  You can view
       the history of a repository, examine each change (comments and
-      diffs), and view the contents of each directory and file.</para>
+      diffs), and view the contents of each directory and file.  You
+      can even get a view of history that gives a graphical view of
+      the relationships between individual changes and merges.</para>
 
-    <para id="x_44d">Also for human consumption, the web interface provides an
-      RSS feed of the changes in a repository.  This lets you
+    <para id="x_44d">Also for human consumption, the web interface provides
+      Atom and RSS feeds of the changes in a repository.  This lets you
       <quote>subscribe</quote> to a repository using your favorite
       feed reader, and be automatically notified of activity in that
       repository as soon as it happens.  I find this capability much
@@ -40,22 +42,40 @@
     <para id="x_44f">The easiest way to get started with the web interface is to
       use your web browser to visit an existing repository, such as
       the master Mercurial repository at <ulink
-	url="http://www.selenic.com/repo/hg?style=gitweb">http://www.selenic.com/repo/hg?style=gitweb</ulink>.</para>
+	url="http://www.selenic.com/repo/hg">http://www.selenic.com/repo/hg</ulink>.</para>
 
     <para id="x_450">If you're interested in providing a web interface
-      to your own repositories, Mercurial provides two ways to do
-      this.  The first is using the <command role="hg-cmd">hg
+      to your own repositories, there are several good ways to do
+      this.</para>
+
+    <para>The easiest and fastest way to get started in an informal
+      environment is to use the <command role="hg-cmd">hg
 	serve</command> command, which is best suited to short-term
       <quote>lightweight</quote> serving.  See <xref
 	linkend="sec:collab:serve"/> below for details of how to use
-      this command.  If you have a long-lived repository that you'd
-      like to make permanently available, Mercurial has built-in
-      support for the CGI (Common Gateway Interface) standard, which
-      all common web servers support.  See <xref
-	linkend="sec:collab:cgi"/> for details of CGI
-      configuration.</para>
+      this command.</para>
 
+    <para>For longer-lived repositories that you'd like to have
+      permanently available, there are several public hosting services
+      available.</para>
+
+    <itemizedlist>
+      <listitem>
+	<para>Bitbucket, at <ulink
+	    url="http://bitbucket.org/">http://bitbucket.org/</ulink>,
+	  provides free hosting for open source projects, and paid
+	  hosting for commercial projects.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>If you would prefer to host your own repositories, Mercurial
+      has built-in support for several popular hosting technologies,
+      most notably CGI (Common Gateway Interface), and WSGI (Web
+      Services Gateway Interface).  See <xref
+	linkend="sec:collab:cgi"/> for details of CGI and WSGI
+      configuration.</para>
   </sect1>
+
   <sect1>
     <title>Collaboration models</title>
 
@@ -96,8 +116,8 @@
 	could avoid this particular problem by writing a hook that
 	prevents changes from being merged from an inappropriate
 	branch.</para>
-
     </sect2>
+
     <sect2>
       <title>Informal anarchy</title>
 
@@ -115,7 +135,7 @@
 	place) and spend several days more or less locked in there,
 	hacking intensely on a handful of projects.</para>
 
-      <para id="x_457">A sprint is the perfect place to use the
+      <para id="x_457">A sprint or a hacking session in a coffee shop are the perfect places to use the
 	<command role="hg-cmd">hg serve</command> command, since
 	<command role="hg-cmd">hg serve</command> does not require any
 	fancy server infrastructure.  You can get started with
@@ -129,14 +149,15 @@
 	they can clone a branch containing a new feature and try it
 	out.</para>
 
-      <para id="x_458">The charm, and the problem, with doing things in an ad hoc
-	fashion like this is that only people who know about your
-	changes, and where they are, can see them.  Such an informal
-	approach simply doesn't scale beyond a handful people, because
-	each individual needs to know about $n$ different repositories
-	to pull from.</para>
-
+      <para id="x_458">The charm, and the problem, with doing things
+	in an ad hoc fashion like this is that only people who know
+	about your changes, and where they are, can see them.  Such an
+	informal approach simply doesn't scale beyond a handful
+	people, because each individual needs to know about
+	<emphasis>n</emphasis> different repositories to pull
+	from.</para>
     </sect2>
+
     <sect2>
       <title>A single central repository</title>
 
@@ -162,17 +183,39 @@
 	lets us put off publishing the potentially unsafe change until
 	it has had a little testing.</para>
 
-      <para id="x_45c">In this kind of scenario, people usually use
-	the <command>ssh</command> protocol to securely push changes
-	to the central repository, as documented in <xref
+      <para id="x_45c">If a team is hosting its own repository in this
+	kind of scenario, people will usually use the
+	<command>ssh</command> protocol to securely push changes to
+	the central repository, as documented in <xref
 	  linkend="sec:collab:ssh"/>.  It's also usual to publish a
-	read-only copy of the repository over HTTP using CGI, as in
-	<xref linkend="sec:collab:cgi"/>. Publishing
-	over HTTP satisfies the needs of people who don't have push
-	access, and those who want to use web browsers to browse the
-	repository's history.</para>
-
+	read-only copy of the repository over HTTP, as in
+	<xref linkend="sec:collab:cgi"/>. Publishing over HTTP
+	satisfies the needs of people who don't have push access, and
+	those who want to use web browsers to browse the repository's
+	history.</para>
     </sect2>
+
+    <sect2>
+      <title>A hosted central repository</title>
+
+      <para>A wonderful thing about public hosting services like
+	<ulink url="http://bitbucket.org/">Bitbucket</ulink> is that
+	not only do they handle the fiddly server configuration
+	details, such as user accounts, authentication, and secure
+	wire protocols, they provide additional infrastructure to make
+	this model work well.</para>
+
+      <para>For instance, a well-engineered hosting service will let
+	people clone their own copies of a repository with a single
+	click.  This lets people work in separate spaces and share
+	their changes when they're ready.</para>
+
+      <para>In addition, a good hosting service will let people
+	communicate with each other, for instance to say <quote>there
+	  are changes ready for you to review in this
+	  tree</quote>.</para>
+    </sect2>
+
     <sect2>
       <title>Working with multiple branches</title>
 
@@ -196,7 +239,7 @@
 	another as the need arises.  Because repositories are
 	independent of each other, unstable changes in a development
 	branch will never affect a stable branch unless someone
-	explicitly merges those changes in.</para>
+	explicitly merges those changes into the stable branch.</para>
 
       <para id="x_45f">Here's an example of how this can work in practice.  Let's
 	say you have one <quote>main branch</quote> on a central
@@ -227,38 +270,41 @@
       &interaction.branching.update;
 
       <para id="x_464">In addition, immediately after the main branch is tagged,
-	someone can then clone the main branch on the server to a new
+	we can then clone the main branch on the server to a new
 	<quote>stable</quote> branch, also on the server.</para>
 
       &interaction.branching.clone;
 
-      <para id="x_465">Someone who needs to make a change to the stable branch
-	can then clone <emphasis>that</emphasis> repository, make
-	their changes, commit, and push their changes back there.</para>
+      <para id="x_465">If we need to make a change to the stable
+	branch, we can then clone <emphasis>that</emphasis>
+	repository, make our changes, commit, and push our changes
+	back there.</para>
 
       &interaction.branching.stable;
 
       <para id="x_466">Because Mercurial repositories are independent, and
 	Mercurial doesn't move changes around automatically, the
 	stable and main branches are <emphasis>isolated</emphasis>
-	from each other.  The changes that you made on the main branch
+	from each other.  The changes that we made on the main branch
 	don't <quote>leak</quote> to the stable branch, and vice
 	versa.</para>
 
-      <para id="x_467">You'll often want all of your bugfixes on the stable
+      <para id="x_467">We'll often want all of our bugfixes on the stable
 	branch to show up on the main branch, too.  Rather than
-	rewrite a bugfix on the main branch, you can simply pull and
+	rewrite a bugfix on the main branch, we can simply pull and
 	merge changes from the stable to the main branch, and
-	Mercurial will bring those bugfixes in for you.</para>
+	Mercurial will bring those bugfixes in for us.</para>
 
-	&interaction.branching.merge;
+      &interaction.branching.merge;
 
-      <para id="x_468">The main branch will still contain changes that are not on
-	the stable branch, but it will also contain all of the
-	bugfixes from the stable branch.  The stable branch remains
-	unaffected by these changes.</para>
-
+      <para id="x_468">The main branch will still contain changes that
+	are not on the stable branch, but it will also contain all of
+	the bugfixes from the stable branch.  The stable branch
+	remains unaffected by these changes, since changes are only
+	flowing from the stable to the main branch, and not the other
+	way.</para>
     </sect2>
+
     <sect2>
       <title>Feature branches</title>
 
@@ -281,8 +327,8 @@
 	shape, someone on that feature team pulls and merges from the
 	master branch into the feature branch, then pushes back up to
 	the master branch.</para>
-
     </sect2>
+
     <sect2>
       <title>The release train</title>
 
@@ -297,8 +343,8 @@
 	went out on that train release into the feature branch, and
 	the team continues its work on top of that release so that
 	their feature can make the next release.</para>
-
     </sect2>
+
     <sect2>
       <title>The Linux kernel model</title>
 
@@ -372,8 +418,8 @@
 	it appropriate; and the pace of development is astounding.
 	And yet Linux is a highly successful, well-regarded piece of
 	software.</para>
-
     </sect2>
+
     <sect2>
       <title>Pull-only versus shared-push collaboration</title>
 
@@ -391,12 +437,11 @@
 	you'll have to roll your own approach on top (such as applying
 	a patch by hand).</para>
 
-      <para id="x_478">A good distributed revision control tool, such as
-	Mercurial, will support both models.  You and your
-	collaborators can then structure how you work together based
-	on your own needs and preferences, not on what contortions
-	your tools force you into.</para>
-
+      <para id="x_478">A good distributed revision control tool will
+	support both models.  You and your collaborators can then
+	structure how you work together based on your own needs and
+	preferences, not on what contortions your tools force you
+	into.</para>
     </sect2>
     <sect2>
       <title>Where collaboration meets branch management</title>
@@ -409,16 +454,16 @@
 	Even though this subject is intimately related to how your
 	team collaborates, it's dense enough to merit treatment of its
 	own, in <xref linkend="chap:branch"/>.</para>
-
     </sect2>
   </sect1>
+
   <sect1>
     <title>The technical side of sharing</title>
 
     <para id="x_47a">The remainder of this chapter is devoted to the question of
-      serving data to your collaborators.</para>
-
+      sharing changes with your collaborators.</para>
   </sect1>
+
   <sect1 id="sec:collab:serve">
     <title>Informal sharing with <command role="hg-cmd">hg
 	serve</command></title>
@@ -495,9 +540,9 @@
 	find out what URL you should send to your collaborators, start
 	it with the <option role="hg-opt-global">-v</option>
 	option.</para>
-
     </sect2>
   </sect1>
+
   <sect1 id="sec:collab:ssh">
     <title>Using the Secure Shell (ssh) protocol</title>
 
@@ -506,11 +551,11 @@
       protocol.  To use this successfully, you may have to do a little
       bit of configuration on the client or server sides.</para>
 
-    <para id="x_487">If you're not familiar with ssh, it's a network protocol
-      that lets you securely communicate with another computer.  To
-      use it with Mercurial, you'll be setting up one or more user
-      accounts on a server so that remote users can log in and execute
-      commands.</para>
+    <para id="x_487">If you're not familiar with ssh, it's the name of
+      both a command and a network protocol that let you securely
+      communicate with another computer.  To use it with Mercurial,
+      you'll be setting up one or more user accounts on a server so
+      that remote users can log in and execute commands.</para>
 
     <para id="x_488">(If you <emphasis>are</emphasis> familiar with ssh, you'll
       probably find some of the material that follows to be elementary
@@ -569,8 +614,8 @@
 	<emphasis>absolute</emphasis> path on the server, begin the
 	path component with two slashes, as in this example.</para>
       <programlisting>ssh://server//absolute/path</programlisting>
-
     </sect2>
+
     <sect2>
       <title>Finding an ssh client for your system</title>
 
@@ -582,44 +627,44 @@
 	unlikely event that it isn't present, take a look at your
 	system documentation to figure out how to install it.</para>
 
-      <para id="x_494">On Windows, you'll first need to download a suitable ssh
-	client.  There are two alternatives.</para>
-      <itemizedlist>
-	<listitem><para id="x_495">Simon Tatham's excellent PuTTY package
-	    <citation>web:putty</citation> provides a complete suite
-	    of ssh client commands.</para>
-	</listitem>
-	<listitem><para id="x_496">If you have a high tolerance for pain, you can
-	    use the Cygwin port of OpenSSH.</para>
-	</listitem></itemizedlist>
-      <para id="x_497">In either case, you'll need to edit your <filename
-      role="special">hg.ini</filename> file to
-	tell Mercurial where to find the actual client command.  For
-	example, if you're using PuTTY, you'll need to use the
-	<command>plink</command> command as a command-line ssh
-	client.</para>
-      <programlisting>[ui]
-ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
-
-      <note>
-	<para id="x_498">  The path to <command>plink</command> shouldn't contain
-	  any whitespace characters, or Mercurial may not be able to
-	  run it correctly (so putting it in <filename
-	    class="directory">C:\Program Files</filename> is probably
-	  not a good idea).</para>
-      </note>
-
+      <para id="x_494">On Windows, the TortoiseHg package is bundled
+	with a version of Simon Tatham's excellent
+	<command>plink</command> command, and you should not need to
+	do any further configuration.</para>
     </sect2>
+
     <sect2>
       <title>Generating a key pair</title>
 
-      <para id="x_499">To avoid the need to repetitively type a password every
-	time you need to use your ssh client, I recommend generating a
-	key pair.  On a Unix-like system, the
-	<command>ssh-keygen</command> command will do the trick. On
-	Windows, if you're using PuTTY, the
-	<command>puttygen</command> command is what you'll
-	need.</para>
+      <para id="x_499">To avoid the need to repetitively type a
+	password every time you need to use your ssh client, I
+	recommend generating a key pair.</para>
+
+      <tip>
+	<title>Key pairs are not mandatory</title>
+
+	<para>Mercurial knows nothing about ssh authentication or key
+	  pairs.  You can, if you like, safely ignore this section and
+	  the one that follows until you grow tired of repeatedly
+	  typing ssh passwords.</para>
+      </tip>
+
+      <itemizedlist>
+	<listitem>
+	  <para>On a Unix-like system, the
+	    <command>ssh-keygen</command> command will do the
+	    trick.</para>
+	  <para>On Windows, if you're using TortoiseHg, you may need
+	    to download a command named <command>puttygen</command>
+	    from <ulink
+	      url="http://www.chiark.greenend.org.uk/~sgtatham/putty">the 
+	      PuTTY web site</ulink> to generate a key pair.  See
+	    <ulink
+	      url="http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter8.html#pubkey-puttygen">the 
+	      <command>puttygen</command> documentation</ulink> for
+	    details of how use the command.</para>
+	</listitem>
+      </itemizedlist>
 
       <para id="x_49a">When you generate a key pair, it's usually
 	<emphasis>highly</emphasis> advisable to protect it with a
@@ -642,7 +687,6 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	public key to a file of your choosing, or paste it from the
 	window it's displayed in straight into the <filename
 	  role="special">authorized_keys</filename> file.</para>
-
     </sect2>
     <sect2>
       <title>Using an authentication agent</title>
@@ -663,21 +707,34 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	judgment as to whether this is an acceptable risk.  It
 	certainly saves a lot of repeated typing.</para>
 
-      <para id="x_49f">On Unix-like systems, the agent is called
-	<command>ssh-agent</command>, and it's often run automatically
-	for you when you log in.  You'll need to use the
-	<command>ssh-add</command> command to add passphrases to the
-	agent's store.  On Windows, if you're using PuTTY, the
-	<command>pageant</command> command acts as the agent.  It adds
-	an icon to your system tray that will let you manage stored
-	passphrases.</para>
-
+      <itemizedlist>
+	<listitem>
+	  <para id="x_49f">On Unix-like systems, the agent is called
+	    <command>ssh-agent</command>, and it's often run
+	    automatically for you when you log in.  You'll need to use
+	    the <command>ssh-add</command> command to add passphrases
+	    to the agent's store.</para>
+	</listitem>
+	<listitem>
+	  <para>On Windows, if you're using TortoiseHg, the
+	    <command>pageant</command> command acts as the agent.  As
+	    with <command>puttygen</command>, you'll need to <ulink
+	      url="http://www.chiark.greenend.org.uk/%7Esgtatham/putty/download.html">download 
+	      <command>pageant</command></ulink> from the PuTTY web
+	    site and read <ulink
+	      url="http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter9.html#pageant">its 
+	      documentation</ulink>.  The <command>pageant</command>
+	    command adds an icon to your system tray that will let you
+	    manage stored passphrases.</para>
+	</listitem>
+      </itemizedlist>
     </sect2>
+
     <sect2>
       <title>Configuring the server side properly</title>
 
       <para id="x_4a0">Because ssh can be fiddly to set up if you're new to it,
-	there's a variety of things that can go wrong.  Add Mercurial
+	a variety of things can go wrong.  Add Mercurial
 	on top, and there's plenty more scope for head-scratching.
 	Most of these potential problems occur on the server side, not
 	the client side.  The good news is that once you've gotten a
@@ -821,7 +878,6 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	If you run into problems with Mercurial and ssh at this point,
 	try using the <option role="hg-opt-global">--debug</option>
 	option to get a clearer picture of what's going on.</para>
-
     </sect2>
     <sect2>
       <title>Using compression with ssh</title>
@@ -842,30 +898,39 @@ ssh = C:/path/to/plink.exe -ssh -i "C:/path/to/my/private/key"</programlisting>
 	accept a <option role="cmd-opt-ssh">-C</option> option which
 	turns on compression.  You can easily edit your <filename
 	  role="special">~/.hgrc</filename> to enable compression for
-	all of Mercurial's uses of the ssh protocol.</para>
+	all of Mercurial's uses of the ssh protocol.  Here is how to
+	do so for regular <command>ssh</command> on Unix-like systems,
+	for example.</para>
       <programlisting>[ui]
 ssh = ssh -C</programlisting>
 
-      <para id="x_4b9">If you use <command>ssh</command>, you can configure it to
-	always use compression when talking to your server.  To do
-	this, edit your <filename
-	  role="special">.ssh/config</filename> file (which may not
-	yet exist), as follows.</para>
+      <para id="x_4b9">If you use <command>ssh</command> on a
+	Unix-like system, you can configure it to always use
+	compression when talking to your server.  To do this, edit
+	your <filename role="special">.ssh/config</filename> file
+	(which may not yet exist), as follows.</para>
+
       <programlisting>Host hg
   Compression yes
   HostName hg.example.com</programlisting>
-      <para id="x_4ba">This defines an alias, <literal>hg</literal>.  When you
-	use it on the <command>ssh</command> command line or in a
-	Mercurial <literal>ssh</literal>-protocol URL, it will cause
+
+      <para id="x_4ba">This defines a hostname alias,
+	<literal>hg</literal>.  When you use that hostname on the
+	<command>ssh</command> command line or in a Mercurial
+	<literal>ssh</literal>-protocol URL, it will cause
 	<command>ssh</command> to connect to
 	<literal>hg.example.com</literal> and use compression.  This
 	gives you both a shorter name to type and compression, each of
 	which is a good thing in its own right.</para>
-
     </sect2>
   </sect1>
+
   <sect1 id="sec:collab:cgi">
     <title>Serving over HTTP using CGI</title>
+
+    <para>The simplest way to host one or more repositories in a
+      permanent way is to use a web server and Mercurial's CGI
+      support.</para>
 
     <para id="x_4bb">Depending on how ambitious you are, configuring Mercurial's
       CGI interface can take anything from a few moments to several
@@ -877,13 +942,20 @@ ssh = ssh -C</programlisting>
       your web server's configuration.</para>
 
     <note>
-      <para id="x_4bd">  Configuring a web server is a complex, fiddly, and
-	highly system-dependent activity.  I can't possibly give you
-	instructions that will cover anything like all of the cases
-	you will encounter. Please use your discretion and judgment in
-	following the sections below.  Be prepared to make plenty of
-	mistakes, and to spend a lot of time reading your server's
-	error logs.</para>
+      <title>High pain tolerance required</title>
+
+      <para id="x_4bd">Configuring a web server is a complex, fiddly,
+	and highly system-dependent activity.  I can't possibly give
+	you instructions that will cover anything like all of the
+	cases you will encounter. Please use your discretion and
+	judgment in following the sections below.  Be prepared to make
+	plenty of mistakes, and to spend a lot of time reading your
+	server's error logs.</para>
+
+      <para>If you don't have a strong stomach for tweaking
+	configurations over and over, or a compelling need to host
+	your own services, you might want to try one of the public
+	hosting services that I mentioned earlier.</para>
     </note>
 
     <sect2>
@@ -893,9 +965,10 @@ ssh = ssh -C</programlisting>
 	aspects of your system's setup.</para>
 
       <orderedlist>
-	<listitem><para id="x_4bf">Do you have a web server installed at all?
-	    Mac OS X ships with Apache, but many other systems may not
-	    have a web server installed.</para>
+	<listitem><para id="x_4bf">Do you have a web server installed
+	    at all? Mac OS X and some Linux distributions ship with
+	    Apache, but many other systems may not have a web server
+	    installed.</para>
 	</listitem>
 	<listitem><para id="x_4c0">If you have a web server installed, is it
 	    actually running?  On most systems, even if one is
@@ -917,8 +990,8 @@ ssh = ssh -C</programlisting>
 	repositories.  And <literal>lighttpd</literal> is undeniably
 	<emphasis>much</emphasis> easier to get started with than
 	Apache.</para>
-
     </sect2>
+
     <sect2>
       <title>Basic CGI configuration</title>
 
@@ -1048,8 +1121,8 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	<para id="x_4d0">At this point, when you try to reload the page, you
 	  should be presented with a nice HTML view of your
 	  repository's history.  Whew!</para>
-
       </sect3>
+
       <sect3>
 	<title>Configuring lighttpd</title>
 
@@ -1084,9 +1157,9 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
 	  configure than Apache, even though I've used Apache for over
 	  a decade, and this was my first exposure to
 	  <literal>lighttpd</literal>.</para>
-
       </sect3>
     </sect2>
+
     <sect2>
       <title>Sharing multiple repositories with one CGI script</title>
 
@@ -1214,14 +1287,16 @@ repo2 = /some/path/to/another</programlisting>
 	  file.</para>
 
 	<note>
-	  <para id="x_4e2">  If multiple repositories have the same virtual path,
-	    <filename role="special">hgwebdir.cgi</filename> will not
-	    report an error.  Instead, it will behave
-	    unpredictably.</para>
-	</note>
+	  <title>Beware duplicate virtual paths</title>
 
+	  <para id="x_4e2">  If several repositories have the same
+	    virtual path, <filename
+	      role="special">hgwebdir.cgi</filename> will not report
+	    an error.  Instead, it will behave unpredictably.</para>
+	</note>
       </sect3>
     </sect2>
+
     <sect2>
       <title>Downloading source archives</title>
 
@@ -1234,8 +1309,7 @@ repo2 = /some/path/to/another</programlisting>
 	you'll need to add an <envar
 	  role="rc-item-web">allow_archive</envar> item to the
 	<literal role="rc-web">web</literal> section of your <filename
-	  role="special">~/.hgrc</filename>.</para>
-
+	  role="special">~/.hgrc</filename>; see below for details.</para>
     </sect2>
     <sect2>
       <title>Web configuration options</title>
@@ -1317,9 +1391,28 @@ allow_archive = bz2 gz zip</programlisting>
 	<listitem><para id="x_4f0"><envar
 	      role="rc-item-web">style</envar>: Controls the template
 	    Mercurial uses to display the web interface.  Mercurial
-	    ships with two web templates, named
-	    <literal>default</literal> and <literal>gitweb</literal>
-	    (the latter is much more visually attractive).  You can
+	    ships with several web templates.</para>
+	  <itemizedlist>
+	    <listitem>
+	      <para><literal>coal</literal> is monochromatic.</para>
+	    </listitem>
+	    <listitem>
+	      <para><literal>gitweb</literal> emulates the visual
+		style of git's web interface.</para>
+	    </listitem>
+	    <listitem>
+	      <para><literal>monoblue</literal> uses solid blues and
+		greys.</para>
+	    </listitem>
+	    <listitem>
+	      <para><literal>paper</literal> is the default.</para>
+	    </listitem>
+	    <listitem>
+	      <para><literal>spartan</literal> was the default for a
+		long time.</para>
+	    </listitem>
+	  </itemizedlist>
+	  <para>You can
 	    also specify a custom template of your own; see 
 	    <xref linkend="chap:template"/> for details. Here, you can
 	    see how to enable the <literal>gitweb</literal>
@@ -1360,8 +1453,8 @@ style = gitweb</programlisting>
 	      interface.  This overrides the default name, which is
 	      the last component of the repository's path.</para>
 	  </listitem></itemizedlist>
-
       </sect3>
+
       <sect3>
 	<title>Options specific to the <command role="hg-cmd">hg
 	    serve</command> command</title>
@@ -1399,8 +1492,8 @@ style = gitweb</programlisting>
 	      Integer.  The TCP port number on which the server should
 	      listen.  The default port number used is 8000.</para>
 	  </listitem></itemizedlist>
-
       </sect3>
+
       <sect3>
 	<title>Choosing the right <filename
 	    role="special">~/.hgrc</filename> file to add <literal
@@ -1422,10 +1515,55 @@ style = gitweb</programlisting>
 	  <filename role="special">~/.hgrc</filename> file in the
 	  home directory of the user ID that runs your web server, or
 	  add those settings to a system-wide <filename
-	    role="special">~/.hgrc</filename> file.</para>
-
-
+	    role="special">hgrc</filename> file.</para>
       </sect3>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>System-wide configuration</title>
+
+    <para>On Unix-like systems shared by multiple users (such as a
+      server to which people publish changes), it often makes sense to
+      set up some global default behaviors, such as what theme to use
+      in web interfaces.</para>
+
+    <para>If a file named <filename>/etc/mercurial/hgrc</filename>
+      exists, Mercurial will read it at startup time and apply any
+      configuration settings it finds in that file.  It will also look
+      for files ending in a <literal>.rc</literal> extension in a
+      directory named <filename>/etc/mercurial/hgrc.d</filename>, and
+      apply any configuration settings it finds in each of those
+      files.</para>
+
+    <sect2>
+      <title>Making Mercurial more trusting</title>
+
+      <para>One situation in which a global <filename>hgrc</filename>
+	can be useful is if users are pulling changes owned by other
+	users.  By default, Mercurial will not trust most of the
+	configuration items in a <filename>.hg/hgrc</filename> file
+	inside a repository that is owned by a different user. If we
+	clone or pull changes from such a repository, Mercurial will
+	print a warning stating that it does not trust their
+	<filename>.hg/hgrc</filename>.</para>
+
+      <para>If everyone in a particular Unix group is on the same team
+	and <emphasis>should</emphasis> trust each other's
+	configuration settings, or we want to trust particular users,
+	we can override Mercurial's skeptical defaults by creating a
+	system-wide <filename>hgrc</filename> file such as the
+	following:</para>
+
+    <programlisting># Save this as e.g. /etc/mercurial/hgrc.d/trust.rc
+[trusted]
+# Trust all entries in any hgrc file owned by the "editors" or
+# "www-data" groups.
+groups = editors, www-data
+
+# Trust entries in hgrc files owned by the following users.
+users = apache, bobo
+</programlisting>
     </sect2>
   </sect1>
 </chapter>
