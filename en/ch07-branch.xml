@@ -128,7 +128,7 @@
 
     <para id="x_37c">Mercurial stores tags in a normal revision-controlled file
       in your repository.  If you've created any tags, you'll find
-      them in a file named <filename
+      them in a file in the root of your repository named <filename
 	role="special">.hgtags</filename>.  When you run the <command
 	role="hg-cmd">hg tag</command> command, Mercurial modifies
       this file, then automatically commits the change to it.  This
@@ -170,8 +170,8 @@
 	location of the error, which you can then fix and commit.  You
 	should then run <command role="hg-cmd">hg tags</command>
 	again, just to be sure that your fix is correct.</para>
-
     </sect2>
+
     <sect2>
       <title>Tags and cloning</title>
 
@@ -195,8 +195,8 @@
 	project's history in the new repository, but
 	<emphasis>not</emphasis> the tag you might have
 	expected.</para>
-
     </sect2>
+
     <sect2>
       <title>When permanent tags are too much</title>
 
@@ -221,9 +221,9 @@
 	controlled.  Any tags you create using <option
 	  role="hg-opt-tag">-l</option> remain strictly local to the
 	repository you're currently working in.</para>
-
     </sect2>
   </sect1>
+
   <sect1>
     <title>The flow of changes&emdash;big picture vs. little</title>
 
@@ -252,8 +252,8 @@
 	  merging changes.  They expose the narrative of how the code
 	  was developed.</para>
       </listitem></itemizedlist>
-
   </sect1>
+
   <sect1>
     <title>Managing big-picture branches in repositories</title>
 
@@ -285,8 +285,8 @@
       the <literal>myproject</literal> repository.</para>
 
     &interaction.branch-repo.new;
-
   </sect1>
+
   <sect1>
     <title>Don't repeat yourself: merging across branches</title>
 
@@ -308,8 +308,8 @@
       push back to the main branch.</para>
 
     &interaction.branch-repo.merge;
-
   </sect1>
+
   <sect1>
     <title>Naming branches within one repository</title>
 
@@ -408,8 +408,8 @@
     <para id="x_39d">In practice, this is something you won't do very often, as
       branch names tend to have fairly long lifetimes.  (This isn't a
       rule, just an observation.)</para>
-
   </sect1>
+
   <sect1>
     <title>Dealing with multiple named branches in a
       repository</title>
@@ -454,8 +454,8 @@
       introduces a new head.</para>
 
     &interaction.branch-named.foo-commit;
-
   </sect1>
+
   <sect1>
     <title>Branch names and merging</title>
 
@@ -496,8 +496,8 @@
       Mercurial will choose the <quote>right</quote>
       (<literal>bleeding-edge</literal>) branch name when I pull and
       merge from <literal>stable</literal>.</para>
-
   </sect1>
+
   <sect1>
     <title>Branch naming is generally useful</title>
 
@@ -522,7 +522,6 @@
 	/.hgrc</filename>.</para>
     <programlisting>[hooks]
 pretxnchangegroup.branch = hg heads --template '{branches} ' | grep mybranch</programlisting>
-
   </sect1>
 </chapter>
 

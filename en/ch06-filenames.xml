@@ -27,8 +27,8 @@
       before continuing with the current directory.</para>
 
       &interaction.filenames.dirs;
-
   </sect1>
+
   <sect1>
     <title>Running commands without any file names</title>
 
@@ -70,8 +70,8 @@
 	role="hg-cmd">hg root</command> command.</para>
 
       &interaction.filenames.wdir-relname;
-
   </sect1>
+
   <sect1>
     <title>Telling you what's going on</title>
 
@@ -85,17 +85,17 @@
     <para id="x_54d">The principle here is of <emphasis>least
 	surprise</emphasis>.  If you've exactly named a file on the
       command line, there's no point in repeating it back at you.  If
-      Mercurial is acting on a file <emphasis>implicitly</emphasis>,
+      Mercurial is acting on a file <emphasis>implicitly</emphasis>, e.g.
       because you provided no names, or a directory, or a pattern (see
-      below), it's safest to tell you what it's doing.</para>
+      below), it is safest to tell you what files it's operating on.</para>
 
     <para id="x_54e">For commands that behave this way, you can silence them
       using the <option role="hg-opt-global">-q</option> option.  You
       can also get them to print the name of every file, even those
       you've named explicitly, using the <option
 	role="hg-opt-global">-v</option> option.</para>
-
   </sect1>
+
   <sect1>
     <title>Using patterns to identify files</title>
 
@@ -194,9 +194,9 @@
 	  example illustrates the difference between the two.</para>
 
 	  &interaction.filenames.glob.star-starstar;
-
       </sect3>
     </sect2>
+
     <sect2>
       <title>Regular expression matching with <literal>re</literal>
 	patterns</title>
@@ -227,9 +227,9 @@
 	string; it doesn't look for a match anywhere within the
 	string.  To match anywhere in a string, start your pattern
 	with <quote><literal>.*</literal></quote>.</para>
-
     </sect2>
   </sect1>
+
   <sect1>
     <title>Filtering files</title>
 
@@ -266,14 +266,65 @@
 	pattern</quote>.</para>
 
     &interaction.filenames.filter.exclude;
-
   </sect1>
+
   <sect1>
-    <title>Ignoring unwanted files and directories</title>
+    <title>Permanently ignoring unwanted files and directories</title>
 
-    <para id="x_569">XXX.</para>
+    <para id="x_569">When you create a new repository, the chances are
+      that over time it will grow to contain files that ought to
+      <emphasis>not</emphasis> be managed by Mercurial, but which you
+      don't want to see listed every time you run <command>hg
+	status</command>.  For instance, <quote>build products</quote>
+      are files that are created as part of a build but which should
+      not be managed by a revision control system.  The most common
+      build products are output files produced by software tools such
+      as compilers.  As another example, many text editors litter a
+      directory with lock files, temporary working files, and backup
+      files, which it also makes no sense to manage.</para>
 
+    <para id="x_6b4">To have Mercurial permanently ignore such files, create a
+      file named <filename>.hgignore</filename> in the root of your
+      repository.  You <emphasis>should</emphasis> <command>hg
+      add</command> this file so that it gets tracked with the rest of
+      your repository contents, since your collaborators will probably
+      find it useful too.</para>
+
+    <para id="x_6b5">By default, the <filename>.hgignore</filename> file should
+      contain a list of regular expressions, one per line.  Empty
+      lines are skipped. Most people prefer to describe the files they
+      want to ignore using the <quote>glob</quote> syntax that we
+      described above, so a typical <filename>.hgignore</filename>
+      file will start with this directive:</para>
+
+    <programlisting>syntax: glob</programlisting>
+
+    <para id="x_6b6">This tells Mercurial to interpret the lines that follow as
+      glob patterns, not regular expressions.</para>
+
+    <para id="x_6b7">Here is a typical-looking <filename>.hgignore</filename>
+      file.</para>
+
+    <programlisting>syntax: glob
+# This line is a comment, and will be skipped.
+# Empty lines are skipped too.
+
+# Backup files left behind by the Emacs editor.
+*~
+
+# Lock files used by the Emacs editor.
+# Notice that the "#" character is quoted with a backslash.
+# This prevents it from being interpreted as starting a comment.
+.\#*
+
+# Temporary files used by the vim editor.
+.*.swp
+
+# A hidden file created by the Mac OS X Finder.
+.DS_Store
+</programlisting>
   </sect1>
+
   <sect1 id="sec:names:case">
     <title>Case sensitivity</title>
 
@@ -361,8 +412,8 @@
 	conflict between the two file names that the filesystem would
 	treat as the same, and forbid the update or merge from
 	occurring.</para>
-
     </sect2>
+
     <sect2>
       <title>Fixing a case conflict</title>
 
@@ -388,15 +439,6 @@
 	<command role="hg-cmd">hg update</command> your working
 	directory to that changeset on a Windows or MacOS system, but
 	you can continue development unimpeded.</para>
-
-      <note>
-	<para id="x_577">  Prior to version 0.9.3, Mercurial did not use a case
-	  safe repository storage mechanism, and did not detect case
-	  folding conflicts.  If you are using an older version of
-	  Mercurial on Windows or MacOS, I strongly recommend that you
-	  upgrade.</para>
-      </note>
-
     </sect2>
   </sect1>
 </chapter>
