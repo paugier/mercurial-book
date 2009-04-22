@@ -1033,18 +1033,17 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
 	  wrong?</title>
 
 	<para id="x_4c7">Once you've copied the CGI script into place,
-	  go into a web browser, and try to open the URL <ulink
-	    url="http://myhostname/myuser/hgweb.cgi"
-	    >http://myhostname/myuser/hgweb.cgi</ulink>,
-	  <emphasis>but</emphasis> brace
-	  yourself for instant failure.  There's a high probability
-	  that trying to visit this URL will fail, and there are many
-	  possible reasons for this.  In fact, you're likely to
-	  stumble over almost every one of the possible errors below,
-	  so please read carefully.  The following are all of the
-	  problems I ran into on a system running Fedora 7, with a
-	  fresh installation of Apache, and a user account that I
-	  created specially to perform this exercise.</para>
+	  go into a web browser, and try to open the URL
+	  <literal>http://myhostname/~myuser/hgweb.cgi</literal>,
+	  <emphasis>but</emphasis> brace yourself for instant failure.
+	  There's a high probability that trying to visit this URL
+	  will fail, and there are many possible reasons for this.  In
+	  fact, you're likely to stumble over almost every one of the
+	  possible errors below, so please read carefully.  The
+	  following are all of the problems I ran into on a system
+	  running Fedora 7, with a fresh installation of Apache, and a
+	  user account that I created specially to perform this
+	  exercise.</para>
 
 	<para id="x_4c8">Your web server may have per-user directories disabled.
 	  If you're using Apache, search your config file for a
@@ -1187,9 +1186,7 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
 chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 
       <para id="x_4d7">With basic configuration out of the way, try to
-	visit <ulink
-	  url="http://myhostname/myuser/hgwebdir.cgi"
-	  >http://myhostname/ myuser/hgwebdir.cgi</ulink>
+	visit <literal>http://myhostname/~myuser/hgwebdir.cgi</literal>
 	in your	browser.  It should
 	display an empty list of repositories.  If you get a blank
 	window or error message, try walking through the list of
@@ -1223,19 +1220,17 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	remaining component of a path after this stripping has
 	occurred is called a <quote>virtual path</quote>.</para>
 
-      <para id="x_4db">Given the example above, if we have a repository whose
-	local path is <filename
+      <para id="x_4db">Given the example above, if we have a
+	repository whose local path is <filename
 	  class="directory">/my/root/this/repo</filename>, the CGI
 	script will strip the leading <filename
 	  class="directory">/my/root</filename> from the name, and
 	publish the repository with a virtual path of <filename
 	  class="directory">this/repo</filename>.  If the base URL for
-	our CGI script is <ulink
-	  url="http://myhostname/myuser/hgwebdir.cgi"
-	  >http://myhostname/myuser/hgwebdir.cgi</ulink>, the complete URL
-	for that repository will be <ulink
-	  url="http://myhostname/myuser/hgwebdir.cgi/this/repo"
-	  >http://myhostname/myuser/hgwebdir.cgi/this/repo</ulink>.</para>
+	our CGI script is
+	<literal>http://myhostname/~myuser/hgwebdir.cgi</literal>, the
+	complete URL for that repository will be
+	<literal>http://myhostname/~myuser/hgwebdir.cgi/this/repo</literal>.</para>
 
       <para id="x_4dc">If we replace <filename
 	  class="directory">/my/root</filename> on the left hand side
