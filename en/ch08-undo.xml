@@ -196,7 +196,7 @@
     <tip>
       <title>Be careful with <filename>.orig</filename> files</title>
 
-      <para>It's extremely unlikely that you are either using
+      <para id="x_6b8">It's extremely unlikely that you are either using
 	Mercurial to manage files with <filename>.orig</filename>
 	extensions or that you even care about the contents of such
 	files.  Just in case, though, it's useful to remember that
@@ -396,7 +396,7 @@
 	  were</quote>, only with some extra history that undoes the
 	effect of the changeset you wanted to back out.</para>
 
-      <para>You might wonder why Mercurial does not commit the result
+      <para id="x_6b9">You might wonder why Mercurial does not commit the result
 	of the merge that it performed.  The reason lies in Mercurial
 	behaving conservatively: a merge naturally has more scope for
 	error than simply undoing the effect of the tip changeset,
@@ -634,14 +634,14 @@
     <sect2>
       <title>Backing out a merge</title>
 
-      <para>Since merges are often complicated, it is not unheard of
+      <para id="x_6ba">Since merges are often complicated, it is not unheard of
 	for a merge to be mangled badly, but committed erroneously.
 	Mercurial provides an important safeguard against bad merges
 	by refusing to commit unresolved files, but human ingenuity
 	guarantees that it is still possible to mess a merge up and
 	commit it.</para>
 
-      <para>Given a bad merge that has been committed, usually the
+      <para id="x_6bb">Given a bad merge that has been committed, usually the
 	best way to approach it is to simply try to repair the damage
 	by hand.  A complete disaster that cannot be easily fixed up
 	by hand ought to be very rare, but the <command
@@ -659,16 +659,16 @@
 	</mediaobject>
       </figure>
 
-      <para>Suppose we have a revision graph like that in <xref
+      <para id="x_6bc">Suppose we have a revision graph like that in <xref
 	  linkend="fig:undo:bad-merge-1"/>.  What we'd like is to
 	<emphasis>redo</emphasis> the merge of revisions 2 and
 	3.</para>
 
-      <para>One way to do so would be as follows.</para>
+      <para id="x_6bd">One way to do so would be as follows.</para>
 
       <orderedlist>
 	<listitem>
-	  <para>Call <command role="hg-cmd">hg backout --rev=4
+	  <para id="x_6be">Call <command role="hg-cmd">hg backout --rev=4
 	      --parent=2</command>.  This tells <command
 	      role="hg-cmd">hg backout</command> to back out revision
 	    4, which is the bad merge, and to when deciding which
@@ -685,7 +685,7 @@
 	</listitem>
 
 	<listitem>
-	  <para>Call <command role="hg-cmd">hg backout --rev=4
+	  <para id="x_6bf">Call <command role="hg-cmd">hg backout --rev=4
 	      --parent=3</command>.  This tells <command
 	      role="hg-cmd">hg backout</command> to back out revision
 	    4 again, but this time to choose parent 3, the other
@@ -703,7 +703,7 @@
 	</listitem>
 
 	<listitem>
-	  <para>Redo the bad merge by merging the two backout heads,
+	  <para id="x_6c0">Redo the bad merge by merging the two backout heads,
 	    which reduces the number of heads in the repository to
 	    two, as can be seen in <xref
 	      linkend="fig:undo:bad-merge-4"/>.</para>
@@ -717,7 +717,7 @@
 	</listitem>
 
 	<listitem>
-	  <para>Merge with the commit that was made after the bad
+	  <para id="x_6c1">Merge with the commit that was made after the bad
 	    merge, as shown in <xref
 	      linkend="fig:undo:bad-merge-5"/>.</para>
 	  <figure id="fig:undo:bad-merge-5">
@@ -761,11 +761,11 @@
     <sect2>
       <title>What to do about sensitive changes that escape</title>
 
-      <para>Even a carefully run project can suffer an unfortunate
+      <para id="x_6c2">Even a carefully run project can suffer an unfortunate
 	event such as the committing and uncontrolled propagation of a
 	file that contains important passwords.</para>
 
-      <para>If something like this happens to you, and the information
+      <para id="x_6c3">If something like this happens to you, and the information
 	that gets accidentally propagated is truly sensitive, your
 	first step should be to mitigate the effect of the leak
 	without trying to control the leak itself. If you are not 100%
@@ -776,12 +776,12 @@
 	the change has propagated far and wide, and that there's
 	nothing more you can do.</para>
 
-      <para>You might hope that there would be mechanisms you could
+      <para id="x_6c4">You might hope that there would be mechanisms you could
 	use to either figure out who has seen a change or to erase the
 	change permanently everywhere, but there are good reasons why
 	these are not possible.</para>
 
-      <para>Mercurial does not provide an audit trail of who has
+      <para id="x_6c5">Mercurial does not provide an audit trail of who has
 	pulled changes from a repository, because it is usually either
 	impossible to record such information or trivial to spoof it.
 	In a multi-user or networked environment, you should thus be
@@ -793,7 +793,7 @@
 	completely innocent ways to confound your attempts to track
 	down every copy of a problematic change.</para>
 
-      <para>Mercurial also does not provide a way to make a file or
+      <para id="x_6c6">Mercurial also does not provide a way to make a file or
 	changeset completely disappear from history, because there is
 	no way to enforce its disappearance; someone could easily
 	modify their copy of Mercurial to ignore such directives. In
