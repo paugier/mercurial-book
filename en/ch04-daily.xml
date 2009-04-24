@@ -677,17 +677,17 @@
   <sect1>
     <title>More useful diffs</title>
 
-    <para>The default output of the <command role="hg-cmd">hg
+    <para id="x_6c7">The default output of the <command role="hg-cmd">hg
 	diff</command> command is backwards compatible with the
       regular <command>diff</command> command, but this has some
       drawbacks.</para>
 
-    <para>Consider the case where we use <command role="hg-cmd">hg
+    <para id="x_6c8">Consider the case where we use <command role="hg-cmd">hg
 	rename</command> to rename a file.</para>
 
     &interaction.ch04-diff.rename.basic;
 
-    <para>The output of <command role="hg-cmd">hg diff</command> above
+    <para id="x_6c9">The output of <command role="hg-cmd">hg diff</command> above
       obscures the fact that we simply renamed a file.  The <command
 	role="hg-cmd">hg diff</command> command accepts an option,
       <option>--git</option> or <option>-g</option>, to use a newer
@@ -696,7 +696,7 @@
 
     &interaction.ch04-diff.rename.git;
 
-    <para>This option also helps with a case that can otherwise be
+    <para id="x_6ca">This option also helps with a case that can otherwise be
       confusing: a file that appears to be modified according to
       <command role="hg-cmd">hg status</command>, but for which
       <command role="hg-cmd">hg diff</command> prints nothing. This
@@ -705,7 +705,7 @@
 
     &interaction.ch04-diff.chmod;
 
-    <para>The normal <command>diff</command> command pays no attention
+    <para id="x_6cb">The normal <command>diff</command> command pays no attention
       to file permissions, which is why <command role="hg-cmd">hg
 	diff</command> prints nothing by default.  If we supply it
       with the <option>-g</option> option, it tells us what really
@@ -717,28 +717,28 @@
   <sect1>
     <title>Which files to manage, and which to avoid</title>
 
-    <para>Revision control systems are generally best at managing text
+    <para id="x_6cc">Revision control systems are generally best at managing text
       files that are written by humans, such as source code, where the
       files do not change much from one revision to the next.  Some
       centralized revision control systems can also deal tolerably
       well with binary files, such as bitmap images.</para>
 
-    <para>For instance, a game development team will typically manage
+    <para id="x_6cd">For instance, a game development team will typically manage
       both its source code and all of its binary assets (e.g. geometry
       data, textures, map layouts) in a revision control
       system.</para>
 
-    <para>Because it is usually impossible to merge two conflicting
+    <para id="x_6ce">Because it is usually impossible to merge two conflicting
       modifications to a binary file, centralized systems often
       provide a file locking mechanism that allow a user to say
       <quote>I am the only person who can edit this
 	file</quote>.</para>
 
-    <para>Compared to a centralized system, a distributed revision
+    <para id="x_6cf">Compared to a centralized system, a distributed revision
       control system changes some of the factors that guide decisions
       over which files to manage and how.</para>
 
-    <para>For instance, a distributed revision control system cannot,
+    <para id="x_6d0">For instance, a distributed revision control system cannot,
       by its nature, offer a file locking facility.  There is thus no
       built-in mechanism to prevent two people from making conflicting
       changes to a binary file.  If you have a team where several
@@ -746,7 +746,7 @@
       good idea to use Mercurial&emdash;or any other distributed
       revision control system&emdash;to manage those files.</para>
 
-    <para>When storing modifications to a file, Mercurial usually
+    <para id="x_6d1">When storing modifications to a file, Mercurial usually
       saves only the differences between the previous and current
       versions of the file.  For most text files, this is extremely
       efficient. However, some files (particularly binary files) are
@@ -759,7 +759,7 @@
       affect both local storage needs and the amount of time it takes
       to clone a repository.</para>
 
-    <para>To get an idea of how this could affect you in practice,
+    <para id="x_6d2">To get an idea of how this could affect you in practice,
       suppose you want to use Mercurial to manage an OpenOffice
       document.  OpenOffice stores documents on disk as compressed zip
       files. Edit even a single letter of your document in OpenOffice,
@@ -772,22 +772,22 @@
       to Mercurial's storage assumptions can easily have an outsized
       effect on the size of the repository.</para>
 
-    <para>Even worse, if both you and someone else edit the OpenOffice
+    <para id="x_6d3">Even worse, if both you and someone else edit the OpenOffice
       document you're working on, there is no useful way to merge your
       work. In fact, there isn't even a good way to tell what the
       differences are between your respective changes.</para>
 
-    <para>There are thus a few clear recommendations about specific
+    <para id="x_6d4">There are thus a few clear recommendations about specific
       kinds of files to be very careful with.</para>
 
     <itemizedlist>
       <listitem>
-	<para>Files that are very large and incompressible, e.g. ISO
+	<para id="x_6d5">Files that are very large and incompressible, e.g. ISO
 	  CD-ROM images, will by virtue of sheer size make clones over
 	  a network very slow.</para>
       </listitem>
       <listitem>
-	<para>Files that change a lot from one revision to the next
+	<para id="x_6d6">Files that change a lot from one revision to the next
 	  may be expensive to store if you edit them frequently, and
 	  conflicts due to concurrent edits may be difficult to
 	  resolve.</para>
@@ -798,7 +798,7 @@
   <sect1>
     <title>Backups and mirroring</title>
 
-    <para>Since Mercurial maintains a complete copy of history in each
+    <para id="x_6d7">Since Mercurial maintains a complete copy of history in each
       clone, everyone who uses Mercurial to collaborate on a project
       can potentially act as a source of backups in the event of a
       catastrophe.  If a central repository becomes unavailable, you
@@ -806,7 +806,7 @@
       repository from one contributor, and pulling any changes they
       may not have seen from others.</para>
 
-    <para>It is simple to use Mercurial to perform off-site backups
+    <para id="x_6d8">It is simple to use Mercurial to perform off-site backups
       and remote mirrors.  Set up a periodic job (e.g. via the
       <command>cron</command> command) on a remote server to pull
       changes from your master repositories every hour.  This will
@@ -815,7 +815,7 @@
       you'll need to do a little scripting to refresh the list of
       repositories to back up.</para>
 
-    <para>If you perform traditional backups of your master
+    <para id="x_6d9">If you perform traditional backups of your master
       repositories to tape or disk, and you want to back up a
       repository named <filename>myrepo</filename>.  Use <command>hg
 	clone -U myrepo myrepo.bak</command> to create a
@@ -824,7 +824,7 @@
       working directory after the clone completes, since that would be
       superfluous and make the backup take longer.
 
-    <para>If you then back up <filename>myrepo.bak</filename> instead
+    <para id="x_6da">If you then back up <filename>myrepo.bak</filename> instead
       of <filename>myrepo</filename>, you will be guaranteed to have a
       consistent snapshot of your repository that won't be pushed to
       by an insomniac developer in mid-backup.</para>
