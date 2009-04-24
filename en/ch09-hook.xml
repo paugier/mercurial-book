@@ -147,8 +147,8 @@
 	  incoming</command>), remember that it is the other
 	repository's hooks you should be checking, not your own.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Hooks do not propagate</title>
 
@@ -178,8 +178,8 @@
 	filesystem, and use a site-wide <filename role="special">~/.hgrc</filename> file to define hooks that all users will
 	see.  However, this too has its limits; see below.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Hooks can be overridden</title>
 
@@ -193,8 +193,8 @@
 	hooks, you should thus understand that your users can disable
 	or override those hooks.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Ensuring that critical hooks are run</title>
 
@@ -232,116 +232,7 @@
 
     </sect2>
   </sect1>
-  <sect1>
-    <title>Care with <literal>pretxn</literal> hooks in a
-      shared-access repository</title>
 
-    <para id="x_206">If you want to use hooks to do some automated work in a
-      repository that a number of people have shared access to, you
-      need to be careful in how you do this.
-    </para>
-
-    <para id="x_207">Mercurial only locks a repository when it is writing to the
-      repository, and only the parts of Mercurial that write to the
-      repository pay attention to locks.  Write locks are necessary to
-      prevent multiple simultaneous writers from scribbling on each
-      other's work, corrupting the repository.
-    </para>
-
-    <para id="x_208">Because Mercurial is careful with the order in which it
-      reads and writes data, it does not need to acquire a lock when
-      it wants to read data from the repository.  The parts of
-      Mercurial that read from the repository never pay attention to
-      locks.  This lockless reading scheme greatly increases
-      performance and concurrency.
-    </para>
-
-    <para id="x_209">With great performance comes a trade-off, though, one which
-      has the potential to cause you trouble unless you're aware of
-      it.  To describe this requires a little detail about how
-      Mercurial adds changesets to a repository and reads those
-      changes.
-    </para>
-
-    <para id="x_20a">When Mercurial <emphasis>writes</emphasis> metadata, it
-      writes it straight into the destination file.  It writes file
-      data first, then manifest data (which contains pointers to the
-      new file data), then changelog data (which contains pointers to
-      the new manifest data).  Before the first write to each file, it
-      stores a record of where the end of the file was in its
-      transaction log.  If the transaction must be rolled back,
-      Mercurial simply truncates each file back to the size it was
-      before the transaction began.
-    </para>
-
-    <para id="x_20b">When Mercurial <emphasis>reads</emphasis> metadata, it reads
-      the changelog first, then everything else.  Since a reader will
-      only access parts of the manifest or file metadata that it can
-      see in the changelog, it can never see partially written data.
-    </para>
-
-    <para id="x_20c">Some controlling hooks (<literal
-	role="hook">pretxncommit</literal> and <literal
-	role="hook">pretxnchangegroup</literal>) run when a
-      transaction is almost complete. All of the metadata has been
-      written, but Mercurial can still roll the transaction back and
-      cause the newly-written data to disappear.
-    </para>
-
-    <para id="x_20d">If one of these hooks runs for long, it opens a window of
-      time during which a reader can see the metadata for changesets
-      that are not yet permanent, and should not be thought of as
-      <quote>really there</quote>.  The longer the hook runs, the
-      longer that window is open.
-    </para>
-
-    <sect2>
-      <title>The problem illustrated</title>
-
-      <para id="x_20e">In principle, a good use for the <literal
-	  role="hook">pretxnchangegroup</literal> hook would be to
-	automatically build and test incoming changes before they are
-	accepted into a central repository.  This could let you
-	guarantee that nobody can push changes to this repository that
-	<quote>break the build</quote>. But if a client can pull
-	changes while they're being tested, the usefulness of the test
-	is zero; an unsuspecting someone can pull untested changes,
-	potentially breaking their build.
-      </para>
-
-      <para id="x_20f">The safest technological answer to this challenge is to
-	set up such a <quote>gatekeeper</quote> repository as
-	<emphasis>unidirectional</emphasis>.  Let it take changes
-	pushed in from the outside, but do not allow anyone to pull
-	changes from it (use the <literal
-	  role="hook">preoutgoing</literal> hook to lock it down).
-	Configure a <literal role="hook">changegroup</literal> hook so
-	that if a build or test succeeds, the hook will push the new
-	changes out to another repository that people
-	<emphasis>can</emphasis> pull from.
-      </para>
-
-      <para id="x_210">In practice, putting a centralised bottleneck like this in
-	place is not often a good idea, and transaction visibility has
-	nothing to do with the problem.  As the size of a
-	project&emdash;and the time it takes to build and
-	test&emdash;grows, you rapidly run into a wall with this
-	<quote>try before you buy</quote> approach, where you have
-	more changesets to test than time in which to deal with them.
-	The inevitable result is frustration on the part of all
-	involved.
-      </para>
-
-      <para id="x_211">An approach that scales better is to get people to build
-	and test before they push, then run automated builds and tests
-	centrally <emphasis>after</emphasis> a push, to be sure all is
-	well.  The advantage of this approach is that it does not
-	impose a limit on the rate at which the repository can accept
-	changes.
-      </para>
-
-    </sect2>
-  </sect1>
   <sect1 id="sec:hook:simple">
     <title>A short tutorial on using hooks</title>
 
@@ -509,8 +400,8 @@
 	<literal>foo</literal>, while the environment variable for an
 	external hook will be named <literal>HG_FOO</literal>.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Hook return values and activity control</title>
 
@@ -526,8 +417,8 @@
 	zero/false means <quote>allow</quote>, while
 	non-zero/true/exception means <quote>deny</quote>.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Writing an external hook</title>
 
@@ -555,8 +446,8 @@
 	should not rely on environment variables being set to the
 	values you have in your environment when testing the hook.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Telling Mercurial to use an in-process hook</title>
 
@@ -585,8 +476,8 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 	for the callable object named <literal>myhook</literal>, and
 	calls it.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Writing an in-process hook</title>
 
@@ -622,8 +513,8 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
       </para>
 
 &interaction.hook.msglen.go;
-
     </sect2>
+
     <sect2>
       <title>Checking for trailing whitespace</title>
 
@@ -838,8 +729,8 @@ debug = true</programlisting>
 	  forbidding pushes from specific users.
 	</para>
 
-      </sect3>
-    </sect2>
+      </sect3>    </sect2>
+
     <sect2>
       <title><literal
 	  role="hg-ext">bugzilla</literal>&emdash;integration with
@@ -1144,8 +1035,8 @@ cd `dirname $0` &amp;&amp; ./processmail "$1" nobody@example.com</programlisting
 	  a valid Bugzilla user name.
 	</para>
 
-      </sect3>
-    </sect2>
+      </sect3>    </sect2>
+
     <sect2>
       <title><literal role="hg-ext">notify</literal>&emdash;send email
 	notifications</title>
@@ -1344,8 +1235,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	APIs normally use.  To convert a hash from hex to binary, use
 	the <literal>bin</literal> function.
       </para>
-
     </sect2>
+
     <sect2>
       <title>External hook execution</title>
 
@@ -1382,8 +1273,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	have succeeded.  If it exits with a non-zero status, it is
 	considered to have failed.
       </para>
-
     </sect2>
+
     <sect2>
       <title>Finding out where changesets come from</title>
 
@@ -1425,8 +1316,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      being transferred to or from a bundle.
 	    </para>
 	  </listitem></itemizedlist>
-
       </sect3>
+
       <sect3 id="sec:hook:url">
 	<title>Where changes are going&emdash;remote repository
 	  URLs</title>
@@ -1462,7 +1353,6 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	      discovered about the remote client.
 	    </para>
 	  </listitem></itemizedlist>
-
       </sect3>
     </sect2>
   </sect1>
@@ -1520,8 +1410,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">pretxnchangegroup</literal> (<xref
 	  linkend="sec:hook:pretxnchangegroup"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:commit">
       <title><literal role="hook">commit</literal>&emdash;after a new
 	changeset is created</title>
@@ -1553,8 +1443,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">pretxncommit</literal> (<xref
 	  linkend="sec:hook:pretxncommit"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:incoming">
       <title><literal role="hook">incoming</literal>&emdash;after one
 	remote changeset is added</title>
@@ -1599,8 +1489,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">pretxnchangegroup</literal> (<xref
 	  linkend="sec:hook:pretxnchangegroup"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:outgoing">
       <title><literal role="hook">outgoing</literal>&emdash;after
 	changesets are propagated</title>
@@ -1646,8 +1536,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">preoutgoing</literal> (<xref
 	  linkend="sec:hook:preoutgoing"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:prechangegroup">
       <title><literal
 	  role="hook">prechangegroup</literal>&emdash;before starting
@@ -1692,8 +1582,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">pretxnchangegroup</literal> (<xref
 	  linkend="sec:hook:pretxnchangegroup"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:precommit">
       <title><literal role="hook">precommit</literal>&emdash;before
 	starting to commit a changeset</title>
@@ -1732,8 +1622,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">pretxncommit</literal> (<xref
 	  linkend="sec:hook:pretxncommit"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:preoutgoing">
       <title><literal role="hook">preoutgoing</literal>&emdash;before
 	starting to propagate changesets</title>
@@ -1769,8 +1659,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">outgoing</literal> (<xref
 	  linkend="sec:hook:outgoing"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:pretag">
       <title><literal role="hook">pretag</literal>&emdash;before
 	tagging a changeset</title>
@@ -1811,6 +1701,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	(<xref linkend="sec:hook:tag"/>)
       </para>
     </sect2>
+
     <sect2 id="sec:hook:pretxnchangegroup">
       <title><literal
 	  role="hook">pretxnchangegroup</literal>&emdash;before
@@ -1875,8 +1766,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">prechangegroup</literal> (<xref
 	  linkend="sec:hook:prechangegroup"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:pretxncommit">
       <title><literal role="hook">pretxncommit</literal>&emdash;before
 	completing commit of new changeset</title>
@@ -1901,8 +1792,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	race conditions if you do not take steps to avoid them.
       </para>
 
-      <para id="x_2d2">Parameters to this hook:
-      </para>
+      <para id="x_2d2">Parameters to this hook:</para>
+
       <itemizedlist>
 	<listitem><para id="x_2d3"><literal>node</literal>: A changeset ID.  The
 	    changeset ID of the newly committed changeset.
@@ -1923,8 +1814,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  role="hook">precommit</literal> (<xref
 	  linkend="sec:hook:precommit"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:preupdate">
       <title><literal role="hook">preupdate</literal>&emdash;before
 	updating or merging working directory</title>
@@ -1955,8 +1846,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 
       <para id="x_2db">See also: <literal role="hook">update</literal>
 	(<xref linkend="sec:hook:update"/>)</para>
-
     </sect2>
+
     <sect2 id="sec:hook:tag">
       <title><literal role="hook">tag</literal>&emdash;after tagging a
 	changeset</title>
@@ -1992,8 +1883,8 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <para id="x_2e2">See also: <literal role="hook">pretag</literal>
 	(<xref linkend="sec:hook:pretag"/>)
       </para>
-
     </sect2>
+
     <sect2 id="sec:hook:update">
       <title><literal role="hook">update</literal>&emdash;after
 	updating or merging working directory</title>
