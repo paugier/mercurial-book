@@ -197,7 +197,7 @@
       file.  Take a look below for a simple example of these commands
       in action.</para>
 
-&interaction.mq.dodiff.diff;
+      &interaction.mq.dodiff.diff;
 
     <para id="x_3c4">The type of file that <command>diff</command> generates (and
       <command>patch</command> takes as input) is called a
@@ -766,14 +766,18 @@ hgext.mq =</programlisting>
     <sect2>
       <title>Converting to and from permanent revisions</title>
 
-      <para id="x_6dd">Once you're done working on a patch and want to turn it
-	into a permanent changeset, use the <command
-	  role="hg-ext-mq">hg qdelete -r</command> command.  Pass a
-	revision to the <option>-r</option> option to identify the
-	patch that you want to turn into a regular changeset; this
-	patch must already be applied.</para>
+      <para id="x_6dd">Once you're done working on a patch and want to
+      turn it into a permanent changeset, use the <command
+      role="hg-ext-mq">hg qfinish</command> command. Pass a revision
+      to the command to identify the patch that you want to turn into
+      a regular changeset; this patch must already be applied.</para>
 
       &interaction.ch11-qdelete.convert;
+
+      <para id="x_6e0">The <command role="hg-ext-mq">hg qfinish</command> command
+        accepts an <option>--all</option> or <option>-a</option>
+        option, which turns all applied patches into regular
+        changesets.</para>
 
       <para id="x_6de">It is also possible to turn an existing changeset into a
 	patch, by passing the <option>-r</option> option to <command
