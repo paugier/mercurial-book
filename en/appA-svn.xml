@@ -4,66 +4,66 @@
   <?dbhtml filename="migrating-to-mercurial.html"?>
 <title>Migrating to Mercurial</title>
 
-  <para>A common way to test the waters with a new revision control
+  <para id="x_6e1">A common way to test the waters with a new revision control
     tool is to experiment with switching an existing project, rather
     than starting a new project from scratch.</para>
 
-  <para>In this appendix, we discuss how to import a project's history
+  <para id="x_6e2">In this appendix, we discuss how to import a project's history
     into Mercurial, and what to look out for if you are used to a
     different revision control system.</para>
 
   <sect1>
     <title>Importing history from another system</title>
 
-    <para>Mercurial ships with an extension named
+    <para id="x_6e3">Mercurial ships with an extension named
       <literal>convert</literal>, which can import project history
       from most popular revision control systems.  At the time this
       book was written, it could import history from the following
       systems:</para>
     <itemizedlist>
       <listitem>
-	<para>Subversion</para>
+	<para id="x_6e4">Subversion</para>
       </listitem>
       <listitem>
-	<para>CVS</para>
+	<para id="x_6e5">CVS</para>
       </listitem>
       <listitem>
-	<para>git</para>
+	<para id="x_6e6">git</para>
       </listitem>
       <listitem>
-	<para>Darcs</para>
+	<para id="x_6e7">Darcs</para>
       </listitem>
       <listitem>
-	<para>Bazaar</para>
+	<para id="x_6e8">Bazaar</para>
       </listitem>
       <listitem>
-	<para>Monotone</para>
+	<para id="x_6e9">Monotone</para>
       </listitem>
       <listitem>
-	<para>GNU Arch</para>
+	<para id="x_6ea">GNU Arch</para>
       </listitem>
       <listitem>
-	<para>Mercurial</para>
+	<para id="x_6eb">Mercurial</para>
       </listitem>
     </itemizedlist>
 
-    <para>(To see why Mercurial itself is supported as a source, see
+    <para id="x_6ec">(To see why Mercurial itself is supported as a source, see
       <xref linkend="svn.filemap"/>.)</para>
 
-    <para>You can enable the extension in the usual way, by editing
+    <para id="x_6ed">You can enable the extension in the usual way, by editing
       your <filename>~/.hgrc</filename> file.</para>
 
     <programlisting>[extensions]
 convert =</programlisting>
 
-    <para>This will make a <command>hg convert</command> command
+    <para id="x_6ee">This will make a <command>hg convert</command> command
       available.  The command is easy to use.  For instance, this
       command will import the Subversion history for the Nose unit
       testing framework into Mercurial.</para>
 
     <screen><prompt>$</prompt> <userinput>hg convert http://python-nose.googlecode.com/svn/trunk</userinput></screen>
 
-    <para>The <literal>convert</literal> extension operates
+    <para id="x_6ef">The <literal>convert</literal> extension operates
       incrementally.  In other words, after you have run <command>hg
 	convert</command> once, running it again will import any new
       revisions committed after the first run began.  Incremental
@@ -78,13 +78,13 @@ convert =</programlisting>
     <sect2>
       <title>Mapping user names</title>
 
-      <para>Some revision control tools save only short usernames with
+      <para id="x_6f0">Some revision control tools save only short usernames with
 	commits, and these can be difficult to interpret.  The norm
 	with Mercurial is to save a committer's name and email
 	address, which is much more useful for talking to them after
 	the fact.</para>
 
-      <para>If you are converting a tree from a revision control
+      <para id="x_6f1">If you are converting a tree from a revision control
 	system that uses short names, you can map those names to
 	longer equivalents by passing a <option>--authors</option>
 	option to <command>hg convert</command>.  This option accepts
@@ -94,7 +94,7 @@ convert =</programlisting>
       <programlisting>arist = Aristotle &lt;aristotle@phil.example.gr&gt;
 soc = Socrates &lt;socrates@phil.example.gr&gt;</programlisting>
 
-      <para>Whenever <literal>convert</literal> encounters a commit
+      <para id="x_6f2">Whenever <literal>convert</literal> encounters a commit
 	with the username <literal>arist</literal> in the source
 	repository, it will use the name <literal>Aristotle
 	  &lt;aristotle@phil.example.gr&gt;</literal> in the converted
@@ -105,19 +105,19 @@ soc = Socrates &lt;socrates@phil.example.gr&gt;</programlisting>
     <sect2 id="svn.filemap">
       <title>Tidying up the tree</title>
 
-      <para>Not all projects have pristine history.  There may be a
+      <para id="x_6f3">Not all projects have pristine history.  There may be a
 	directory that should never have been checked in, a file that
 	is too big, or a whole hierarchy that needs to be
 	refactored.</para>
 
-      <para>The <literal>convert</literal> extension supports the idea
+      <para id="x_6f4">The <literal>convert</literal> extension supports the idea
 	of a <quote>file map</quote> that can reorganize the files and
 	directories in a project as it imports the project's history.
 	This is useful not only when importing history from other
 	revision control systems, but also to prune or refactor a
 	Mercurial tree.</para>
 
-      <para>To specify a file map, use the <option>--filemap</option>
+      <para id="x_6f5">To specify a file map, use the <option>--filemap</option>
 	option and supply a file name.  A file map contains lines of the
 	following forms.</para>
 
@@ -131,14 +131,14 @@ exclude path/to/file
 rename from/some/path to/some/other/place
 </programlisting>
 
-      <para>The <literal>include</literal> directive causes a file, or
+      <para id="x_6f6">The <literal>include</literal> directive causes a file, or
 	all files under a directory, to be included in the destination
 	repository.  This also excludes all other files and dirs not
 	explicitely included.  The <literal>exclude</literal>
 	directive causes files or directories to be omitted, and
 	others not explicitly mentioned to be included.</para>
 
-      <para>To move a file or directory from one location to another,
+      <para id="x_6f7">To move a file or directory from one location to another,
 	use the <literal>rename</literal> directive.  If you need to
 	move a file or directory from a subdirectory into the root of
 	the repository, use <literal>.</literal> as the second
@@ -149,7 +149,7 @@ rename from/some/path to/some/other/place
   <sect1>
     <title>Migrating from Subversion</title>
 
-    <para>Subversion is currently the most popular open source
+    <para id="x_6f8">Subversion is currently the most popular open source
       revision control system. Although there are many differences
       between Mercurial and Subversion, making the transition from
       Subversion to Mercurial is not particularly difficult.  The two
@@ -159,7 +159,7 @@ rename from/some/path to/some/other/place
     <sect2>
       <title>Philosophical differences</title>
 
-      <para>The fundamental difference between Subversion and
+      <para id="x_6f9">The fundamental difference between Subversion and
 	Mercurial is of course that Subversion is centralized, while
 	Mercurial is distributed.  Since Mercurial stores all of a
 	project's history on your local drive, it only needs to
@@ -168,7 +168,7 @@ rename from/some/path to/some/other/place
 	stores very little information locally, and the client must
 	thus contact its server for many common operations.</para>
 
-      <para>Subversion more or less gets away without a well-defined
+      <para id="x_6fa">Subversion more or less gets away without a well-defined
 	notion of a branch: which portion of a server's namespace
 	qualifies as a branch is a matter of convention, with the
 	software providing no enforcement.  Mercurial treats a
@@ -177,14 +177,14 @@ rename from/some/path to/some/other/place
       <sect3>
 	<title>Scope of commands</title>
 
-	<para>Since Subversion doesn't know what parts of its
+	<para id="x_6fb">Since Subversion doesn't know what parts of its
 	  namespace are really branches, it treats most commands as
 	  requests to operate at and below whatever directory you are
 	  currently visiting.  For instance, if you run <command>svn
 	    log</command>, you'll get the history of whatever part of
 	  the tree you're looking at, not the tree as a whole.</para>
 
-	<para>Mercurial's commands behave differently, by defaulting
+	<para id="x_6fc">Mercurial's commands behave differently, by defaulting
 	  to operating over an entire repository.  Run <command>hg
 	    log</command> and it will tell you the history of the
 	  entire tree, no matter what part of the working directory
@@ -192,7 +192,7 @@ rename from/some/path to/some/other/place
 	  just a particular file or directory, simply supply it by
 	  name, e.g. <command>hg log src</command>.</para>
 
-	<para>From my own experience, this difference in default
+	<para id="x_6fd">From my own experience, this difference in default
 	  behaviors is probably the most likely to trip you up if you
 	  have to switch back and forth frequently between the two
 	  tools.</para>
@@ -201,7 +201,7 @@ rename from/some/path to/some/other/place
       <sect3>
 	<title>Multi-user operation and safety</title>
 
-	<para>With Subversion, it is normal (though slightly frowned
+	<para id="x_6fe">With Subversion, it is normal (though slightly frowned
 	  upon) for multiple people to collaborate in a single branch.
 	  If Alice and Bob are working together, and Alice commits
 	  some changes to their shared branch, Bob must update his
@@ -210,7 +210,7 @@ rename from/some/path to/some/other/place
 	  made, he can corrupt or lose his modifications during and
 	  after his update.</para>
 
-	<para>Mercurial encourages a commit-then-merge model instead.
+	<para id="x_6ff">Mercurial encourages a commit-then-merge model instead.
 	  Bob commits his changes locally before pulling changes from,
 	  or pushing them to, the server that he shares with Alice.
 	  If Alice pushed her changes before Bob tries to push his, he
@@ -219,7 +219,7 @@ rename from/some/path to/some/other/place
 	  he makes a mistake during the merge, he still has the option
 	  of reverting to the commit that recorded his changes.</para>
 
-	<para>It is worth emphasizing that these are the common ways
+	<para id="x_700">It is worth emphasizing that these are the common ways
 	  of working with these tools. Subversion supports a safer
 	  work-in-your-own-branch model, but it is cumbersome enough
 	  in practice to not be widely used.  Mercurial can support
@@ -231,15 +231,15 @@ rename from/some/path to/some/other/place
       <sect3>
 	<title>Published vs local changes</title>
 
-	<para>A Subversion <command>svn commit</command> command
+	<para id="x_701">A Subversion <command>svn commit</command> command
 	  immediately publishes changes to a server, where they can be
 	  seen by everyone who has read access.</para>
 
-	<para>With Mercurial, commits are always local, and must be
+	<para id="x_702">With Mercurial, commits are always local, and must be
 	  published via a <command>hg push</command> command
 	  afterwards.</para>
 
-	<para>Each approach has its advantages and disadvantages.  The
+	<para id="x_703">Each approach has its advantages and disadvantages.  The
 	  Subversion model means that changes are published, and hence
 	  reviewable and usable, immediately.  On the other hand, this
 	  means that a user must have commit access to a repository in
@@ -247,7 +247,7 @@ rename from/some/path to/some/other/place
 	  is not lightly given out by most open source
 	  projects.</para>
 
-	<para>The Mercurial approach allows anyone who can clone a
+	<para id="x_704">The Mercurial approach allows anyone who can clone a
 	  repository to commit changes without the need for someone
 	  else's permission, and they can then publish their changes
 	  and continue to participate however they see fit.  The
@@ -408,7 +408,7 @@ rename from/some/path to/some/other/place
   <sect1>
     <title>Useful tips for newcomers</title>
 
-    <para>Under some revision control systems, printing a diff for a
+    <para id="x_705">Under some revision control systems, printing a diff for a
       single committed revision can be painful. For instance, with
       Subversion, to see what changed in revision 104654, you must
       type <command>svn diff -r104653:104654</command>. Mercurial
@@ -417,7 +417,7 @@ rename from/some/path to/some/other/place
       a log message followed by a diff, <command>hg log -r104654
 	-p</command>.</para>
 
-    <para>When you run <command>hg status</command> without any
+    <para id="x_706">When you run <command>hg status</command> without any
       arguments, it prints the status of the entire tree, with paths
       relative to the root of the repository.  This makes it tricky to
       copy a file name from the output of <command>hg status</command>
