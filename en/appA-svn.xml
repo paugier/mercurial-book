@@ -75,6 +75,41 @@ convert =</programlisting>
       <filename>.hg/shamap</filename> inside the target
       repository.</para>
 
+    <para>When you want to start making changes using Mercurial, it's
+      best to clone the tree in which you are doing your conversions,
+      and leave the original tree for future incremental conversions.
+      This is the safest way to let you pull and merge future commits
+      from the source revision control system into your newly active
+      Mercurial project.</para>
+
+    <sect2>
+      <title>Converting multiple branches</title>
+
+      <para>The <command>hg convert</command> command given above
+	converts only the history of the <literal>trunk</literal>
+	branch of the Subversion repository.  If we instead use the
+	URL <literal>http://python-nose.googlecode.com/svn</literal>,
+	Mercurial will automatically detect the
+	<literal>trunk</literal>, <literal>tags</literal> and
+	<literal>branches</literal> layout that Subversion projects
+	usually use, and it will import each as a separate Mercurial
+	branch.</para>
+
+      <para>By default, each Subversion branch imported into Mercurial
+	is given a branch name.  After the conversion completes, you
+	can get a list of the active branch names in the Mercurial
+	repository using <command>hg branches -a</command>. If you
+	would prefer to import the Subversion branches without names,
+	pass the <option>--config
+	  convert.hg.usebranchnames=false</option> option to
+	<command>hg convert</command>.</para>
+
+      <para>Once you have converted your tree, if you want to follow
+	the usual Mercurial practice of working in a tree that
+	contains a single branch, you can clone that single branch
+	using <command>hg clone -r mybranchname</command>.</para>
+    </sect2>
+
     <sect2>
       <title>Mapping user names</title>
 
@@ -143,6 +178,70 @@ rename from/some/path to/some/other/place
 	move a file or directory from a subdirectory into the root of
 	the repository, use <literal>.</literal> as the second
 	argument to the <literal>rename</literal> directive.</para>
+    </sect2>
+
+    <sect2>
+      <title>Improving Subversion conversion performance</title>
+
+      <para>You will often need several attempts before you hit the
+	perfect combination of user map, file map, and other
+	conversion parameters.  Converting a Subversion repository
+	over an access protocol like <literal>ssh</literal> or
+	<literal>http</literal> can proceed thousands of times more
+	slowly than Mercurial is capable of actually operating, due to
+	network delays.  This can make tuning that perfect conversion
+	recipe very painful.</para>
+
+      <para>The <ulink
+	  url="http://svn.collab.net/repos/svn/trunk/notes/svnsync.txt"><command>svnsync</command></ulink> 
+	command can greatly speed up the conversion of a Subversion
+	repository.  It is a read-only mirroring program for
+	Subversion repositories.  The idea is that you create a local
+	mirror of your Subversion tree, then convert the mirror into a
+	Mercurial repository.</para>
+
+      <para>Suppose we want to convert the Subversion repository for
+	the popular Memcached project into a Mercurial tree.  First,
+	we create a local Subversion repository.</para>
+
+      <screen><prompt>$</prompt> <userinput>svnadmin create memcached-mirror</userinput></screen>
+
+      <para>Next, we set up a Subversion hook that
+	<command>svnsync</command> needs.</para>
+
+      <screen><prompt>$</prompt> <userinput>echo '#!/bin/sh' > memcached-mirror/hooks/pre-revprop-change</userinput>
+<prompt>$</prompt> <userinput>chmod +x memcached-mirror/hooks/pre-revprop-change</userinput></screen>
+
+      <para>We then initialize <command>svnsync</command> in this
+	repository.</para>
+
+      <screen><prompt>$</prompt> <userinput>svnsync --init file://`pwd`/memcached-mirror \
+  http://code.sixapart.com/svn/memcached</userinput></screen>
+
+      <para>Our next step is to begin the <command>svnsync</command>
+	mirroring process.</para>
+
+      <screen><prompt>$</prompt> <userinput>svnsync sync file://`pwd`/memcached-mirror</userinput></screen>
+
+      <para>Finally, we import the history of our local Subversion
+	mirror into Mercurial.</para>
+
+      <screen><prompt>$</prompt> <userinput>hg convert memcached-mirror</userinput></screen>
+      
+      <para>We can use this process incrementally if the Subversion
+	repository is still in use.  We run <command>svnsync</command>
+	to pull new changes into our mirror, then <command>hg
+	  convert</command> to import them into our Mercurial
+	tree.</para>
+
+      <para>There are two advantages to doing a two-stage import with
+	<command>svnsync</command>.  The first is that it uses more
+	efficient Subversion network syncing code than <command>hg
+	  convert</command>, so it transfers less data over the
+	network.  The second is that the import from a local
+	Subversion tree is so fast that you can tweak your conversion
+	setup repeatedly without having to sit through a painfully
+	slow network-based conversion process each time.</para>
     </sect2>
   </sect1>
 
