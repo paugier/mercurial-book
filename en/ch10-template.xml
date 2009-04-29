@@ -2,12 +2,12 @@
 
 <chapter id="chap:template">
   <?dbhtml filename="customizing-the-output-of-mercurial.html"?>
-  <title>Customising the output of Mercurial</title>
+  <title>Customizing the output of Mercurial</title>
 
   <para id="x_578">Mercurial provides a powerful mechanism to let you control how
     it displays information.  The mechanism is based on templates.
     You can use templates to generate specific output for a single
-    command, or to customise the entire appearance of the built-in web
+    command, or to customize the entire appearance of the built-in web
     interface.</para>
 
   <sect1 id="sec:style">
@@ -71,11 +71,11 @@ style = compact</programlisting>
 
     <para id="x_581">As I write this manual, these are so far the only commands
       that support styles and templates.  Since these are the most
-      important commands that need customisable output, there has been
+      important commands that need customizable output, there has been
       little pressure from the Mercurial user community to add style
       and template support to other commands.</para>
-
   </sect1>
+
   <sect1>
     <title>The basics of templating</title>
 
@@ -186,12 +186,13 @@ style = compact</programlisting>
       <listitem><para id="x_594"><literal role="template-keyword">tags</literal>:
 	  List of strings.  Any tags associated with the
 	  changeset.</para>
-      </listitem></itemizedlist>
+      </listitem>
+    </itemizedlist>
 
     <para id="x_595">A few simple experiments will show us what to expect when we
       use these keywords; you can see the results below.</para>
 
-&interaction.template.simple.keywords;
+    &interaction.template.simple.keywords;
 
     <para id="x_596">As we noted above, the date keyword does not produce
       human-readable output, so we must treat it specially.  This
@@ -227,11 +228,11 @@ style = compact</programlisting>
       <listitem><para id="x_59c"><literal>\v</literal>: Vertical
 	  tab, ASCII 13.</para>
       </listitem>
-      <listitem><para id="x_59d"><literal>{</literal>: Open curly
+      <listitem><para id="x_59d"><literal>\{</literal>: Open curly
 	  brace, <quote><literal>{</literal></quote>, ASCII
 	  173.</para>
       </listitem>
-      <listitem><para id="x_59e"><literal>}</literal>: Close curly
+      <listitem><para id="x_59e"><literal>\}</literal>: Close curly
 	  brace, <quote><literal>}</literal></quote>, ASCII
 	  175.</para>
       </listitem></itemizedlist>
@@ -408,7 +409,8 @@ style = compact</programlisting>
 	  example, <quote><literal>Bryan O'Sullivan
 	      &lt;bos@serpentine.com&gt;</literal></quote> becomes
 	  <quote><literal>bos</literal></quote>.</para>
-      </listitem></itemizedlist>
+      </listitem>
+    </itemizedlist>
 
     &interaction.template.simple.manyfilters;
 
@@ -471,8 +473,8 @@ style = compact</programlisting>
       <para id="x_5be">This tells Mercurial, <quote>if you're printing a
 	  changeset, use the text on the right as the
 	  template</quote>.</para>
-
     </sect2>
+
     <sect2>
       <title>Style file syntax</title>
 
@@ -564,7 +566,8 @@ style = compact</programlisting>
 	    clear (as in this case), but even when it is cryptic, it
 	    is almost always trivial to visually inspect the offending
 	    line in the style file and see what is wrong.</para>
-	</listitem></itemizedlist>
+	</listitem>
+      </itemizedlist>
     </sect2>
 
     <sect2>
@@ -577,8 +580,8 @@ style = compact</programlisting>
 
       &interaction.template.svnstyle.id;
 
-      <para id="x_5d2">This is not guaranteed to be unique, but it is
-	nevertheless useful in many cases.</para>
+      <para id="x_5d2">This is likely to be unique, and so it is
+	useful in many cases.  There are a few caveats.</para>
       <itemizedlist>
 	<listitem><para id="x_5d3">It will not work in a completely empty
 	    repository, because such a repository does not have a
@@ -600,7 +603,18 @@ style = compact</programlisting>
 	    Save this information away when you run an automated build
 	    or other activity, so that you can <quote>replay</quote>
 	    the build later if necessary.</para>
-	</listitem></itemizedlist>
+	</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Listing files on multiple lines</title>
+
+      <para id="x_714">Suppose we want to list the files changed by a changeset,
+	one per line, with a little indentation before each file
+	name.</para>
+
+      &interaction.ch10-multiline.go;
     </sect2>
 
     <sect2>
