@@ -1,9 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+#
+# save as .hg/check_whitespace.py and make executable
 
 import re
 
 def trailing_whitespace(difflines):
-    added, linenum, header = [], 0, False
+    # 
+    linenum, header = 0, False
 
     for line in difflines:
         if header:
@@ -25,19 +28,19 @@ def trailing_whitespace(difflines):
         # hunk body - check for an added line with trailing whitespace
         m = re.match(r'\+.*\s$', line)
         if m:
-            added.append((filename, linenum))
+            yield filename, linenum
         if line and line[0] in ' +':
             linenum += 1
-    return added
 
 if __name__ == '__main__':
     import os, sys
     
-    added = trailing_whitespace(os.popen('hg export tip'))
+    added = 0
+    for filename, linenum in trailing_whitespace(os.popen('hg export tip')):
+        print >> sys.stderr, ('%s, line %d: trailing whitespace added' %
+                              (filename, linenum))
+        added += 1
     if added:
-        for filename, linenum in added:
-            print >> sys.stderr, ('%s, line %d: trailing whitespace added' %
-                                  (filename, linenum))
         # save the commit message so we don't need to retype it
         os.system('hg tip --template "{desc}" > .hg/commit.save')
         print >> sys.stderr, 'commit message saved to .hg/commit.save'

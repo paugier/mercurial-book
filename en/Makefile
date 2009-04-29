@@ -35,7 +35,6 @@ example-sources-by-name := \
 	filenames \
 	hook.msglen \
 	hook.simple \
-	hook.ws \
 	issue29 \
 	mq.guards \
 	mq.qinit-help \
