@@ -149,7 +149,7 @@ hg push http://hg.serpentine.com/tutorial/hello
 
 #$ name:
 cp hello.c ../new-hello.c
-sed -i '/printf/i\\tprintf("once more, hello.\\n");' ../new-hello.c
+sed -i '/printf("hello,/i\\tprintf("once more, hello.\\n");' ../new-hello.c
 
 #$ name: merge.clone
 
@@ -164,9 +164,12 @@ hg commit -m 'A new hello for a new day.'
 
 hg log -r 5 | grep changeset | cut -c 16-19 2>/dev/null > /tmp/REV5.my-new-hello
 
-#$ name: merge.cat
+#$ name: merge.cat1
 
 cat hello.c
+
+#$ name: merge.cat2
+
 cat ../my-hello/hello.c
 
 #$ name: merge.pull
