@@ -72,6 +72,16 @@
 
     </sect2>
     <sect2>
+      <title><command role="hg-ext-mq">qfold</command>&emdash;move
+	applied patches into repository history</title>
+
+      <para>The <command>hg qfinish</command> command converts the
+	specified applied patches into permanent changes by moving
+	them out of MQ's control so that they will be treated as
+	normal repository history.</para>
+    </sect2>
+
+    <sect2>
       <title><command role="hg-ext-mq">qfold</command>&emdash;merge
 	(<quote>fold</quote>) several patches into one</title>
 
@@ -328,8 +338,8 @@
 	    no such text, a default commit message is used that
 	    identifies the name of the patch.</para>
 	</listitem></itemizedlist>
-      <para id="x_615">If a patch contains a Mercurial patch header (XXX add
-	link), the information in the patch header overrides these
+      <para id="x_615">If a patch contains a Mercurial patch header,
+	the information in the patch header overrides these
 	defaults.</para>
 
       <para id="x_616">Options:</para>
@@ -435,21 +445,6 @@
 
     </sect2>
     <sect2>
-      <title><command
-	  role="hg-ext-mq">qrestore</command>&emdash;restore saved
-	queue state</title>
-
-      <para id="x_628">XXX No idea what this does.</para>
-
-    </sect2>
-    <sect2>
-      <title><command role="hg-ext-mq">qsave</command>&emdash;save
-	current queue state</title>
-
-      <para id="x_629">XXX Likewise.</para>
-
-    </sect2>
-    <sect2>
       <title><command role="hg-ext-mq">qseries</command>&emdash;print
 	the entire patch series</title>
 
@@ -501,9 +496,7 @@
 	    changesets in the backup bundle.</para>
 	</listitem>
 	<listitem><para id="x_631"><option role="hg-opt-strip">-f</option>: If a
-	    branch has multiple heads, remove all heads. XXX This
-	    should be renamed, and use <literal>-f</literal> to strip
-	    revs when there are pending changes.</para>
+	    branch has multiple heads, remove all heads.</para>
 	</listitem>
 	<listitem><para id="x_632"><option role="hg-opt-strip">-n</option>: Do
 	    not save a backup bundle.</para>

@@ -108,10 +108,11 @@
   <sect1>
     <title>How to stop tracking a file</title>
 
-    <para id="x_1af">Once you decide that a file no longer belongs in your
-      repository, use the <command role="hg-cmd">hg remove</command>
-      command. This deletes the file, and tells Mercurial to stop
-      tracking it.  A removed file is represented in the output of
+    <para id="x_1af">Once you decide that a file no longer belongs in
+      your repository, use the <command role="hg-cmd">hg
+	remove</command> command. This deletes the file, and tells
+      Mercurial to stop tracking it (which will occur at the next
+      commit).  A removed file is represented in the output of
       <command role="hg-cmd">hg status</command> with a
       <quote><literal>R</literal></quote>.</para>
 
@@ -214,7 +215,7 @@
     </sect2>
   </sect1>
 
-  <sect1>
+  <sect1 id="chap:daily.copy">
     <title>Copying files</title>
 
     <para id="x_1bc">Mercurial provides a <command role="hg-cmd">hg
@@ -535,11 +536,12 @@
       <command role="hg-cmd">hg revert</command> to get rid of
       erroneous changes to a file.</para>
 
-    <para id="x_1e4">It's good to remember that the <command role="hg-cmd">hg
-	revert</command> command is useful for changes that you have
-      not yet committed.  Once you've committed a change, if you
-      decide it was a mistake, you can still do something about it,
-      though your options may be more limited.</para>
+    <para id="x_1e4">It is helpful to remember that the <command
+	role="hg-cmd">hg revert</command> command is useful for
+      changes that you have not yet committed.  Once you've committed
+      a change, if you decide it was a mistake, you can still do
+      something about it, though your options may be more
+      limited.</para>
 
     <para id="x_1e5">For more information about the <command
 	role="hg-cmd">hg revert</command> command, and details about
@@ -817,7 +819,7 @@
 
     <para id="x_6d9">If you perform traditional backups of your master
       repositories to tape or disk, and you want to back up a
-      repository named <filename>myrepo</filename>.  Use <command>hg
+      repository named <filename>myrepo</filename>, use <command>hg
 	clone -U myrepo myrepo.bak</command> to create a
       clone of <filename>myrepo</filename> before you start your
       backups.  The <option>-U</option> option doesn't check out a

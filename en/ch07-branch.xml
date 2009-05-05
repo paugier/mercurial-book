@@ -183,15 +183,15 @@
 	after the revision you specified.  This has an interaction
 	with tags that can surprise the unwary.</para>
 
-      <para id="x_381">Recall that a tag is stored as a revision to the <filename
-	  role="special">.hgtags</filename> file, so that when you
-	create a tag, the changeset in which it's recorded necessarily
-	refers to an older changeset.  When you run <command
-	  role="hg-cmd">hg clone -r foo</command> to clone a
-	repository as of tag <literal>foo</literal>, the new clone
-	<emphasis>will not contain the history that created the
-	  tag</emphasis> that you used to clone the repository.  The
-	result is that you'll get exactly the right subset of the
+      <para id="x_381">Recall that a tag is stored as a revision to
+	the <filename role="special">.hgtags</filename> file. When you
+	create a tag, the changeset in which its recorded refers to an
+	older changeset.  When you run <command role="hg-cmd">hg clone
+	  -r foo</command> to clone a repository as of tag
+	<literal>foo</literal>, the new clone <emphasis>will not
+	  contain any revision newer than the one the tag refers to,
+	  including the revision where the tag was created</emphasis>.
+	The result is that you'll get exactly the right subset of the
 	project's history in the new repository, but
 	<emphasis>not</emphasis> the tag you might have
 	expected.</para>
@@ -227,9 +227,10 @@
   <sect1>
     <title>The flow of changes&emdash;big picture vs. little</title>
 
-    <para id="x_384">To return to the outline I sketched at the beginning of a
-      chapter, let's think about a project that has multiple
-      concurrent pieces of work under development at once.</para>
+    <para id="x_384">To return to the outline I sketched at the
+      beginning of the chapter, let's think about a project that has
+      multiple concurrent pieces of work under development at
+      once.</para>
 
     <para id="x_385">There might be a push for a new <quote>main</quote> release;
       a new minor bugfix release to the last main release; and an
@@ -416,7 +417,7 @@
 
     <para id="x_39e">If you have more than one named branch in a repository,
       Mercurial will remember the branch that your working directory
-      on when you start a command like <command role="hg-cmd">hg
+      is on when you start a command like <command role="hg-cmd">hg
 	update</command> or <command role="hg-cmd">hg pull
 	-u</command>.  It will update the working directory to the tip
       of this branch, no matter what the <quote>repo-wide</quote> tip

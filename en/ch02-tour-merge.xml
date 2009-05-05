@@ -146,6 +146,7 @@ This updates the working directory so that it
 
       &interaction.tour.merge.parents;
     </sect2>
+
     <sect2>
       <title>Committing the results of the merge</title>
 
@@ -292,8 +293,8 @@ This updates the working directory so that it
 	strengths and weaknesses.  Most are tuned for merging files
 	containing plain text, while a few are aimed at specialised
 	file formats (generally XML).</para>
-
     </sect2>
+
     <sect2>
       <title>A worked example</title>
 
@@ -365,6 +366,7 @@ This updates the working directory so that it
       </note>
     </sect2>
   </sect1>
+
   <sect1 id="sec:tour-merge:fetch">
     <title>Simplifying the pull-merge-commit sequence</title>
 
@@ -421,7 +423,27 @@ fetch =</programlisting>
       the extension, but since the <literal
 	role="hg-ext">fetch</literal> extension is in the standard
       distribution, Mercurial knows where to search for it.)</para>
+  </sect1>
 
+  <sect1>
+    <title>Renaming, copying, and merging</title>
+
+    <para>During the life of a project, we will often want to change
+      the layout of its files and directories. This can be as simple
+      as renaming a single file, or as complex as restructuring the
+      entire hierarchy of files within the project.</para>
+
+    <para>Mercurial supports these kinds of complex changes fluently,
+      provided we tell it what we're doing.  If we want to rename a
+      file, we should use the <command>hg rename</command><footnote>
+	<para>If you're a Unix user, you'll be glad to know that the
+	  <command>hg rename</command> command can be abbreviated as
+	  <command>hg mv</command>.</para>
+      </footnote> command to rename it, so that Mercurial can do the
+      right thing later when we merge.</para>
+
+    <para>We will cover the use of these commands in more detail in
+      <xref linkend="chap:daily.copy"/>.</para>
   </sect1>
 </chapter>
 

@@ -21,6 +21,12 @@
       supports. We will revisit each of these hooks in more detail
       later, in <xref linkend="sec:hook:ref"/>.</para>
 
+    <para id="x_1f6">Each of the hooks whose description begins with the word
+      <quote>Controlling</quote> has the ability to determine whether
+      an activity can proceed.  If the hook succeeds, the activity may
+      proceed; if it fails, the activity is either not permitted or
+      undone, depending on the hook.</para>
+
     <itemizedlist>
       <listitem><para id="x_1e9"><literal role="hook">changegroup</literal>: This
 	  is run after a group of changesets has been brought into the
@@ -87,12 +93,6 @@
 	  finished.
 	</para>
       </listitem></itemizedlist>
-    <para id="x_1f6">Each of the hooks whose description begins with the word
-      <quote>Controlling</quote> has the ability to determine whether
-      an activity can proceed.  If the hook succeeds, the activity may
-      proceed; if it fails, the activity is either not permitted or
-      undone, depending on the hook.
-    </para>
 
   </sect1>
   <sect1>
@@ -139,11 +139,11 @@
 	</para>
       </note>
 
-      <para id="x_1fb">XXX To see what hooks are defined in a repository, use the
-	<command role="hg-cmd">hg config hooks</command> command.  If
-	you are working in one repository, but talking to another that
-	you do not own (e.g. using <command role="hg-cmd">hg
-	  pull</command> or <command role="hg-cmd">hg
+      <para id="x_1fb">To see what hooks are defined in a repository,
+	use the <command role="hg-cmd">hg showconfig hooks</command>
+	command.  If you are working in one repository, but talking to
+	another that you do not own (e.g. using <command
+	  role="hg-cmd">hg pull</command> or <command role="hg-cmd">hg
 	  incoming</command>), remember that it is the other
 	repository's hooks you should be checking, not your own.
       </para>
@@ -585,11 +585,11 @@ commit.example = python:mymodule.submodule.myhook</programlisting>
 
       &interaction.ch09-hook.ws.better;
 
-      <para id="x_237">As a final aside, note in the example above the use of
-	<command>perl</command>'s in-place editing feature to get rid
-	of trailing whitespace from a file.  This is concise and
-	useful enough that I will reproduce it here.
-      </para>
+      <para id="x_237">As a final aside, note in the example above the
+	use of <command>sed</command>'s in-place editing feature to
+	get rid of trailing whitespace from a file.  This is concise
+	and useful enough that I will reproduce it here (using
+	<command>perl</command> for good measure).</para>
       <programlisting>perl -pi -e 's,\s+$,,' filename</programlisting>
 
     </sect2>
@@ -817,10 +817,7 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
 		role="rc-item-bugzilla">version</envar>: The version
 	      of Bugzilla installed on the server.  The database
 	      schema that Bugzilla uses changes occasionally, so this
-	      hook has to know exactly which schema to use. At the
-	      moment, the only version supported is
-	      <literal>2.16</literal>.
-	    </para>
+	      hook has to know exactly which schema to use.</para>
 	  </listitem>
 	  <listitem><para id="x_253"><envar role="rc-item-bugzilla">host</envar>:
 	      The hostname of the MySQL server that stores your
