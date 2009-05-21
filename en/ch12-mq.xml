@@ -118,8 +118,8 @@
       <para id="x_3b9">Quilt knows nothing about revision control tools, so it
 	works equally well on top of an unpacked tarball or a
 	Subversion working copy.</para>
-
     </sect2>
+
     <sect2 id="sec:mq:quilt-mq">
       <title>From patchwork quilt to Mercurial Queues</title>
 
@@ -181,8 +181,8 @@
 	role="hg-cmd">hg annotate</command> command to see which
       changeset or patch modified a particular line of a source file.
       And so on.</para>
-
   </sect1>
+
   <sect1 id="sec:mq:patch">
     <title>Understanding patches</title>
 
@@ -197,7 +197,7 @@
       file.  Take a look below for a simple example of these commands
       in action.</para>
 
-&interaction.mq.dodiff.diff;
+      &interaction.mq.dodiff.diff;
 
     <para id="x_3c4">The type of file that <command>diff</command> generates (and
       <command>patch</command> takes as input) is called a
@@ -244,8 +244,8 @@
       later (in <xref linkend="sec:mq:adv-patch"/>), but you
       should have
       enough information now to use MQ.</para>
-
   </sect1>
+
   <sect1 id="sec:mq:start">
     <title>Getting started with Mercurial Queues</title>
 
@@ -265,14 +265,14 @@ hgext.mq =</programlisting>
       the <command role="hg-ext-mq">qinit</command> command is now
       available.</para>
 
-&interaction.mq.qinit-help.help;
+    &interaction.mq.qinit-help.help;
 
     <para id="x_3cc">You can use MQ with <emphasis>any</emphasis> Mercurial
       repository, and its commands only operate within that
       repository.  To get started, simply prepare the repository using
       the <command role="hg-ext-mq">qinit</command> command.</para>
 
-&interaction.mq.tutorial.qinit;
+    &interaction.mq.tutorial.qinit;
 
     <para id="x_3cd">This command creates an empty directory called <filename
 	role="special" class="directory">.hg/patches</filename>, where
@@ -292,7 +292,7 @@ hgext.mq =</programlisting>
 	  class="directory">.hg/patches</filename> directory, as you
 	can see below.</para>
 
-&interaction.mq.tutorial.qnew;
+      &interaction.mq.tutorial.qnew;
 
       <para id="x_3d0">Also newly present in the <filename role="special"
 	  class="directory">.hg/patches</filename> directory are two
@@ -320,8 +320,8 @@ hgext.mq =</programlisting>
 	normal Mercurial commands, such as <command role="hg-cmd">hg
 	  diff</command> and <command role="hg-cmd">hg
 	  annotate</command>, work exactly as they did before.</para>
-
     </sect2>
+
     <sect2>
       <title>Refreshing a patch</title>
 
@@ -329,7 +329,7 @@ hgext.mq =</programlisting>
 	use the <command role="hg-ext-mq">qrefresh</command> command
 	to update the patch you are working on.</para>
 
-&interaction.mq.tutorial.qrefresh;
+      &interaction.mq.tutorial.qrefresh;
 
       <para id="x_3d4">This command folds the changes you have made in the
 	working directory into your patch, and updates its
@@ -342,9 +342,9 @@ hgext.mq =</programlisting>
 	doesn't work out, <command role="hg-cmd">hg revert</command>
 	your modifications back to the last time you refreshed.</para>
 
-&interaction.mq.tutorial.qrefresh2;
-
+      &interaction.mq.tutorial.qrefresh2;
     </sect2>
+
     <sect2>
       <title>Stacking and tracking patches</title>
 
@@ -354,7 +354,8 @@ hgext.mq =</programlisting>
 	new patch. Mercurial will apply this patch on top of your
 	existing patch.</para>
 
-&interaction.mq.tutorial.qnew2;
+      &interaction.mq.tutorial.qnew2;
+
       <para id="x_3d7">Notice that the patch contains the changes in our prior
 	patch as part of its context (you can see this more clearly in
 	the output of <command role="hg-cmd">hg
@@ -367,7 +368,7 @@ hgext.mq =</programlisting>
 	many commands that are easier to use when you are thinking
 	about patches, as illustrated below.</para>
 
-&interaction.mq.tutorial.qseries;
+      &interaction.mq.tutorial.qseries;
 
       <itemizedlist>
 	<listitem><para id="x_3d9">The <command
@@ -382,8 +383,8 @@ hgext.mq =</programlisting>
 	    repository, again from oldest to newest (most recently
 	    applied).</para>
 	</listitem></itemizedlist>
-
     </sect2>
+
     <sect2>
       <title>Manipulating the patch stack</title>
 
@@ -420,15 +421,16 @@ hgext.mq =</programlisting>
 	directory.  See below for examples of <command
 	  role="hg-ext-mq">qpop</command> and <command
 	  role="hg-ext-mq">qpush</command> in action.</para>
-&interaction.mq.tutorial.qpop;
+
+      &interaction.mq.tutorial.qpop;
 
       <para id="x_3df">Notice that once we have popped a patch or two patches,
 	the output of <command role="hg-ext-mq">qseries</command>
 	remains the same, while that of <command
 	  role="hg-ext-mq">qapplied</command> has changed.</para>
 
-
     </sect2>
+
     <sect2>
       <title>Pushing and popping many patches</title>
 
@@ -444,9 +446,9 @@ hgext.mq =</programlisting>
 	patches.  (For some more ways to push and pop many patches,
 	see <xref linkend="sec:mq:perf"/> below.)</para>
 
-&interaction.mq.tutorial.qpush-a;
-
+      &interaction.mq.tutorial.qpush-a;
     </sect2>
+
     <sect2>
       <title>Safety checks, and overriding them</title>
 
@@ -460,7 +462,7 @@ hgext.mq =</programlisting>
 	case by the <command role="hg-cmd">hg add</command> of
 	<filename>file3</filename>.</para>
 
-&interaction.mq.tutorial.add;
+      &interaction.mq.tutorial.add;
 
       <para id="x_3e2">Commands that check the working directory all take an
 	<quote>I know what I'm doing</quote> option, which is always
@@ -474,8 +476,8 @@ hgext.mq =</programlisting>
 	will revert modifications to any files affected by the patch
 	that it is popping.  Be sure to read the documentation for a
 	command's <option>-f</option> option before you use it!</para>
-
     </sect2>
+
     <sect2>
       <title>Working on several patches at once</title>
 
@@ -499,9 +501,9 @@ hgext.mq =</programlisting>
 	the core bug, <command role="hg-ext-mq">qrefresh</command> the
 	core patch, and <command role="hg-ext-mq">qpush</command> back
 	to the UI patch to continue where you left off.</para>
-
     </sect2>
   </sect1>
+
   <sect1 id="sec:mq:adv-patch">
     <title>More about patches</title>
 
@@ -580,6 +582,7 @@ hgext.mq =</programlisting>
 	  311</ulink> for details.
       </para>
     </sect2>
+
     <sect2>
       <title>Strategies for applying a patch</title>
 
@@ -623,8 +626,8 @@ hgext.mq =</programlisting>
 	<filename>foo.orig</filename>, a <filename>foo.rej</filename>
 	containing one hunk, and <filename>foo</filename>, containing
 	the changes made by the five successful hunks.</para>
-
     </sect2>
+
     <sect2>
       <title>Some quirks of patch representation</title>
 
@@ -663,6 +666,7 @@ hgext.mq =</programlisting>
 	      tree</quote>.</para>
 	</listitem></itemizedlist>
     </sect2>
+
     <sect2>
       <title>Beware the fuzz</title>
 
@@ -686,8 +690,8 @@ hgext.mq =</programlisting>
 	on top of multiple versions of a source tree, it's acceptable
 	to have a patch apply with some fuzz, provided you've verified
 	the results of the patching process in such cases.</para>
-
     </sect2>
+
     <sect2>
       <title>Handling rejection</title>
 
@@ -707,15 +711,10 @@ hgext.mq =</programlisting>
 	the <filename role="special">.rej</filename> file and edit the
 	target file, applying the rejected hunks by hand.</para>
 
-      <para id="x_3fc">If you're feeling adventurous, Neil Brown, a Linux kernel
-	hacker, wrote a tool called <command>wiggle</command>
-	<citation>web:wiggle</citation>, which is more vigorous than
-	<command>patch</command> in its attempts to make a patch
-	apply.</para>
-
-      <para id="x_3fd">Another Linux kernel hacker, Chris Mason (the author of
-	Mercurial Queues), wrote a similar tool called
-	<command>mpatch</command> <citation>web:mpatch</citation>,
+      <para id="x_3fd">A Linux kernel hacker, Chris Mason (the author
+	of Mercurial Queues), wrote a tool called
+	<command>mpatch</command> (<ulink
+	  url="http://oss.oracle.com/~mason/mpatch/">http://oss.oracle.com/~mason/mpatch/</ulink>), 
 	which takes a simple approach to automating the application of
 	hunks rejected by <command>patch</command>.  The
 	<command>mpatch</command> command can help with four common
@@ -736,28 +735,76 @@ hgext.mq =</programlisting>
 	    content than those currently present in the file.</para>
 	</listitem></itemizedlist>
 
-      <para id="x_402">If you use <command>wiggle</command> or
-	<command>mpatch</command>, you should be doubly careful to
-	check your results when you're done.  In fact,
-	<command>mpatch</command> enforces this method of
-	double-checking the tool's output, by automatically dropping
-	you into a merge program when it has done its job, so that you
-	can verify its work and finish off any remaining
+      <para id="x_402">If you use <command>mpatch</command>, you
+	should be doubly careful to check your results when you're
+	done.  In fact, <command>mpatch</command> enforces this method
+	of double-checking the tool's output, by automatically
+	dropping you into a merge program when it has done its job, so
+	that you can verify its work and finish off any remaining
 	merges.</para>
-
     </sect2>
   </sect1>
+
+  <sect1>
+    <title>More on patch management</title>
+
+    <para id="x_6db">As you grow familiar with MQ, you will find yourself wanting
+      to perform other kinds of patch management operations.</para>
+
+    <sect2>
+      <title>Deleting unwanted patches</title>
+
+      <para id="x_6dc">If you want to get rid of a patch, use the <command
+	  role="hg-ext-mq">hg qdelete</command> command to delete the
+	patch file and remove its entry from the patch series.  If you
+	try to delete a patch that is still applied, <command
+	  role="hg-ext-mq">hg qdelete</command> will refuse.</para>
+
+      &interaction.ch11-qdelete.go;
+    </sect2>
+
+    <sect2>
+      <title>Converting to and from permanent revisions</title>
+
+      <para id="x_6dd">Once you're done working on a patch and want to
+      turn it into a permanent changeset, use the <command
+      role="hg-ext-mq">hg qfinish</command> command. Pass a revision
+      to the command to identify the patch that you want to turn into
+      a regular changeset; this patch must already be applied.</para>
+
+      &interaction.ch11-qdelete.convert;
+
+      <para id="x_6e0">The <command role="hg-ext-mq">hg qfinish</command> command
+        accepts an <option>--all</option> or <option>-a</option>
+        option, which turns all applied patches into regular
+        changesets.</para>
+
+      <para id="x_6de">It is also possible to turn an existing changeset into a
+	patch, by passing the <option>-r</option> option to <command
+	  role="hg-ext-mq">hg qimport</command>.</para>
+
+      &interaction.ch11-qdelete.import;
+
+      <para id="x_6df">Note that it only makes sense to convert a changeset into
+	a patch if you have not propagated that changeset into any
+	other repositories.  The imported changeset's ID will change
+	every time you refresh the patch, which will make Mercurial
+	treat it as unrelated to the original changeset if you have
+	pushed it somewhere else.</para>
+    </sect2>
+  </sect1>
+
   <sect1 id="sec:mq:perf">
     <title>Getting the best performance out of MQ</title>
 
-    <para id="x_403">MQ is very efficient at handling a large number of patches.
-      I ran some performance experiments in mid-2006 for a talk that I
-      gave at the 2006 EuroPython conference
-      <citation>web:europython</citation>.  I used as my data set the
-      Linux 2.6.17-mm1 patch series, which consists of 1,738 patches.
-      I applied these on top of a Linux kernel repository containing
-      all 27,472 revisions between Linux 2.6.12-rc2 and Linux
-      2.6.17.</para>
+    <para id="x_403">MQ is very efficient at handling a large number
+      of patches. I ran some performance experiments in mid-2006 for a
+      talk that I gave at the 2006 EuroPython conference (on modern
+      hardware, you should expect better performance than you'll see
+      below).  I used as my data set the Linux 2.6.17-mm1 patch
+      series, which consists of 1,738 patches. I applied these on top
+      of a Linux kernel repository containing all 27,472 revisions
+      between Linux 2.6.12-rc2 and Linux 2.6.17.</para>
 
     <para id="x_404">On my old, slow laptop, I was able to <command
 	role="hg-cmd">hg qpush <option
@@ -799,8 +846,8 @@ hgext.mq =</programlisting>
       of the patch, or by number.  If you use numeric addressing,
       patches are counted from zero; this means that the first patch
       is zero, the second is one, and so on.</para>
-
   </sect1>
+
   <sect1 id="sec:mq:merge">
     <title>Updating your patches when the underlying code
       changes</title>
@@ -899,8 +946,8 @@ hgext.mq =</programlisting>
 	strip</command>.  You can delete <filename role="special"
 	class="directory">.hg/patches.N</filename> once you are sure
       that you no longer need it as a backup.</para>
-
   </sect1>
+
   <sect1>
     <title>Identifying patches</title>
 
@@ -963,9 +1010,9 @@ hgext.mq =</programlisting>
       few normal Mercurial commands in use with applied
       patches.</para>
 
-&interaction.mq.id.output;
-
+    &interaction.mq.id.output;
   </sect1>
+
   <sect1>
     <title>Useful things to know about</title>
 
@@ -991,8 +1038,8 @@ hgext.mq =</programlisting>
 	  this, it will appear to succeed, but MQ will become
 	  confused.</para>
       </listitem></itemizedlist>
-
   </sect1>
+
   <sect1 id="sec:mq:repo">
     <title>Managing patches in a repository</title>
 
@@ -1077,8 +1124,8 @@ hgext.mq =</programlisting>
 
       <para id="x_42d">You can then issue commands of the form <command>mq
 	  pull</command> from the main repository.</para>
-
     </sect2>
+
     <sect2>
       <title>A few things to watch out for</title>
 
@@ -1216,8 +1263,8 @@ hgext.mq =</programlisting>
 	tree.</para>
 
       &interaction.mq.tarball.repush;
-
     </sect2>
+
     <sect2 id="sec:mq:combine">
       <title>Combining entire patches</title>
 
@@ -1237,8 +1284,8 @@ hgext.mq =</programlisting>
 	you applied first <literal>foo</literal>, then
 	<literal>bar</literal>, followed by
 	<literal>quux</literal>.</para>
-
     </sect2>
+
     <sect2>
       <title>Merging part of one patch into another</title>
 

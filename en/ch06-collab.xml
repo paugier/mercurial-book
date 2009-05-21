@@ -55,18 +55,12 @@
 	linkend="sec:collab:serve"/> below for details of how to use
       this command.</para>
 
-    <para id="x_69e">For longer-lived repositories that you'd like to have
-      permanently available, there are several public hosting services
-      available.</para>
-
-    <itemizedlist>
-      <listitem>
-	<para id="x_69f">Bitbucket, at <ulink
-	    url="http://bitbucket.org/">http://bitbucket.org/</ulink>,
-	  provides free hosting for open source projects, and paid
-	  hosting for commercial projects.</para>
-      </listitem>
-    </itemizedlist>
+    <para id="x_69e">For longer-lived repositories that you'd like to
+      have permanently available, there are several public hosting
+      services available.  Some are free to open source projects,
+      while others offer paid commercial hosting.  An up-to-date list
+      is available at <ulink
+	url="http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting">http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting</ulink>.</para>
 
     <para id="x_6a0">If you would prefer to host your own repositories, Mercurial
       has built-in support for several popular hosting technologies,
@@ -827,7 +821,7 @@
 	so that they only print output if they're run interactively.
 	Otherwise these banners will at least clutter up Mercurial's
 	output.  Worse, they could potentially cause problems with
-	running Mercurial commands remotely.  Mercurial makes tries to
+	running Mercurial commands remotely.  Mercurial tries to
 	detect and ignore banners in non-interactive
 	<command>ssh</command> sessions, but it is not foolproof.  (If
 	you're editing your login scripts on your server, the usual
@@ -1032,19 +1026,18 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
 	<title>What could <emphasis>possibly</emphasis> go
 	  wrong?</title>
 
-	<para id="x_4c7">Once you've copied the CGI script into place, go into a
-	  web browser, and try to open the URL <ulink
-	    url="http://myhostname/
-	    myuser/hgweb.cgi">http://myhostname/
-	    myuser/hgweb.cgi</ulink>, <emphasis>but</emphasis> brace
-	  yourself for instant failure.  There's a high probability
-	  that trying to visit this URL will fail, and there are many
-	  possible reasons for this.  In fact, you're likely to
-	  stumble over almost every one of the possible errors below,
-	  so please read carefully.  The following are all of the
-	  problems I ran into on a system running Fedora 7, with a
-	  fresh installation of Apache, and a user account that I
-	  created specially to perform this exercise.</para>
+	<para id="x_4c7">Once you've copied the CGI script into place,
+	  go into a web browser, and try to open the URL
+	  <literal>http://myhostname/~myuser/hgweb.cgi</literal>,
+	  <emphasis>but</emphasis> brace yourself for instant failure.
+	  There's a high probability that trying to visit this URL
+	  will fail, and there are many possible reasons for this.  In
+	  fact, you're likely to stumble over almost every one of the
+	  possible errors below, so please read carefully.  The
+	  following are all of the problems I ran into on a system
+	  running Fedora 7, with a fresh installation of Apache, and a
+	  user account that I created specially to perform this
+	  exercise.</para>
 
 	<para id="x_4c8">Your web server may have per-user directories disabled.
 	  If you're using Apache, search your config file for a
@@ -1108,7 +1101,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 	  directions inside it to correctly set your
 	  <envar>PYTHONPATH</envar> environment variable.</para>
 
-	<para id="x_4cf">Finally, you are <emphasis>certain</emphasis> to by
+	<para id="x_4cf">Finally, you are <emphasis>certain</emphasis> to be
 	  served with another colourful Python backtrace: this one
 	  will complain that it can't find <filename
 	    class="directory">/path/to/repository</filename>.  Edit
@@ -1187,9 +1180,8 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
 chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 
       <para id="x_4d7">With basic configuration out of the way, try to
-	visit <ulink url="http://myhostname/
-	  myuser/hgwebdir.cgi">http://myhostname/
-	  myuser/hgwebdir.cgi</ulink> in your browser.  It should
+	visit <literal>http://myhostname/~myuser/hgwebdir.cgi</literal>
+	in your	browser.  It should
 	display an empty list of repositories.  If you get a blank
 	window or error message, try walking through the list of
 	potential problems in <xref
@@ -1222,19 +1214,17 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 	remaining component of a path after this stripping has
 	occurred is called a <quote>virtual path</quote>.</para>
 
-      <para id="x_4db">Given the example above, if we have a repository whose
-	local path is <filename
+      <para id="x_4db">Given the example above, if we have a
+	repository whose local path is <filename
 	  class="directory">/my/root/this/repo</filename>, the CGI
 	script will strip the leading <filename
 	  class="directory">/my/root</filename> from the name, and
 	publish the repository with a virtual path of <filename
 	  class="directory">this/repo</filename>.  If the base URL for
-	our CGI script is <ulink url="http://myhostname/
-	  myuser/hgwebdir.cgi">http://myhostname/
-	  myuser/hgwebdir.cgi</ulink>, the complete URL for that
-	repository will be <ulink url="http://myhostname/
-	  myuser/hgwebdir.cgi/this/repo">http://myhostname/
-	  myuser/hgwebdir.cgi/this/repo</ulink>.</para>
+	our CGI script is
+	<literal>http://myhostname/~myuser/hgwebdir.cgi</literal>, the
+	complete URL for that repository will be
+	<literal>http://myhostname/~myuser/hgwebdir.cgi/this/repo</literal>.</para>
 
       <para id="x_4dc">If we replace <filename
 	  class="directory">/my/root</filename> on the left hand side

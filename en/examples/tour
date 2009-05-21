@@ -119,6 +119,7 @@ hg parents
 hg update 2
 hg parents
 hg update
+hg parents
 
 #$ name: clone-push
 
@@ -148,24 +149,32 @@ hg push http://hg.serpentine.com/tutorial/hello
 
 #$ name:
 cp hello.c ../new-hello.c
-sed -i '/printf/i\\tprintf("once more, hello.\\n");' ../new-hello.c
+sed -i '/printf("hello,/i\\tprintf("once more, hello.\\n");' ../new-hello.c
+
+my-text-editor()
+{
+cp ../new-hello.c hello.c
+}
 
 #$ name: merge.clone
 
 cd ..
 hg clone hello my-new-hello
 cd my-new-hello
-# The file new-hello.c is lightly edited.
-cp ../new-hello.c hello.c
+# Make some simple edits to hello.c.
+my-text-editor hello.c
 hg commit -m 'A new hello for a new day.'
 
 #$ name: merge.dummy2
 
 hg log -r 5 | grep changeset | cut -c 16-19 2>/dev/null > /tmp/REV5.my-new-hello
 
-#$ name: merge.cat
+#$ name: merge.cat1
 
 cat hello.c
+
+#$ name: merge.cat2
+
 cat ../my-hello/hello.c
 
 #$ name: merge.pull

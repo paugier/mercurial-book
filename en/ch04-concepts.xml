@@ -112,12 +112,15 @@
       <para id="x_2f3">As the illustration shows, there is
 	<emphasis>not</emphasis> a <quote>one to one</quote>
 	relationship between revisions in the changelog, manifest, or
-	filelog. If the manifest hasn't changed between two
-	changesets, the changelog entries for those changesets will
-	point to the same revision of the manifest.  If a file that
+	filelog. If a file that
 	Mercurial tracks hasn't changed between two changesets, the
 	entry for that file in the two revisions of the manifest will
-	point to the same revision of its filelog.</para>
+	point to the same revision of its filelog<footnote>
+	  <para id="x_725">It is possible (though unusual) for the manifest to
+	    remain the same between two changesets, in which case the
+	    changelog entries for those changesets will point to the
+	    same revision of the manifest.</para>
+	</footnote>.</para>
 
     </sect2>
   </sect1>
@@ -175,16 +178,18 @@
     <sect2>
       <title>Fast retrieval</title>
 
-      <para id="x_2fa">Mercurial cleverly avoids a pitfall common to all earlier
-	revision control systems: the problem of <emphasis>inefficient
-	  retrieval</emphasis>. Most revision control systems store
-	the contents of a revision as an incremental series of
-	modifications against a <quote>snapshot</quote>.  To
-	reconstruct a specific revision, you must first read the
-	snapshot, and then every one of the revisions between the
-	snapshot and your target revision.  The more history that a
-	file accumulates, the more revisions you must read, hence the
-	longer it takes to reconstruct a particular revision.</para>
+      <para id="x_2fa">Mercurial cleverly avoids a pitfall common to
+	all earlier revision control systems: the problem of
+	<emphasis>inefficient retrieval</emphasis>. Most revision
+	control systems store the contents of a revision as an
+	incremental series of modifications against a
+	<quote>snapshot</quote>.  (Some base the snapshot on the
+	oldest revision, others on the newest.)  To reconstruct a
+	specific revision, you must first read the snapshot, and then
+	every one of the revisions between the snapshot and your
+	target revision.  The more history that a file accumulates,
+	the more revisions you must read, hence the longer it takes to
+	reconstruct a particular revision.</para>
 
       <figure id="fig:concepts:snapshot">
 	<title>Snapshot of a revlog, with incremental deltas</title>
@@ -211,25 +216,15 @@
       <sect3>
 	<title>Aside: the influence of video compression</title>
 
-	<para id="x_2fe">If you're familiar with video compression or have ever
-	  watched a TV feed through a digital cable or satellite
-	  service, you may know that most video compression schemes
-	  store each frame of video as a delta against its predecessor
-	  frame.  In addition, these schemes use <quote>lossy</quote>
-	  compression techniques to increase the compression ratio, so
-	  visual errors accumulate over the course of a number of
-	  inter-frame deltas.</para>
+	<para id="x_2fe">If you're familiar with video compression or
+	  have ever watched a TV feed through a digital cable or
+	  satellite service, you may know that most video compression
+	  schemes store each frame of video as a delta against its
+	  predecessor frame.</para>
 
-	<para id="x_2ff">Because it's possible for a video stream to <quote>drop
-	    out</quote> occasionally due to signal glitches, and to
-	  limit the accumulation of artefacts introduced by the lossy
-	  compression process, video encoders periodically insert a
-	  complete frame (called a <quote>key frame</quote>) into the
-	  video stream; the next delta is generated against that
-	  frame.  This means that if the video signal gets
-	  interrupted, it will resume once the next key frame is
-	  received.  Also, the accumulation of encoding errors
-	  restarts anew with each key frame.</para>
+	<para id="x_2ff">Mercurial borrows this idea to make it
+	  possible to reconstruct a revision from a snapshot and a
+	  small number of deltas.</para>
 
       </sect3>
     </sect2>
@@ -261,9 +256,9 @@
 	uncorrupted sections of the revlog, both before and after the
 	corrupted section.  This would not be possible with a
 	delta-only storage model.</para>
-
     </sect2>
   </sect1>
+
   <sect1>
     <title>Revision history, branching, and merging</title>
 
@@ -314,11 +309,15 @@
       those files, with the same contents it had when the changeset
       was committed.</para>
 
-    <para id="x_309">The <emphasis>dirstate</emphasis> contains Mercurial's
-      knowledge of the working directory.  This details which
-      changeset the working directory is updated to, and all of the
-      files that Mercurial is tracking in the working
-      directory.</para>
+    <para id="x_309">The <emphasis>dirstate</emphasis> is a special
+      structure that contains Mercurial's knowledge of the working
+      directory.  It is maintained as a file named
+      <filename>.hg/dirstate</filename> inside a repository.  The
+      dirstate details which changeset the working directory is
+      updated to, and all of the files that Mercurial is tracking in
+      the working directory. It also lets Mercurial quickly notice
+      changed files, by recording their checkout times and
+      sizes.</para>
 
     <para id="x_30a">Just as a revision of a revlog has room for two parents, so
       that it can represent either a normal revision (with one parent)
@@ -426,9 +425,9 @@
       </figure>
 
       <note>
-	<para id="x_315">  If you're new to Mercurial, you should keep in mind a
-	  common <quote>error</quote>, which is to use the <command
-	    role="hg-cmd">hg pull</command> command without any
+	<para id="x_315">If you're new to Mercurial, you should keep
+	  in mind a common <quote>error</quote>, which is to use the
+	  <command role="hg-cmd">hg pull</command> command without any
 	  options.  By default, the <command role="hg-cmd">hg
 	    pull</command> command <emphasis>does not</emphasis>
 	  update the working directory, so you'll bring new changesets
@@ -436,16 +435,19 @@
 	  synced at the same changeset as before the pull.  If you
 	  make some changes and commit afterwards, you'll thus create
 	  a new head, because your working directory isn't synced to
-	  whatever the current tip is.</para>
+	  whatever the current tip is.  To combine the operation of a
+	  pull, followed by an update, run <command>hg pull
+	    -u</command>.</para>
 
-	<para id="x_316">  I put the word <quote>error</quote> in
-	  quotes because all that you need to do to rectify this
-	  situation is <command role="hg-cmd">hg merge</command>, then
-	  <command role="hg-cmd">hg commit</command>.  In other words,
-	  this almost never has negative consequences; it's just
-	  something of a surprise for newcomers.  I'll discuss other
-	  ways to avoid this behavior, and why Mercurial behaves in
-	  this initially surprising way, later on.</para>
+	<para id="x_316">I put the word <quote>error</quote> in quotes
+	  because all that you need to do to rectify the situation
+	  where you created a new head by accident is
+	  <command role="hg-cmd">hg merge</command>, then <command
+	    role="hg-cmd">hg commit</command>.  In other words, this
+	  almost never has negative consequences; it's just something
+	  of a surprise for newcomers.  I'll discuss other ways to
+	  avoid this behavior, and why Mercurial behaves in this
+	  initially surprising way, later on.</para>
       </note>
 
     </sect2>
@@ -511,13 +513,15 @@
 	working directory has two parents; these will become the
 	parents of the new changeset.</para>
 
-      <para id="x_322">Mercurial lets you perform multiple merges, but you must
-	commit the results of each individual merge as you go.  This
-	is necessary because Mercurial only tracks two parents for
-	both revisions and the working directory.  While it would be
-	technically possible to merge multiple changesets at once, the
-	prospect of user confusion and making a terrible mess of a
-	merge immediately becomes overwhelming.</para>
+      <para id="x_322">Mercurial lets you perform multiple merges, but
+	you must commit the results of each individual merge as you
+	go.  This is necessary because Mercurial only tracks two
+	parents for both revisions and the working directory.  While
+	it would be technically feasible to merge multiple changesets
+	at once, Mercurial avoids this for simplicity.  With multi-way
+	merges, the risks of user confusion, nasty conflict
+	resolution, and making a terrible mess of a merge would grow
+	intolerable.</para>
 
     </sect2>
 
@@ -598,10 +602,17 @@
 	  transferred, yielding better network performance over most
 	  kinds of network.</para>
 
-	<para id="x_329">(If the connection is over <command>ssh</command>,
-	  Mercurial <emphasis>doesn't</emphasis> recompress the
-	  stream, because <command>ssh</command> can already do this
-	  itself.)</para>
+	<para id="x_329">If the connection is over
+	  <command>ssh</command>, Mercurial
+	  <emphasis>doesn't</emphasis> recompress the stream, because
+	  <command>ssh</command> can already do this itself.  You can
+	  tell Mercurial to always use <command>ssh</command>'s
+	  compression feature by editing the
+	  <filename>.hgrc</filename> file in your home directory as
+	  follows.</para>
+
+	<programlisting>[ui]
+ssh = ssh -C</programlisting>
 
       </sect3>
     </sect2>
@@ -611,9 +622,8 @@
       <para id="x_32a">Appending to files isn't the whole story when
 	it comes to guaranteeing that a reader won't see a partial
 	write.  If you recall <xref linkend="fig:concepts:metadata"/>,
-	revisions in
-	the changelog point to revisions in the manifest, and
-	revisions in the manifest point to revisions in filelogs.
+	revisions in the changelog point to revisions in the manifest,
+	and revisions in the manifest point to revisions in filelogs.
 	This hierarchy is deliberate.</para>
 
       <para id="x_32b">A writer starts a transaction by writing filelog and
@@ -637,7 +647,7 @@
 	being written to while the read is occurring. This has a big
 	effect on scalability; you can have an arbitrary number of
 	Mercurial processes safely reading data from a repository
-	safely all at once, no matter whether it's being written to or
+	all at once, no matter whether it's being written to or
 	not.</para>
 
       <para id="x_32e">The lockless nature of reading means that if you're
@@ -709,8 +719,8 @@
 	storage is cheap, and this method gives the highest
 	performance while deferring most book-keeping to the operating
 	system.  An alternative scheme would most likely reduce
-	performance and increase the complexity of the software, each
-	of which is much more important to the <quote>feel</quote> of
+	performance and increase the complexity of the software, but
+	speed and simplicity are key to the <quote>feel</quote> of
 	day-to-day use.</para>
 
     </sect2>
@@ -731,18 +741,32 @@
 	dirstate so that it knows what to do with those files when you
 	commit.</para>
 
-      <para id="x_337">When Mercurial is checking the states of files in the
-	working directory, it first checks a file's modification time.
-	If that has not changed, the file must not have been modified.
-	If the file's size has changed, the file must have been
-	modified.  If the modification time has changed, but the size
-	has not, only then does Mercurial need to read the actual
-	contents of the file to see if they've changed. Storing these
-	few extra pieces of information dramatically reduces the
-	amount of data that Mercurial needs to read, which yields
-	large performance improvements compared to other revision
-	control systems.</para>
+      <para id="x_337">The dirstate helps Mercurial to efficiently
+	  check the status of files in a repository.</para>
 
+      <itemizedlist>
+	<listitem>
+	  <para id="x_726">When Mercurial checks the state of a file in the
+	    working directory, it first checks a file's modification
+	    time against the time in the dirstate that records when
+	    Mercurial last wrote the file. If the last modified time
+	    is the same as the time when Mercurial wrote the file, the
+	    file must not have been modified, so Mercurial does not
+	    need to check any further.</para>
+	</listitem>
+	<listitem>
+	  <para id="x_727">If the file's size has changed, the file must have
+	    been modified.  If the modification time has changed, but
+	    the size has not, only then does Mercurial need to
+	    actually read the contents of the file to see if it has
+	    changed.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_728">Storing the modification time and size dramatically
+	reduces the number of read operations that Mercurial needs to
+	perform when we run commands like <command>hg status</command>.
+	This results in large performance improvements.</para>
     </sect2>
   </sect1>
 </chapter>

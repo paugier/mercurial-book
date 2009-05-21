@@ -127,17 +127,17 @@
 	repository&emdash;particularly if it's a shared
 	repository&emdash;it has essentially <quote>escaped into the
 	  wild,</quote> and you'll have to recover from your mistake
-	in a different way.  What will happen if you push a changeset
-	somewhere, then roll it back, then pull from the repository
-	you pushed to, is that the changeset will reappear in your
-	repository.</para>
+	in a different way.  If you push a changeset somewhere, then
+	roll it back, then pull from the repository you pushed to, the
+	changeset you thought you'd gotten rid of will simply reappear
+	in your repository.</para>
 
-      <para id="x_df">(If you absolutely know for sure that the change you want
-	to roll back is the most recent change in the repository that
-	you pushed to, <emphasis>and</emphasis> you know that nobody
-	else could have pulled it from that repository, you can roll
-	back the changeset there, too, but you really should really
-	not rely on this working reliably.  If you do this, sooner or
+      <para id="x_df">(If you absolutely know for sure that the change
+	you want to roll back is the most recent change in the
+	repository that you pushed to, <emphasis>and</emphasis> you
+	know that nobody else could have pulled it from that
+	repository, you can roll back the changeset there, too, but
+	you really should not expect this to work reliably.  Sooner or
 	later a change really will make it into a repository that you
 	don't directly control (or have forgotten about), and come
 	back to bite you.)</para>
@@ -192,6 +192,21 @@
       extension.</para>
 
     &interaction.daily.revert.status;
+
+    <tip>
+      <title>Be careful with <filename>.orig</filename> files</title>
+
+      <para id="x_6b8">It's extremely unlikely that you are either using
+	Mercurial to manage files with <filename>.orig</filename>
+	extensions or that you even care about the contents of such
+	files.  Just in case, though, it's useful to remember that
+	<command role="hg-cmd">hg revert</command> will
+	unconditionally overwrite an existing file with a
+	<filename>.orig</filename> extension. For instance, if you
+	already have a file named <filename>foo.orig</filename> when
+	you revert <filename>foo</filename>, the contents of
+	<filename>foo.orig</filename> will be clobbered.</para>
+    </tip>
 
     <para id="x_e6">Here is a summary of the cases that the <command
 	role="hg-cmd">hg revert</command> command can deal with.  We
@@ -249,63 +264,27 @@
 	with the copied-from file.</para>
 
       &interaction.daily.revert.copy;
-
-      <sect3>
-	<title>A slightly special case: reverting a rename</title>
-
-	<para id="x_ef">If you <command role="hg-cmd">hg rename</command> a
-	  file, there is one small detail that you should remember.
-	  When you <command role="hg-cmd">hg revert</command> a
-	  rename, it's not enough to provide the name of the
-	  renamed-to file, as you can see here.</para>
-
-	&interaction.daily.revert.rename;
-
-	<para id="x_f0">As you can see from the output of <command
-	    role="hg-cmd">hg status</command>, the renamed-to file is
-	  no longer identified as added, but the
-	  renamed-<emphasis>from</emphasis> file is still removed!
-	  This is counter-intuitive (at least to me), but at least
-	  it's easy to deal with.</para>
-
-	&interaction.daily.revert.rename-orig;
-
-	<para id="x_f1">So remember, to revert a <command role="hg-cmd">hg
-	    rename</command>, you must provide
-	  <emphasis>both</emphasis> the source and destination
-	  names.</para>
-
-	<para id="x_f2">% TODO: the output doesn't look like it will be
-	  removed!</para>
-
-	<para id="x_f3">(By the way, if you rename a file, then modify the
-	  renamed-to file, then revert both components of the rename,
-	  when Mercurial restores the file that was removed as part of
-	  the rename, it will be unmodified. If you need the
-	  modifications in the renamed-to file to show up in the
-	  renamed-from file, don't forget to copy them over.)</para>
-
-	<para id="x_f4">These fiddly aspects of reverting a rename arguably
-	  constitute a small bug in Mercurial.</para>
-
-      </sect3>
     </sect2>
   </sect1>
+
   <sect1>
     <title>Dealing with committed changes</title>
 
-    <para id="x_f5">Consider a case where you have committed a change $a$, and
-      another change $b$ on top of it; you then realise that change
-      $a$ was incorrect.  Mercurial lets you <quote>back out</quote>
-      an entire changeset automatically, and building blocks that let
-      you reverse part of a changeset by hand.</para>
+    <para id="x_f5">Consider a case where you have committed a change
+      <emphasis>a</emphasis>, and another change
+      <emphasis>b</emphasis> on top of it; you then realise that
+      change <emphasis>a</emphasis> was incorrect.  Mercurial lets you
+      <quote>back out</quote> an entire changeset automatically, and
+      building blocks that let you reverse part of a changeset by
+      hand.</para>
 
     <para id="x_f6">Before you read this section, here's something to
       keep in mind: the <command role="hg-cmd">hg backout</command>
-      command undoes changes by <emphasis>adding</emphasis> history,
-      not by modifying or erasing it.  It's the right tool to use if
-      you're fixing bugs, but not if you're trying to undo some change
-      that has catastrophic consequences.  To deal with those, see
+      command undoes the effect of a change by
+      <emphasis>adding</emphasis> to your repository's history, not by
+      modifying or erasing it.  It's the right tool to use if you're
+      fixing bugs, but not if you're trying to undo some change that
+      has catastrophic consequences.  To deal with those, see
       <xref linkend="sec:undo:aaaiiieee"/>.</para>
 
     <sect2>
@@ -392,17 +371,17 @@
 
       <para id="x_100">As the graphical history in <xref
 	  linkend="fig:undo:backout-non-tip"/> illustrates, Mercurial
-	actually commits <emphasis>two</emphasis> changes in this kind
-	of situation (the box-shaped nodes are the ones that Mercurial
-	commits automatically).  Before Mercurial begins the backout
-	process, it first remembers what the current parent of the
-	working directory is.  It then backs out the target changeset,
-	and commits that as a changeset.  Finally, it merges back to
-	the previous parent of the working directory, and commits the
-	result of the merge.</para>
-
-      <para id="x_101">% TODO: to me it looks like mercurial doesn't commit the
-	second merge automatically!</para>
+	still commits one change in this kind of situation (the
+	box-shaped node is the ones that Mercurial commits
+	automatically), but the revision graph now looks different.
+	Before Mercurial begins the backout process, it first
+	remembers what the current parent of the working directory is.
+	It then backs out the target changeset, and commits that as a
+	changeset.  Finally, it merges back to the previous parent of
+	the working directory, but notice that it <emphasis>does not
+	  commit</emphasis> the result of the merge.  The repository
+	now contains two heads, and the working directory is in a
+	merge state.</para>
 
       <figure id="fig:undo:backout-non-tip">
 	<title>Automated backout of a non-tip change using the
@@ -416,6 +395,14 @@
       <para id="x_103">The result is that you end up <quote>back where you
 	  were</quote>, only with some extra history that undoes the
 	effect of the changeset you wanted to back out.</para>
+
+      <para id="x_6b9">You might wonder why Mercurial does not commit the result
+	of the merge that it performed.  The reason lies in Mercurial
+	behaving conservatively: a merge naturally has more scope for
+	error than simply undoing the effect of the tip changeset,
+	so your work will be safest if you first inspect (and test!)
+	the result of the merge, <emphasis>then</emphasis> commit
+	it.</para>
 
       <sect3>
 	<title>Always use the <option
@@ -530,12 +517,12 @@
 	</listitem>
 	<listitem><para id="x_112">It remembers the current parent of the working
 	    directory.  Let's call this changeset
-	    <literal>orig</literal></para>
+	    <literal>orig</literal>.</para>
 	</listitem>
 	<listitem><para id="x_113">It does the equivalent of a <command
 	      role="hg-cmd">hg update</command> to sync the working
 	    directory to the changeset you want to back out.  Let's
-	    call this changeset <literal>backout</literal></para>
+	    call this changeset <literal>backout</literal>.</para>
 	</listitem>
 	<listitem><para id="x_114">It finds the parent of that changeset.  Let's
 	    call that changeset <literal>parent</literal>.</para>
@@ -632,7 +619,7 @@
 
     <para id="x_120">If a situation like this arises, and you know which
       repositories your bad change has propagated into, you can
-      <emphasis>try</emphasis> to get rid of the changeefrom
+      <emphasis>try</emphasis> to get rid of the change from
       <emphasis>every</emphasis> one of those repositories.  This is,
       of course, not a satisfactory solution: if you miss even a
       single repository while you're expunging, the change is still
@@ -644,10 +631,105 @@
       provide a way to <quote>punch a hole</quote> in history, leaving
       changesets intact.</para>
 
-    <para id="x_122">XXX This needs filling out.  The
-      <literal>hg-replay</literal> script in the
-      <literal>examples</literal> directory works, but doesn't handle
-      merge changesets.  Kind of an important omission.</para>
+    <sect2>
+      <title>Backing out a merge</title>
+
+      <para id="x_6ba">Since merges are often complicated, it is not unheard of
+	for a merge to be mangled badly, but committed erroneously.
+	Mercurial provides an important safeguard against bad merges
+	by refusing to commit unresolved files, but human ingenuity
+	guarantees that it is still possible to mess a merge up and
+	commit it.</para>
+
+      <para id="x_6bb">Given a bad merge that has been committed, usually the
+	best way to approach it is to simply try to repair the damage
+	by hand.  A complete disaster that cannot be easily fixed up
+	by hand ought to be very rare, but the <command
+	  role="hg-cmd">hg backout</command> command may help in
+	making the cleanup easier. It offers a <option
+	  role="hg-opt-backout">--parent</option> option, which lets
+	you specify which parent to revert to when backing out a
+	merge.</para>
+
+      <figure id="fig:undo:bad-merge-1">
+	<title>A bad merge</title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/bad-merge-1.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_6bc">Suppose we have a revision graph like that in <xref
+	  linkend="fig:undo:bad-merge-1"/>.  What we'd like is to
+	<emphasis>redo</emphasis> the merge of revisions 2 and
+	3.</para>
+
+      <para id="x_6bd">One way to do so would be as follows.</para>
+
+      <orderedlist>
+	<listitem>
+	  <para id="x_6be">Call <command role="hg-cmd">hg backout --rev=4
+	      --parent=2</command>.  This tells <command
+	      role="hg-cmd">hg backout</command> to back out revision
+	    4, which is the bad merge, and to when deciding which
+	    revision to prefer, to choose parent 2, one of the parents
+	    of the merge.  The effect can be seen in <xref
+	      linkend="fig:undo:bad-merge-2"/>.</para>
+	  <figure id="fig:undo:bad-merge-2">
+	    <title>Backing out the merge, favoring one parent</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-2.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+
+	<listitem>
+	  <para id="x_6bf">Call <command role="hg-cmd">hg backout --rev=4
+	      --parent=3</command>.  This tells <command
+	      role="hg-cmd">hg backout</command> to back out revision
+	    4 again, but this time to choose parent 3, the other
+	    parent of the merge.  The result is visible in <xref
+	    linkend="fig:undo:bad-merge-3"/>, in which the repository
+	    now contains three heads.</para>
+	  <figure id="fig:undo:bad-merge-3">
+	    <title>Backing out the merge, favoring the other
+	      parent</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-3.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+
+	<listitem>
+	  <para id="x_6c0">Redo the bad merge by merging the two backout heads,
+	    which reduces the number of heads in the repository to
+	    two, as can be seen in <xref
+	      linkend="fig:undo:bad-merge-4"/>.</para>
+	  <figure id="fig:undo:bad-merge-4">
+	    <title>Merging the backouts</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-4.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+
+	<listitem>
+	  <para id="x_6c1">Merge with the commit that was made after the bad
+	    merge, as shown in <xref
+	      linkend="fig:undo:bad-merge-5"/>.</para>
+	  <figure id="fig:undo:bad-merge-5">
+	    <title>Merging the backouts</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-5.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+      </orderedlist>
+    </sect2>
 
     <sect2>
       <title>Protect yourself from <quote>escaped</quote>
@@ -670,12 +752,62 @@
 	propagate into the central repository.  Better yet, this
 	happens without any need for explicit intervention.</para>
 
-      <para id="x_125">For instance, an incoming change hook that verifies that a
-	changeset will actually compile can prevent people from
-	inadvertantly <quote>breaking the build</quote>.</para>
+      <para id="x_125">For instance, an incoming change hook that
+	verifies that a changeset will actually compile can prevent
+	people from inadvertently <quote>breaking the
+	  build</quote>.</para>
+    </sect2>
 
+    <sect2>
+      <title>What to do about sensitive changes that escape</title>
+
+      <para id="x_6c2">Even a carefully run project can suffer an unfortunate
+	event such as the committing and uncontrolled propagation of a
+	file that contains important passwords.</para>
+
+      <para id="x_6c3">If something like this happens to you, and the information
+	that gets accidentally propagated is truly sensitive, your
+	first step should be to mitigate the effect of the leak
+	without trying to control the leak itself. If you are not 100%
+	certain that you know exactly who could have seen the changes,
+	you should immediately change passwords, cancel credit cards,
+	or find some other way to make sure that the information that
+	has leaked is no longer useful.  In other words, assume that
+	the change has propagated far and wide, and that there's
+	nothing more you can do.</para>
+
+      <para id="x_6c4">You might hope that there would be mechanisms you could
+	use to either figure out who has seen a change or to erase the
+	change permanently everywhere, but there are good reasons why
+	these are not possible.</para>
+
+      <para id="x_6c5">Mercurial does not provide an audit trail of who has
+	pulled changes from a repository, because it is usually either
+	impossible to record such information or trivial to spoof it.
+	In a multi-user or networked environment, you should thus be
+	extremely skeptical of yourself if you think that you have
+	identified every place that a sensitive changeset has
+	propagated to.  Don't forget that people can and will send
+	bundles by email, have their backup software save data
+	offsite, carry repositories on USB sticks, and find other
+	completely innocent ways to confound your attempts to track
+	down every copy of a problematic change.</para>
+
+      <para id="x_6c6">Mercurial also does not provide a way to make a file or
+	changeset completely disappear from history, because there is
+	no way to enforce its disappearance; someone could easily
+	modify their copy of Mercurial to ignore such directives. In
+	addition, even if Mercurial provided such a capability,
+	someone who simply hadn't pulled a <quote>make this file
+	  disappear</quote> changeset wouldn't be affected by it, nor
+	would web crawlers visiting at the wrong time, disk backups,
+	or other mechanisms.  Indeed, no distributed revision control
+	system can make data reliably vanish. Providing the illusion
+	of such control could easily give a false sense of security,
+	and be worse than not providing it at all.</para>
     </sect2>
   </sect1>
+
   <sect1 id="sec:undo:bisect">
     <title>Finding the source of a bug</title>
 
@@ -689,7 +821,7 @@
     <para id="x_127">The idea behind the <command role="hg-cmd">hg
 	bisect</command> command is that a changeset has introduced
       some change of behavior that you can identify with a simple
-      binary test.  You don't know which piece of code introduced the
+      pass/fail test.  You don't know which piece of code introduced the
       change, but you know how to test for the presence of the bug.
       The <command role="hg-cmd">hg bisect</command> command uses your
       test to direct its search for the changeset that introduced the
@@ -815,11 +947,11 @@
 	  <itemizedlist>
 	    <listitem><para id="x_139">If the test succeeded, you tell <command
 		  role="hg-cmd">hg bisect</command> by running the
-		<command role="hg-cmd">hg bisect good</command>
+		<command role="hg-cmd">hg bisect --good</command>
 		command.</para>
 	    </listitem>
 	    <listitem><para id="x_13a">If it failed, run the <command
-		  role="hg-cmd">hg bisect bad</command>
+		  role="hg-cmd">hg bisect --bad</command>
 		command.</para></listitem></itemizedlist>
 	</listitem>
 	<listitem><para id="x_13b">The command uses your information to decide
@@ -909,13 +1041,13 @@
 
       <para id="x_14a">When you're finished using the <command role="hg-cmd">hg
 	  bisect</command> command in a repository, you can use the
-	<command role="hg-cmd">hg bisect reset</command> command to
+	<command role="hg-cmd">hg bisect --reset</command> command to
 	drop the information it was using to drive your search.  The
 	command doesn't use much space, so it doesn't matter if you
 	forget to run this command.  However, <command
 	  role="hg-cmd">hg bisect</command> won't let you start a new
 	search in that repository until you do a <command
-	  role="hg-cmd">hg bisect reset</command>.</para>
+	  role="hg-cmd">hg bisect --reset</command>.</para>
 
       &interaction.bisect.search.reset;
 

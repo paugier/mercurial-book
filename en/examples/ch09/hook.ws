@@ -17,7 +17,8 @@ hg commit -A -m 'drop trailing whitespace and try again'
 
 echo '[hooks]' > .hg/hgrc
 echo "pretxncommit.whitespace = .hg/check_whitespace.py" >> .hg/hgrc
-cp $EXAMPLE_DIR/data/check_whitespace.py .hg
+cp $EXAMPLE_DIR/ch09/check_whitespace.py.lst .hg/check_whitespace.py
+chmod +x .hg/check_whitespace.py
 
 #$ name: better
 

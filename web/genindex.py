@@ -6,7 +6,8 @@ chapter_re = re.compile(r'<(chapter|appendix|preface)\s+id="([^"]+)">')
 filename_re = re.compile(r'<\?dbhtml filename="([^"]+)"\?>')
 title_re = re.compile(r'<title>(.*)</title>')
 
-chapters = glob.glob('../en/ch*.xml') + glob.glob('../en/app*.xml')
+chapters = (sorted(glob.glob('../en/ch*.xml')) +
+            sorted(glob.glob('../en/app*.xml')))
 
 fp = open('index-read.html.in', 'w')
 
