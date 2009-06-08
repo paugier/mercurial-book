@@ -1,0 +1,151 @@
+<preface id="chap:preface">
+  <?dbhtml filename="prefazione.html"?>
+  <title>Prefazione</title>
+
+  <sect1>
+    <title>Raccontare la tecnologia</title>
+
+    <para id="x_72e">Alcuni anni fa, quando volevo spiegare perché credevo che il controllo di revisione distribuito fosse importante, il campo era allora così nuovo che non esisteva quasi nessuna opera di letteratura pubblicata da dare come riferimento alle persone.</para>
+
+    <para id="x_72f">Sebbene a quel tempo spendessi un certo tempo lavorando agli interni di Mercurial stesso, mi volsi alla scrittura di questo libro perché sembrava il modo più efficace di aiutare il software a raggiungere un largo pubblico, insieme all'idea che il controllo di revisione dovesse essere distribuito per natura. Pubblico il libro online secondo i termini di una licenza liberale per la stessa ragione: per diffondere il messaggio.</para>
+
+    <para id="x_730">C'è un ritmo familiare in un buon libro di software che somiglia da vicino al racconto di una storia: che cos'è questa cosa? Perché ha importanza? Come mi aiuterà? Come la uso? In questo libro, provo a rispondere a queste domande per il controllo di revisione distribuito in generale e per Mercurial in particolare.</para>
+  </sect1>
+    
+  <sect1>
+    <title>Grazie per il vostro supporto a Mercurial</title>
+
+    <para id="x_731">Acquistando una copia di questo libro state supportando il continuo sviluppo e la libertà di Mercurial in particolare e del software free e open source in generale. O'Reilly Media e io stiamo donando le mie royalty sulle vendite di questo libro alla Software Freedom Conservancy (<ulink
+	url="http://www.softwarefreedom.org/">http://www.softwarefreedom.org/</ulink>) che fornisce supporto in termini di personale e di assistenza legale a Mercurial e a un certo numero di altri progetti software open source importanti e meritevoli.</para>
+  </sect1>
+
+  <sect1>
+    <title>Ringraziamenti</title>
+
+    <para id="x_732">Questo libro non esisterebbe se non fosse per gli sforzi di Matt Mackall, l'autore e capo progetto di Mercurial. Centiania di collaboratori volontari lo assistono abilmente da tutto il mondo.</para>
+
+    <para id="x_733">I miei figli, Cian e Ruairi, si sono sempre fatti trovare pronti ad aiutarmi a rilassarmi con meravigliosi, avventati giochi da bambini. Vorrei anche ringraziare la mia ex moglie, Shannon, per il suo supporto.</para>
+
+    <para id="x_734">I miei colleghi e amici hanno fornito aiuto e supporto in innumerevoli modi. Questa lista di persone è necessariamente molto incompleta: Stephen Hahn, Karyn Ritter, Bonnie Corwin, James Vasile, Matt Norwood, Eben Moglen, Bradley Kuhn, Robert Walsh, Jeremy Fitzhardinge, Rachel Chalmers.</para>
+
+    <para id="x_735">Ho sviluppato questo libro pubblicamente, pubblicando sul sito web del libro le bozze dei capitoli mano a mano che li completavo. I lettori mi hanno poi sottoposto il loro giudizio usando una applicazione web che ho sviluppato. Al momento in cui ho finito il libro, più di 100 persone avevano spedito i loro commenti, un numero impressionante considerando che il sistema di commenti è stato attivo solo per circa due mesi verso la fine del processo di stesura.</para> 
+
+    <para id="x_736">Vorrei esprimere in particolare un riconoscimento alle seguenti persone, che tra loro hanno contribuito a più di un terzo del numero totale di commenti. Vorrei ringraziarli per la cura e lo sforzo che hanno impiegato nel fornire un giudizio così tanto dettagliato.</para> 
+
+    <para id="x_737">Martin Geisler, Damien Cassou, Alexey Bakhirkin, Till Plewe, Dan Himes, Paul Sargent, Gokberk Hamurcu, Matthijs van der Vleuten, Michael Chermside, John Mulligan, Jordi Fita, Jon Parise.</para>
+
+    <para id="x_738">Vorrei anche ringraziare le molte persone che mi hanno aiutato notando errori e fornendo utili suggerimenti attraverso tutto il libro.</para>
+
+    <para id="x_739">Jeremy W. Sherman, Brian Mearns, Vincent Furia, Iwan Luijks, Billy Edwards, Andreas Sliwka, Paweł Sołyga, Eric Hanchrow, Steve Nicolai, Michał Masłowski, Kevin Fitch, Johan Holmberg, Hal Wine, Volker Simonis, Thomas P Jakobsen, Ted Stresen-Reuter, Stephen Rasku, Raphael Das Gupta, Ned Batchelder, Lou Keeble, Li Linxiao, Kao Cardoso Félix, Joseph Wecker, Jon Prescot, Jon Maken, John Yeary, Jason Harris, Geoffrey Zheng, Fredrik Jonson, Ed Davies, David Zumbrunnen, David Mercer, David Cabana, Ben Karel, Alan Franzoni, Yousry Abdallah, Whitney Young, Vinay Sajip, Tom Towle, Tim Ottinger, Thomas Schraitle, Tero Saarni, Ted Mielczarek, Svetoslav Agafonkin, Shaun Rowland, Rocco Rutte, Polo-Francois Poli, Philip Jenvey, Petr Tesałék, Peter R. Annema, Paul Bonser, Olivier Scherler, Olivier Fournier, Nick Parker, Nick Fabry, Nicholas Guarracino, Mike Driscoll, Mike Coleman, Mietek Bák, Michael Maloney, László Nagy, Kent Johnson, Julio Nobrega, Jord Fita, Jonathan March, Jonas Nockert, Jim Tittsler, Jeduan Cornejo Legorreta, Jan Larres, James Murphy, Henri Wiechers, Hagen Möbius, Gábor Farkas, Fabien Engels, Evert Rol, Evan Willms, Eduardo Felipe Castegnaro, Dennis Decker Jensen, Deniz Dogan, David Smith, Daed Lee, Christine Slotty, Charles Merriam, Guillaume Catto, Brian Dorsey, Bob Nystrom, Benoit Boissinot, Avi Rosenschein, Andrew Watts, Andrew Donkin, Alexey Rodriguez, Ahmed Chaudhary.</para>
+  </sect1>
+
+  <sect1>
+    <title>Convenzioni usate in questo libro</title>
+
+    <para id="x_73a">In questo libro vengono usate le seguenti convenzioni tipografiche:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>Corsivo</term>
+
+        <listitem>
+          <para id="x_73b">Indica nuovi termini, URL, indirizzi email, nomi di file ed estensioni di file.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><literal>Spaziatura fissa</literal></term>
+
+        <listitem>
+          <para id="x_73c">Usato per i listati dei programmi, così come all'interno di paragrafi che fanno riferimento a elementi di programmazione come variabili o nomi di funzione, databse, tipi di dati, variabili d'ambiente, istruzioni e parole chiave.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><userinput>Spaziatura fissa in grassetto</userinput></term>
+
+        <listitem>
+          <para id="x_73d">Mostra comandi o altro testo che dovrebbe essere digitato letteralmente dall'utente.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><replaceable>Spaziatura fissa in corsivo</replaceable></term>
+
+        <listitem>
+          <para id="x_73e">Mostra testo che dovrebbe essere sostituito da valori forniti dall'utente oppure determinati dal contesto.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <tip>
+      <para id="x_73f">Questa icona indica un consiglio, suggerimento, o nota generale.</para>
+    </tip>
+
+    <caution>
+      <para id="x_740">Questa icona indica un avviso o avvertimento.</para>
+    </caution>
+  </sect1>
+
+  <sect1>
+    <title>Usare gli esempi di codice</title>
+
+    <para id="x_741">Questo libro è qui per aiutarvi a fare il vostro lavoro. In generale, potete usare il codice in questo libro nei vostri programmi e nella vostra documentazione. Non è necessario che ci contattiate per chiedere il permesso, a meno che non stiate riproducendo una porzione significativa del codice. Per esempio, scrivere un programma che usa diversi frammenti di codice da questo libro non richiede un permesso. Vendere o distribuire un CD-ROM di esempi dai libri pubblicati da O'Reilly richiede un permesso. Rispondere a una domanda citando questo libro e riproducendo codice di esemio non richiede un permesso. Incorporare una quantità significativa di codice da questo libro nella documentazione di un vostro prodotto richiede un permesso.</para>
+
+    <para id="x_742">Apprezziamo, ma non richiediamo, l'attribuzione. Un'attribuzione di solito include il titolo, l'autore, l'editore e il codice ISBN. Per esempio: “<emphasis>Titolo del libro</emphasis> scritto da Qualche Autore. Copyright 2008 O’Reilly Media, Inc., 978-0-596-xxxx-x.”</para>
+
+    <para id="x_743">Se credete che il vostro utilizzo del codice di esempio ricada fuori dai confini dell'uso corretto o dei permessi dati sopra, sentitevi liberi di contattarci all'indirizzo email <email>permissions@oreilly.com</email>.</para>
+  </sect1>
+
+  <sect1>
+    <title>Safari® Books Online</title>
+
+    <note role="safarienabled">
+      <para id="x_744">Quando vedete un'icona Safari® Books Online sulla copertina del vostro libro di tecnologia preferito, questo significa che quel libro è disponibile attraverso la libreria Safari di O'Reilly Network.</para>
+    </note>
+
+    <para id="x_745">Safari offre una soluzione che è meglio degli e-book. &Egrave; una libreria virtuale che vi permette di effettuare facilmente ricerche su migliaia di libri di tecnologia, copiare e incollare gli esempi di codice, scaricare capitoli e trovare risposte veloci quando avete bisogno delle informazioni più accurate e recenti. Provatelo gratis all'indirizzo <ulink role="orm:hideurl:ital"
+	url="http://my.safaribooksonline.com/?portal=oreilly">http://my.safaribooksonline.com</ulink>.</para>
+  </sect1>
+
+  <sect1>
+    <title>Come contattarci</title>
+
+    <para id="x_746">Per favore spedite commenti e domande riguardanti questo libro all'editore:</para>
+
+    <simplelist type="vert">
+      <member>O’Reilly Media, Inc.</member>
+
+      <member>1005 Gravenstein Highway North</member>
+
+      <member>Sebastopol, CA 95472</member>
+
+      <member>800-998-9938 (negli Stati Uniti o in Canada)</member>
+
+      <member>707-829-0515 (internazionale o locale)</member>
+
+      <member>707 829-0104 (fax)</member>
+    </simplelist>
+
+    <para id="x_747">Abbiamo una pagina web per questo libro, dove elenchiamo errata, esempi e ogni informazione aggiuntiva. Potete accedere questa pagina all'indirizzo:</para>
+
+    <simplelist type="vert">
+      <member><ulink url="http://www.oreilly.com/catalog/&lt;catalog
+	  page&gt;"></ulink></member>
+    </simplelist>
+
+    <remark>Non dimenticarti di aggiornare anche l'attributo &lt;url&gt;.</remark>
+
+    <para id="x_748">Per commentare o chiedere domande tecniche su questo libro, spedite una email a:</para>
+
+    <simplelist type="vert">
+      <member><email>bookquestions@oreilly.com</email></member>
+    </simplelist>
+
+    <para id="x_749">Per maggiori informazioni sui nostri libri, sulle conferenze, sui Centri di Risorse, e su O'Reilly Network, visitate il nostro sito web all'indirizzo:</para>
+
+    <simplelist type="vert">
+      <member><ulink url="http://www.oreilly.com"></ulink></member>
+    </simplelist>
+  </sect1>
+</preface>
