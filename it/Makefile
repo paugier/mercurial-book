@@ -19,6 +19,7 @@ $(obj-web)/index.html: .validated-00book.xml
 	cp ${web-global}/styles.css ${obj-web}
 	mkdir -p ${figs-web}
 	cp -f ${web-global}/icons/*.png $(figs-web)
+    cp -f examples/figs/*.png $(figs-web)
 	sed -i -e "s|/support/||g" ${obj-web}/*.html
 #	python ../web/texpand.py ../web/index-read.html.in html/read/index.html
 #	for i in $(obj-web-read)/*.html; do \
