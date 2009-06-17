@@ -8,6 +8,7 @@ xml-src-files := \
     
 obj-web := html
 figs-web := ${obj-web}/figs
+script-web := $(obj-web)/javascript
 web-global := ../web
 web-local := web
 
@@ -21,6 +22,8 @@ $(obj-web)/index.html: .validated-00book.xml
 	mkdir -p ${figs-web}
 	cp -f ${web-global}/icons/*.png $(figs-web)
 	cp -f examples/figs/*.png $(figs-web)
+	mkdir -p $(script-web)
+	cp -f $(web-local)/*.js $(script-web)
 	sed -i -e "s|/support/||g" ${obj-web}/*.html
 #	python ../web/texpand.py ../web/index-read.html.in html/read/index.html
 #	for i in $(obj-web-read)/*.html; do \
