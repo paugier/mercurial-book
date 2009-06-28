@@ -28,6 +28,7 @@
       <p><img src="figs/rss.png"/> Volete rimanere aggiornati? Abbonatevi al feed delle modifiche per <a id="chapterfeed" class="feed" href="/feeds/comments/">questo capitolo</a> o per <a class="feed" href="/feeds/comments/">l'intero libro</a>.</p>
       <p>Copyright 2006, 2007, 2008, 2009 Bryan O'Sullivan.
       Icone realizzate da <a href="mailto:mattahan@gmail.com">Paul Davey</a> alias <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
+      <p>Copyright 2009 <a href="mailto:giulio.piancastelli@gmail.com">Giulio Piancastelli</a> per la traduzione italiana.</p>
     </div>
   </xsl:template>
   
