@@ -1,4 +1,4 @@
-#!C:/Programmi/Python30/python
+# This script works with Python 3.0 or above
 
 import glob, os, re
 

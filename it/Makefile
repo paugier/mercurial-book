@@ -1,10 +1,18 @@
 include Makefile.vars
 
+# Makefile.vars include the following system-dependent variables:
+#
+# dtd-url = the location of the DocBook 4.5 DTD on your filesystem
+# system-xsl-dir = the location of DocBook XSLT on your filesystem
+# python = the location of Python 3.x on your filesystem
+
 xml-src-files := \
 	00book.xml \
 	$(wildcard ch*.xml)
 	#$(wildcard app*.xml)
-	
+
+xsltproc-opts := --nonet --xinclude
+xmllint-opts := --noout --nonet --valid --path '$(dtd-url)'
     
 obj-web := html
 figs-web := ${obj-web}/figs
@@ -38,7 +46,7 @@ $(web-local)/index-read.html.in: $(web-local)/genindex.py $(xml-src-files)
 	sed -i -e "s|{% block bodycontent %}{% endblock %}|$(shell cat $(web-local)/index-read.html.in)|g" ${obj-web}/index.html
 
 $(web-local)/genindex.py: $(xml-src-files)
-	cd $(web-local) && ./genindex.py
+	cd $(web-local) && $(python) genindex.py
 
 valid: .validated-00book.xml
 
