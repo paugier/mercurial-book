@@ -2,9 +2,9 @@
   <?dbhtml filename="migrare-verso-mercurial.html"?>
 <title>Migrare verso Mercurial</title>
 
-  <para id="x_6e1">Un modo comune di tastare il terreno con un nuovo strumento di controllo di revisione è sperimentarlo spostando un progetto esistente, piuttosto che cominciare un nuovo progetto da zero.</para>
+  <para id="x_6e1">Un modo comune di esplorare un nuovo strumento di controllo di revisione è quello di sperimentarlo trasferendo un progetto esistente piuttosto che cominciare un nuovo progetto da zero.</para>
 
-  <para id="x_6e2">In questa appendice, parliamo di come importare la cronologia di un progetto in Mercurial e di quello a cui dovete essere preparati se siete abituati a un sistema di controllo di revisione differente.</para>
+  <para id="x_6e2">In questa appendice, parleremo di come importare la cronologia di un progetto in Mercurial e di quello a cui dovete essere preparati se siete abituati a un sistema di controllo di revisione differente.</para>
 
   <sect1>
     <title>Importare la cronologia da un altro sistema</title>
@@ -37,64 +37,64 @@
       </listitem>
     </itemizedlist>
 
-    <para id="x_6ec">(Per verificare se lo stesso Mercurial è supportato come sorgente da cui importare la cronologia, si veda la <xref linkend="svn.filemap"/>.)</para>
+    <para id="x_6ec">(Per verificare perché lo stesso Mercurial sia supportato come sorgente da cui importare la cronologia, si veda la <xref linkend="svn.filemap"/>.)</para>
 
-    <para id="x_6ed">Potete abilitare l'estensione nel solito modo, modificando il vostro file <filename>~/.hgrc</filename>.</para>
+    <para id="x_6ed">Potete attivare l'estensione nel solito modo, modificando il vostro file <filename>~/.hgrc</filename>.</para>
 
     <programlisting>[extensions]
 convert =</programlisting>
 
-    <para id="x_6ee">Questo renderà disponibile il comando <command>hg convert</command> Il comando è facile da usare. Per esempio, l'invocazione seguente importerà la cronologia di Subversion per il framework di collaudo di unità Nose in Mercurial.</para>
+    <para id="x_6ee">Questo renderà disponibile il comando <command>hg convert</command>. Il comando è facile da usare. Per esempio, l'invocazione seguente importerà in Mercurial la cronologia di Subversion per Nose, un framework per il collaudo di unità.</para>
 
     <screen><prompt>$</prompt> <userinput>hg convert http://python-nose.googlecode.com/svn/trunk</userinput></screen>
 
-    <para id="x_6ef">L'estensione <literal>convert</literal> opera in maniera incrementale. In altre parole, dopo che avete eseguito <command>hg convert</command> una prima volta, eseguendolo nuovamente importerete qualsiasi nuova revisione inserita dopo che avete dato il via alla prima esecuzione. La conversione incrementale funzionerà solo se eseguite <command>hg convert</command> nello stesso repository Mercurial che avete usato in origine, perché l'estensione <literal>convert</literal> salva alcuni metadati privati in un file esterno al controllo di revisione chiamato <filename>.hg/shamap</filename> all'interno del repository.</para>
+    <para id="x_6ef">L'estensione <literal>convert</literal> opera in maniera incrementale. In altre parole, dopo che avete eseguito <command>hg convert</command> una prima volta, eseguendolo nuovamente importerete tutte le nuove revisioni inserite dopo che avete dato il via alla prima esecuzione. La conversione incrementale funzionerà solo se eseguite <command>hg convert</command> nello stesso repository Mercurial che avete usato in origine, perché l'estensione <literal>convert</literal> salva alcuni metadati privati all'interno del repository in un file chiamato <filename>.hg/shamap</filename> non soggetto al controllo di revisione.</para>
 
-    <para id="x_707">Quando volete cominciare a fare modifiche usando Mercurial, la cosa migliore è clonare l'alberto in cui state facendo le vostre conversioni e lasciare l'albero originale per conversioni incrementali future. Questo è il modo più sicuro di permettervi di estrarre e unire i futuri inserimenti dal sistema di controllo di revisione sorgente nel vostro progetto Mercurial appena attivato.</para>
+    <para id="x_707">Quando volete cominciare a effettuare modifiche usando Mercurial, è preferibile clonare l'albero in cui state facendo le vostre conversioni e tenere da parte l'albero originale per dedicarlo a future conversioni incrementali. Questo è il modo più sicuro di per estrarre i futuri commit dal sistema di controllo di revisione sorgente e incorporarli nel progetto Mercurial che avete appena creato.</para>
 
     <sect2>
-      <title>Convertire rami molteplici</title>
+      <title>Convertire molti rami</title>
 
-      <para id="x_708">Il comando <command>hg convert</command> eseguito in precedenza converte solo la cronologia del <literal>trunk</literal> del repository Subversion. Se invece usiamo l'URL <literal>http://python-nose.googlecode.com/svn</literal>, Mercurial scoprirà automaticamente le directory <literal>trunk</literal>, <literal>tags</literal> e <literal>branches</literal> che compongono il layout usato di solito dai progetti Subversion e le importerà in Mercurial come rami separati.</para>
+      <para id="x_708">Il comando <command>hg convert</command> eseguito in precedenza converte solo la cronologia del <literal>trunk</literal> del repository Subversion. Se invece usiamo l'URL <literal>http://python-nose.googlecode.com/svn</literal>, Mercurial individuerà automaticamente le directory <literal>trunk</literal>, <literal>tags</literal> e <literal>branches</literal> che compongono il layout usato di solito dai progetti Subversion e le importerà come rami separati.</para>
 
-      <para id="x_709">Di default, a ogni ramo Subversion importato in Mercurial viene assegnato un nome di ramo. Dopo che la conversione si è conclusa, potete ottenere una lista dei nomi dei rami attivi nel repository Mercurial usando <command>hg branches -a</command>. Se preferite importare i rami Subversion senza nomi, passate l'opzione <option>--config convert.hg.usebranchnames=false</option> al comando <command>hg convert</command>.</para>
+      <para id="x_709">Per default, a ogni ramo Subversion importato in Mercurial viene assegnato un nome. Dopo che la conversione si è conclusa, potete ottenere una lista dei nomi dei rami attivi nel repository Mercurial usando <command>hg branches -a</command>. Se preferite importare i rami Subversion senza nomi, passate l'opzione <option>--config convert.hg.usebranchnames=false</option> al comando <command>hg convert</command>.</para>
 
-      <para id="x_70a">Una volta che avete convertito il vostro albero, se volete seguire la classica procedura Mercurial di lavorare in un albero che contiene un singolo ramo, potete clonare quel singolo ramo usando <command>hg clone -r mybranchname</command>.</para>
+      <para id="x_70a">Una volta che avete convertito il vostro albero, se volete seguire la consuetudine, tipica per Mercurial, di lavorare in un albero che contiene un singolo ramo, potete clonare quel singolo ramo usando <command>hg clone -r nomedelbranch</command>.</para>
     </sect2>
 
     <sect2>
       <title>Correlare i nomi utente</title>
 
-      <para id="x_6f0">Alcuni strumenti di controllo di revisione salvano solo nomi utenti brevi con ogni inserimento e questi possono essere difficili da interpretare. La norma con Mercurial è quella di salvare il nome e l'indirizzo email di chi effettua il commit, che è molto più utile per parlare con loro dopo il fatto.</para>
+      <para id="x_6f0">Alcuni strumenti di controllo di revisione salvano con ogni inserimento solo nomi utenti brevi che possono essere difficili da interpretare. Con Mercurial, la norma è quella di salvare il nome e l'indirizzo email di chi effettua il commit, due informazioni molto più utile se in seguito volessimo contattare quella persona.</para>
 
-      <para id="x_6f1">Se state convertendo un albero da un sistema di controllo di revisione che usa nomi brevi, potete correlare quei nomi a equivalenti più lunghi passando l'opzione <option>--authors</option> a <command>hg convert</command>. Questa opzione accetta un nome di file che dovrebbe contenere voci della forma seguente.</para>
+      <para id="x_6f1">Se state convertendo un albero da un sistema di controllo di revisione che usa nomi brevi, potete correlare quei nomi a equivalenti più lunghi passando l'opzione <option>--authors</option> al comando <command>hg convert</command>. Questa opzione accetta un nome di file che dovrebbe contenere voci nel seguente formato.</para>
 
-      <programlisting>arist = Aristotle &lt;aristotle@phil.example.gr&gt;
-soc = Socrates &lt;socrates@phil.example.gr&gt;</programlisting>
+      <programlisting>arist = Aristotele &lt;aristotele@filo.example.gr&gt;
+soc = Socrate &lt;socrate@filo.example.gr&gt;</programlisting>
 
-      <para id="x_6f2">Ogni volta che <literal>convert</literal> incontra un commit associato al nome utente <literal>arist</literal> nel repository sorgente, userà il nome <literal>Aristotle &lt;aristotle@phil.example.gr&gt;</literal> nella revisione convertita in Mercurial. Se nessuna corrispondenza viene trovata per un dato nome, quel nome è usato alla lettera.</para>
+      <para id="x_6f2">Ogni volta che <literal>convert</literal> incontra un commit associato al nome utente <literal>arist</literal> nel repository sorgente, userà il nome <literal>Aristotele &lt;aristotele@filo.example.gr&gt;</literal> nella revisione convertita in Mercurial. Se nessuna corrispondenza viene trovata per un dato nome, quel nome è usato alla lettera.</para>
     </sect2>
 
     <sect2 id="svn.filemap">
-      <title>Rassettare l'albero</title>
+      <title>Riordinare l'albero</title>
 
-      <para id="x_6f3">Non tutti i progetti hanno una cronologia pristina. Potrebbe esserci una directory che non avrebbe mai dovuto essere inserita, un file che è troppo grande, o un'intera gerarchia che ha bisogno di essere riorganizzata.</para>
+      <para id="x_6f3">Non tutti i progetti hanno una cronologia pulita. Potrebbe esserci una directory che non avrebbe mai dovuto essere inserita, un file che è troppo grande, o un'intera gerarchia che ha bisogno di essere riorganizzata.</para>
 
-      <para id="x_6f4">L'estensione <literal>convert</literal> supporta l'idea di una <quote>mappa di file</quote> che può riorganizzare i file e le directory in un progetto nel momento in cui ne importa la cronologia. Questo è utile non solo quando si importa la cronologia da altri sistemi di controllo di revisione, ma anche per potare o riorganizzare un albero di Mercurial.</para>
+      <para id="x_6f4">L'estensione <literal>convert</literal> supporta l'idea di una <quote>mappa di file</quote> che può essere impiegata per riorganizzare i file e le directory di un progetto nel momento in cui se ne importa la cronologia. Questo è utile non solo quando si importa la cronologia da altri sistemi di controllo di revisione, ma anche per potare o riorganizzare un albero Mercurial.</para>
 
       <para id="x_6f5">Per specificare una mappa di file, usate l'opzione <option>--filemap</option> e fornitele un nome di file. Una mappa di file contiene righe nei seguenti formati.</para>
 
       <programlisting># Questo è un commento
 # Le righe vuote vengono ignorate
 
-include path/to/file
+include percorso/del/file
 
-exclude path/to/file
+exclude percorso/del/file
 
-rename from/some/path to/some/other/place
+rename da/qualche/percorso a/qualche/altra/posizione
 </programlisting>
 
-      <para id="x_6f6">La direttiva <literal>include</literal> provoca l'inclusione di un file, o di tutti i file contenuti in una directory, nel repository destinazione. Questa direttiva provoca anche l'esclusione di tutti gli altri file o directory che non sono stati esplicitamente inclusi. La direttiva <literal>exclude</literal> provoca l'omissione di file e directory indicati e di tutti quegli altri che non sono stati esplicitamente menzionati per essere inclusi.</para>
+      <para id="x_6f6">La direttiva <literal>include</literal> provoca l'inclusione di un file, o di tutti i file contenuti in una directory, nel repository destinazione. Questa direttiva provoca anche l'esclusione di tutti gli altri file o directory che non sono stati esplicitamente inclusi. La direttiva <literal>exclude</literal> provoca l'esclusione dei file e delle directory indicate e di tutti quegli altri percorsi che non sono stati esplicitamente menzionati per essere inclusi.</para>
 
       <para id="x_6f7">Per spostare un file o una directory da una posizione a un'altra, usate la direttiva <literal>rename</literal>. Se dovete spostare un file o una directory da una sottodirectory alla radice del repository, usate <literal>.</literal> come secondo argomento della direttiva <literal>rename</literal>.</para>
     </sect2>
@@ -102,15 +102,15 @@ rename from/some/path to/some/other/place
     <sect2>
       <title>Migliorare le prestazioni della conversione da Subversion</title>
 
-      <para id="x_70b">Avrete spesso bisogno di fare diversi tentativi prima di trovare la combinazione perfetta tra mappa di utenti, mappa di file e altri parametri di conversione. Convertire un repository Subversion attraverso un protocollo di accesso come <literal>ssh</literal> o <literal>http</literal> può procedere migliaia di volte più lentamente di quanto Mercurial sia in grado di operare effettivamente, a causa della latenza di rete. Questo può rendere molto dolorosa la regolazione di quella ricetta per la conversione perfetta.</para>
+      <para id="x_70b">Avrete spesso bisogno di fare diversi tentativi prima di trovare la combinazione perfetta tra mappa di utenti, mappa di file e altri parametri di conversione. La conversione di un repository Subversion attraverso un protocollo di accesso come <literal>ssh</literal> o <literal>http</literal> può procedere migliaia di volte più lentamente di quanto Mercurial sia capace di operare in realtà, a causa della latenza di rete. Questo può rendere molto complicata la messa a punto di quella ricetta per la conversione perfetta.</para>
 
-      <para id="x_70c">Il comando <ulink url="http://svn.collab.net/repos/svn/trunk/notes/svnsync.txt"><command>svnsync</command></ulink> può velocizzare grandemente la conversione di un repository Subversion. Serve per creare un mirror di sola lettura di un repository Subversion. L'idea è quella di creare un mirror locale del vostro albero Subversion, poi di convertire il mirror in un repository Mercurial.</para>
+      <para id="x_70c">Il comando <ulink url="http://svn.collab.net/repos/svn/trunk/notes/svnsync.txt"><command>svnsync</command></ulink> può velocizzare grandemente la conversione di un repository Subversion. Serve per creare un mirror di sola lettura di un repository Subversion. L'idea è quella di creare un mirror locale del vostro albero Subversion per poi convertire il mirror in un repository Mercurial.</para>
 
       <para id="x_70d">Immaginiamo di voler convertire il repository Subversion che contiene il popolare progetto Memcached in un albero Mercurial. Per prima cosa, creiamo un repository Subversion locale.</para>
 
       <screen><prompt>$</prompt> <userinput>svnadmin create memcached-mirror</userinput></screen>
 
-      <para id="x_70e">Successivamente, impostiamo un ~hook~ Subversion di cui <command>svnsync</command> ha bisogno.</para>
+      <para id="x_70e">Successivamente, impostiamo un hook Subversion di cui <command>svnsync</command> ha bisogno.</para>
 
       <screen><prompt>$</prompt> <userinput>echo '#!/bin/sh' > memcached-mirror/hooks/pre-revprop-change</userinput>
 <prompt>$</prompt> <userinput>chmod +x memcached-mirror/hooks/pre-revprop-change</userinput></screen>
@@ -120,7 +120,7 @@ rename from/some/path to/some/other/place
       <screen><prompt>$</prompt> <userinput>svnsync --init file://`pwd`/memcached-mirror \
   http://code.sixapart.com/svn/memcached</userinput></screen>
 
-      <para id="x_710">Il passo successivo consiste nel cominciare il processo di creazione del mirror con il comando <command>svnsync</command>.</para>
+      <para id="x_710">Il passo successivo consiste nell'avviare il processo di creazione del mirror con il comando <command>svnsync</command>.</para>
 
       <screen><prompt>$</prompt> <userinput>svnsync sync file://`pwd`/memcached-mirror</userinput></screen>
 
@@ -128,42 +128,42 @@ rename from/some/path to/some/other/place
 
       <screen><prompt>$</prompt> <userinput>hg convert memcached-mirror</userinput></screen>
       
-      <para id="x_712">Possiamo usare questo processo in maniera incrementale se il repository Subversion è ancora attivo. Eseguiamo <command>svnsync</command> per propagare i nuovi cambiamenti verso il nostro mirror e poi eseguiamo <command>hg convert</command> per importarli nel nostro albero Mercurial.</para>
+      <para id="x_712">Se il repository Subversion è ancora attivo, possiamo usare questo processo in maniera incrementale. Eseguiamo <command>svnsync</command> per propagare i nuovi cambiamenti verso il nostro mirror e poi eseguiamo <command>hg convert</command> per importarli nel nostro albero Mercurial.</para>
 
-      <para id="x_713">Ci sono due vantaggi nel fare una importazione in due stadi con <command>svnsync</command>. Il primo è che usa una sincronizzazione di rete con Subversion più efficiente rispetto al comando <command>hg convert</command>, quindi trasferisce meno dati attraverso la rete. Il secondo è che l'importazione da un albero Subversion locale è così veloce che potete aggiustare ripetutamente le vostre impostazioni di conversione senza aspettare che un processo di conversione basato sulla rete e dolorosamente lento si concluda ogni volta.</para>
+      <para id="x_713">Un'importazione in due stadi realizata con <command>svnsync</command> ha due vantaggi. Il primo è che <command>svnsync</command> usa una sincronizzazione di rete con Subversion più efficiente rispetto al comando <command>hg convert</command>, quindi trasferisce meno dati attraverso la rete. Il secondo è che l'importazione da un albero Subversion locale è così veloce che potete aggiustare ripetutamente le vostre impostazioni di conversione senza aspettare ogni volta la terminazione di un processo di conversione basato su rete e dolorosamente lento.</para>
     </sect2>
   </sect1>
 
   <sect1>
     <title>Migrare da Subversion</title>
 
-    <para id="x_6f8">Attualmente Subversion è il sistema di controllo di revisione open source più popolare. Sebbene ci siano molte differenze tra Mercurial e Subversion, effettuare una transizione da Subversion a Mercurial non è particolarmente difficile. I due hanno insiemi di comandi simili e interfacce generalmente uniformi.</para>
+    <para id="x_6f8">Attualmente Subversion è il sistema di controllo di revisione open source più popolare. Sebbene ci siano molte differenze tra Mercurial e Subversion, effettuare una transizione da Subversion a Mercurial non è particolarmente difficile. I due sistemi hanno insiemi di comandi simili e interfacce generalmente uniformi.</para>
 
     <sect2>
       <title>Differenze filosofiche</title>
 
       <para id="x_6f9">Naturalmente, la differenza fondamentale tra Subversion e Mercurial è che Subversion è centralizzato mentre Mercurial è distribuito. Dato che Mercurial memorizza tutta la cronologia di un progetto sul vostro disco locale, ha bisogno di accedere alla rete solo quando volete esplicitamente comunicare con un altro repository. Al contrario, Subversion memorizza localmente un'esigua quantità di informazioni, perciò il client deve contattare il proprio server per molte operazioni comuni.</para>
 
-      <para id="x_6fa">Subversion riesce più o meno a cavarsela senza una nozione di ramo ben definita: quale porzione di uno spazio di nomi sul server si qualifica come ramo è un problema di convenzioni, e il software non fornisce alcuna imposizione. Mercurial tratta un repository come l'unità della gestione dei rami.</para>
+      <para id="x_6fa">Subversion riesce più o meno a cavarsela senza una nozione di ramo ben definita: qualificare come ramo una porzione dello spazio di nomi sul server è una questione di convenzioni, e il software non impone alcuna costrizione. Mercurial tratta un repository come l'unità della gestione dei rami.</para>
 
       <sect3>
 	<title>L'ambito dei comandi</title>
 
-	<para id="x_6fb">Dato che Subversion non sa quali parti del suo spazio di nomi siano realmente rami, tratta la maggior parte dei comandi come se richiedesse di operare al livello di qualsiasi directory stiate correntemente visitando e ai livelli sottostanti. Per esempio, se eseguite <command>svn log</command>, otterrete la cronologia di qualunque parte dell'albero stiate osservando, non dell'intero albero.</para>
+	<para id="x_6fb">Dato che Subversion non sa quali parti del suo spazio di nomi siano realmente rami, tratta la maggior parte dei comandi come se richiedesse di operare al livello di qualsiasi directory in cui vi troviate e ai livelli sottostanti. Per esempio, se eseguite <command>svn log</command>, otterrete la cronologia di qualunque parte dell'albero stiate osservando, non dell'intero albero.</para>
 
-	<para id="x_6fc">I comandi Mercurial si comportano in maniera differente, perché di default operano sull'intero repository. Eseguite <command>hg log</command> e vi mostrerà la cronologia dell'intero albero, a prescindere da quale parte della directory di lavoro stiate visitando in quel momento. Se volete solo la cronologia di un file o una directory particolare, vi basta fornire un nome al comando, e.g. <command>hg log src</command>.</para>
+	<para id="x_6fc">Il comportamento predefinito di Mercurial è differente perché i suoi comandi operano sull'intero repository. Eseguite <command>hg log</command> e vi mostrerà la cronologia dell'intero albero, a prescindere da quale parte della directory di lavoro state visitando in quel momento. Se volete solo la cronologia di un file o di una directory particolare, vi basta fornire un nome al comando, e.g. <command>hg log src</command>.</para>
 
-	<para id="x_6fd">Per la mia esperienza, questa differenza nel comportamento predefinito dei comandi è probabilmente la cosa che potrà confondervi di più se dovete spostarvi frequentemente avanti e indietro tra i due strumenti.</para>
+	<para id="x_6fd">Secondo la mia esperienza, questa differenza nel comportamento predefinito dei comandi è probabilmente la cosa che può confondervi di più se dovete spostarvi frequentemente avanti e indietro tra i due strumenti.</para>
       </sect3>
 
       <sect3>
 	<title>Operazioni multi-utente e sicurezza</title>
 
-	<para id="x_6fe">Con Subversion, è normale (anche se leggermente disapprovato) collaborare tra più persone in un singolo ramo. Se Alice e Bruno stanno lavorando insieme e Alice inserisce alcune modifiche al loro ramo condiviso, Bruno deve aggiornare la vista del ramo del suo client prima di poter effettuare un commit. Dato che in quel momento non ha alcuna registrazione permanente dei cambiamenti che ha fatto, potrebbe rovinare o perdere le proprie modifiche durante e dopo questo aggiornamento.</para>
+	<para id="x_6fe">Con Subversion, è normale (anche se blandamente deprecato) che più persone collaborino su un singolo ramo. Se Alice e Bruno stanno lavorando insieme e Alice inserisce alcune modifiche nel ramo condiviso, Bruno deve aggiornare la vista del ramo del suo client prima di poter effettuare un commit. Dato che in quel momento non esiste alcuna registrazione permanente dei cambiamenti fatti da Bruno, le sue modifiche potrebbero rovinarsi o andare perdute durante e dopo questo aggiornamento.</para>
 
-	<para id="x_6ff">Mercurial, invece, incoraggia un modello di inserimento-e-unione. Bruno inserisce le proprie modifiche nel suo repository locale prima di estrarre i cambiamenti dal, o trasmetterli al, server che condivide con Alice. Se Alice trasmette i suoi cambiamenti prima che Bruno provi a trasmettere i propri, Bruno non sarà in grado di trasmettere i propri cambiamenti prima di aver estratto quelli di Alice, averli incorporati e aver effettuato il commit dei risultati dell'unione. Se commette un errore durante l'unione, ha ancora l'opzione di ritornare al commit che aveva registrato i suoi cambiamenti.</para>
+	<para id="x_6ff">Mercurial, invece, incoraggia un modello di inserimento-e-unione. Bruno inserisce le proprie modifiche nel suo repository locale prima di estrarre o trasmettere i cambiamenti da o verso il server che condivide con Alice. Se Alice trasmette i suoi cambiamenti prima che Bruno provi a trasmettere i propri, Bruno non sarà in grado di trasmettere i suoi cambiamenti prima di aver estratto quelli di Alice, averli incorporati e aver effettuato il commit dei risultati dell'unione. Se Bruno commette un errore durante l'unione, può sempre ritornare al commit che aveva registrato i suoi cambiamenti.</para>
 
-	<para id="x_700">Vale la pena sottolineare che questi sono i modi più comuni di lavorare con questi strumenti. Subversion supporta un modello più sicuro di lavorare-nel-vostro-ramo-personale, che però in pratica si rivela abbastanza scomodo da non essere largamente usato. Mercurial può supportare il modello meno sicuro di consentire l'estrazione e l'unione di cambiamenti su modifiche non ancora registrate, ma questo è considerato estremamente inusuale.</para>
+	<para id="x_700">Vale la pena sottolineare che questi sono i modi più comuni di lavorare con questi strumenti. Subversion supporta un modello più sicuro per consentirvi di lavorare-nel-vostro-ramo-personale, che però in pratica si rivela abbastanza scomodo da non essere particolarmente diffuso. Mercurial può supportare un modello meno sicuro che permette di estrarre e unire i cambiamenti nonostante la presenza di modifiche non ancora registrate, ma questo è considerato estremamente inusuale.</para>
       </sect3>
 
       <sect3>
@@ -173,14 +173,14 @@ rename from/some/path to/some/other/place
 
 	<para id="x_702">Con Mercurial, i commit sono sempre locali e devono essere pubblicati successivamente tramite il comando <command>hg push</command>.</para>
 
-	<para id="x_703">Ogni approccio ha i propri vantaggi e svantaggi. Il modello di Subversion significa che i cambiamenti sono pubblicati, e quindi revisionabili e utilizzabili, immediatamente. D'altra parte, questo significa che un utente deve avere accesso in scrittura a un repository per utilizzare lo strumento in maniera normale, ma la maggior parte dei progetti open source non concede alla leggera i permessi di scrittura.</para>
+	<para id="x_703">Ogni approccio ha i propri vantaggi e svantaggi. Il modello di Subversion prevede che i cambiamenti siano pubblicati, e quindi revisionabili e utilizzabili, immediatamente. D'altra parte, questo significa che un utente deve avere accesso in scrittura a un repository per utilizzare normalmente lo strumento, ma la maggior parte dei progetti open source non concede alla leggera i permessi di scrittura.</para>
 
-	<para id="x_704">L'approccio di Mercurial consente a chiunque possa clonare un repository di inserirvi modifiche senza il bisogno del permesso di qualcun altro, e chiunque può pubblicare i propri cambiamenti e continuare a partecipare nel modo che preferisce. La distinzione tra le operazioni di inserimento e trasmissione dei cambiamenti apre la possibilità che qualcuno effettui il commit di alcune modifiche sul proprio computer e si allontani per qualche giorno dimenticandosi di trasmetterli, che in rari casi potrebbe lasciare i collaboratori temporaneamente bloccati.</para>
+	<para id="x_704">L'approccio di Mercurial consente a chiunque possa clonare un repository di inserirvi modifiche senza il bisogno del permesso di qualcun altro e di pubblicare i propri cambiamenti e continuare a partecipare nel modo che preferisce. A causa della distinzione tra le operazioni di inserimento e trasmissione dei cambiamenti, può capitare che qualcuno effettui il commit di alcune modifiche sul proprio computer e si allontani per qualche giorno dimenticandosi di trasmetterli, cosa che in rari casi potrebbe bloccare temporaneamente le attività dei collaboratori.</para>
       </sect3>
     </sect2>
 
     <sect2>
-      <title>~Quick reference~</title>
+      <title>Guida rapida</title>
 
       <table>
 	<title>Equivalenze tra i comandi Subversion e Mercurial</title>
@@ -270,7 +270,7 @@ rename from/some/path to/some/other/place
 	      <entry><command>svn info</command></entry>
 	      <entry><command>hg showconfig
 		  paths.parent</command></entry>
-	      <entry>Mostra quale URL è stato estratto</entry>
+	      <entry>Mostra da quale URL è avvenuta l'estrazione</entry>
 	    </row>
 	    <row>
 	      <entry><command>svn list</command></entry>
@@ -327,9 +327,9 @@ rename from/some/path to/some/other/place
   <sect1>
     <title>Suggerimenti utili per i principianti</title>
 
-    <para id="x_705">In alcuni sistemi di controllo di revisione, stampare le differenze per una singola revisione inserita può essere doloroso. Per esempio, con Subversion, per vedere cosa è cambiato nella revisione 104654 dovete digitare <command>svn diff -r104653:104654</command>. Mercurial elimina la necessità di digitare due volte l'identificatore di revisione in questo caso comune. Per ottenere solo le differenze, digitate <command>hg export 104654</command>. Per un ottenere messaggio nel registro della cronologia seguito dalle differenze, digitate <command>hg log -r104654 -p</command>.</para>
+    <para id="x_705">In alcuni sistemi di controllo di revisione, può diventare complicato stampare le differenze per una singola revisione registrata nel repository. Per esempio, con Subversion, per vedere cosa è cambiato nella revisione 104654 dovete digitare <command>svn diff -r104653:104654</command>. Mercurial elimina la necessità di digitare due volte l'identificatore di revisione in questo caso comune. Per ottenere solo le differenze, digitate <command>hg export 104654</command>. Per ottenere un messaggio nel registro della cronologia seguito dalle differenze, digitate <command>hg log -r104654 -p</command>.</para>
 
-    <para id="x_706">Quando eseguite <command>hg status</command> senza argomenti, vi viene mostrato lo stato dell'intero albero, con i percorsi relativi alla radice del repository. Questo rende complicato copiare un nome di file dal risultato di <command>hg status</command> alla riga di comando. Se eseguite <command>hg command</command> passandogli il nome di un file o di una directory, il comando stamperà i percorsi relativi alla vostra posizione corrente. Quindi, per ottenere da <command>hg status</command> lo stato di tutto l'albero, con i percorsi relativi alla vostra directory corrente invece che alla radice del repository, passate il risultato di <command>hg root</command> al comando <command>hg status</command>. Su un sistema di tipo Unix, potete farlo facilmente nel modo che segue:</para>
+    <para id="x_706">Quando eseguite <command>hg status</command> senza argomenti, vi viene mostrato lo stato dell'intero albero, con i percorsi relativi alla radice del repository. Questo rende complicato copiare un nome di file dal risultato di <command>hg status</command> alla riga di comando. Se eseguite <command>hg status</command> passandogli il nome di un file o di una directory, il comando stamperà i percorsi relativi alla vostra posizione corrente. Quindi, per ottenere da <command>hg status</command> lo stato di tutto l'albero, con i percorsi relativi alla vostra directory corrente invece che alla radice del repository, passate il risultato di <command>hg root</command> al comando <command>hg status</command>. Su un sistema di tipo Unix, potete farlo facilmente nel modo che segue:</para>
 
     <screen><prompt>$</prompt> <userinput>hg status `hg root`</userinput></screen>
   </sect1>
