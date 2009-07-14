@@ -1,0 +1,239 @@
+<chapter id="chap:branch">
+  <?dbhtml filename="gestire-le-release-e-lo-sviluppo-con-i-rami.html"?>
+  <title>Gestire le release e lo sviluppo con i rami</title>
+
+  <para id="x_369">Mercurial vi fornisce diversi meccanismi per gestire un progetto che sta facendo progressi su più fronti contemporaneamente. Per comprendere questi meccanismi, come prima cosa diamo una breve occhiata alla struttura di un progetto software abbastanza normale.</para>
+
+  <para id="x_36a">Molti progetti software distribuiscono periodicamente release <quote>principali</quote> che contengono nuove funzionalità sostanziali. In parallelo, possono distribuire release <quote>minori</quote> che di solito sono identiche alle release principali su cui sono basate e in più contengono alcune correzioni di bug.</para>
+
+  <para id="x_36b">In questo capitolo, cominceremo parlando di come mantenere una registrazione di pietre miliari di un progetto come le release. Poi, continueremo parlando del flusso di lavoro tra fasi differenti di un progetto e di come Mercurial può aiutarvi a isolare e gestire questo lavoro.</para>
+
+  <sect1>
+    <title>Dare un nome persistente a una revisione</title>
+
+    <para id="x_36c">Una volta che avete deciso che vi piacerebbe chiamare <quote>release</quote> una particolare revisione, è una buona idea registrare l'identità di quella revisione. Questo vi permetterà di riprodurre quella release in un momento successivo, per qualsiasi scopo potreste averne bisogno in quel momento (riprodurre un bug, convertirla verso una nuova piattaforma, etc).</para>
+      &interaction.tag.init;
+
+    <para id="x_36d">Mercurial vi consente di dare un nome permanente a qualsiasi revisione usando il comando <command role="hg-cmd">hg tag</command>. Ovviamente, questi nomi sono chiamati <quote>etichette</quote> (in inglese, tag).</para>
+
+    &interaction.tag.tag;
+
+    <para id="x_36e">Un'etichetta non è altro che un <quote>nome simbolico</quote> per una revisione. Le etichette esistono puramente per la vostra convenienza, cosicché abbiate un modo comodo e permanente per riferirvi a una revisione. Mercurial non interpreta in alcun modo i nomi delle etichette che usate, né impone alcuna restrizione sul nome di un'etichetta, a parte le poche che sono necessarie affinché un'etichetta possa essere riconosciuta senza ambiguità. Un nome di etichetta non può contenere nessuno dei caratteri seguenti:</para>
+    <itemizedlist>
+      <listitem><para id="x_36f">due punti (ASCII 58,
+	  <quote><literal>:</literal></quote>)</para>
+      </listitem>
+      <listitem><para id="x_370">ritorno a capo (ASCII 13,
+	  <quote><literal>\r</literal></quote>)</para>
+      </listitem>
+      <listitem><para id="x_371">nuova riga (ASCII 10,
+	  <quote><literal>\n</literal></quote>)</para>
+      </listitem></itemizedlist>
+
+    <para id="x_372">Potete usare il comando <command role="hg-cmd">hg tags</command> per visualizzare le etichette presenti nel vostro repository. Nel risultato del comando, ogni revisione etichettata è identificata prima dal proprio nome, poi dal numero di revisione e infine dallo hash unico della revisione.</para>
+
+    &interaction.tag.tags;
+
+    <para id="x_373">Notate che <literal>tip</literal> viene compreso nell'elenco mostrato da <command role="hg-cmd">hg tags</command>. L'etichetta <literal>tip</literal> è una speciale etichetta <quote>mobile</quote> che identifica sempre la revisione più recente contenuta in un repository.</para>
+
+    <para id="x_374">Il comando <command role="hg-cmd">hg tags</command> command elenca le etichette in ordine inverso secondo il numero di revisione. Di solito questo significa che le etichette recenti sono elencate prima delle etichette più vecchie. Significa anche che <literal>tip</literal> è sempre la prima etichetta elencata nel risultato di <command role="hg-cmd">hg tags</command>.</para>
+
+    <para id="x_375">Quando eseguite <command role="hg-cmd">hg log</command>, se visualizza una revisione che ha una o più etichette associate, stamperà quelle etichette.</para>
+
+    &interaction.tag.log;
+
+    <para id="x_376">Ogni volta che dovete fornire un identificatore di revisione a un comando Mercurial, il comando accetterà il nome di un'etichetta al suo posto. Internamente, Mercurial tradurrà il nome della vostra etichetta nel corrispondente identificatore di revisione e poi userà quello.</para>
+
+    &interaction.tag.log.v1.0;
+
+    <para id="x_377">Non c'è alcun limite al numero di etichette che potete avere in un repository, o al numero di etichette che può avere una singola revisione. Nella pratica, non è una grande idea averne <quote>troppe</quote> (un numero che varierà da progetto a progetto), semplicemente perché le etichette sono pensate per aiutarvi a rintracciare le revisioni. Se avete molte etichette, la comodità di usarle per identificare le revisioni diminuisce rapidamente.</para>
+
+    <para id="x_378">Per esempio, se il vostro progetto ha pietre miliari con una frequenza di pochi giorni, è perfettamente ragionevole dotare ognuna di un'etichetta. Ma se avete un sistema di assemblaggio continuo che si assicura che ogni revisione possa essere assemblata in modo pulito, introdurreste troppo rumore se etichettaste ogni assemblaggio pulito. Invece, potreste etichettare gli assemblaggi falliti (supponendo che siano rari!) o semplicemente evitare di usare le etichette per tenere traccia degli assemblaggi.</para>
+
+    <para id="x_379">Se volete rimuovere un'etichetta che non volete più, usate <command role="hg-cmd">hg tag --remove</command>.</para>
+
+    &interaction.tag.remove;
+
+    <para id="x_37a">Potete anche modificare un'etichetta in qualsiasi momenti, in modo che identifichi una revisione differente, semplicemente invocando di nuovo il comando <command role="hg-cmd">hg tag</command>. Dovrete usare l'opzione <option role="hg-opt-tag">-f</option> per dire a Mercurial che volete <emphasis>davvero</emphasis> aggiornare l'etichetta.</para>
+
+    &interaction.tag.replace;
+
+    <para id="x_37b">La registrazione permanente della precedente identità dell'etichetta rimarrà, ma Mercurial non la userà più. Quindi non c'è alcuna penalità per etichettare la revisione sbagliata; tutto quello che dovete fare è tornare sui vostri passi ed etichettare la revisione corretta una volta che scoprite il vostro errore.</para>
+
+    <para id="x_37c">Mercurial memorizza le etichette nel vostro repository in un file ordinario soggetto al controllo di revisione. Se avete creato qualche etichetta, le troverete in un file chiamato <filename role="special">.hgtags</filename> alla radice del vostro repository. Quando eseguite il comando <command role="hg-cmd">hg tag</command>, Mercurial modifica questo file, poi ne effettua automaticamente il commit registrandone i cambiamenti. Questo significa che ogni volta che eseguite <command role="hg-cmd">hg tag</command>, vedrete un corrispondente changeset nell'elenco mostrato da <command role="hg-cmd">hg log</command>.</para>
+
+    &interaction.tag.tip;
+
+    <sect2>
+      <title>Gestire i conflitti di etichette durante un'unione</title>
+
+      <para id="x_37d">Non avrete spesso bisogno di preoccuparvi del file <filename role="special">.hgtags</filename>, ma talvolta la sua presenza si farà sentire durante un'unione. Il formato del file è semplice: consiste di una serie di righe. Ogni riga comincia con un hash di changeset, seguito da uno spazio, seguito dal nome di un'etichetta.</para>
+
+      <para id="x_37e">Se state risolvendo un conflitto nel file <filename role="special">.hgtags</filename> durante un'unione, c'è un ~twist~ nel modificare il file <filename role="special">.hgtags</filename>: quando Mercurial sta analizzando le etichette in un repository, non legge <emphasis>mai</emphasis> la copia di lavoro del file <filename role="special">.hgtags</filename>, ma legge la revisione del file <emphasis>registrata più recentemente</emphasis>.</para>
+
+      <para id="x_37f">Una sfortunata conseguenza di questo design è che non potete verificare la correttezza del file <filename role="special">.hgtags</filename> risultato dall'unione se non <emphasis>dopo</emphasis> aver effettuato il commit di un cambiamento. Quindi, se vi trovate a risolvere un conflitto su <filename role="special">.hgtags</filename> durante un'unione, assicuratevi di eseguire <command role="hg-cmd">hg tags</command> dopo aver effettuato il commit. Se il comando trova un errore nel file <filename role="special">.hgtags</filename>, riporterà la posizione dell'errore, che potrete dunque correggere, registrando la correzione nel repository. Dovreste poi eseguire ancora <command role="hg-cmd">hg tags</command>, giusto per essere sicuri che la vostra correzione è corretta.</para>
+    </sect2>
+
+    <sect2>
+      <title>Etichette e cloni</title>
+
+      <para id="x_380">Potreste aver notato che il comando <command role="hg-cmd">hg clone</command> offre un'opzione <option role="hg-opt-clone">-r</option> per lasciarvi clonare una copia esatta di un repository a un particolare changeset. Il nuovo clone non conterrà alcuna cronologia del progetto registrata dopo la revisione che avete specificato. Questo ha una interazione con le etichette che potrebbe sorprendere gli incauti.</para>
+
+      <para id="x_381">Se ricordate, un'etichetta viene memorizzata come una revisione del file <filename role="special">.hgtags</filename>. Quando create un'etichetta, il changeset in cui viene registrata si riferisce a un changeset precedente. Quando eseguite <command role="hg-cmd">hg clone -r foo</command> per clonare un repository all'etichetta <literal>foo</literal>, il nuovo clone <emphasis>non conterrà alcuna revisione più recente di quella a cui si riferisce l'etichetta, compresa la revisione in cui l'etichetta è stata creata</emphasis>. Il risultato è che otterrete esattamente il sottoinsieme corretto della cronologia del progetto nel nuovo repository, ma <emphasis>non</emphasis> l'etichetta che vi sareste potuti aspettare.</para>
+    </sect2>
+
+    <sect2>
+      <title>Quando le etichette permanenti sono eccessive</title>
+
+      <para id="x_382">Dato che le etichette di Mercurial sono soggette a controllo di revisione e trasportate insieme alla cronologia del progetto, chiunque lavori con voi vedrà le etichette che create. Ma dare nomi alle revisioni ha usi che vanno al di là della semplice annotazione che la revisione	<literal>4237e45506ee</literal> in realtà è la <literal>v2.0.2</literal>.  Se state provando a rintracciare un oscuro bug, poteste volere un'etichetta per ricordarvi di qualcosa come <quote>Anna ha visto gli effetti con questa revisione</quote>.</para>
+
+      <para id="x_383">Per casi come questo, quello che potreste voler usare sono le etichette <emphasis>locali</emphasis>. Potete creare un'etichetta locale con l'opzione <option role="hg-opt-tag">-l</option> del comando <command role="hg-cmd">hg tag</command>. Questo memorizzerà l'etichetta in un file chiamato <filename role="special">.hg/localtags</filename>. Diversamente da <filename role="special">.hgtags</filename>, <filename
+	  role="special">.hg/localtags</filename> non è soggetto a controllo di revisione. Qualsiasi etichetta creiate usando l'opzione <option role="hg-opt-tag">-l</option> rimarrà strettamente locale al repository in cui state correntemente lavorando.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Il flusso dei cambiamenti&emdash;la visione d'insieme e la visione di dettaglio</title>
+
+    <para id="x_384">Per ritornare allo schema che ho abbozzato all'inizio del capitolo, pensiamo a un progetto che ha molteplici attività di sviluppo parallele in lavorazione contemporaneamente.</para>
+
+    <para id="x_385">Potrebbero esserci iniziative per una nuova release <quote>principale</quote>, per una nuova release minore che corregge alcuni bug trovati nell'ultima release principale, e per un'inattesa <quote>correzione a caldo</quote> di una vecchia release che ora è in fase di manutenzione.</para>
+
+    <para id="x_386">Di solito, le persone chiamano <quote>ramo</quote> (in inglese, branch) ognuna di queste direzioni di sviluppo parallele. Tuttavia, abbiamo già visto più volte che Mercurial tratta <emphasis>tutta la cronologia</emphasis> come una serie di rami e unioni. In realtà, quello che abbiamo qui sono due idee marginalmente correlate che condividono casualmente lo stesso nome.</para>
+    <itemizedlist>
+      <listitem><para id="x_387">Nella <quote>visione d'insieme</quote> i rami rappresentano il flusso dell'evoluzione di un progetto; le persone danno loro nomi e parlano di loro durante le conversazioni.</para>
+      </listitem>
+      <listitem><para id="x_388">Nella <quote>visione di dettaglio</quote> i rami sono artefatti costruiti durante l'attività quotidiana di sviluppo e unione dei cambiamenti. Narrano la storia di come il codice è stato sviluppato.</para>
+      </listitem></itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Gestire i rami nella visione d'insieme</title>
+
+    <para id="x_389">Nella <quote>visione d'insieme</quote>, il modo più facile di isolare un ramo in Mercurial è quello di utilizzare un repository dedicato. Se avete un repository condiviso esistente&emdash;chiamiamolo <literal>mioprogetto</literal>&emdash;che raggiunge una release <quote>1.0</quote>, potete cominciare a preparare le future release di mantenimento basate sulla versione 1.0 etichettando la revisione dalla quale avete preparato la release 1.0.</para>
+
+    &interaction.branch-repo.tag;
+
+    <para id="x_38a">Potete quindi clonare un nuovo repository condiviso <literal>mioprogetto-1.0.1</literal> da quella etichetta.</para>
+
+    &interaction.branch-repo.clone;
+
+    <para id="x_38b">Successivamente, chi ha bisogno di lavorare sulla correzione di un bug che dovrebbe essere contenuta in una prossima release minore 1.0.1 potrà clonare il repository <literal>myproject-1.0.1</literal>, fare le proprie modifiche e poi trasmetterle a quel repository.</para>
+
+    &interaction.branch-repo.bugfix;
+
+    <para id="x_38c">Nel frattempo, lo sviluppo della prossima release principale può continuare, isolato e inesorabile, nel repository <literal>mioprogetto</literal>.</para>
+
+    &interaction.branch-repo.new;
+  </sect1>
+
+  <sect1>
+    <title>Non ripetetevi: unire i rami</title>
+
+    <para id="x_38d">In molti casi, se avete un bug da correggere in un ramo di manutenzione, è probabile che il bug sia presenta anche nel ramo principale del progetto (e magari anche in altri rami di manutenzione). &Egrave; raro che uno sviluppatore voglia correggere lo stesso bug più volte, quindi diamo un'occhiata ad alcuni modi in cui Mercurial può aiutarvi a gestire queste correzioni senza duplicare il vostro lavoro.</para>
+
+    <para id="x_38e">Nel caso più semplice, tutto quello che dovete fare è propagare i cambiamenti dal vostro ramo di manutenzione al vostro clone locale del ramo obiettivo.</para>
+
+    &interaction.branch-repo.pull;
+
+    <para id="x_38f">Poi avrete bisogno di unire le teste dei due rami e di trasmettere i cambiamenti al ramo principale.</para>
+
+    &interaction.branch-repo.merge;
+  </sect1>
+
+  <sect1>
+    <title>Denominare i rami in un repository</title>
+
+    <para id="x_390">Nella maggior parte dei casi, isolare ogni ramo in un proprio repository è l'approccio giusto. La sua semplicità lo rende facile da cpaire e quindi è difficile commettere erori. Esiste una relazione uno-a-uno tra i rami in cui state lavorando e le directory sul vostro sistema. Questo vi consente di usare strumenti ordinari (inconsapevoli di Mercurial) per lavorare sui file all'interno di un ramo/repository.</para>
+
+    <para id="x_391">Se invece appartenete alla categoria degli <quote>utenti avanzati</quote> (<emphasis>e</emphasis> vi appartengono anche i vostri collaboratori), esiste un modo alternativo di gestire i rami che potete considerare. Ho già menzionato la distinzione a livello umano tra i rami nella <quote>visione di dettaglio</quote> e nella <quote>visione d'insieme</quote>. Mentre Mercurial lavora con molteplici rami <quote>di dettaglio</quote> alla volta in un repository (per esempio dopo che avete propagato i cambiamenti, ma prima di incorporarli), può <emphasis>anche</emphasis> lavorare con molteplici rami <quote>d'insieme</quote>.</para>
+
+    <para id="x_392">La chiave per lavorare in questo modo è che Mercurial vi permette di assegnare un <emphasis>nome</emphasis> persistente a un ramo. Esiste sempre un ramo chiamato <literal>default</literal>. Anche prima che cominciate a denominare rami voi stessi, potete trovare tracce del ramo <literal>default</literal> se le cercate.</para>
+
+    <para id="x_393">Per esempio, quando esguite il comando <command role="hg-cmd">hg commit</command> e vi viene presentato un editor per farvi inserire un messaggio di commit, cercate una riga che contiene il testo <quote><literal>HG: branch default</literal></quote> verso il fondo. Questo vi dice che il vostro commit avverrà sul ramo chiamato <literal>default</literal>.</para>
+
+    <para id="x_394">Per cominciare a lavorare con i rami con nome, usate il comando <command role="hg-cmd">hg branches</command>. Questo comando elenca i rami con nome già presenti nel vostro repository, dicendovi quale changeset è in cima a ognuno di loro.</para>
+
+    &interaction.branch-named.branches;
+
+    <para id="x_395">Dato che non avete ancora creato alcun ramo con nome, l'unico che esiste è <literal>default</literal>.</para>
+
+    <para id="x_396">Per trovare qual è il ramo <quote>corrente</quote>, eseguite il comando <command role="hg-cmd">hg branch</command> senza passargli alcun argomento. Questo vi dice in quale ramo si trova il genitore del changeset corrente.</para>
+
+    &interaction.branch-named.branch;
+
+    <para id="x_397">Per creare un nuovo ramo, eseguite di nuovo il comando <command role="hg-cmd">hg branch</command>. Questa volta, passategli un argomento: il nome del ramo che volete creare.</para>
+
+    &interaction.branch-named.create;
+
+    <para id="x_398">Dopo che avete creato un ramo, potreste chiedervi qual è stato l'effetto del comando <command role="hg-cmd">hg branch</command>. Che cosa riportano i comandi <command role="hg-cmd">hg status</command> e <command role="hg-cmd">hg tip</command>?</para>
+
+    &interaction.branch-named.status;
+
+    <para id="x_399">Niente è cambiato nella directory di lavoro e non è stata creata nuova cronologia. Come questo suggerisce, eseguire il comando <command role="hg-cmd">hg branch</command> non ha alcun effetto permanente, ma dice solo a Mercurial quale nome di ramo usare la <emphasis>prossima</emphasis> volta che effettuate il commit di un changeset.</para>
+
+    <para id="x_39a">Quando inserite un cambiamento nel repository, Mercurial registra il nome del ramo su cui lo avete inserito. Una volta che siete passati dal ramo <literal>default</literal> a un altro e avete eseguito il commit, vedrete il nome del nuovo ramo apparire nel risultato dei comandi <command role="hg-cmd">hg log</command>, <command role="hg-cmd">hg tip</command> e altri comandi che mostrano lo stesso tipo di informazioni.</para>
+
+    &interaction.branch-named.commit;
+
+    <para id="x_39b">I comandi tipo <command role="hg-cmd">hg log</command> stamperanno il nome del ramo di ogni changeset che non è nel ramo <literal>default</literal>. Come risultato, se non avete mai usato i rami con nome, non vedrete mai questa informazione.</para>
+
+    <para id="x_39c">Una volta che avete denominato un ramo e inserito un cambiamento in quel ramo, ogni commit successivo che discende da quel cambiamento erediterà lo stesso nome di ramo. Potete cambiare il nome a un ramo in ogni momento, usando il comando <command role="hg-cmd">hg branch</command>.</para>
+
+    &interaction.branch-named.rebranch;
+
+    <para id="x_39d">In pratica, questa non è una cosa che farete molto spesso, dato che i nomi di ramo tendono ad avere un tempo di vita piuttosto lungo. (Questa non è una regola, ma solo una osservazione.)</para>
+  </sect1>
+
+  <sect1>
+    <title>Gestire molti rami con nome in un repository</title>
+
+    <para id="x_39e">Se avete più di un ramo con nome in un repository, Mercurial ricorderà il ramo in cui si trova la vostra directory di lavoro quando eseguite un comando tipo <command role="hg-cmd">hg update</command> o <command role="hg-cmd">hg pull -u</command> e aggiornerà la directory di lavoro alla revisione di punta di quel ramo, a prescindere da quale sia la punta dell'intero repository. Per aggiornare la directory di lavoro a una revisione che si trova su un ramo con un nome diverso, potreste dover usare l'opzione <option role="hg-opt-update">-C</option> per il comando <command role="hg-cmd">hg update</command>.</para>
+
+    <para id="x_39f">Questo comprotamento è leggermente oscuro, quindi vediamolo in azione. Per prima cosa, controlliamo in quale ramo ci troviamo al momento e quali rami ci sono nel nostro repository.</para>
+
+    &interaction.branch-named.parents;
+
+    <para id="x_3a0">Ci troviamo sul ramo <literal>bar</literal>, ma esiste anche un ramo più vecchio chiamato <literal>foo</literal>.</para>
+
+    <para id="x_3a1">Possiamo utilizzare <command role="hg-cmd">hg update</command> per spostarci avanti e indietro tra le revisioni di punta dei rami <literal>foo</literal> e <literal>bar</literal> senza aver bisogno di impiegare l'opzione <option role="hg-opt-update">-C</option>, perché questi spostamenti avvengono linearmente attraverso la nostra cronologia dei cambiamenti.</para>
+
+    &interaction.branch-named.update-switchy;
+
+    <para id="x_3a2">Se torniamo indietro al ramo <literal>foo</literal> ed eseguiamo <command role="hg-cmd">hg update</command>, il comando ci manterrà su <literal>foo</literal>, senza spostarci alla punta di <literal>bar</literal>.</para>
+
+    &interaction.branch-named.update-nothing;
+
+    <para id="x_3a3">Inserire un nuovo cambiamento sul ramo <literal>foo</literal> introduce una nuova testa.</para>
+
+    &interaction.branch-named.foo-commit;
+  </sect1>
+
+  <sect1>
+    <title>I nomi di ramo e le unioni</title>
+
+    <para id="x_3a4">Come probabilmente avete notato, le unioni in Mercurial non sono simmetriche. Diciamo che il nostro repository possiede due teste, 17 e 23. Se uso <command role="hg-cmd">hg update</command> per aggiornare alla 17 e poi eseguo <command role="hg-cmd">hg merge</command> per incorporare la 23, Mercurial registra la 17 come il primo genitore dell'unione e la 23 come il secondo. Ma se uso <command role="hg-cmd">hg update</command> per aggiornare alla 23 e poi eseguo <command role="hg-cmd">hg merge</command> per incorporare la 17, Mercurial registra la 23 come primo genitore e la 17 come secondo.</para>
+
+    <para id="x_3a5">Questo influenza la scelta di Mercurial sui nomi di ramo quando effettuate un'unione. Dopo un'unione, Mercurial manterrà il nome del ramo del primo genitore quando registrate i risultati dell'unione. Se il nome del ramo del primo genitore è <literal>foo</literal> e lo unite con <literal>bar</literal>, dopo l'unione il nome del ramo in cui vi troverete sarà ancora <literal>foo</literal>.</para>
+
+    <para id="x_3a6">Capita spesso che un repository contenga più teste, ognuna con lo stesso nome di ramo. Diciamo che io sto lavorando sul ramo <literal>foo</literal> e anche voi. Effettuiamo il commit di cambiamenti differenti; io estraggo i vostri cambiamenti e mi ritrovo con due teste, ognuna che dichiara di appartenere al ramo <literal>foo</literal>. Il risultato di un'unione sarà una singola testa sul ramo <literal>foo</literal>, come potreste sperare.</para>
+
+    <para id="x_3a7">Ma se io sto lavorando sul ramo <litera>bar</litera> e incorporo il lavoro dal ramo <literal>foo</literal>, il risultato rimarrà sul ramo <literal>bar</literal>.</para>
+
+    &interaction.branch-named.merge;
+
+    <para id="x_3a8">Per farvi un esempio più concreto, se sto lavorando sul ramo <literal>bleeding-edge</literal> e voglio incorporare le ultime correzioni dal ramo <literal>stable</literal>, Mercurial sceglierà il nome del ramo <quote>corretto</quote> (<literal>bleeding-edge</literal>) quando estrarrò e incorporerò i cambiamenti da <literal>stable</literal>.</para>
+  </sect1>
+
+  <sect1>
+    <title>La denominazione dei rami è generalmente utile</title>
+
+    <para id="x_3a9">Non dovreste pensare che i rami con nome siano applicabili solo in situazioni dove avete molteplici rami longevi che coabitano in un singolo repository. Sono molto utili anche nel caso in cui utilizziate un ramo per repository.</para>
+
+    <para id="x_3aa">Nel caso più semplice, dare un nome a ogni ramo vi offre una registrazione permanente di quale sia il ramo da cui un changeset ha avuto origine. Questo vi dà un contesto maggiore quando state cercando di seguire la cronologia di un progetto longevo e ramificato.</para>
+
+    <para id="x_3ab">Se state lavorando con repository condivisi, potete impostare un hook <literal role="hook">pretxnchangegroup</literal> su ognuno in modo da bloccare i cambiamenti in entrata che appartengono al nome di ramo <quote>sbagliato</quote>. Questo vi offre una semplice ma efficace difesa contro persone che trasmettono accidentalmente i cambiamenti da un ramo <quote>bleeding edge</quote> a un ramo <quote>stabile</quote>. Un hook di questo tipo potrebbe somigliare al seguente, contenuto all'interno del file <filename role="special">/.hgrc</filename> del repository condiviso.</para>
+    <programlisting>[hooks]
+pretxnchangegroup.branch = hg heads --template '{branches} ' | grep mybranch</programlisting>
+  </sect1>
+</chapter>
