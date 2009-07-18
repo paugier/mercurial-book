@@ -44,7 +44,7 @@
 
       <para id="x_db">In questa situazione, potete immaginare che pasticcio accadrebbe se aveste un repository <quote>0.9</quote> locale e vi propagaste accidentalmente i cambiamenti dal repository <quote>1.0</quote> condiviso. Nel caso peggiore, potreste non fare abbastanza attenzione e trasmettere quei cambiamenti nell'albero <quote>0.9</quote> condiviso, confondendo tutti gli altri sviluppatori (ma non preoccupatevi, ritorneremo a questo orribile scenario più avanti). Tuttavia, è più probabile che notiate immediatamente l'errore, perché Mercurial vi mostrerà l'URL da cui sta estraendo i cambiamenti, o perché vedrete Mercurial propagare un numero sospettosamente alto di cambiamenti nel repository.</para>
 
-      <para id="x_dc">Il comando <command role="hg-cmd">hg rollback</command> lavorerà scrupolosamente per cancellare tutti i changeset che avete appena estratto. Mercurial raggruppa tutti i cambiamenti provenienti da una invocazione di <command role="hg-cmd">hg pull</command> in una singola transazione, quindi un'unica invocazione di <command role="hg-cmd">hg rollback</command> è tutto quello che vi serve per annullare questo errore.</para>
+      <para id="x_dc">Il comando <command role="hg-cmd">hg rollback</command> cancellerà scrupolosamente tutti i changeset che avete appena estratto. Mercurial raggruppa tutti i cambiamenti provenienti da una invocazione di <command role="hg-cmd">hg pull</command> in una singola transazione, quindi un'unica invocazione di <command role="hg-cmd">hg rollback</command> è tutto quello che vi serve per annullare questo errore.</para>
 
     </sect2>
     <sect2 id="sec:undo:rollback-after-push">
@@ -71,7 +71,7 @@
   <sect1>
     <title>Rimediare alle modifiche sbagliate</title>
 
-    <para id="x_e2">Se fate un cambiamento a un file e decidete che in realtà non volevate affatto modificare il file, e non avete ancora inserito i vostri cambiamenti nel repository, il comando che vi serve è <command role="hg-cmd">hg revert</command>. Guarda al changeset che è il genitore della directory di lavoro e ripristina il contenuto di quel file allo stato in cui era in quel changeset. (Questo è un modo verboso di dire che, nel caso normale, annulla le vostre modifiche.)</para>
+    <para id="x_e2">Se fate un cambiamento a un file e decidete che in realtà non volevate affatto modificare il file, e non avete ancora inserito i vostri cambiamenti nel repository, il comando che vi serve è <command role="hg-cmd">hg revert</command>. Guarda al changeset che è il genitore della directory di lavoro e ripristina il contenuto di quel file allo stato in cui era in quel changeset. (Questo è un modo prolisso di dire che, nel caso normale, annulla le vostre modifiche.)</para>
 
     <para id="x_e3">Vediamo come funziona il comando <command role="hg-cmd">hg revert</command> attraverso ancora un altro piccolo esempio. Cominceremo modificando un file che Mercurial ha già registrato.</para>
 
@@ -549,7 +549,7 @@
 
       <para id="x_157">&Egrave; possibile che questo altro bug <quote>mascheri</quote> completamente il vostro, cioè che sia comparso prima che il vostro bug abbia avuto la possibilità di manifestarsi. Se non potete evitare quell'altro bug (per esempio, impedisce al vostro progetto di venire assemblato) e quindi non potete dire se il vostro bug è presente in un particolare changeset, il comando <command role="hg-cmd">hg bisect</command> non è in grado di aiutarvi direttamente. Invece, invocando <command role="hg-cmd">hg bisect --skip</command> potete contrassegnare un changeset come non collaudato.</para>
 
-      <para id="x_158">Potrebbe esserci un problema differente se il vostro test per la presenza di un bug non è abbastanza specifico. Se controllate che <quote>il mio programma ~crashes~</quote>, allora sia il vostro ~crashing~ bug che un ~crashing~ bug non correlato che lo maschera sembreranno la stessa cosa e fuorvieranno <command role="hg-cmd">hg bisect</command>.</para>
+      <para id="x_158">Potrebbe esserci un problema differente se il vostro test per la presenza di un bug non è abbastanza specifico. Se controllate che <quote>il mio programma ~crashes~</quote>, allora sia il vostro ~crashing~ bug che il ~crashing~ bug scorrelato che lo maschera sembreranno la stessa cosa e fuorvieranno <command role="hg-cmd">hg bisect</command>.</para>
 
       <para id="x_159">Un'altra situazione utile in cui sfruttare <command role="hg-cmd">hg bisect --skip</command> è quella in cui non potete collaudare una revisione perché il vostro progetto era guasto e quindi in uno stato non collaudabile in quella revisione, magari perché qualcuno aveva introdotto un cambiamento che impediva al progetto di venire assemblato.</para>
 
