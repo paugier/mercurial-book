@@ -10,15 +10,15 @@
     <sect2>
       <title>L'inserimento accidentale</title>
 
-      <para id="x_d3">Ho l'occasionale ma persistente problema di digitare più velocemente di quanto riesca a pensare, cosa che talvolta ha come risultato io che inserisco un changeset che è incompleto o completamente sbagliato. Nel mio caso, il classico tipo di changeset incompleto è quello in cui ho creato un nuovo file sorgente ma ho dimenticato di usare <command role="hg-cmd">hg add</command> per aggiungerlo al repository. Un changeset <quote>completamente sbagliato</quote> non è così comune, ma non è meno fastidioso.</para>
+      <para id="x_d3">Ho l'occasionale ma persistente problema di digitare più velocemente di quanto riesca a pensare, cosa che talvolta provoca come conseguenza l'inserimento di un changeset che è incompleto o completamente sbagliato. Nel mio caso, il classico tipo di changeset incompleto è quello in cui ho creato un nuovo file sorgente ma ho dimenticato di usare <command role="hg-cmd">hg add</command> per aggiungerlo al repository. Un changeset <quote>completamente sbagliato</quote> non è così comune, ma non è meno fastidioso.</para>
 
     </sect2>
     <sect2 id="sec:undo:rollback">
-      <title>~Rolling back~ una transazione</title>
+      <title>Abortire una transazione</title>
 
-      <para id="x_d4">Nella <xref linkend="sec:concepts:txn"/>, ho menzionato che Mercurial tratta ogni modifica del repository come una <emphasis>transazione</emphasis>. Ogni volta che inserite un changeset o estraete i cambiamenti da un altro repository, Mercurial ricorda cosa avete fatto. Potete annullare, o <emphasis>~roll back~</emphasis>, esattamente una di queste azioni usando il comando <command role="hg-cmd">hg rollback</command>. (Leggete la <xref linkend="sec:undo:rollback-after-push"/> per un importante avvertimento su come usare questo comando.)</para>
+      <para id="x_d4">Nella <xref linkend="sec:concepts:txn"/>, ho menzionato che Mercurial tratta ogni modifica del repository come una <emphasis>transazione</emphasis>. Ogni volta che inserite un changeset o estraete i cambiamenti da un altro repository, Mercurial ricorda cosa avete fatto. Potete annullare, o <emphasis>abortire</emphasis>, esattamente una di queste azioni usando il comando <command role="hg-cmd">hg rollback</command>. (Leggete la <xref linkend="sec:undo:rollback-after-push"/> per un importante avvertimento su come usare questo comando.)</para>
 
-      <para id="x_d5">Ecco un errore che mi ritrovo spesso a commettere: inserire un cambiamento in cui ho creato un nuovo file ma ho dimenticato di aggiungerlo tramite <command role="hg-cmd">hg add</command>.</para>
+      <para id="x_d5">Ecco un errore che mi ritrovo spesso a commettere: inserire un changeset in cui ho creato un nuovo file ma ho dimenticato di aggiungerlo tramite <command role="hg-cmd">hg add</command>.</para>
 
       &interaction.rollback.commit;
 
@@ -32,7 +32,7 @@
 
       &interaction.rollback.rollback;
 
-      <para id="x_d9">Notate che il changeset non è più presente nella cronologia del repository e che la directory di lavoro pensa ancora che il file <filename>a</filename> sia stato modificato. Il commit e il ~rollback~ hanno lasciato la directory di lavoro nello stato esatto in cui si trovava prima dell'inserimento; il changeset è stato completamente rimosso. Ora posso tranquillamente usare <command role="hg-cmd">hg add</command> per aggiungere il file <filename>b</filename> e rieseguire il commit.</para>
+      <para id="x_d9">Notate che il changeset non è più presente nella cronologia del repository e che la directory di lavoro pensa ancora che il file <filename>a</filename> sia stato modificato. Il commit e il suo annullamento hanno lasciato la directory di lavoro nello stato esatto in cui si trovava prima dell'inserimento; il changeset è stato completamente rimosso. Ora posso tranquillamente usare <command role="hg-cmd">hg add</command> per aggiungere il file <filename>b</filename> e rieseguire il commit.</para>
 
       &interaction.rollback.add;
 
@@ -48,23 +48,23 @@
 
     </sect2>
     <sect2 id="sec:undo:rollback-after-push">
-      <title>~Rolling back~ è inutile se avete già trasmesso le modifiche</title>
+      <title>Abortire è inutile se avete già trasmesso le modifiche</title>
 
-      <para id="x_dd">Il valore di <command role="hg-cmd">hg rollback</command> scende a zero una volta che avete trasmesso le vostre modifiche a un altro repository. ~Rolling back~ un cambiamento lo fa scomparire interamente, ma <emphasis>solo</emphasis> nel repository in cui invocate <command role="hg-cmd">hg rollback</command>. Dato che un ~rollback~ elimina parte della cronologia, non è possibile che la scomparsa di un cambiamento si propaghi tra i repository.</para>
+      <para id="x_dd">Il valore di <command role="hg-cmd">hg rollback</command> scende a zero una volta che avete trasmesso le vostre modifiche a un altro repository. Abortire un cambiamento lo fa scomparire interamente, ma <emphasis>solo</emphasis> nel repository in cui invocate <command role="hg-cmd">hg rollback</command>. Dato che un annullamento elimina parte della cronologia, non è possibile che la scomparsa di un cambiamento si propaghi tra i repository.</para>
 
-      <para id="x_de">Se avete trasmesso un cambiamento a un altro repository&emdash;in particolare se è un repository condiviso&emdash;è essenzialmente <quote>scappato dal recinto</quote> e dovrete rimediare all'errore in un altro modo. Se trasmettete un changeset da qualche parte, poi ~roll it back~ e poi estraete i cambiamenti dal repository verso cui avete effettuato la trasmissione, il changeset di cui credevate di esservi sbarazzati riapparirà semplicemente nel vostro repository.</para>
+      <para id="x_de">Se avete trasmesso un cambiamento a un altro repository&emdash;in particolare se è un repository condiviso&emdash;è essenzialmente <quote>scappato dal recinto</quote> e dovrete rimediare all'errore in un altro modo. Se trasmettete un changeset da qualche parte, lo abortite e poi estraete i cambiamenti dal repository verso cui avete effettuato la trasmissione, il changeset di cui credevate di esservi sbarazzati riapparirà semplicemente nel vostro repository.</para>
 
-      <para id="x_df">(Se siete assolutamente sicuri che il cambiamento che volete ritirare è quello più recente contenuto nel repository a cui lo avete trasmesso <emphasis>e</emphasis> sapete che nessun altro può averlo estratto da quel repository, potete ritirare il changeset anche là, ma non dovreste aspettarvi che questo funzioni in maniera affidabile. Presto o tardi un cambiamento finirà in un repository su cui non avete un controllo diretto (o vi siete dimenticati di averlo) e tornerà indietro a mordervi.)</para>
+      <para id="x_df">(Se siete assolutamente sicuri che il cambiamento che volete abortire è quello più recente contenuto nel repository a cui lo avete trasmesso <emphasis>e</emphasis> sapete che nessun altro può averlo estratto da quel repository, potete ritirare il changeset anche là, ma non dovreste aspettarvi che questo funzioni in maniera affidabile. Presto o tardi un cambiamento finirà in un repository su cui non avete un controllo diretto (o vi siete dimenticati di averlo) e tornerà indietro a mordervi.)</para>
 
     </sect2>
     <sect2>
-      <title>Potete ritirare una sola volta</title>
+      <title>Potete abortire una sola volta</title>
 
-      <para id="x_e0">Mercurial memorizza esattamente una transazione nel suo registro delle transazioni: quella più recente avvenuta nel repository. Questo significa che potete ritirare solo una transazione. Se vi aspettate di poter ritirare una transazione e poi il suo predecessore, questo non il comportamento che otterrete.</para>
+      <para id="x_e0">Mercurial memorizza esattamente una transazione nel suo registro delle transazioni: quella più recente avvenuta nel repository. Questo significa che potete abortire solo una transazione. Se vi aspettate di poter abortire una transazione e poi il suo predecessore, questo non il comportamento che otterrete.</para>
 
       &interaction.rollback.twice;
 
-      <para id="x_e1">Una volta che avete ritirato una transazione in un repository, non potete effettuare un altro ritiro in quel repository fino a quando non avete eseguito un altro inserimento o una nuova estrazione.</para>
+      <para id="x_e1">Una volta che avete abortito una transazione in un repository, non potete effettuare un altro annullamento in quel repository fino a quando non avete eseguito un altro inserimento o una nuova estrazione.</para>
 
     </sect2>
   </sect1>
@@ -545,11 +545,11 @@
     <sect2>
       <title>Fate attenzione alle interferenze tra i bug</title>
 
-      <para id="x_156">&Egrave; possibile che la vostra ricerca di un bug venga rovinata dalla presenza di un altro bug. Per esempio, diciamo che il vostro software ~crashes~ alla revisione 100 e funziona correttamente alla revisione 50. Senza che voi lo sappiate, qualcun altro ha introdotto un ~crashing~ bug differente alla revisione 60 e lo ha corretto alla revisione 80. Questo potrebbe distorcere i vostri risultati in vari modi.</para>
+      <para id="x_156">&Egrave; possibile che la vostra ricerca di un bug venga rovinata dalla presenza di un altro bug. Per esempio, diciamo che il vostro software si blocca alla revisione 100 e funziona correttamente alla revisione 50. Senza che voi lo sappiate, qualcun altro ha introdotto un bug bloccante differente alla revisione 60 e lo ha corretto alla revisione 80. Questo potrebbe distorcere i vostri risultati in vari modi.</para>
 
       <para id="x_157">&Egrave; possibile che questo altro bug <quote>mascheri</quote> completamente il vostro, cioè che sia comparso prima che il vostro bug abbia avuto la possibilità di manifestarsi. Se non potete evitare quell'altro bug (per esempio, impedisce al vostro progetto di venire assemblato) e quindi non potete dire se il vostro bug è presente in un particolare changeset, il comando <command role="hg-cmd">hg bisect</command> non è in grado di aiutarvi direttamente. Invece, invocando <command role="hg-cmd">hg bisect --skip</command> potete contrassegnare un changeset come non collaudato.</para>
 
-      <para id="x_158">Potrebbe esserci un problema differente se il vostro test per la presenza di un bug non è abbastanza specifico. Se controllate che <quote>il mio programma ~crashes~</quote>, allora sia il vostro ~crashing~ bug che il ~crashing~ bug scorrelato che lo maschera sembreranno la stessa cosa e fuorvieranno <command role="hg-cmd">hg bisect</command>.</para>
+      <para id="x_158">Potrebbe esserci un problema differente se il vostro test per la presenza di un bug non è abbastanza specifico. Se controllate che <quote>il mio programma si blocca</quote>, allora sia il vostro bug bloccante che il bug bloccante scorrelato che lo maschera sembreranno la stessa cosa e fuorvieranno <command role="hg-cmd">hg bisect</command>.</para>
 
       <para id="x_159">Un'altra situazione utile in cui sfruttare <command role="hg-cmd">hg bisect --skip</command> è quella in cui non potete collaudare una revisione perché il vostro progetto era guasto e quindi in uno stato non collaudabile in quella revisione, magari perché qualcuno aveva introdotto un cambiamento che impediva al progetto di venire assemblato.</para>
 
