@@ -147,7 +147,7 @@
     <sect2 id="sec:hook:lang">
       <title>Scegliere come il vostro hook dovrebbe eseguire</title>
 
-      <para id="x_21f">Potete implementare un hook come un programma normale&emdhas;tipicamente uno script di shell&emdash;o come una funzione Python che viene eseguita nell'ambito del processo Mercurial.</para>
+      <para id="x_21f">Potete implementare un hook come un programma normale&emdash;tipicamente uno script di shell&emdash;o come una funzione Python che viene eseguita nell'ambito del processo Mercurial.</para>
 
       <para id="x_220">Implementare un hook come programma esterno ha il vantaggio di non richiedere alcuna conoscenza del funzionamento interno di Mercurial. Potete invocare i normali comandi Mercurial per ottenere qualsiasi informazione aggiuntiva di cui abbiate bisogno. Il #trade-off# è che gli hook esterni sono più lenti rispetto agli hook #in-process#.</para>
 
@@ -179,8 +179,7 @@
 
       <para id="x_228">Un hook eseguibile viene sempre eseguito con la sua directory corrente impostata alla directory radice del repository.</para>
 
-      <para id="x_229">Ogni parametro di hook viene passato come una variabile di ambiente con il nome in maiuscolo preceduto dalla stringa <quote><literal>HG_</literal></quote>.
-      </para>
+      <para id="x_229">Ogni parametro di hook viene passato come una variabile di ambiente con il nome in maiuscolo preceduto dalla stringa <quote><literal>HG_</literal></quote>.</para>
 
       <para id="x_22a">Con l'eccezione dei parametri di hook, Mercurial non imposta o modifica alcuna variabile d'ambiente quando esegue un hook. Questo è utile da ricordare se state scrivendo un hook #site-wide# che potrebbe venire eseguito da un certo numero di utenti differenti con differenti variabili d'ambiente impostate. In situazioni multi-utente, non dovreste fare affidamento sul fatto che le variabili di ambiente siano impostate con i valori che avete nel vostro ambiente quando state collaudando l'hook.</para>
     </sect2>
@@ -189,10 +188,8 @@
       <title>Dire a Mercurial di usare un hook #in-process#</title>
 
       <para id="x_22b">La sintassi del file <filename role="special">~/.hgrc</filename> per definire un hook #in-process# è leggermente differente da quella per un hook eseguibile. Il valore dell'hook deve cominciare con il testo <quote><literal>python:</literal></quote> e proseguire con il nome completamente qualificato dell'oggetto invocabile da usare come il valore dell'hook.</para>
-      </para>
 
-      <para id="x_22c">Il modulo in cui si trova l'hook viene automaticamente importato quando l'hook viene eseguito. Fino a quando il nome del modulo e il valore di <envar>PYTHONPATH</envar> sono corretti, dovrebbe <quote>funzionare e basta</quote>.
-      </para>
+      <para id="x_22c">Il modulo in cui si trova l'hook viene automaticamente importato quando l'hook viene eseguito. Fino a quando il nome del modulo e il valore di <envar>PYTHONPATH</envar> sono corretti, dovrebbe <quote>funzionare e basta</quote>.</para>
 
       <para id="x_22d">Il seguente frammento di un file <filename role="special">~/.hgrc</filename> di esempio illustra la sintassi e il significato delle nozioni appena descritte.</para>
       <programlisting>[hooks]
@@ -732,11 +729,11 @@ incoming.notify = python:hgext.notify.hook</programlisting>
       <para id="x_2d2">I parametri di questo hook sono i seguenti.</para>
 
       <itemizedlist>
-    <listitem><para id="x_299"><literal>node</literal>: un identificatore di changeset. L'identificatore del changeset appena inserito.</para>
+    <listitem><para id="x_2d3"><literal>node</literal>: un identificatore di changeset. L'identificatore del changeset appena inserito.</para>
 	</listitem>
-	<listitem><para id="x_29a"><literal>parent1</literal>: un identificatore di changeset. L'identificatore di changeset del primo genitore del changeset appena inserito.</para>
+	<listitem><para id="x_2d4"><literal>parent1</literal>: un identificatore di changeset. L'identificatore di changeset del primo genitore del changeset appena inserito.</para>
 	</listitem>
-	<listitem><para id="x_29b"><literal>parent2</literal>: un identificatore di changeset. L'identificatore di changeset del secondo genitore del changeset appena inserito.</para>
+	<listitem><para id="x_2d5"><literal>parent2</literal>: un identificatore di changeset. L'identificatore di changeset del secondo genitore del changeset appena inserito.</para>
 	</listitem></itemizedlist>
 
       <para id="x_2d6">Si vedano anche gli hook: <literal role="hook">precommit</literal> (<xref linkend="sec:hook:precommit"/>)</para>
@@ -764,11 +761,11 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 
       <para id="x_2dd">I parametri di questo hook sono i seguenti.</para>
       <itemizedlist>
-    <listitem><para id="x_2c1"><literal>local</literal>: un booleano. Indica se l'etichetta è locale a questa istanza del repository (i.e. memorizzata nel file <filename role="special">.hg/localtags</filename>) o se è gestita da Mercurial (memorizzata nel file <filename role="special">.hgtags</filename>).</para>
+    <listitem><para id="x_2de"><literal>local</literal>: un booleano. Indica se l'etichetta è locale a questa istanza del repository (i.e. memorizzata nel file <filename role="special">.hg/localtags</filename>) o se è gestita da Mercurial (memorizzata nel file <filename role="special">.hgtags</filename>).</para>
 	</listitem>
-	<listitem><para id="x_2c2"><literal>node</literal>: un identificatore di changeset. L'identificatore del changeset che è stato etichettato.</para>
+	<listitem><para id="x_2df"><literal>node</literal>: un identificatore di changeset. L'identificatore del changeset che è stato etichettato.</para>
 	</listitem>
-	<listitem><para id="x_2c3"><literal>tag</literal>: una stringa. Il nome dell'etichetta creata.</para>
+	<listitem><para id="x_2e0"><literal>tag</literal>: una stringa. Il nome dell'etichetta creata.</para>
 	</listitem></itemizedlist>
 
       <para id="x_2e1">Se l'etichetta creata è soggetta a controllo di revisione, l'hook <literal role="hook">commit</literal> (<xref linkend="sec:hook:commit"/>) verrà eseguito prima di questo hook.</para>
