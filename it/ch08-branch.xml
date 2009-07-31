@@ -222,7 +222,7 @@
 
     &interaction.branch-named.merge;
 
-    <para id="x_3a8">Per farvi un esempio più concreto, se sto lavorando sul ramo <literal>avanzato</literal> e voglio incorporare le ultime correzioni dal ramo <literal>stabile</literal>, Mercurial sceglierà il nome del ramo <quote>corretto</quote> (<literal>avanzato</literal>) quando estrarrò e incorporerò i cambiamenti da <literal>stabile</literal>.</para>
+    <para id="x_3a8">Per farvi un esempio più concreto, se sto lavorando sul ramo <literal>sperimentale</literal> e voglio incorporare le ultime correzioni dal ramo <literal>stabile</literal>, Mercurial sceglierà il nome del ramo <quote>corretto</quote> (<literal>sperimentale</literal>) quando estrarrò e incorporerò i cambiamenti da <literal>stabile</literal>.</para>
   </sect1>
 
   <sect1>
@@ -232,7 +232,7 @@
 
     <para id="x_3aa">Nel caso più semplice, dare un nome a ogni ramo vi offre una registrazione permanente dell'identità del ramo da cui un changeset ha avuto origine. Questo vi dà un contesto maggiore quando state cercando di seguire la cronologia di un progetto di lunga data e ramificato.</para>
 
-    <para id="x_3ab">Se state lavorando con repository condivisi, potete impostare un hook <literal role="hook">pretxnchangegroup</literal> su ogni repository in modo da bloccare i cambiamenti in entrata che appartengono al nome di ramo <quote>sbagliato</quote>. Questo accorgimento vi offre una difesa semplice ma efficace nei confronti di chi trasmette accidentalmente i cambiamenti da un ramo <quote>avanzato</quote> a un ramo <quote>stabile</quote>. Un hook di questo tipo potrebbe somigliare al seguente, contenuto all'interno del file <filename role="special">/.hgrc</filename> del repository condiviso.</para>
+    <para id="x_3ab">Se state lavorando con repository condivisi, potete impostare un hook <literal role="hook">pretxnchangegroup</literal> su ogni repository in modo da bloccare i cambiamenti in entrata che appartengono al nome di ramo <quote>sbagliato</quote>. Questo accorgimento vi offre una difesa semplice ma efficace nei confronti di chi trasmette accidentalmente i cambiamenti da un ramo <quote>sperimentale</quote> a un ramo <quote>stabile</quote>. Un hook di questo tipo potrebbe somigliare al seguente, contenuto all'interno del file <filename role="special">/.hgrc</filename> del repository condiviso.</para>
     <programlisting>[hooks]
 pretxnchangegroup.branch = hg heads --template '{branches} ' | grep mybranch</programlisting>
   </sect1>
