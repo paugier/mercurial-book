@@ -1,0 +1,846 @@
+\chapter{A tour of Mercurial: the basics}
+\label{chap:tour-basic}
+
+\section{Installing Mercurial on your system}
+\label{sec:tour:install}
+
+一般的な全ての OS 向けに、
+ビルド済みの Mercurial バイナリ版が提供されています。
+バイナリ版を使用することで、
+簡単に Mercurial をセットアップすることができます。
+
+\subsection{Linux}
+
+Linux ディストリビューションは、
+それぞれ固有のパッケージ管理ツール、
+パッケージ作成方針、ならびに開発ペースを持っていますので、
+全てのバイナリ版 Mercurial 
+のインストール手順に関する包括的な説明を行うのは困難です。
+また、
+バイナリ版のインストールによって利用可能な Mercurial のバージョンは、
+当該ディストリビューションのパッケージ保守担当者が、
+どの程度活発であるかによって異なります。
+
+簡便化のため、
+著名な Linux ディストリビューションにおける、
+コマンドラインを用いた Mercurial のインストールに限定して説明します。
+殆どのディストリビューションでは、
+\texttt{mercurial} という名前のパッケージを探したならば、
+クリックひとつで Mercurial がインストールできるような、
+グラフィカルなパッケージ管理ツールが提供されています。
+
+\begin{description}
+\item[Debian]
+  \begin{codesample4}
+    apt-get install mercurial
+  \end{codesample4}
+
+\item[Fedora Core]
+  \begin{codesample4}
+    yum install mercurial
+  \end{codesample4}
+
+\item[Gentoo]
+  \begin{codesample4}
+    emerge mercurial
+  \end{codesample4}
+
+\item[OpenSUSE]
+  \begin{codesample4}
+    yum install mercurial
+  \end{codesample4}
+
+\item[Ubuntu] Ubuntu の Mercurial パッケージは非常に古いので、
+  使用すべきではありません。
+  できれば、Debian パッケージをリビルドしてインストールしてください。
+  おそらく Mercurial をソースからビルドする方が簡単でしょう。
+  その場合の詳細は、\ref{sec:srcinstall:unixlike}~節を参照してください。
+
+\end{description}
+
+\subsection{Mac OS X}
+
+Mac OS~X 向けの Mercurial インストーラは、
+Lee Cantey によって
+\url{http://mercurial.berkwood.com} で公開されています。
+このパッケージは、Intel および Power の両 Mac で動作します。
+このインストーラを使用する前に、
+Universal MacPython~\cite{web:macpython} 
+と互換性のある Python をインストールする必要があります。
+Lee 氏のサイトにある手順を踏めば、簡単にインストールできます。
+
+\subsection{Solaris}
+
+未校。XXX
+
+\subsection{Windows}
+
+Windows 向けの Mercurial インストーラは、
+Lee Cantey によって
+\url{http://mercurial.berkwood.com} で公開されています。
+このパッケージは他のパッケージへの依存性がありませんので、
+単独で利用できます。
+
+\begin{note}
+  基底状態の Windows 版 Mercurial は、
+  Windows と Unix の改行形式の自動変換は行いません。
+  Unix 利用者と変更成果を共有したい場合は、
+  少々追加設定を行う必要があります。
+  詳細未校 XXX。
+\end{note}
+
+\section{Getting started}
+
+Mercurial を使い始めるにあたり、
+実際に利用可能な Mercurial コマンドのバージョンを確認するため、
+\hgcmd{version} コマンドを使ってみましょう。
+実際のバージョン情報にはそれほど重要性はありませんが、
+何も表示されない場合は対処が必要です。
+
+\interaction{tour.version}
+
+\subsection{Built-in help}
+
+Mercurial は組み込みヘルプ機能を持っています。
+この機能は、
+コマンドの実行方法を思い出せない場合に有用です。
+何をして良いのか完全にわからなくなってしまった場合は、
+単に \hgcmd{help} を実行することで、
+それぞれがどのような機能を持っているかの説明が付いた、
+簡単なコマンド一覧が表示されます。
+以下に示すような形式で、
+特定のコマンドについて \hgcmd{help} を実行した場合、
+そのコマンドに関する詳細な情報が表示されます。
+
+\interaction{tour.help}
+
+更に多くの詳細な（通常は必要としない）情報を表示するには、
+\hgcmdargs{help}{\hggopt{-v}} を実行します。
+\hggopt{-v} オプションは \hggopt{--verbose} の省略形で、
+通常よりも多くの情報を Mercurial に表示させます。
+
+\section{Working with a repository}
+
+Mercurial では、
+全てが\emph{リポジトリ}に閉じています。
+例えば、あるプロジェクトのために作成したリポジトリには、
+プロジェクトに``属する''全てのファイルだけでなく、
+ファイルに関する履歴情報も格納されています。
+
+リポジトリはファイルシステム上にある只のディレクトリツリーですので、
+Mercurial が特別扱いするということ以外には、
+通常のディレクトリやファイルと比較して特に変わっている点はありません。
+コマンド行やファイルブラウザを利用して、
+任意の時点で改名や削除することができます。
+
+\subsection{Making a local copy of a repository}
+
+リポジトリの\emph{複製}は、少々特別です。
+通常のディレクトリ複製のコマンドでもリポジトリを複製できますが、
+Mercurial 組み込みの複製コマンドを使用した方が良いでしょ。
+このコマンドは、
+既存のリポジトリと同一の複製を生成するため、
+\hgcmd{clone} と呼ばれています。
+
+\interaction{tour.clone}
+
+チュートリアル用のリポジトリからの複製に成功したなら、
+ローカルファイルシステム上に
+\dirname{hello} という名前のディレクトリがある筈です。
+このディレクトリにはファイルが幾つか格納されていることでしょう。
+This directory will contain some files.
+
+\interaction{tour.ls}
+
+これらのファイルは、
+複製元になったリポジトリにおけるファイルと、
+全く同じ内容と履歴情報を持っています。
+
+全ての Mercurial リポジトリは、
+機能提供に必要なものを全て格納しているため、
+それ自体で完結している、独立した存在です。
+リポジトリには、
+プロジェクトに属するファイルの私的な複製と履歴情報が格納されます。
+複製されたリポジトリは、
+複製元となったリポジトリの位置を記憶していますが、
+特に明示的な指示をしない限り、
+複製元リポジトリとの連携（および、それ以外のリポジトリとの連携も）
+は行われません。
+
+それぞれのリポジトリは、
+他のリポジトリに影響を及ぼすことの無い、
+私的な``箱庭''と言えますから、
+自身のリポジトリで自由に実験ができるわけです。
+
+\subsection{What's in a repository?}
+
+リポジトリ内部を仔細に見てみると、
+\dirname{.hg} という名前のディレクトリがあることに気が付くことでしょう。
+このディレクトリは、
+Mercurial がリポジトリのメタデータを格納しているディレクトリです。
+
+\interaction{tour.ls-a}
+
+\dirname{.hg} およびその配下のディレクトリの内容は、
+Mercurial が私的に使用するものです。
+リポジトリにおけるそれ以外のディレクトリ・ファイルは、
+自由に利用して構いません。
+
+用語の定義をするにあたり、
+\dirname{.hg} ディレクトリを``本当の''リポジトリとするなら、
+それと共存する他のファイル・ディレクトリは
+\emph{作業領域ディレクトリ}にあるもの、と呼ばれます。
+両者の区分を簡単に言うなら、
+\emph{リポジトリ}がプロジェクトの\emph{履歴}を保持する一方で、
+\emph{作業領域ディレクトリ}は、
+履歴上のとある時点におけるプロジェクトの\emph{スナップショット}を保持する、
+と言えます。
+
+\section{A tour through history}
+
+馴染みの無い新しいリポジトリに対しては、
+まずはその履歴を参照してみようと思うことでしょう。
+\hgcmd{log} コマンドは、履歴情報を出力します。
+
+\interaction{tour.log}
+
+このコマンドの基底動作では、
+プロジェクトに加えられた個々の変更の記録に対して簡単な出力を行います。
+Mercurial の用語では、
+複数のファイルに対する変更を保持し得ることから、
+記録されたこれらの出来事を\emph{チェンジセット}と呼称します。
+
+\hgcmd{log} の出力形式における各欄は、
+以下のようになっています。
+
+\begin{description}
+\item[\texttt{changeset}] この欄は、10 進数、コロン（colon: \texttt{:}）
+  および 16 進数の連続形式となっています。
+  ２つの数値は共にチェンジセットの\emph{識別子}です。
+  16 進数のものよりも、10 進数の方が短く、入力が容易であることから、
+  ２つの識別氏が存在します。
+
+\item[\texttt{user}] チェンジセットの作成者に関する識別情報です。
+  この欄は自由形式ですが、殆どの場合、
+  人名と電子メールアドレスが格納されます。
+
+\item[\texttt{date}] チェンジセットが作成された日時と、そのタイムゾーンです
+  （日時は当該タイムゾーンにおける値ですので、
+  チェンジセットの作成者にとっての日時を表します）。
+
+\item[\texttt{summary}] チェンジセット作成者が、
+  作成の際にチェンジセットの説明として入力したメッセージの最初の行です。
+
+\end{description}
+
+基底動作における \hgcmd{log} の出力は、
+単純な要約ですので、
+多くの詳細データが欠けています。
+
+図~\ref{fig:tour-basic:history} は、
+履歴の``動向''を把握し易くするために、
+\dirname{hello} リポジトリにおける履歴を図示したものです。
+本章および以降の章において、
+何度かこの図に立ち返ることになることでしょう。
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-history}
+  \label{fig:tour-basic:history}
+  \caption{Graphical history of the \dirname{hello} repository}
+\end{figure}
+
+\subsection{Changesets, revisions, and talking to other people}
+
+英語が不正確さで悪名高い言語であり、
+計算機科学では用語の混乱はいつものことですので、
+構成管理の分野では、
+同じことを表す複数の用語や言い回しが存在します。
+Mercurial での履歴管理について話をする場合、
+``チェンジセット''（changeset）という用語が時には
+``チェンジ''（change）や
+（文書の場合は）``cset''などと省略されていたり、
+チェンジセットという言い回しが、
+``リビジョン''（revision）ないし``rev''
+を表すものとして使用されたりするのを目にするかもしれません。
+
+``チェンジセット''の概念をどのような\emph{用語}で表そうが問題ではありませんが、
+``\emph{特定の}チェンジセット''を指すための\emph{識別子}は非常に重要です。
+\hgcmd{log} の出力における \texttt{changeset} 欄が、
+10 進数と 16 進数の両方の識別子を使ってチェンジセットを識別している、
+ということを思い出してください。
+
+\begin{itemize}
+\item 10 進数の識別子（＝ リビジョン番号）が、
+  \emph{当該リポジトリでのみ有効な値}である一方で、
+
+\item 16 進数の識別子は、\emph{全ての}複製リポジトリに渡って、
+  厳密にチェンジセットを識別可能な\emph{恒久普遍の識別子}です。
+
+\end{itemize}
+
+この区別は重要です。
+電子メールで他の人と``リビジョン~33''の話をした場合、
+相手のリビジョン~33は、
+自分の意図するそれとは高い確率で\emph{異なります}。
+これは、
+リビジョン番号の割り付けが、
+当該チェンジセットがリポジトリに認識された順序に依存しており、
+チェンジセットの認識順序が同一であることを、
+異なるリポジトリの間では保障できないためです。
+３つのチェンジセット $a,b,c$ が、
+とあるリポジトリでは $0,1,2$ の順序で認識される一方で、
+別なリポジトリでは $1,0,2$ の順序で認識される、
+といったことは容易に起こり得ます。
+
+Mercurial がリビジョン番号を使用しているのは、
+純粋に記述簡略化の利便性のためです。
+他の人とチェンジセットに関して話をする場合や、
+何らかの理由（例えば、障害報告における記録）
+によってチェンジセットに関する記録を残す場合は、
+16 進数の識別子を使いましょう。
+
+\subsection{Viewing specific revisions}
+
+\hgcmd{log} の出力を単一のリビジョンのものに限定する場合、
+\hgopt{log}{-r}（ないし \hgopt{log}{--rev}）オプションを使用します。
+10 進数のリビジョン番号と、
+16 進数のチェンジセット識別子のどちらも使用できますし、
+必要に応じて複数のリビジョンを指定することもできます。
+
+\interaction{tour.log-r}
+
+個別に列挙すること無しに複数のリビジョンの履歴を参照したい場合は、
+\emph{範囲記法}を使用します。
+この記法は、
+``$a$ から $b$ の間の全てのリビジョン''
+という意図を表現します。
+
+\interaction{tour.log.range}
+
+Mercurial はりビジョンの記述順序に忠実に振舞いますので、
+\hgcmdargs{log}{-r 2:4} というコマンド起動が
+$2,3,4$ の順序で表示する一方、
+\hgcmdargs{log}{-r 4:2} というコマンド起動は
+$4,3,2$ の順序で表示します。
+
+\subsection{More detailed information}
+
+目当てのチェンジセットが既に判明している場合は
+\hgcmd{log} が出力する概要情報は有用ですが、
+あるチェンジセットが目当てのものか否かを判定しようとする場合には、
+変更についての完全な説明文や、
+変更されたファイルの一覧が必要になることでしょう。
+\hgcmd{log} コマンドの
+\hggopt{-v}（ないし \hggopt{--verbose}）オプションは、
+これら追加の詳細情報を表示します。
+
+\interaction{tour.log-v}
+
+説明文と変更内容の両方を見たい場合は、
+\hgopt{log}{-p} （ないし \hgopt{log}{--patch}）
+オプションを付加してください。
+このオプションにより、
+変更内容が \emph{unified diff} 形式
+（これまでに unified diff 形式を見たことが無いのでしたら、
+\ref{sec:mq:patch}~節に概要の説明があります）で出力されます。
+
+\interaction{tour.log-vp}
+
+\section{All about command options}
+
+Mercurial のコマンド探検をここで少々中断して、
+Mercurial コマンドの動作パターンについて説明しましょう。
+本章におけるツアーを続けるにつれて、
+このことを覚えておいて良かったと思うことでしょう。
+
+Mercurial は、
+コマンドに対して指定可能なオプションの取り扱いに関して、
+近年の Linux および Unix システムに共通のオプション記述慣習を踏襲した、
+一貫した素直な扱い方を採用しています。
+
+\begin{itemize}
+\item 全てのオプションはロングネーム（long name）を持っています。
+  例えば、既に見てきたように、
+  \hgcmd{log} コマンドは \hgopt{log}{--rev} オプションを受け付けます。
+
+\item 殆どのオプションがショートネーム（short name）も持っています。
+  \hgopt{log}{--rev} オプションの代わりに
+  \hgopt{log}{-r} を使用できます
+  （ショートネームを持たないオプションがあるのは、
+  それらのオプションが滅多に利用されないためです\footnote{訳注:
+  訳者のコマンド開発経験では、
+  ショートネームの候補となるアルファベットが複数のオプションの間で重なる場合、
+  あえてショートネームを設定しない、
+  という場合もあります。}）。
+
+\item ロングネームオプションは２つのマイナス記号\footnote{訳注:
+  原文では ``dash(es)'' ですが、
+  「ダッシュ（ダーシ）」や「ハイフン」よりも、
+  PC における入力では直接的な、
+  「マイナス記号」を訳語に当てました。}で始まります
+  （例: \hgopt{log}{--rev}）が
+  ショートネームオプションは１つのマイナス記号で始まります
+  （例: \hgopt{log}{-r}）。
+
+\item オプションの命名と用法は、コマンド間で一貫性が取られています\footnote{
+  訳注： 訳者が以前、オプションを追加するパッチを提案した際には、
+  パッチの機能的な話とは別に、
+  「○○のコマンドでは××というう命名になっているから、それに倣ってね」
+  と指摘されたことがあり、
+  「一貫性がとられている」との主張は伊達ではありません。}。
+  例えば、チェンジセット識別子やりビジョン番号を指定可能なコマンドは、
+  全て \hgopt{log}{-r} および \hgopt{log}{--rev} オプションを受理します。
+
+\end{itemize}
+
+本書の実行例では、
+ロングネームオプションの代わりにショートネームオプションを使用します。
+これは単に筆者の好みというだけのことですので、
+特に気にする必要はありません。
+
+何らかの表示を行うコマンドの多くは、
+\hggopt{-v}（ないし \hggopt{--verbose}）
+オプションを付与することでより多くの情報の表示を、
+\hggopt{-q}（ないし \hggopt{--quiet}）
+オプションを付与することで表示を抑止することができます。
+
+\section{Making and reviewing changes}
+
+この時点で、Mercurial における履歴を把握できていますので、
+変更の実施や、その検証を行ってみましょう。
+
+まず始めにすべきことは、
+独自の実験を元々のリポジトリから隔離することです。
+リポジトリの複製に、先程は \hgcmd{clone} を使用しましたが、
+この時点での遠隔リポジトリからの複製は必要ありません。
+既に手元にある複製リポジトリから複製すれば良いのです。
+ローカルリポジトリの複製は、
+ネットワーク越しの複製よりも非常に高速ですし、
+多くの場合においてディスク領域消費も少なくて済みます\footnote{訳注:
+詳細は ``Avoiding seeks'' にありますが、
+Mercurial はローカルリポジトリの複製の際に、
+ディスクヘッドのシーク回避のために、
+ファイルの複製ではなく所謂``ハードリンク''を実施します。}。
+
+\interaction{tour.reclone}
+
+話は逸れますが、
+作業に着手しようとした際に、
+作業用サンドボックスとしての一時的な複製を何時でも作成できますので、
+遠隔リポジトリの複製を``まっさらな''状態で保つように心掛けるのが良いでしょ。
+こうすることで、
+複数の作業を平行に行うことができますし、
+作業完了後にそれらを統合するまでは、
+互いの作業を隔離された状態にすることができます。
+ローカルリポジトリの複製は低コストですから、
+リポジトリの複製および破棄にはオーバヘッドが殆どありません。
+
+\dirname{my-hello} リポジトリには、
+典型的な ``hello, world'' プログラムが格納された
+\filename{hello.c} ファイルがあります。
+ではここで、
+いにしえの \command{sed} コマンドを使用して、
+２行目を出力するように変更してみましょう。
+（変更のために \command{sed} を使用するのは、
+単にスクリプトによる自動化が簡単であるからです。
+自動化の必要が無ければ、
+おそらく \command{sed} を使用する必要は無いでしょう。
+好みのエディタで編集をしてください。）。
+
+\interaction{tour.sed}
+
+\hgcmd{status} コマンドにより、
+リポジトリ配下のファイルの状況に関する
+Mercurial の認識が表示されます。
+
+\interaction{tour.status}
+
+幾つかのファイルに対しては、
+\hgcmd{status} コマンドは特に何も表示しませんが、
+\filename{hello.c} に対しては
+``\texttt{M}'' で始まる行を表示します。
+明示的に指定しない限り、
+変更されていないファイルに対して
+\hgcmd{status} は何も表示しません。
+
+``\texttt{M}'' 表示は、
+Mercurial が \filename{hello.c} ファイルの変更を検知していることを表します。
+ファイルの変更に先立って（あるいは変更の後に）、
+Mercurial に対して\emph{通知}する必要はありません。
+Mercurial 自身で変更の実施を検知することができます。
+
+\hgcmd{status} の表示は、
+\filename{hello.c} を変更したことを知るのに役立ちますが、
+\emph{どのような}変更を行ったのかを厳密に知りたい場合も有るでしょう。
+変更内容を知るためには、
+\hgcmd{diff} コマンドを使用します。
+
+\interaction{tour.diff}
+
+\section{Recording changes in a new changeset}
+
+変更内容に満足して、
+新規チェンジセットに変更内容を記録するに足る状況に到達するまでは、
+ファイルの内容を変更し、
+ビルドと変更内容に対する試験を行い、
+\hgcmd{status} および \hgcmd{diff} による変更内容を確認する、
+という作業を繰り返します。
+
+\hgcmd{commit} コマンドを用いることで、
+チェンジセットを新たに作成することができます。
+通常これを``コミットの実施''（``making a commit''）ないし
+``コミットする''（``committing''）と言います。
+
+\subsection{Setting up a username}
+
+最初に \hgcmd{commit} 実行を行う際には、
+必ずしも実行が成功\footnote{訳注:
+ここで言う``成功''とは、
+コマンド実行そのものの成功というよりは、
+``思った通りのチェンジセットを生成''することに対する成功に近いニュアンスです。
+}するとは限りません。
+チェンジセットのコミットの際に Mercurial は、
+コミットしたユーザの名前と電子メールアドレスを、
+チェンジセット毎に記録しますので、
+誰もが後からチェンジセット作成者を知ることができます。
+Mercurial は以下の手順で、
+変更内容と共に記録する妥当なユーザ名を自動的に検出しようとします。
+
+\begin{enumerate}
+\item \hgcmd{commit} コマンド起動の際に
+  \hgopt{commit}{-u} オプションによってユーザ名を指定した場合、
+  常にその値が優先的に使用されます。
+
+\item 次に \envar{HGUSER} 環境変数設定の有無が確認されます。
+
+\item ホームディレクトリ直下に、
+  \rcitem{ui}{username} 要素を持つ
+  \sfilename{.hgrc}\footnote{訳注:
+  Windows 向けバイナリ版の場合、
+  \envar{HOME} 環境変数が指すディレクトリ、
+  ないし \dirname{C:\\Documents and Settings\\USERNAME}
+  配下の \sfilename{Mercurial.ini} が用いられます。}
+  がある場合、その値が使用されます。
+  このファイルに書くべき内容に関しては、
+  \ref{sec:tour-basic:username}節を参照してください。
+
+\item \envar{EMAIL} 環境変数が設定されている場合は、
+  その値が使用されます。
+
+\item それ以外の場合、
+  Mercurial は稼動しているシステムにユーザとホストの名前を問い合わせた上で、
+  電子メールアドレス形式のユーザ名を生成し、これを使用します。
+  この方法で生成されたユーザ名は往々にして役に立たないため、
+  Mercurial は警告を表示します。
+
+\end{enumerate}
+
+上記の方法が全て失敗した場合、
+Mercurial によるコミットは失敗し、
+エラーメッセージを表示します。
+そのような場合では、明示的にユーザ名を指定しない限り、
+コミットは成功しないでしょう。
+
+\envar{HGUSER} 環境変数と
+\hgcmd{commit} コマンドへの
+\hgopt{commit}{-u} オプション指定は、
+Mercurial 設定ファイル中の username 設定を
+\emph{無効にする}点に注意してください。
+通常の使用において、
+自身のユーザ名を簡単且つ確実に指定するには、
+\sfilename{.hgrc} ファイルで指定するのが良いでしょ。
+記述方法に関する詳細は後述します。
+
+\subsubsection{Creating a Mercurial configuration file}
+\label{sec:tour-basic:username}
+
+ユーザ名を設定するには、
+まずは好みのエディタを使って、
+ホームディレクトリ直下に
+\sfilename{.hgrc}ファイルを作成します。
+Mercurial はこのファイルから利用者の個人設定を参照します。
+\sfilename{.hgrc} の内容は、
+まずは以下のようになるでしょう。
+
+\begin{codesample2}
+  # This is a Mercurial configuration file.
+  [ui]
+  username = Firstname Lastname <email.address@domain.net>
+\end{codesample2}
+
+``\texttt{[ui]}'' 行は、
+設定ファイルの\emph{セクション}開始を意味し、
+``\texttt{username = ...}'' という記述行は
+``\texttt{ui} セクションにおける \texttt{username} 項目への値の設定''
+とみなされます。
+一度セクションが開始されたなら、
+新たなセクションが開始されるか、
+ファイルの末尾に達するまで当該セクションが続きます。
+空の行と、
+``\texttt{\#}'' の次の文字から行末までは、
+Mercurial によってコメントとみなされ無視されます。
+
+\subsubsection{Choosing a user name}
+
+\texttt{username} 設定項目は、
+Mercurial に与える値ではありますが、
+リポジトリを参照する他の利用者のための情報ですので、
+任意の文字を使用可能です。
+殆どの利用者は、
+名前と電子メールアドレスを用いた前述のような形式を用いています。
+
+\begin{note}
+  Mercurial の組み込みウェブサーバ機能では、
+  スパムメールの送付者が利用する電子メールアドレス自動収集ツールに対して、
+  電子メールアドレスを難読化することが可能です。
+  この機能を用いることで、
+  Mercurial リポジトリをウェブ上に公開した際に、
+  益体も無いメール受信の増加を抑止することができます。
+\end{note}
+
+\subsection{Writing a commit message}
+
+当該チェンジセットでの変更内容を説明するメッセージを入力するために、
+Mercurial はコミットの際にエディタを起動します。
+このメッセージを\emph{コミットメッセージ}と呼び、
+読み手に変更の内容と理由を伝えるために記録されるもので、
+コミット後の \hgcmd{log} コマンドにより表示されます。
+
+\interaction{tour.commit}
+
+\hgcmd{commit} コマンドが起動するエディタは、
+``\texttt{HG:}''で始まる数行が後に続く空行を表示していることでしょう。
+
+\begin{codesample2}
+  \emph{空行}
+  HG: changed hello.c
+\end{codesample2}
+
+Mercurial は
+``\texttt{HG:}'' で始まる行を無視します。
+これらの行は、
+チェンジセットへの変更記録対象となるファイルの一覧を、
+コミットしようとしているユーザに知らせるためだけのものです。
+そのため、これらの行の変更や削除は何も意味を持ちません。
+
+\subsection{Writing a good commit message}
+
+\hgcmd{log} はコミットメッセージの最初の１行しか表示しませんので、
+最初の１行だけで意味の通じる内容にするのが良いでしょう。
+この方針から\emph{外れている}ために、
+読み難いコミットメッセージの実例を以下に示します。
+
+\begin{codesample2}
+  changeset:   73:584af0e231be
+  user:        Censored Person <censored.person@example.org>
+  date:        Tue Sep 26 21:37:07 2006 -0700
+  summary:     include buildmeister/commondefs.   Add an exports and install
+\end{codesample2}
+
+コミットメッセージの２行目以降に関しては、
+特に厳密なルールは存在しません。
+コミットメッセージに対して、
+プロジェクト運用上の方針として何らかの形式を要求するかもしれませんが、
+Mercurial 自身が解釈や忖度をすることはありません。
+
+筆者の個人的な好みは、
+\hgcmdargs{log}{--patch} を一瞥しただけでは判断できない事柄について、
+簡潔でありながら有益な情報をもたらすようなコミットメッセージです。
+
+\subsection{Aborting a commit}
+
+コミットメッセージの記述中にコミットを取りやめを決意した場合には、
+編集中のファイルを保存せずにエディタを終了すれば良いのです。
+この場合、リポジトリと作業領域ディレクトリのいずれに対しても、
+何ら操作は加えられません。
+
+引数無しで \hgcmd{commit} コマンドを実行した場合、
+\hgcmd{status} および \hgcmd{diff} 
+によって報告された全ての変更内容が記録されます。
+
+\subsection{Admiring our new handiwork}
+
+コミットが完了したなら、
+今しがた新規作成したチェンジセットを
+\hgcmd{tip} コマンドで表示することができます。
+このコマンドは \hgcmd{log} と同一の出力を行いますが、
+表示されるのはリポジトリにおける最新のリビジョンだけです。
+
+\interaction{tour.tip}
+
+リポジトリにおける最新のリビジョンを tip リビジョン、
+あるいは単に tip と呼びます。
+
+\section{Sharing changes}
+
+先の記述で、Mercurial におけるリポジトリは、
+それ自身で完結している旨述べました。
+これは即ち、
+たった今新規に作成したチェンジセットは、
+手元の \dirname{my-hello} リポジトリにしか存在しないことを意味します。
+この変更内容を他のリポジトリへと伝播する方法を、
+順に見てゆきましょう。
+
+\subsection{Pulling changes from another repository}
+\label{sec:tour:pull}
+
+まず始めに、
+元々の \dirname{hello} リポジトリを複製して、
+たった今新規に作成した変更のコミットされていないリポジトリを作成しましょう。
+この複製したリポジトリを、
+\dirname{hello-pull} と呼びます。
+
+\interaction{tour.clone-pull}
+
+\hgcmd{pull} コマンドにより、
+\dirname{my-hello} から
+\dirname{hello-pull} へと変更を取り込みます。
+しかしながら、未知の変更を闇雲にリポジトリに取り込むのは、
+あまりぞっとしません。
+Mercurial が提供する \hgcmd{incoming} コマンドは、
+実際に変更を取り込む事無く、
+\hgcmd{pull} 
+によってリポジトリに取り込まれる\emph{予定}のチェンジセットを表示します。
+
+\interaction{tour.incoming}
+
+（勿論、
+\hgcmd{incoming} コマンドを実行したリポジトリに対して、
+\hgcmd{pull} による変更取り込みの機会よりも前に、
+より多くの変更を追加することは可能ですので、
+実際の変更取り込みは予定とは異なる可能性が有ります。）
+
+リポジトリへの変更の取り込みは、
+どのリポジトリから取り込むかを指示しつつ、
+\hgcmd{pull} コマンドを実行するという簡単なものです。
+
+\interaction{tour.pull}
+
+実施前後の \hgcmd{tip} 出力から見て取れるように、
+手元のリポジトリへの変更内容の反映が成功しています。
+取り込んだ変更内容を作業領域ディレクトリにおいて参照するためには、
+もうひと手順必要です。
+
+\subsection{Updating the working directory}
+
+リポジトリと作業領域ディレクトリの関係について、
+これまでは大雑把にしか説明してきませんでした。
+\ref{sec:tour:pull}~節で実行した
+\hgcmd{pull} コマンドは、
+リポジトリへの変更の取り込みを行いますが、
+確認してみればわかるように、
+作業領域には何ら影響を及ぼしません。
+これは、
+\hgcmd{pull} の（基底の）挙動が、
+作業領域に影響を及ぼさないものであるためです。
+作業領域の更新には、
+\hgcmd{pull} ではなく \hgcmd{update} を用います。
+
+\interaction{tour.update}
+
+\hgcmd{pull} 実行時に作業領域を自動的に更新しないことは、
+一見奇異に見えるかもしれませんが、
+実はそれには理由が有ります。
+\hgcmd{update} を用いることで、
+リポジトリに記録された\emph{任意の版}の状態へと、
+作業領域ディレクトリの内容を更新することができます。
+作業領域ディレクトリを
+---例えば、バグの原因調査などのために---
+古い版にして作業していた場合などは、
+\hgcmd{pull} 実行が作業領域ディレクトリを最新の版に自動的に更新してしまうのは、
+あまりよろしくないでしょう。
+
+しかし、\hgcmd{pull} 〜 \hgcmd{update} という流れは非常に頻繁な作業ですから、
+\hgcmd{pull} に \hgopt{pull}{-u} オプションを指定することで、
+Mercurial はこれら２つを組み合わせた機能を提供します。
+
+\begin{codesample2}
+  hg pull -u
+\end{codesample2}
+
+\ref{sec:tour:pull}~節での
+\hgopt{pull}{-u} オプションを指定しない
+\hgcmd{pull} 実行の出力には、
+作業領域ディレクトリの更新に明示的な手順が必要であることを示す、
+注意喚起のメッセージが表示されているのが見て取れます。
+
+\begin{codesample2}
+  (run 'hg update' to get a working copy)
+\end{codesample2}
+
+作業領域ディレクトリがどの版の内容に基づいているかを見るには、
+\hgcmd{parents} コマンドを使用します。
+
+\interaction{tour.parents}
+
+図~\ref{fig:tour-basic:history} では、
+個々のチェンジセットを繋ぐ矢印が描かれています。
+矢印の\emph{根元}にあたるチェンジセットが親を、
+そして矢印の\emph{先}にあたるチェンジセットが子を表しています。
+同じように、作業領域ディレクトリも親を持っており、
+現時点で保持している作業領域ディレクトリの内容は、
+そのチェンジセットに基づいたものです。
+
+作業領域ディレクトリの内容を特定の版のものにする場合、
+\hgcmd{update} コマンドにリビジョン番号ないしチェンジセット~IDを指定します。
+
+\interaction{tour.older}
+
+明示的な版指定をしなかった場合、
+上記の例における２つ目の \hgcmd{update} 実行で見て取れるように、
+\hgcmd{update} は tip が指定されたものとして振舞います。
+
+\subsection{Pushing changes to another repository}
+
+Mercurial では、
+現在作業を行っているリポジトリから他のリポジトリへの、
+変更内容の反映が可能です。
+先に示した \hgcmd{pull} の例と同様に、
+まずは変更反映先とするための一時的なリポジトリを作成します。
+
+\interaction{tour.clone-push}
+
+\hgcmd{outgoing} コマンドは、
+他のリポジトリへの反映対象となるチェンジセットを一覧表示します。
+
+\interaction{tour.outgoing}
+
+そして \hgcmd{push} コマンドが実際の反映作業を行います。
+
+\interaction{tour.push}
+
+\hgcmd{pull} と同様に、
+\hgcmd{push} コマンドは変更反映先のリポジトリ側において、
+作業領域ディレクトリの更新は行いません
+（\hgcmd{pull} と違い、
+\hgcmd{push} は変更反映先のリポジトリ側での作業領域ディレクトリを更新する
+\texttt{-u} オプションを持ちません）。
+
+当該リポジトリが既に相当するチェンジセットを持っている場合、
+変更の取り込みあるいは反映を行うとどうなるのでしょう？
+驚くようなことは何も起こりません。
+
+\interaction{tour.push.nothing}
+
+\subsection{Sharing changes over a network}
+
+先の幾つかの節で触れたコマンドの利用は、
+手元にあるリポジトリにのみ限定されているわけではありません。
+全く同様の形式で、
+ネットワーク接続経由でも機能します。
+ローカルファイルシステムのパスの代わりに、
+URL を指定すれば良いのです。
+
+\interaction{tour.outgoing.net}
+
+この例では、
+遠隔リポジトリに対して反映可能な変更の一覧を見ることができますが、
+このリポジトリは匿名での変更反映を許すようには当然ですが設定されていません。
+
+\interaction{tour.push.net}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

@@ -1,0 +1,78 @@
+% The use of oneside here is a temporary hack; \marginpar entries
+% don't show up on odd pages of PDF output without it.  Sigh.
+%\documentclass[oneside]{jbook}
+\documentclass[oneside]{book}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% output format independent part:
+%%%%
+
+%\usepackage{enumerate}
+\usepackage{fullpage}
+\usepackage{makeidx}
+\usepackage{fancyvrb}
+\usepackage{custom}
+
+%%%%
+%%%% output format specific part:
+%%%%
+
+\usepackage{graphicx}
+
+% leave hyperref until last
+\usepackage[
+  tex4ht,
+  colorlinks=true,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  bookmarkstype=toc
+  ]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% output format independent part:
+%%%%
+
+\include{99defs}
+
+%%%%
+%%%% output format specific part:
+%%%%
+
+%\newcommand{\grafix}[1]{\includegraphics{#1}}
+%\newcommand{\grafix}[1]{#1}
+\newcommand{\grafix}[2][]{\Picture{#2}} % ignore #1
+\newcommand{\grafixL}[1]{\Picture{#1}}
+
+% Note: blah blah.
+\newsavebox{\notebox}
+\newenvironment{note}{
+  \begin{lrbox}{\notebox}
+    \begin{minipage}{0.7\textwidth}
+      \textbf{備考:}\space%
+}{
+    \end{minipage}
+  \end{lrbox}
+  \fbox{\usebox{\notebox}}
+}
+\newenvironment{caution}{
+  \begin{lrbox}{\notebox}
+    \begin{minipage}{0.7\textwidth}
+      \textbf{注意:}\space%
+}{
+    \end{minipage}
+  \end{lrbox}
+  \fbox{\usebox{\notebox}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{00book}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
