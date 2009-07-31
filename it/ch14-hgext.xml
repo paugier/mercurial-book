@@ -10,7 +10,7 @@
     </listitem>
     <listitem><para id="x_501">Nel <xref linkend="chap:hook"/>, abbiamo parlato di diverse estensioni che sono utili per funzionalità relative agli hook: <literal role="hg-ext">acl</literal> aggiunge le liste di controllo d'accesso; <literal role="hg-ext">bugzilla</literal> aggiunge l'integrazione con il sistema Bugzilla per la gestione dei bug; e <literal role="hg-ext">notify</literal> invia email di notifica in reazione all'inserimento di nuovi cambiamenti.</para>
     </listitem>
-    <listitem><para id="x_502">L'estensione Mercurial Queues per la gestione delle patch è talmente inestimabile che merita due capitoli e un'appendice a essa dedicati. Il <!--<xref linkend="chap:mq"/>-->FIXME copre le nozioni di base; il <!--<xref linkend="chap:mq-collab"/>-->FIXME ne discute gli argomenti avanzati; e il <!--<xref linkend="chap:mqref"/>-->FIXME entra nei dettagli di ogni comando.</para>
+    <listitem><para id="x_502">L'estensione Mercurial Queues per la gestione delle patch è talmente inestimabile che merita due capitoli e un'appendice a essa dedicati: il <xref linkend="chap:mq"/> copre le nozioni di base, il <xref linkend="chap:mq-collab"/> ne discute gli argomenti avanzati e il <xref linkend="chap:mqref"/> entra nei dettagli di ogni comando.</para>
     </listitem>
   </itemizedlist>
 
@@ -69,7 +69,7 @@ sudo python setup.py install --skip-build</programlisting>
 hg clone crew inotify
 hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches</programlisting>
       </listitem>
-      <listitem><para id="x_517">Assicuratevi di avere abilitato l'estensione <literal role="hg-ext">mq</literal> per Mercurial Queues. Se non avete mai usato MQ, leggete la sezione <!--<xref linkend="sec:mq:start"/>-->FIXME per cominciare velocemente.</para>
+      <listitem><para id="x_517">Assicuratevi di avere abilitato l'estensione <literal role="hg-ext">mq</literal> per Mercurial Queues. Se non avete mai usato MQ, leggete la <xref linkend="sec:mq:start"/> per cominciare velocemente.</para>
       </listitem>
       <listitem><para id="x_518">Posizionatevi nel repository <filename class="directory">inotify</filename> e applicate tutte le patch per l'estensione <literal role="hg-ext">inotify</literal> usando l'opzione <option role="hg-ext-mq-cmd-qpush-opt">hg -a</option> per il comando <command role="hg-ext-mq">qpush</command>.</para>
 	<programlisting>cd inotify
@@ -127,7 +127,7 @@ extdiff =</programlisting>
     <para id="x_52a">Lanciare uno strumento di diff visuale è altrettanto facile. Ecco come lanciare il visualizzatore<command>kdiff3</command>.</para>
     <programlisting>hg extdiff -p kdiff3 -o</programlisting>
 
-    <para id="x_52b">Se il comando che usate per visualizzare i diff non gestisce le directory, potete facilmente aggirare questo problema con un minimo di programmazione. Per un esempio di un programma simile in azione con l'estensione <literal role="hg-ext">mq</literal> e il comando <command>interdiff</command>, consultate la sezione <!--<xref linkend="mq-collab:tips:interdiff"/>-->FIXME.</para>
+    <para id="x_52b">Se il comando che usate per visualizzare i diff non gestisce le directory, potete facilmente aggirare questo problema con un minimo di programmazione. Per un esempio di un programma simile in azione con l'estensione <literal role="hg-ext">mq</literal> e il comando <command>interdiff</command>, consultate la <xref linkend="mq-collab:tips:interdiff"/>.</para>
 
     <sect2>
       <title>Definire alias per i comandi</title>
@@ -190,7 +190,7 @@ patchbomb =</programlisting>
 	</listitem>
 	<listitem><para id="x_53d">Per cambiare l'indirizzo email da cui vengono spediti i messaggi usate l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">hg -f</option>. Questa opzione prende un argomento, l'indirizzo email da usare.</para>
 	</listitem>
-	<listitem><para id="x_53e">Il comportamento predefinito è quello di inviare diff in formato unified (leggete <!--<xref linkend="sec:mq:patch"/>-->FIXME per una descrizione del formato), uno per messaggio. Potete invece inviare un bundle eseguibile con l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">hg -b</option>.</para>
+	<listitem><para id="x_53e">Il comportamento predefinito è quello di inviare diff in formato unified (leggete la <xref linkend="sec:mq:patch"/> per una descrizione del formato), uno per messaggio. Potete invece inviare un bundle eseguibile con l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">hg -b</option>.</para>
 	</listitem>
 	<listitem><para id="x_53f">I diff in formato unified sono normalmente preceduti da un'intestazione di metadati. Potete ometterla e inviare diff disadorni con l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">hg --plain</option>.</para>
 	</listitem>

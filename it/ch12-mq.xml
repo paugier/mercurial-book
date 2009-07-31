@@ -409,7 +409,7 @@ hgext.mq =</programlisting>
     <para id="x_420">Ci sono alcuni aspetti dell'uso di MQ che non trovano posto in sezioni dedicate, ma che è bene conoscere. Li presento qui, in un unico posto.</para>
 
     <itemizedlist>
-      <listitem><para id="x_421">Normalmente, quando estraete una patch tramite <command role="hg-ext-mq">qpop</command> e poi la reinserite tramite <command role="hg-ext-mq">qpush</command>, il changeset che rappresenta la patch dopo l'estrazione/inserimento avrà una <emphasis>diversa identità</emphasis> rispetto al changeset che rappresentava l'hash in precedenza. Leggete <!--<xref linkend="sec:mqref:cmd:qpush"/>-->FIXME per sapere perché succede questo.</para>
+      <listitem><para id="x_421">Normalmente, quando estraete una patch tramite <command role="hg-ext-mq">qpop</command> e poi la reinserite tramite <command role="hg-ext-mq">qpush</command>, il changeset che rappresenta la patch dopo l'estrazione/inserimento avrà una <emphasis>diversa identità</emphasis> rispetto al changeset che rappresentava l'hash in precedenza. Leggete la <xref linkend="sec:mqref:cmd:qpush"/> per sapere perché succede questo.</para>
       </listitem>
       <listitem><para id="x_422">Non è una buona idea usare <command role="hg-cmd">hg merge</command> per unire i cambiamenti da un altro ramo con un changeset di patch, almeno se volete mantenere la <quote>natura di patch</quote> di quel changeset e dei changeset che si trovano sotto a quello nella pila delle patch. Se provate a farlo, sembrerà avere successo, ma l'effetto sarà quello di confondere MQ.</para>
       </listitem>
@@ -465,7 +465,7 @@ hgext.mq =</programlisting>
 
 &interaction.mq.tools.tools;
 
-    <para id="x_432">Il pacchetto <literal role="package">patchutils</literal> <citation>web:patchutils</citation> è inestimabile. Fornisce un insieme di piccole utilità che seguono la <quote>filosofia Unix:</quote> ognuna fa una singola cosa utile con una patch. Il comando di <literal role="package">patchutils</literal> che uso di più è <command>filterdiff</command>, che estrae sottinsiemi di un file di patch. Per esempio, data una patch che modifica centinaia di file attraverso dozzine di directory, una singola invocazione di <command>filterdiff</command> può generare una patch più piccola che tocca solo i file il cui nome corrisponde a un particolare pattern di tipo glob. Leggete la <!--<xref linkend="mq-collab:tips:interdiff"/>-->FIXME per un altro esempio.</para>
+    <para id="x_432">Il pacchetto <literal role="package">patchutils</literal> <citation>web:patchutils</citation> è inestimabile. Fornisce un insieme di piccole utilità che seguono la <quote>filosofia Unix:</quote> ognuna fa una singola cosa utile con una patch. Il comando di <literal role="package">patchutils</literal> che uso di più è <command>filterdiff</command>, che estrae sottinsiemi di un file di patch. Per esempio, data una patch che modifica centinaia di file attraverso dozzine di directory, una singola invocazione di <command>filterdiff</command> può generare una patch più piccola che tocca solo i file il cui nome corrisponde a un particolare pattern di tipo glob. Leggete la <xref linkend="mq-collab:tips:interdiff"/> per un altro esempio.</para>
 
   </sect1>
   <sect1>
