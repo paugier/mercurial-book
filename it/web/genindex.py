@@ -9,7 +9,7 @@ title_re = re.compile(r'<title>(.*)</title>')
 chapters = (sorted(glob.glob('../ch*.xml')) +
             sorted(glob.glob('../app*.xml')))
 
-fp = open('index-read.html.in', 'w')
+fp = open('index-read.html.in', 'w', encoding='utf-8')
 
 print('''
 <div class="navheader"><h1 class="booktitle">Mercurial: la guida definitiva<div class="authors">di Bryan O'Sullivan</div></h1></div>
@@ -23,7 +23,7 @@ for c in chapters:
     title = None
     chapid = None
     chaptype = None
-    for line in open(c):
+    for line in open(c, encoding='utf-8'):
         m = chapter_re.search(line)
         if m:
             chaptype, chapid = m.groups()
