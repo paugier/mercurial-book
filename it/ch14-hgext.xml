@@ -27,7 +27,7 @@
 
     <para id="x_506">Le prestazioni di Mercurial sono tipicamente eccellenti. Per esempio, quando invocate il comando <command role="hg-cmd">hg status</command>, Mercurial deve esaminare quasi ogni file e directory nel vostro repository in modo da mostrare lo stato dei file. Molti altri comandi Mercurial devono fare lo stesso lavoro dietro le quinte; per esempio, il comando <command role="hg-cmd">hg diff</command> usa il meccanismo dello stato per evitare costose operazioni di confronto su file che ovviamente non sono stati modificati.</para>
 
-    <para id="x_507">Dato che ottenere lo stato di un file è un'operazione cruciale per raggiungere buone prestazioni, gli autori di Mercurial hanno ottimizzato quasi completamente questo codice. Tuttavia, non è possibile evitare il fatto che, quando invocate <command role="hg-cmd">hg
+    <para id="x_507">Dato che ottenere lo stato di un file è un'operazione cruciale per raggiungere buone prestazioni, gli autori di Mercurial hanno ottimizzato il più possibile questo codice. Tuttavia, non è possibile evitare il fatto che, quando invocate <command role="hg-cmd">hg
 	status</command>, Mercurial dovrà effettuare almeno una costosa chiamata di sistema per ogni file registrato in modo da determinare se è stato modificato dall'ultima volta che Mercurial ha controllato. Per repository di dimensioni sufficientemente grandi, questa operazione può durare molto tempo.</para>
 
     <para id="x_508">Per esprimere numericamente la vastità di questo effetto, ho creato un repository contenente 150.000 file registrati e ho cronometrato <command role="hg-cmd">hg status</command> per scoprire che impiega dieci secondi a terminare, anche quando <emphasis>nessuno</emphasis> di quei file è stato modificato.</para>
