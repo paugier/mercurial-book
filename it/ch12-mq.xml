@@ -190,7 +190,7 @@ hgext.mq =</programlisting>
     </sect2>
 
     <sect2>
-      <title>I controlli di sicurezza e come aggirarli</title>
+      <title>I controlli di sicurezza e come scavalcarli</title>
 
       <para id="x_3e1">Diversi comandi MQ esaminano la directory di lavoro prima di fare qualunque cosa e falliscono se trovano una qualsiasi modifica. Si comportano in questo modo per assicurarsi di non farvi perdere i cambiamenti che avete fatto ma che non avete ancora incorporato in una patch. L'esempio seguente illustra questo caso: il comando <command role="hg-ext-mq">qnew</command> eviterà di creare una nuova patch se ci sono cambiamenti in sospeso, causati in questo caso dall'invocazione di <command role="hg-cmd">hg add</command> su <filename>file3</filename>.</para>
 
@@ -429,10 +429,10 @@ hgext.mq =</programlisting>
     <sect2>
       <title>Il supporto di MQ per i repository di patch</title>
 
-      <para id="x_427">MQ vi aiuta a lavorare con la directory <filename role="special" class="directory">.hg/patches</filename> in qualità di repository. Quando preparate un repository per lavorare con le patch usando <command role="hg-ext-mq">qinit</command>, potete passare l'opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option> per creare la directory <filename role="special" class="directory">.hg/patches</filename> sotto forma di un repository Mercurial.</para>
+      <para id="x_427">MQ vi aiuta a lavorare con la directory <filename role="special" class="directory">.hg/patches</filename> in qualità di repository. Quando preparate un repository per lavorare con le patch usando <command role="hg-ext-mq">qinit</command>, potete passare l'opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option> per creare la directory <filename role="special" class="directory">.hg/patches</filename> sotto forma di repository Mercurial.</para>
 
       <note>
-	<para id="x_428">Se dimenticate di usare l'opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option>, potete semplicemente posizionarvi nella directory <filename role="special" class="directory">.hg/patches</filename> in qualsiasi momento e invocare <command role="hg-cmd">hg init</command>. Non dimenticate, però, di aggiungere una voce per il file <filename role="special">status</filename> al file <filename role="special">.hgignore</filename> (<command role="hg-cmd">hg qinit <option role="hg-ext-mq-cmd-qinit-opt">-c</option></command> fa questo automaticamente per voi), perché il file <filename role="special">status</filename> non andrebbe <emphasis>davvero</emphasis> amministrato.</para>
+	<para id="x_428">Se dimenticate di usare l'opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option>, potete semplicemente posizionarvi nella directory <filename role="special" class="directory">.hg/patches</filename> in qualsiasi momento e invocare <command role="hg-cmd">hg init</command>. Non dimenticate, però, di aggiungere una voce per il file <filename role="special">status</filename> al file <filename role="special">.hgignore</filename> (<command role="hg-cmd">hg qinit <option role="hg-ext-mq-cmd-qinit-opt">-c</option></command> lo fa automaticamente per voi), perché il file <filename role="special">status</filename> non andrebbe <emphasis>davvero</emphasis> amministrato.</para>
       </note>
 
       <para id="x_42a">Per convenienza, se MQ nota che la directory <filename class="directory">.hg/patches</filename> è un repository, userà automaticamente <command role="hg-cmd">hg add</command> per aggiungere ogni patch che create e importate.</para>
