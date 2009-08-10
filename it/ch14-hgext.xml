@@ -99,7 +99,7 @@ inotify =</programlisting>
   <sect1 id="sec:hgext:extdiff">
     <title>Supporto flessibile per i diff con l'estensione <literal role="hg-ext">extdiff</literal></title>
 
-    <para id="x_521">Il comando predefinito di Mercurial <command role="hg-cmd">hg diff</command> stampa il testo semplice di diff in formato unified.</para>
+    <para id="x_521">Il comando predefinito di Mercurial <command role="hg-cmd">hg diff</command> stampa il testo semplice di diff unificati.</para>
 
     &interaction.extdiff.diff;
 
@@ -108,7 +108,7 @@ inotify =</programlisting>
     <para id="x_523">L'estensione <literal role="hg-ext">extdiff</literal> è inclusa in Mercurial, quindi è facile da installare. Per abilitare l'estensione, vi basta aggiungere una voce di una riga nella sezione <literal role="rc-extensions">extensions</literal> del vostro file <filename role="special">~/.hgrc</filename>.</para>
     <programlisting>[extensions]
 extdiff =</programlisting>
-    <para id="x_524">Questa estensione introduce un comando chiamato <command role="hg-ext-extdiff">extdiff</command>, il cui comportamento predefinito è quello di usare il comando <command>diff</command> del vostro sistema per generare un diff in formato unified allo stesso modo del comando <command
+    <para id="x_524">Questa estensione introduce un comando chiamato <command role="hg-ext-extdiff">extdiff</command>, il cui comportamento predefinito è quello di usare il comando <command>diff</command> del vostro sistema per generare un diff unificato allo stesso modo del comando <command
 	role="hg-cmd">hg diff</command> predefinito.</para>
     
     &interaction.extdiff.extdiff;
@@ -121,7 +121,7 @@ extdiff =</programlisting>
 
     <para id="x_528">Il comando <command role="hg-ext-extdiff">extdiff</command> accetta due importanti opzioni. L'opzione <option role="hg-ext-extdiff-cmd-extdiff-opt">-p</option> vi permette di scegliere un programma diverso da <command>diff</command> con cui visualizzare le differenze. Con l'opzione <option role="hg-ext-extdiff-cmd-extdiff-opt">-o</option>, potete cambiare le opzioni che <command role="hg-ext-extdiff">extdiff</command> passa al programma (le opzioni predefinite sono <quote><literal>-Npru</literal></quote>, che hanno senso solo se state invocando <command>diff</command>). Sotto altri aspetti, il comando <command role="hg-ext-extdiff">extdiff</command> agisce in modo simile al comando predefinito <command role="hg-cmd">hg diff</command>: si usano gli stessi nomi di opzione, la stessa sintassi e gli stessi argomenti per specificare le revisioni che volete, i file che volete, e così via.</para>
 
-    <para id="x_529">Per esempio, ecco come invocare il normale comando <command>diff</command> di sistema per fargli generare diff in formato context (usando l'opzione <option role="cmd-opt-diff">-c</option>) invece di diff in formato unified e per fargli mostrare cinque righe di contesto invece delle tre predefinite (passandogli <literal>5</literal> come argomento per l'opzione <option role="cmd-opt-diff">-C</option>).</para>
+    <para id="x_529">Per esempio, ecco come invocare il normale comando <command>diff</command> di sistema per fargli generare diff contestuali (usando l'opzione <option role="cmd-opt-diff">-c</option>) invece di diff unificati e per fargli mostrare cinque righe di contesto invece delle tre predefinite (passandogli <literal>5</literal> come argomento per l'opzione <option role="cmd-opt-diff">-C</option>).</para>
 
       &interaction.extdiff.extdiff-ctx;
 
@@ -191,9 +191,9 @@ patchbomb =</programlisting>
 	</listitem>
 	<listitem><para id="x_53d">Per cambiare l'indirizzo email da cui vengono spediti i messaggi usate l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">-f</option>. Questa opzione accetta un argomento, l'indirizzo email da usare.</para>
 	</listitem>
-	<listitem><para id="x_53e">Il comportamento predefinito è quello di inviare diff in formato unified (leggete la <xref linkend="sec:mq:patch"/> per una descrizione del formato), uno per ogni messaggio. Potete invece usare l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">hg -b</option> per inviare un bundle eseguibile.</para>
+	<listitem><para id="x_53e">Il comportamento predefinito è quello di inviare diff unificati (leggete la <xref linkend="sec:mq:patch"/> per una descrizione del formato), uno per ogni messaggio. Potete invece usare l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">hg -b</option> per inviare un bundle eseguibile.</para>
 	</listitem>
-	<listitem><para id="x_53f">I diff in formato unified sono normalmente preceduti da un'intestazione di metadati. Potete ometterla e inviare diff disadorni con l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">--plain</option>.</para>
+	<listitem><para id="x_53f">I diff unificati sono normalmente preceduti da un'intestazione di metadati. Potete ometterla e inviare diff disadorni con l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">--plain</option>.</para>
 	</listitem>
 	<listitem><para id="x_540">I diff vengono normalmente spediti <quote>in linea</quote>, nella stessa parte del corpo che contiene la descrizione della patch. Questo è il modo più facile per consentire al più ampio numero di lettori di rispondere citando parti di un diff, dato che alcuni client email citeranno soltanto la prima parte MIME del corpo di un messaggio. Se preferite inviare la descrizione e il diff in parti separate del corpo, usate l'opzione <option role="hg-ext-patchbomb-cmd-email-opt">-a</option>.</para>
 	</listitem>
