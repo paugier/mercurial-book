@@ -5,13 +5,13 @@
   <sect1>
     <title>Aggiungere file a un repository Mercurial</title>
 
-    <para id="x_1a3">Mercurial non lavora con i file nel vostro repository a meno che voi non gli diciate di gestirli. Il comando <command role="hg-cmd">hg status</command> vi dirà quali sono i file che Mercurial non conosce, usando un <quote><literal>?</literal></quote> per mostrare tali file.</para>
+    <para id="x_1a3">Mercurial lavora solo con i file che gli dite di gestire nel vostro repository. Il comando <command role="hg-cmd">hg status</command> vi dirà quali sono i file che Mercurial non conosce, usando un <quote><literal>?</literal></quote> per mostrare questi file.</para>
 
-    <para id="x_1a4">Per dire a Mercurial di tenere traccia di un file, usate il comando <command role="hg-cmd">hg add</command>. Una volta che avete aggiunto un file, la voce per quel file nell'elenco visualizzato da <command role="hg-cmd">hg status</command> cambia da <quote><literal>?</literal></quote> a <quote><literal>A</literal></quote>.</para>
+    <para id="x_1a4">Per dire a Mercurial di tenere traccia di un file, usate il comando <command role="hg-cmd">hg add</command>. Una volta che avete aggiunto un file, la voce per quel file nell'elenco visualizzato da <command role="hg-cmd">hg status</command> cambia da <quote><literal>?</literal></quote> ad <quote><literal>A</literal></quote>.</para>
 
       &interaction.daily.files.add;
 
-    <para id="x_1a5">Dopo aver eseguito <command role="hg-cmd">hg commit</command>, i file che avete aggiunto prima dell'inserimento non verranno più elencati dal comando <command role="hg-cmd">hg status</command>, perché il comportamento predefinito di <command role="hg-cmd">hg status</command> è quello di segnalarvi solo i file <quote>interessanti</quote> come quelli che avete (per esempio) modificato, rimosso, o rinominato. Se avete un repository che contiene migliaia di file, vorrete raramente sapere qualcosa dei file che Mercurial ha già registrato ma che non sono cambiati. (Potete comunque ottenere questa informazione, come vedremo più avanti.)</para>
+    <para id="x_1a5">Dopo aver eseguito <command role="hg-cmd">hg commit</command>, i file che avete aggiunto prima dell'inserimento non verranno più elencati dal comando <command role="hg-cmd">hg status</command>, perché il comportamento predefinito di <command role="hg-cmd">hg status</command> è quello di segnalarvi solo i file <quote>interessanti</quote> come (per esempio) quelli che avete modificato, rimosso, o rinominato. Se avete un repository che contiene migliaia di file, vorrete raramente sapere qualcosa dei file che Mercurial ha già registrato ma che non sono cambiati. (Potete comunque ottenere questa informazione, come vedremo più avanti.)</para>
 
     <para id="x_1a6">Mercurial non agisce immediatamente su un file che avete appena aggiunto, ma scatterà una fotografia dello stato del file la prossima volta che eseguirete un commit. Poi continuerà a tenere traccia dei cambiamenti che apportate al file ogni volta che eseguite un commit, fino a quando non rimuoverete il file.</para>
 
@@ -22,9 +22,9 @@
 
       &interaction.daily.files.add-dir;
 
-      <para id="x_1a8">Notate che, in questo esempio, Mercurial ha stampato i nomi dei file che ha aggiunto, mentre non lo ha fatto quando abbiamo aggiunto il file <filename>myfile.txt</filename> nell'esempio precedente.</para>
+      <para id="x_1a8">Notate che, in questo esempio, Mercurial ha stampato i nomi dei file che ha aggiunto, mentre non lo ha fatto quando abbiamo aggiunto il file <filename>miofile.txt</filename> nell'esempio precedente.</para>
 
-      <para id="x_1a9">Questo accade perché, nel primo esempio, abbiamo esplicitamente designato il file da aggiungere sulla linea di comando. In questi casi, Mercurial assume che sappiamo ciò che stiamo facendo, per cui non stampa alcuna informazione.</para>
+      <para id="x_1a9">Questo accade perché, nel primo esempio, abbiamo esplicitamente nominato il file da aggiungere sulla riga di comando. In questi casi, Mercurial assume che sappiamo ciò che stiamo facendo, per cui non stampa alcuna informazione.</para>
 
       <para id="x_1aa">Tuttavia, quando <emphasis>implichiamo</emphasis> i nomi dei file dando il nome di una directory, Mercurial compie il passo aggiuntivo di stampare il nome di ogni file su cui agisce. Questo rende più chiaro ciò che sta succedendo e riduce la probabilità di una sorpresa sgradita e silenziosa. La maggior parte dei comandi Mercurial si comporta in questo modo.</para>
     </sect2>
@@ -34,13 +34,13 @@
 
       <para id="x_1ab">Mercurial non tiene traccia delle informazioni sulle directory, ma tiene traccia del percorso di un file. Prima di creare un file, crea tutte le directory mancanti che ne compongono il percorso. Dopo che ha cancellato un file, cancella ogni directory vuota che faceva parte del percorso del file cancellato. Questa sembra una distinzione irrilevante, ma ha una conseguenza pratica di secondaria importanza: Mercurial non vi permette di rappresentare una directory completamente vuota.</para>
 
-      <para id="x_1ac">Le directory vuote sono raramente utili, e ci sono soluzioni non invadenti che potete usare per ottenere un effetto appropriato. Quindi, gli sviluppatori di Mercurial hanno deciso che la complessità che sarebbe stata richiesta per gestire le directory vuote non valesse il limitato beneficio che questa funzionalità avrebbe portato.</para>
+      <para id="x_1ac">Le directory vuote sono raramente utili e ci sono soluzioni non invadenti che potete usare per ottenere un effetto appropriato. Quindi, gli sviluppatori di Mercurial hanno deciso che la complessità che sarebbe stata richiesta per gestire le directory vuote non valesse il limitato beneficio che questa caratteristica avrebbe portato.</para>
 
-      <para id="x_1ad">Se avete bisogno di una directory vuota nel vostro repository, ci sono alcuni modi per ottenerla. Uno dei modi possibili è quello di creare una directory e usare <command role="hg-cmd">hg add</command> per aggiungere un file <quote>nascosto</quote> a quella directory. Sui sistemi di tipo Unix, ogni file il cui nome comincia con un punto (<quote><literal>.</literal></quote>) viene considerato nascosto dalla maggior parte dei comandi e dalle applicazioni con interfaccia grafica. Questo approccio è illustrato qui di seguito.</para>
+      <para id="x_1ad">Se avete bisogno di una directory vuota nel vostro repository, ci sono alcuni modi per ottenerla. Uno dei modi possibili è quello di creare una directory e usare <command role="hg-cmd">hg add</command> per aggiungere un file <quote>nascosto</quote> a quella directory. Sui sistemi di tipo Unix, ogni file il cui nome comincia con un punto (<quote><literal>.</literal></quote>) viene considerato nascosto dalla maggior parte dei comandi e delle applicazioni con interfaccia grafica. Questo approccio è illustrato qui di seguito.</para>
 
-&interaction.daily.files.hidden;
+      &interaction.daily.files.hidden;
 
-      <para id="x_1ae">Un altro modo per soddisfare il bisogno di una directory vuota è semplicemente quello di farla creare al vostro script automatico di costruzione del progetto nel momento in cui ne avete bisogno.</para>
+      <para id="x_1ae">Un altro modo per soddisfare il bisogno di una directory vuota è semplicemente quello di farla creare al vostro programma automatico di assemblaggio del progetto nel momento in cui ne avete bisogno.</para>
     </sect2>
   </sect1>
 
@@ -60,7 +60,7 @@
       <itemizedlist>
 	<listitem><para id="x_1b2">Cancella la versione corrente del file dalla directory di lavoro.</para>
 	</listitem>
-	<listitem><para id="x_1b3">Induce Mercurial a smettere di tenere traccia dei cambiamenti al file dal commit successivo in poi.</para>
+	<listitem><para id="x_1b3">Induce Mercurial a smettere di monitorare i cambiamenti del file dal commit successivo in poi.</para>
 	</listitem></itemizedlist>
       <para id="x_1b4">La rimozione di un file <emphasis>non</emphasis> altera la <emphasis>cronologia</emphasis> del file in alcun modo.</para>
 
@@ -86,7 +86,7 @@
     <sect2>
       <title>Digressione: perché dire esplicitamente a Mercurial di rimuovere un file?</title>
 
-      <para id="x_1b9">Potreste chiedervi perché Mercurial vi costringe a dirgli esplicitamente che state cancellando un file. Nelle prime fasi di sviluppo, Mercurial vi permetteva di cancellare un file nel modo che preferivate: avrebbe notato automaticamente l'assenza del file durante la successiva esecuzione di <command role="hg-cmd">hg commit</command> e avrebbe smesso di tenerne traccia. In pratica, questo modo di operare rendeva troppo facile rimuovere accidentalmente un file senza accorgersene.</para>
+      <para id="x_1b9">Potreste chiedervi perché Mercurial vi costringe a dirgli esplicitamente che state cancellando un file. Nelle prime fasi di sviluppo, Mercurial vi permetteva di cancellare un file nel modo che preferivate: avrebbe notato automaticamente l'assenza del file durante la successiva esecuzione di <command role="hg-cmd">hg commit</command> e avrebbe smesso di monitorarlo. In pratica, questo modo di operare rendeva troppo facile rimuovere accidentalmente un file senza accorgersene.</para>
     </sect2>
 
     <sect2>
@@ -134,7 +134,7 @@
 
       &interaction.daily.copy.other;
 
-      <para id="x_1c3">Ora abbiamo un <filename>file</filename> modificato in questo repository. Quando estraiamo i cambiamenti dal primo repository e uniamo le due teste, Mercurial propagherà i cambiamenti che abbiamo apportato localmente a <filename>file</filename> nella sua copia <filename>new-file</filename>.</para>
+      <para id="x_1c3">Ora abbiamo un <filename>file</filename> modificato in questo repository. Quando estraiamo i cambiamenti dal primo repository e uniamo le due teste, Mercurial propagherà i cambiamenti che abbiamo apportato localmente a <filename>file</filename> nella sua copia <filename>nuovo-file</filename>.</para>
 
       &interaction.daily.copy.merge;
     </sect2>
@@ -160,13 +160,13 @@
     <sect2>
       <title>Come <emphasis>evitare</emphasis> che i cambiamenti seguano una copia</title>
 
-      <para id="x_1cb">Se per qualche ragione decidete che questa faccenda di propagare automaticamente i cambiamenti verso le copie non fa per voi, utilizzate il normale comando per la copia dei file fornito dal vostro sistema (<command>cp</command> per i sistemi di tipo Unix) per effettuare la copia di un file, poi aggiungete a mano la nuova copia invocando <command role="hg-cmd">hg add</command>. Prima di farlo, però, rileggete la <xref linkend="sec:daily:why-copy"/> e prendete una decisione informata sulla validità di questo comportamento nel vostro caso specifico.</para>
+      <para id="x_1cb">Se per qualche ragione decidete che questa faccenda di propagare automaticamente i cambiamenti verso le copie non fa per voi, utilizzate il normale comando per la copia di file fornito dal vostro sistema (<command>cp</command> per i sistemi di tipo Unix) per effettuare la copia di un file, poi aggiungete a mano la nuova copia invocando <command role="hg-cmd">hg add</command>. Prima di farlo, però, rileggete la <xref linkend="sec:daily:why-copy"/> e prendete una decisione informata sulla validità di questo comportamento nel vostro caso specifico.</para>
 
     </sect2>
     <sect2>
       <title>Il comportamento del comando <command role="hg-cmd">hg copy</command></title>
 
-      <para id="x_1cc">Quando usate il comando <command role="hg-cmd">hg copy</command>, Mercurial esegue la copia di qualsiasi file sorgente contenuto nella directory di lavoro nello stato in cui si trova in quel momento. Questo significa che, se fate alcune modifiche a un file e poi lo copiate tramite <command role="hg-cmd">hg copy</command> senza prima aver inserito quelle modifiche nel repository, anche la nuova copia conterrà le modifiche che avete apportato fino a quel momento. (Trovo che questo comportamento sia leggermente controintuitivo ed è per questo che lo menziono qui.)</para>
+      <para id="x_1cc">Quando usate il comando <command role="hg-cmd">hg copy</command>, Mercurial esegue la copia dei file originali contenuti nella directory di lavoro nello stato in cui si trovano in quel momento. Questo significa che, se fate alcune modifiche a un file e poi lo copiate tramite <command role="hg-cmd">hg copy</command> senza prima aver inserito quelle modifiche nel repository, anche la nuova copia conterrà le modifiche che avete apportato fino a quel momento. (Trovo che questo comportamento sia leggermente controintuitivo ed è per questo che lo menziono qui.)</para>
 
       <para id="x_1cd">Il comando <command role="hg-cmd">hg copy</command> agisce in maniera simile al comando Unix <command>cp</command> (potete usare l'alias <command role="hg-cmd">hg cp</command> se preferite). Dobbiamo fornirgli due o più argomenti, di cui l'ultimo viene trattato come <emphasis>destinazione</emphasis> e tutti gli altri vengono trattati come <emphasis>sorgenti</emphasis>.</para>
 
@@ -184,9 +184,9 @@
 
       <para id="x_1d0">Se la sorgente e la destinazione sono entrambe directory, l'albero della sorgente viene ricreato nella directory di destinazione.</para>
 
-	&interaction.daily.copy.dir-src-dest;
+      &interaction.daily.copy.dir-src-dest;
 
-      <para id="x_1d1">Come con il comando <command role="hg-cmd">hg remove</command>, se copiate un file manualmente e poi volete informare Mercurial di avere copiato il file, usate semplicemente l'opzione <option role="hg-opt-copy">--after</option> per <command role="hg-cmd">hg copy</command>.</para>
+      <para id="x_1d1">Come con il comando <command role="hg-cmd">hg remove</command>, se copiate un file manualmente e poi volete informare Mercurial di aver copiato il file, usate semplicemente l'opzione <option role="hg-opt-copy">--after</option> di <command role="hg-cmd">hg copy</command>.</para>
 
       &interaction.daily.copy.after;
     </sect2>
@@ -195,32 +195,32 @@
   <sect1>
     <title>Rinominare i file</title>
 
-    <para id="x_1d2">&Egrave; molto più comune avere bisogno di rinominare un file piuttosto che copiarlo. La ragione per cui ho discusso il comando <command role="hg-cmd">hg copy</command> prima di parlare di come rinominare i file è che Mercurial tratta un cambiamento di nome essenzialmente nello stesso modo di una copia. Perciò, se sapete cosa fa Mercurial quando copiate un file, sapete anche cosa aspettarvi quando rinominate un file.</para>
+    <para id="x_1d2">&Egrave; molto più comune aver bisogno di rinominare un file piuttosto che aver bisogno di copiarlo. La ragione per cui ho discusso il comando <command role="hg-cmd">hg copy</command> prima di parlare di come rinominare i file è che Mercurial tratta un cambiamento di nome essenzialmente nello stesso modo di una copia. Perciò, se sapete cosa fa Mercurial quando copiate un file, sapete anche cosa aspettarvi quando rinominate un file.</para>
 
-    <para id="x_1d3">Quando usate il comando <command role="hg-cmd">hg rename</command>, Mercurial crea una copia di ogni file sorgente, poi li cancella e segnala i file come rimossi.</para>
+    <para id="x_1d3">Quando usate il comando <command role="hg-cmd">hg rename</command>, Mercurial crea una copia del file originale, poi lo cancella e segnala il file come rimosso.</para>
 
-      &interaction.daily.rename.rename;
+    &interaction.daily.rename.rename;
 
     <para id="x_1d4">Il comando <command role="hg-cmd">hg status</command> mostra la nuova copia del file come aggiunta e il file da cui è stata effettuata la copia come rimosso.</para>
 
     &interaction.daily.rename.status;
 
-    <para id="x_1d5">Come accade per i risultati del comando <command role="hg-cmd">hg copy</command>, dobbiamo dare l'opzione <option role="hg-opt-status">-C</option> al comando <command role="hg-cmd">hg status</command> per vedere Mercurial considera il file aggiunto come una copia del file originale ora rimosso.</para>
+    <para id="x_1d5">Come accade per i risultati del comando <command role="hg-cmd">hg copy</command>, dobbiamo usare l'opzione <option role="hg-opt-status">-C</option> del comando <command role="hg-cmd">hg status</command> per vedere che Mercurial considera il file aggiunto come una copia del file originale ora rimosso.</para>
 
     &interaction.daily.rename.status-copy;
 
     <para id="x_1d6">Come con <command role="hg-cmd">hg remove</command> e <command role="hg-cmd">hg copy</command>, potete usare l'opzione <option role="hg-opt-rename">--after</option> per informare Mercurial del cambiamento di nome dopo che il fatto è avvenuto. Nella maggior parte degli altri aspetti, il comportamento del comando <command role="hg-cmd">hg rename</command> e le opzioni che accetta sono simili a quelli del comando <command role="hg-cmd">hg copy</command>.</para>
 
-    <para id="x_686">Se avete familiarità con la riga di comando Unix, sarete contenti di sapere che il comando <command role="hg-cmd">hg rename</command> può essere invocato come <command role="hg-cmd">hg mv</command>.</para>
+    <para id="x_686">Se avete familiarità con la riga di comando Unix, sarete felici di sapere che il comando <command role="hg-cmd">hg rename</command> può essere invocato come <command role="hg-cmd">hg mv</command>.</para>
 
     <sect2>
       <title>Rinominare i file e unire i cambiamenti</title>
 
-      <para id="x_1d7">Dato che Mercurial rinomina i file tramite un'operazione di copia-e-rimozione, i cambiamenti vengono propagati allo stesso modo quando effettuate un'unione sia dopo aver copiato un file che dopo averlo rinominato.</para>
+      <para id="x_1d7">Dato che Mercurial rinomina i file tramite un'operazione di copia-e-rimozione, i cambiamenti vengono propagati nello stesso modo quando effettuate un'unione sia dopo aver copiato un file che dopo averlo rinominato.</para>
 
       <para id="x_1d8">Se io modifico un file e voi lo rinominate e poi uniamo i nostri rispettivi cambiamenti, le mie modifiche al file con il suo nome originale verranno propagate al file con il suo nuovo nome. (Vi potreste aspettare che questo <quote>funzioni e basta</quote> ma in realtà non tutti i sistemi di controllo di revisione lo fanno.)</para>
 
-      <para id="x_1d9">Sebbene la propagazione dei cambiamenti alle copie sia una funzionalità che potreste approvare dicendo <quote>sì, questo potrebbe essere utile,</quote> deve essere chiaro che propagare i cambiamenti ai file rinominati è assolutamente importante. Senza questo meccanismo, i cambiamenti a un file si potrebbero perdere con troppa facilità quando il file viene rinominato.</para>
+      <para id="x_1d9">Sebbene la propagazione dei cambiamenti alle copie sia una funzione che potreste approvare dicendo <quote>sì, questo potrebbe essere utile,</quote> deve essere chiaro che propagare i cambiamenti ai file rinominati è assolutamente importante. Senza questo meccanismo, i cambiamenti a un file si potrebbero perdere con troppa facilità quando il file viene rinominato.</para>
     </sect2>
 
     <sect2>
@@ -236,11 +236,11 @@
 
       <para id="x_1dc">Nel frattempo, Bruno lo rinomina <filename>quux</filename>. (Ricordatevi che <command role="hg-cmd">hg mv</command> è un alias di <command role="hg-cmd">hg rename</command>.)</para>
 
-	&interaction.rename.divergent.rename.bob;
+      &interaction.rename.divergent.rename.bob;
 
       <para id="x_1dd">Mi piace pensare a questo come a un conflitto perché entrambi gli sviluppatori hanno espresso intenzioni differenti a proposito di come il file dovrebbe essere chiamato.</para>
 
-      <para id="x_1de">Cosa pensate che dovrebbe accadere quando uniscono il loro lavoro? L'effettivo comportamento di Mercurial è quello di preservare sempre <emphasis>entrambi</emphasis> i nomi quando unisce changeset che contengono cambiamenti di nome divergenti.</para>
+      <para id="x_1de">Cosa pensate che dovrebbe accadere quando Anna e Bruno uniscono il loro lavoro? L'effettivo comportamento di Mercurial è quello di preservare sempre <emphasis>entrambi</emphasis> i nomi quando unisce changeset che contengono cambiamenti di nome divergenti.</para>
 
       &interaction.rename.divergent.merge;
 
@@ -268,7 +268,7 @@
 
     <para id="x_1e2">Mercurial possiede alcuni comandi utili che vi aiuteranno a rimediare a diversi errori comuni.</para>
 
-    <para id="x_1e3">Il comando <command role="hg-cmd">hg revert</command> vi permette di annullare i cambiamenti che avete apportato alla vostra directory di lavoro. Per esempio, se avete aggiunto un file invocando <command role="hg-cmd">hg add</command> per errore, vi basta eseguire <command role="hg-cmd">hg revert</command> con il nome del file che avete aggiunto e il file non verrà toccato in alcun modo né sarà più registrato per essere aggiunto da Mercurial. Potete anche usare <command role="hg-cmd">hg revert</command> per disfarvi di cambiamenti sbagliati apportati a un file.</para>
+    <para id="x_1e3">Il comando <command role="hg-cmd">hg revert</command> vi permette di annullare i cambiamenti che avete apportato alla vostra directory di lavoro. Per esempio, se avete aggiunto un file invocando <command role="hg-cmd">hg add</command> per errore, vi basta eseguire <command role="hg-cmd">hg revert</command> con il nome del file che avete aggiunto e il file non verrà toccato in alcun modo né sarà più considerato per essere aggiunto da Mercurial. Potete anche usare <command role="hg-cmd">hg revert</command> per disfarvi di cambiamenti sbagliati apportati a un file.</para>
 
     <para id="x_1e4">&Egrave; utile ricordare che il comando <command role="hg-cmd">hg revert</command> serve per i cambiamenti che non avete ancora inserito. Una volta che avete inserito un cambiamento, se decidete che è stato un errore potete ancora fare qualcosa, sebbene le vostre opzioni siano molto più limitate.</para>
 
@@ -300,7 +300,7 @@
 
     &interaction.ch04-resolve.heads;
 
-    <para id="x_68d">Normalmente, se eseguissimo il comando <command role="hg-cmd">hg merge</command> a questo punto, ci verrebbe presentata un'applicazione grafica tramite la quale riconciliare manualmente le modifiche in conflitto su <filename>myfile.txt</filename>. Tuttavia, per semplificare le cose ai fini della presentazione, vorremmo invece che l'unione fallisse immediatamente. Ecco un modo in cui possiamo farlo.</para>
+    <para id="x_68d">Normalmente, se eseguissimo il comando <command role="hg-cmd">hg merge</command> a questo punto, ci verrebbe presentata un'applicazione grafica tramite la quale riconciliare manualmente le modifiche in conflitto su <filename>miofile.txt</filename>. Tuttavia, per semplificare le cose ai fini della presentazione, vorremmo invece che l'unione fallisse immediatamente. Ecco un modo in cui possiamo farlo.</para>
 
     &interaction.ch04-resolve.export;
 
@@ -332,11 +332,11 @@
 
       <para id="x_695">Se Mercurial vede un <emphasis>qualsiasi</emphasis> file nello stato irrisolto dopo un'unione, considera fallita l'unione. Fortunatamente, non abbiamo bisogno di ricominciare l'intera unione da zero.</para>
 
-      <para id="x_696">L'opzione <option role="hg-opt-resolve">--list</option> o <option role="hg-opt-resolve">-l</option> per il comando <command role="hg-cmd">hg resolve</command> mostra lo stato di ogni file coinvolto in un'unione.</para>
+      <para id="x_696">L'opzione <option role="hg-opt-resolve">--list</option> o <option role="hg-opt-resolve">-l</option> del comando <command role="hg-cmd">hg resolve</command> mostra lo stato di ogni file coinvolto in un'unione.</para>
 
       &interaction.ch04-resolve.list;
 
-      <para id="x_697">Nell'elenco stampato da <command role="hg-cmd">hg resolve</command>, un file risolto è contrassegnato con una <literal>R</literal> mentre un file irrisolto è contrassegnato con una <literal>U</literal>.  Se un file qualsiasi viene elencato con una  <literal>U</literal>, sappiamo che un tentativo di inserire i risultati dell'unione nel repository andrebbe incontro al fallimento.</para>
+      <para id="x_697">Nell'elenco stampato da <command role="hg-cmd">hg resolve</command>, un file risolto è contrassegnato con una <literal>R</literal> mentre un file irrisolto è contrassegnato con una <literal>U</literal>.  Se un file qualsiasi viene elencato con una  <literal>U</literal>, sappiamo che un tentativo di inserire i risultati dell'unione nel repository andrà incontro al fallimento.</para>
     </sect2>
 
     <sect2>
@@ -344,7 +344,7 @@
 
       <para id="x_698">Abbiamo diverse opzioni per far passare un file dallo stato irrisolto a quello risolto. Quella di gran lunga più comune consiste nell'eseguire nuovamente <command role="hg-cmd">hg resolve</command>. Se passiamo i nomi di singoli file o directory, il comando riproverà a unire i file irrisolti presenti in quelle ubicazioni. Possiamo anche passare l'opzione <option role="hg-opt-resolve">--all</option> o <option role="hg-opt-resolve">-a</option> per riprovare a unire <emphasis>tutti</emphasis> i file irrisolti.</para>
 
-      <para id="x_699">Mercurial ci permette anche di modificare direttamente lo stato di risoluzione di un file. Possiamo contrassegnare manualmente un file come risolto usando l'opzione <option role="hg-opt-resolve">--mark</option> o come irrisolto usando l'opzione <option role="hg-opt-resolve">--unmark</option>. Questo ci consente di ripulire a mano un'unione particolarmente confusa e di tenere traccia dei nostri progressi con ogni file man mano che procediamo.</para>
+      <para id="x_699">Mercurial ci permette anche di modificare direttamente lo stato di risoluzione di un file. Possiamo contrassegnare manualmente un file come risolto usando l'opzione <option role="hg-opt-resolve">--mark</option> o come irrisolto usando l'opzione <option role="hg-opt-resolve">--unmark</option>. Questo ci consente di ripulire a mano un'unione particolarmente disordinata e di tenere traccia dei nostri progressi con ogni file man mano che procediamo.</para>
     </sect2>
   </sect1>
 
@@ -365,7 +365,7 @@
 
     &interaction.ch04-diff.chmod;
 
-    <para id="x_6cb">Il normale comando <command>diff</command> non fa attenzione di permessi dei file, perciò la semplice invocazione di <command role="hg-cmd">hg diff</command> non stampa nulla. Se però utilizziamo l'opzione <option>-g</option>, il comando ci dice che cos'è realmente accaduto.</para>
+    <para id="x_6cb">Il normale comando <command>diff</command> non considera i permessi dei file, perciò la semplice invocazione di <command role="hg-cmd">hg diff</command> non stampa nulla. Se però utilizziamo l'opzione <option>-g</option>, il comando ci dice che cos'è realmente accaduto.</para>
 
     &interaction.ch04-diff.chmod.git;
   </sect1>
@@ -383,7 +383,7 @@
 
     <para id="x_6d0">Per esempio, un sistema distribuito di controllo di revisione non può, per sua natura, offrire un meccanismo di bloccaggio dei file. Quindi non esiste alcun meccanismo predefinito per evitare che due persone apportino cambiamenti in conflitto a un file binario. Se fate parte di un gruppo in cui diverse persone potrebbero modificare frequentemente i file binari, potrebbe non essere una buona idea impiegare Mercurial&emdash;o un qualsiasi altro sistema distribuito di controllo di revisione&emdash;per gestire quei file.</para>
 
-    <para id="x_6d1">Quando memorizza le modifiche a un file, di solito Mercurial salva solo le differenze tra la versione corrente del file e quella precedente. Per la maggior parte dei file di testo questo approccio si rivela estremamente efficiente. Tuttavia, alcuni file (in particolare i file binari) sono costruiti in modo tale che persino una piccola modifica al contenuto logico del file risulta nel cambiamento di molti o della maggior parte dei byte contenuti nel file. Per esempio, i file compressi sono particolarmente sensibili a questo effetto. Se le differenze tra ogni versione di un file e la successiva sono sempre grandi, Mercurial non riuscirà a memorizzare la cronologia del file in maniera molto efficiente. Questo potrebbe avere effetti sia sul bisogno di spazio di memorizzazione locale sia sulla quantità di tempo che viene impiegata per clonare un repository.</para>
+    <para id="x_6d1">Quando memorizza le modifiche a un file, di solito Mercurial salva solo le differenze tra la versione corrente del file e quella precedente. Per la maggior parte dei file di testo questo approccio si rivela estremamente efficiente. Tuttavia, alcuni file (in particolare i file binari) sono fatti in modo tale che persino una piccola modifica al contenuto logico del file risulta nel cambiamento di molti o della maggior parte dei byte contenuti nel file. Per esempio, i file compressi sono particolarmente sensibili a questo effetto. Se le differenze tra ogni versione di un file e la successiva sono sempre grandi, Mercurial non riuscirà a memorizzare la cronologia del file in maniera molto efficiente. Questo potrebbe avere effetti sia sul bisogno di spazio di memorizzazione locale sia sulla quantità di tempo che viene impiegata per clonare un repository.</para>
 
     <para id="x_6d2">Per avere un'idea di come questo problema potrebbe riguardarvi nella pratica, supponete di voler usare Mercurial per gestire un documento OpenOffice. OpenOffice memorizza i documenti su disco sotto forma di file zip compressi. Modificate anche solo una lettera nel vostro documento in OpenOffice e quasi ogni byte nell'intero file cambierà quando lo salverete. Ora supponete che le dimensioni di quel file siano di 2MB. Dato che la maggior parte del file cambia ogni volta che lo salvate, Mercurial dovrà memorizzare tutti i 2MB del file ogni volta che eseguite un commit, anche se dal vostro punto di vista forse solo poche parole vengono cambiate ogni volta. Un singolo file modificato frequentemente che non rispetti le assunzioni dei meccanismi di memorizzazione di Mercurial può facilmente avere un effetto fuori misura sulle dimensioni del repository.</para>
 
@@ -406,10 +406,10 @@
 
     <para id="x_6d7">Dato che Mercurial mantiene una copia completa della cronologia in ogni clone, chiunque usi Mercurial per collaborare su un progetto può potenzialmente agire come una sorgente di backup nell'eventualità di una catastrofe. Se un repository centrale diventa inaccessibile, potete costruire un rimpiazzo semplicemente clonando una copia del repository da un collaboratore ed estraendo dai repository di altre persone qualsiasi cambiamento che quella copia potrebbe non avere visto.</para>
 
-    <para id="x_6d8">Usare Mercurial per effettuare backup separati e mirror remoti è piuttosto semplice. Impostate un'attività periodica (e.g. tramite il comando <command>cron</command>) su un server remoto per estrarre i cambiamenti dai vostri repository principali ogni ora. Questa operazione sarà complicata solo nell'improbabile caso in cui il numero di repository principali che mantenete cambi frequentemente, eventualità che potrete affrontare utilizzando uno script per programmare l'aggiornamento della lista dei repository di cui fare il backup.</para>
+    <para id="x_6d8">Usare Mercurial per effettuare backup separati e mirror remoti è piuttosto semplice. Impostate un'attività periodica (e.g. tramite il comando <command>cron</command>) su un server remoto per estrarre i cambiamenti dai vostri repository principali ogni ora. Questa operazione diventerà complicata solo nell'improbabile caso in cui il numero dei repository principali che mantenete cambi frequentemente, eventualità che potrete affrontare utilizzando uno script per programmare l'aggiornamento della lista dei repository di cui fare il backup.</para>
 
-    <para id="x_6d9">Se effettuate un backup tradizionale dei vostri repository principali su nastro o su disco e volete fare il backup di un repository chiamato <filename>myrepo</filename>, usate il comando <command>hg clone -U myrepo myrepo.bak</command> per creare un clone di <filename>myrepo</filename> prima di cominciare a registrare i vostri backup. L'opzione <option>-U</option> evita di popolare la directory di lavoro dopo che la clonazione si è conclusa, dato che sarebbe superfluo e renderebbe più lungo il backup.</para>
+    <para id="x_6d9">Se effettuate un backup tradizionale dei vostri repository principali su nastro o su disco e volete fare il backup di un repository chiamato <filename>miorepo</filename>, usate il comando <command>hg clone -U miorepo miorepo.bak</command> per creare un clone di <filename>miorepo</filename> prima di cominciare a registrare i vostri backup. L'opzione <option>-U</option> evita di popolare la directory di lavoro dopo che la clonazione si è conclusa, dato che sarebbe superfluo e renderebbe più lungo il backup.</para>
 
-    <para id="x_6da">Se poi effettuate il backup di <filename>myrepo.bak</filename> invece di <filename>myrepo</filename>, avrete la garanzia di possedere una fotografia consistente del vostro repository a cui nessuno sviluppatore insonne trasmetterà i propri cambiamenti nel bel mezzo di un'operazione di backup.</para>
+    <para id="x_6da">Se poi effettuate il backup di <filename>miorepo.bak</filename> invece di <filename>miorepo</filename>, avrete la garanzia di possedere una fotografia consistente del vostro repository a cui nessuno sviluppatore insonne trasmetterà i propri cambiamenti nel bel mezzo di un'operazione di backup.</para>
   </sect1>
 </chapter>
