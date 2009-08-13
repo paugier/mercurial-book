@@ -68,11 +68,11 @@
     <sect2>
       <title>Gestire i conflitti di etichette durante un'unione</title>
 
-      <para id="x_37d">Avrete raramente bisogno di preoccuparvi del file <filename role="special">.hgtags</filename>, ma talvolta la sua presenza si farà sentire durante un'unione. Il formato del file è semplice: consiste in una serie di righe, ognuna delle quali comincia con un hash di changeset, seguito da uno spazio, seguito dal nome di un'etichetta.</para>
+      <para id="x_37d">Avrete raramente bisogno di preoccuparvi del file <filename role="special">.hgtags</filename>, ma talvolta la sua presenza si farà sentire durante un'unione. Il formato del file è semplice: consiste di una serie di righe, ognuna delle quali comincia con un hash di changeset, seguito da uno spazio, seguito dal nome di un'etichetta.</para>
 
       <para id="x_37e">Se state risolvendo un conflitto nel file <filename role="special">.hgtags</filename> durante un'unione, c'è una particolarità da ricordare quando modificate il file <filename role="special">.hgtags</filename>: quando Mercurial sta analizzando le etichette in un repository, non legge <emphasis>mai</emphasis> la copia di lavoro del file <filename role="special">.hgtags</filename>, ma legge la revisione del file <emphasis>registrata più recentemente</emphasis>.</para>
 
-      <para id="x_37f">Una sfortunata conseguenza di questo comportamento è che non potete verificare la correttezza del file <filename role="special">.hgtags</filename> risultato dall'unione se non <emphasis>dopo</emphasis> aver effettuato il commit di un cambiamento. Quindi, se vi trovate a risolvere un conflitto su <filename role="special">.hgtags</filename> durante un'unione, assicuratevi di eseguire <command role="hg-cmd">hg tags</command> dopo aver effettuato il commit. Se il comando trova un errore nel file <filename role="special">.hgtags</filename>, vi indicherà la posizione dell'errore, che potrete dunque correggere, registrando la correzione nel repository. Dovreste poi eseguire ancora <command role="hg-cmd">hg tags</command>, giusto per essere sicuri che la vostra correzione sia giusta.</para>
+      <para id="x_37f">Una sfortunata conseguenza di questo comportamento è che non potete verificare la correttezza del file <filename role="special">.hgtags</filename> risultato dall'unione se non <emphasis>dopo</emphasis> aver effettuato il commit di un cambiamento. Quindi, se vi trovate a risolvere un conflitto su <filename role="special">.hgtags</filename> durante un'unione, assicuratevi di eseguire <command role="hg-cmd">hg tags</command> dopo aver effettuato il commit. Se il comando trova un errore nel file <filename role="special">.hgtags</filename>, vi indicherà la posizione dell'errore, che potrete dunque correggere, registrando la correzione nel repository. Dovreste poi eseguire ancora <command role="hg-cmd">hg tags</command>, giusto per essere sicuri che la vostra correzione sia valida.</para>
     </sect2>
 
     <sect2>
@@ -171,7 +171,7 @@
 
     &interaction.branch-named.status;
 
-    <para id="x_399">Niente è cambiato nella directory di lavoro e non è stata creata nuova cronologia. Come queste osservazioni suggeriscono, il comando <command role="hg-cmd">hg branch</command> non ha alcun effetto permanente, ma si limita a dire a Mercurial quale nome di ramo usare la <emphasis>prossima</emphasis> volta che effettuerete il commit di un changeset.</para>
+    <para id="x_399">Nulla è cambiato nella directory di lavoro e non è stata creata nuova cronologia. Come queste osservazioni suggeriscono, il comando <command role="hg-cmd">hg branch</command> non ha alcun effetto permanente, ma si limita a dire a Mercurial quale nome di ramo usare la <emphasis>prossima</emphasis> volta che effettuerete il commit di un changeset.</para>
 
     <para id="x_39a">Quando inserite un cambiamento nel repository, Mercurial registra il nome del ramo su cui lo avete inserito. Una volta che siete passati dal ramo <literal>default</literal> a un altro e avete eseguito il commit, vedrete apparire il nome del nuovo ramo nel risultato di <command role="hg-cmd">hg log</command>, <command role="hg-cmd">hg tip</command> e altri comandi che mostrano lo stesso tipo di informazioni.</para>
 
