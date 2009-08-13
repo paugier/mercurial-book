@@ -56,7 +56,7 @@
       <para id="x_1f9">Se state lavorando con un repository posseduto da un altro utente, Mercurial può eseguire gli hook definiti nel repository di quell'utente, ma li eseguirà ancora sotto la <quote>vostra identità</quote>. Per esempio, se estraete i cambiamenti da quel repository tramite <command role="hg-cmd">hg pull</command>, e il suo file <filename role="special">.hg/hgrc</filename> definisce un hook <literal role="hook">outgoing</literal> locale, quell'hook verrà eseguito con il vostro account utente anche se non siete il proprietario di quel repository.</para>
 
       <note>
-	<para id="x_1fa">Questo avviene solo se estraete cambiamenti da un repository operando su un file system locale o di rete. Se state effettuando l'estrazione via HTTP o SSH, qualsiasi hook <literal role="hook">outgoing</literal> verrà eseguito sul server con l'account utente che è stato usato per eseguire il processo server.</para>
+	<para id="x_1fa">Questo avviene solo se estraete cambiamenti da un repository operando su un file system locale o di rete. Se state effettuando l'estrazione via HTTP o ssh, qualsiasi hook <literal role="hook">outgoing</literal> verrà eseguito sul server con l'account utente che è stato usato per eseguire il processo server.</para>
       </note>
 
       <para id="x_1fb">Per vedere quali hook sono definiti in un repository, usate il comando <command role="hg-cmd">hg showconfig hooks</command>. Se state lavorando in un repository, ma state comunicando con un repository di cui non siete i proprietari (e.g. usando <command role="hg-cmd">hg pull</command> o <command role="hg-cmd">hg incoming</command>), ricordate che sono gli hook dell'altro repository che dovreste controllare, non i vostri.</para>
@@ -265,7 +265,7 @@ pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 
 	<para id="x_23d">La sezione <literal role="rc-acl">acl</literal> contiene solo la voce <envar role="rc-item-acl">sources</envar>, che elenca le modalità di provenienza dei cambiamenti in entrata a cui l'hook deve fare attenzione. Di solito, non avrete bisogno di configurare questa sezione.</para>
 	<itemizedlist>
-	  <listitem><para id="x_23e"><envar role="rc-item-acl">serve</envar>: controlla i changeset in entrata che arrivano da un repository remoto via HTTP o SSH. Questo è il valore predefinito di <envar role="rc-item-acl">sources</envar> e di solito è l'unica impostazione di cui avrete bisogno per questo elemento di configurazione.</para>
+	  <listitem><para id="x_23e"><envar role="rc-item-acl">serve</envar>: controlla i changeset in entrata che arrivano da un repository remoto via HTTP o ssh. Questo è il valore predefinito di <envar role="rc-item-acl">sources</envar> e di solito è l'unica impostazione di cui avrete bisogno per questo elemento di configurazione.</para>
 	  </listitem>
 	  <listitem><para id="x_23f"><envar role="rc-item-acl">pull</envar>: controlla i changeset in entrata che arrivano attraverso un'estrazione da un repository locale.</para>
 	  </listitem>
@@ -519,7 +519,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	<para id="x_286">Mercurial dirà a un hook quali sono, o sono stati, i mezzi usati per trasferire i changeset tra repository, fornendo questa informazione in un parametro Python chiamato <literal>source</literal> o in una variabile d'ambiente chiamata <envar>HG_SOURCE</envar>.</para>
 
 	<itemizedlist>
-	  <listitem><para id="x_287"><literal>serve</literal>: i changeset sono trasferiti da o verso un repository remoto via HTTP o SSH.</para>
+	  <listitem><para id="x_287"><literal>serve</literal>: i changeset sono trasferiti da o verso un repository remoto via HTTP o ssh.</para>
 	  </listitem>
 	  <listitem><para id="x_288"><literal>pull</literal>: i changeset sono trasferiti attraverso un'estrazione da un repository a un altro.</para>
 	  </listitem>
@@ -534,9 +534,9 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 
 	<para id="x_28b">Quando è possibile, Mercurial dirà a un hook l'ubicazione del <quote>lato opposto</quote> di un'attività che trasferisce i dati dei changeset tra repository, fornendo questa informazione in un parametro Python chiamato <literal>url</literal> o in una variabile d'ambiente chiamata <envar>HG_URL</envar>.</para>
 
-	<para id="x_28c">Questa informazione non è sempre nota. Se un hook viene invocato in un repository condiviso via HTTP o SSH, Mercurial non è in grado di dire dove si trova il repository, ma potrebbe sapere da dove si sta connettendo il client. In questi casi, l'URL prenderà una delle seguenti forme:</para>
+	<para id="x_28c">Questa informazione non è sempre nota. Se un hook viene invocato in un repository condiviso via HTTP o ssh, Mercurial non è in grado di dire dove si trova il repository, ma potrebbe sapere da dove si sta connettendo il client. In questi casi, l'URL prenderà una delle seguenti forme:</para>
 	<itemizedlist>
-	  <listitem><para id="x_28d"><literal>remote:ssh:1.2.3.4</literal>&emdash;client SSH remoto, all'indirizzo IP <literal>1.2.3.4</literal>.</para>
+	  <listitem><para id="x_28d"><literal>remote:ssh:1.2.3.4</literal>&emdash;client ssh remoto, all'indirizzo IP <literal>1.2.3.4</literal>.</para>
 	  </listitem>
 	  <listitem><para id="x_28e"><literal>remote:http:1.2.3.4</literal>&emdash;client HTTP remoto, all'indirizzo IP <literal>1.2.3.4</literal>. Se il client sta usando SSL, questo URL sarà nella forma <literal>remote:https:1.2.3.4</literal>.</para>
 	  </listitem>
