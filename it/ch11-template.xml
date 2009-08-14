@@ -2,12 +2,12 @@
   <?dbhtml filename="personalizzare-i-messaggi-di-mercurial.html"?>
   <title>Personalizzare i messaggi di Mercurial</title>
 
-  <para id="x_578">Mercurial offre un potente meccanismo basato sui template per permettervi di controllare il modo in cui visualizza le informazioni. Potete usare i template per generare una specifica presentazione dei risultati di un singolo comando, o per personalizzare l'intero aspetto dell'interfaccia web predefinita.</para>
+  <para id="x_578">Mercurial vi offre un potente meccanismo basato sui template per controllare il modo in cui visualizza le informazioni. Potete usare i template per generare una specifica presentazione dei risultati di un singolo comando, o per personalizzare l'intero aspetto dell'interfaccia web predefinita.</para>
 
   <sect1 id="sec:style">
-    <title>Usare gli stili di presentazione già pronti</title>
+    <title>Usare gli stili di formattazione già pronti</title>
 
-    <para id="x_579">Mercurial include alcuni stili di presentazione che potete usare immediatamente. Uno stile è semplicemente un template già pronto che qualcuno ha scritto e installato in una posizione nota a Mercurial.</para>
+    <para id="x_579">Mercurial include alcuni stili di formattazione che potete usare immediatamente. Uno stile è semplicemente un template già pronto che qualcuno ha scritto e installato in una posizione nota a Mercurial.</para>
 
     <para id="x_57a">Prima di dare un'occhiata agli stili distribuiti con Mercurial, rivediamo il normale risultato di un suo comando.</para>
 
@@ -21,17 +21,17 @@
 
     &interaction.template.simple.changelog;
 
-    <para id="x_57d">Non vi sorprenderà sapere che lo stile di output predefinito di Mercurial è chiamato <literal>default</literal>.</para>
+    <para id="x_57d">Non vi sorprenderà sapere che lo stile di formattazione predefinito di Mercurial è chiamato <literal>default</literal>.</para>
 
     <sect2>
       <title>Impostare uno stile predefinito</title>
 
-      <para id="x_57e">Potete modificare lo stile di presentazione che Mercurial userà per ogni comando aggiungendo al vostro file <filename role="special">~/.hgrc</filename> il nome dello stile che preferireste usare.</para>
+      <para id="x_57e">Potete modificare lo stile di formattazione che Mercurial userà per ogni comando aggiungendo al vostro file <filename role="special">~/.hgrc</filename> il nome dello stile che preferireste usare.</para>
 
       <programlisting>[ui]
 style = compact</programlisting>
 
-      <para id="x_57f">Se scrivete un vostro stile, potete usarlo inserendo il percorso del vostro file di stile, oppure copiando il vostro file di stile in un luogo dove Mercurial possa trovarlo (tipicamente la sottodirectory <literal>templates</literal> della vostra directory di installazione di Mercurial).</para>
+      <para id="x_57f">Se create un vostro stile, potete usarlo inserendo il percorso del vostro file di stile, oppure copiando il vostro file di stile in un luogo dove Mercurial possa trovarlo (tipicamente la sottodirectory <literal>templates</literal> della vostra directory di installazione di Mercurial).</para>
     </sect2>
   </sect1>
 
@@ -56,11 +56,11 @@ style = compact</programlisting>
 
     &interaction.template.simple.simplest;
 
-    <para id="x_585">Questo esempio illustra il template più semplice possibile, composto solo da un messaggio di testo statico stampato una volta per ogni changeset. L'opzione <option role="hg-opt-log">--template</option> per il comando <command role="hg-cmd">hg log</command> dice a Mercurial di usare il testo dato come template nel stampare ogni changeset.</para>
+    <para id="x_585">Questo esempio illustra il template più semplice possibile, composto solo da un messaggio di testo statico stampato una volta per ogni changeset. L'opzione <option role="hg-opt-log">--template</option> del comando <command role="hg-cmd">hg log</command> dice a Mercurial di usare il testo dato come template per stampare ogni changeset.</para>
 
-    <para id="x_586">Notate che la stringa di template appena usata termina con il testo <quote><literal>\n</literal></quote>. Questa è una <emphasis>sequenza di escape</emphasis> che dice a Mercurial di stampare una carattere di nuova riga alla fine di ogni elemento di template. Se omettete questa nuova riga, Mercurial mostrerà un messaggio di testo dietro l'altro. Leggete la <xref linkend="sec:template:escape"/> per maggiori dettagli sulle sequenze di escape.</para>
+    <para id="x_586">Notate che la stringa di template appena usata termina con il testo <quote><literal>\n</literal></quote>. Questa è una <emphasis>sequenza di escape</emphasis> che dice a Mercurial di stampare una carattere di nuova riga alla fine di ogni elemento di template. Se omettete questa nuova riga, Mercurial mostrerà un messaggio di testo di seguito all'altro. Leggete la <xref linkend="sec:template:escape"/> per maggiori dettagli sulle sequenze di escape.</para>
 
-    <para id="x_587">Un template che stampa una stringa di testo fissata tutte le volte non è molto utile, perciò proviamo qualcosa di un po' più complesso.</para>
+    <para id="x_587">Un template che stampa una stringa di testo fissa tutte le volte non è molto utile, perciò proviamo qualcosa di un po' più complesso.</para>
 
     &interaction.template.simple.simplesub;
 
@@ -75,7 +75,7 @@ style = compact</programlisting>
     <itemizedlist>
       <listitem><para id="x_58a"><literal role="template-keyword">author</literal>: stringa. Il nome non modificato dell'autore del changeset.</para>
       </listitem>
-      <listitem><para id="x_58b"><literal role="template-keyword">branches</literal>: stringa. Il nome del ramo su cui il changeset è stato inserito. Sarà vuoto se il nome del branch è <literal>default</literal>.</para>
+      <listitem><para id="x_58b"><literal role="template-keyword">branches</literal>: stringa. Il nome del ramo su cui il changeset è stato inserito. Sarà vuoto se il nome del ramo è <literal>default</literal>.</para>
       </listitem>
       <listitem><para id="x_58c"><literal role="template-keyword">date</literal>: informazioni di data. La data in cui il changeset è stato inserito. Questa informazione <emphasis>non</emphasis> è rappresentata in maniera comprensibile, bensì dovete passarla attraverso un filtro per presentarla in maniera appropriata. Leggete la <xref linkend="sec:template:filter"/> per maggiori informazioni sui filtri. La data viene espressa come una coppia di numeri. Il primo numero è una marcatura temporale che segue l'UTC Unix (e indica il numero di secondi trascorsi dal 1° gennaio 1970); il secondo è la differenza tra il fuso orario dell'autore del commit e l'UTC, espressa in secondi.</para>
       </listitem>
@@ -101,7 +101,7 @@ style = compact</programlisting>
 
     &interaction.template.simple.keywords;
 
-    <para id="x_596">Come abbiamo notato prima, la parola chiave per la data non produce un risultato in forma leggibile, così dobbiamo trattarla in maniera speciale. Questo implica l'uso dei <emphasis>filtri</emphasis>, che verranno trattati in maniera più approfondita nella <xref linkend="sec:template:filter"/>.</para>
+    <para id="x_596">Come abbiamo notato prima, la parola chiave per la data non produce un risultato comprensibile, così dobbiamo trattarla in maniera speciale. Questo implica l'uso dei <emphasis>filtri</emphasis>, che verranno trattati in maniera più approfondita nella <xref linkend="sec:template:filter"/>.</para>
 
     &interaction.template.simple.datekeyword;
   </sect1>
@@ -146,7 +146,7 @@ style = compact</programlisting>
     <itemizedlist>
       <listitem><para id="x_5a2"><literal role="template-filter">addbreaks</literal>: qualsiasi testo. Aggiunge un elemento XHTML <quote><literal>&lt;br/&gt;</literal></quote> prima della fine di ogni riga tranne l'ultima. Per esempio, <quote><literal>foo\nbar</literal></quote> diventa <quote><literal>foo&lt;br/&gt;\nbar</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5a3"><literal role="template-kw-filt-date">age</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta l'età della data, relativa all'ora corrente. Produce stringhe come <quote><literal>10 minutes</literal></quote>.</para>
+      <listitem><para id="x_5a3"><literal role="template-kw-filt-date">age</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta l'età della data, relativa all'ora corrente. Produce stringhe come <quote><literal>10 minuti</literal></quote>.</para>
       </listitem>
       <listitem><para id="x_5a4"><literal role="template-filter">basename</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">files</literal> e simili. Tratta il testo come un percorso e restituisce il nome di base. Per esempio, <quote><literal>foo/bar/baz</literal></quote> diventa <quote><literal>baz</literal></quote>.</para>
       </listitem>
@@ -170,7 +170,7 @@ style = compact</programlisting>
       </listitem>
       <listitem><para id="x_5ae"><literal role="template-filter">obfuscate</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Riproduce il testo in ingresso rappresentandolo come una sequenza di entità XML. Questo è utile per impedire ad alcuni programmi particolarmente stupidi utilizzati dagli spammer per raccogliere indirizzi email di copiare i dati destinati a essere visualizzati su schermo.</para>
       </listitem>
-      <listitem><para id="x_5af"><literal role="template-kw-filt-author">person</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Produce il testo prima di un indirizzo email. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>Bryan O'Sullivan</literal></quote>.</para>
+      <listitem><para id="x_5af"><literal role="template-kw-filt-author">person</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Produce il testo che precede un indirizzo email. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>Bryan O'Sullivan</literal></quote>.</para>
       </listitem>
       <listitem><para id="x_5b0"><literal role="template-kw-filt-date">rfc822date</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta una data usando lo stesso formato impiegato nelle intestazioni email. Produce una stringa come <quote><literal>Mon, 04 Sep 2006 15:13:13 -0700</literal></quote>.</para>
       </listitem>
@@ -203,14 +203,14 @@ style = compact</programlisting>
 
       <para id="x_5b9">Notate l'uso di <quote><literal>\t</literal></quote> (un carattere di tabulazione) nel template per indentare la prima riga, necessario dato che <literal role="template-keyword">tabindent</literal> indenta tutte le righe <emphasis>tranne</emphasis> la prima.</para>
 
-      <para id="x_5ba">Tenete a mente che l'ordine dei filtri in una catena è significativo. Il primo filtro viene applicato al risultato della parola chiave, il secondo al risultato del primo filtro, e così via. Per esempio, usare <literal>fill68|tabindent</literal> dà risultati molto diversi da <literal>tabindent|fill68</literal>.</para>
+      <para id="x_5ba">Tenete a mente che l'ordine dei filtri in una catena è significativo. Il primo filtro viene applicato al risultato della parola chiave, il secondo al risultato del primo filtro, e così via. Per esempio, usare <literal>fill68|tabindent</literal> dà risultati molto diversi rispetto a <literal>tabindent|fill68</literal>.</para>
     </sect2>
   </sect1>
 
   <sect1>
     <title>Dai template agli stili</title>
 
-    <para id="x_5bb">Un template a riga di comando fornisce un modo veloce e semplice per formattare il risultato di un certo comando. Ma i template possono diventare prolissi, quindi è utile essere in grado di dare un nome a un template. Un file di stile è un template con un nome, memorizzato in un file.</para>
+    <para id="x_5bb">Un template a riga di comando fornisce un modo semplice e veloce per formattare il risultato di un certo comando. Ma i template possono diventare prolissi, quindi è utile essere in grado di dare un nome a un template. Un file di stile è un template con un nome, memorizzato in un file.</para>
 
     <para id="x_5bc">Ma soprattutto, l'impiego di un file di stile sfrutta la potenza del motore di template di Mercurial in modi che non sono possibili usando l'opzione <option role="hg-opt-log">--template</option> a riga di comando.</para>
 
@@ -221,7 +221,7 @@ style = compact</programlisting>
 
       &interaction.template.simple.rev;
 
-      <para id="x_5be">Questo dice a Mercurial, <quote>se stai stampando un changeset, usa il testo sulla destra come template</quote>.</para>
+      <para id="x_5be">Questo dice a Mercurial: <quote>se stai stampando un changeset, usa il testo sulla destra come template</quote>.</para>
     </sect2>
 
     <sect2>
@@ -261,7 +261,7 @@ style = compact</programlisting>
 
       &interaction.template.svnstyle.syntax.input;
 
-      <para id="x_5ca">Notate che <filename>broken.style</filename> tenta di definire una parola chiave <literal>changeset</literal>, ma dimentica di darle un contenuto qualsiasi. Quando gli si chiede di usare questo file di stile, Mercurial si lamenta prontamente.</para>
+      <para id="x_5ca">Notate che <filename>stile.errato</filename> tenta di definire una parola chiave <literal>changeset</literal>, ma dimentica di darle un contenuto qualsiasi. Quando gli si chiede di usare questo file di stile, Mercurial si lamenta prontamente.</para>
 
       &interaction.template.svnstyle.syntax.error;
 
@@ -269,18 +269,17 @@ style = compact</programlisting>
 
       <itemizedlist>
 	<listitem><para id="x_5cc">Il primo componente è semplicemente il modo in cui Mercurial dice <quote>rinuncio</quote>.</para>
-	  <programlisting>___abort___: broken.style:1: parse error</programlisting>
+	  <programlisting>___fallimento___: stile.errato:1: errore di riconoscimento</programlisting>
 	</listitem>
 	<listitem><para id="x_5cd">Subito dopo, trovate il nome del file di stile che contiene l'errore.</para>
-	  <programlisting>abort: ___broken.style___:1: parse error</programlisting>
+	  <programlisting>fallimento: ___stile.errato___:1: errore di riconoscimento</programlisting>
 	</listitem>
 	<listitem><para id="x_5ce">Il nome del file è seguito dal numero di riga dove l'errore è stato incontrato.</para>
-	  <programlisting>abort: broken.style:___1___: parse error</programlisting>
+	  <programlisting>fallimento: stile.errato:___1___: errore di riconoscimento</programlisting>
 	</listitem>
 	<listitem><para id="x_5cf">Infine, viene fornita una descrizione di quello che è andato storto.</para>
-	  <programlisting>abort: broken.style:1: ___parse error___</programlisting>
-	</listitem>
-	<listitem><para id="x_5d0">La descrizione del problema non è sempre chiara (come in questo caso), ma anche quando è criptica, è quasi sempre banale trovare cosa c'è di sbagliato inspezionando visivamente la riga del file di stile che contiene il problema.</para>
+	  <programlisting>fallimento: stile.errato:1: ___errore di riconoscimento___</programlisting>
+	<para id="x_5d0">La descrizione del problema non è sempre chiara (come in questo caso), ma anche quando è criptica, è quasi sempre banale trovare la causa dell'errore inspezionando visivamente la riga del file di stile che contiene il problema.</para>
 	</listitem>
       </itemizedlist>
     </sect2>
@@ -300,9 +299,9 @@ style = compact</programlisting>
 	</listitem></itemizedlist>
       <para id="x_5d5">Ecco alcuni usi che potete fare di questo identificatore:</para>
       <itemizedlist>
-	<listitem><para id="x_5d6">come chiave nella tabella di un database che gestisce i repository presenti su un server.</para>
+	<listitem><para id="x_5d6">come chiave nella tabella di un database che gestisce i repository presenti su un server;</para>
 	</listitem>
-	<listitem><para id="x_5d7">come metà di una tupla {<emphasis>identificatore di repository</emphasis>, <emphasis>identificatore di revisione</emphasis>}. Salvate questa informazione da qualche parte quando esguite un assemblaggio automatico o un'altra attività simile, in modo che possiate <quote>rieseguire</quote> lo stesso assemblaggio in seguito se necessario.</para>
+	<listitem><para id="x_5d7">come metà di una tupla {<emphasis>identificatore di repository</emphasis>, <emphasis>identificatore di revisione</emphasis>}. Salvate questa informazione da qualche parte quando eseguite un assemblaggio automatico o un'altra attività simile, in modo che possiate <quote>rieseguire</quote> lo stesso assemblaggio in seguito se necessario.</para>
 	</listitem>
       </itemizedlist>
     </sect2>
@@ -322,11 +321,11 @@ style = compact</programlisting>
 
       &interaction.template.svnstyle.short;
 
-      <para id="x_5d9">Dato che lo stile della rappresentazione di Subversion è abbastanza semplice, è facile copiare e incollare una parte dei suoi messaggi in un file e rimpiazzare il testo prodotto da Subversion con i valori di template che vorremmo vedere espansi.</para>
+      <para id="x_5d9">Dato che lo stile della rappresentazione di Subversion è abbastanza semplice, è facile copiare e incollare uno dei suoi messaggi in un file e rimpiazzare il testo prodotto da Subversion con i valori di template che vorremmo vedere espansi.</para>
 
       &interaction.template.svnstyle.template;
 
-      <para id="x_5da">Ci sono alcuni modi in cui questo template si discosta dalla presentazione prodotta da Subversion.</para>
+      <para id="x_5da">Questo template si discosta in alcuni modi dalla presentazione prodotta da Subversion.</para>
       <itemizedlist>
 	<listitem><para id="x_5db">Subversion stampa una data <quote>leggibile</quote> (il <quote><literal>Wed, 27 Sep 2006</literal></quote> nel risultato dell'esempio precedente) tra parentesi. Il motore di template di Mercurial non fornisce un modo per visualizzare una data in questo formato senza stampare anche l'ora e il fuso orario.</para>
 	</listitem>
