@@ -23,6 +23,11 @@ TRANSLATE = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-translate -M UTF-8 \
 rev_id = $(shell hg parents --template '{node|short} ({date|shortdate})')
 
 images := \
+	en/figs/bad-merge-1.png \
+	en/figs/bad-merge-2.png \
+	en/figs/bad-merge-3.png \
+	en/figs/bad-merge-4.png \
+	en/figs/bad-merge-5.png \
 	en/figs/feature-branches.png \
 	en/figs/filelog.png \
 	en/figs/metadata.png \
@@ -59,6 +64,12 @@ help:
 clean:
 	@rm -fr build po/*.mo hello en/hello en/html en/.validated-00book.xml en/examples/.run en/examples/results \
           stylesheets/system-xsl en/figs/*-tmp.svg \
+          web/index-read.html.in \
+          en/figs/bad-merge-1.png \
+          en/figs/bad-merge-2.png \
+          en/figs/bad-merge-3.png \
+          en/figs/bad-merge-4.png \
+          en/figs/bad-merge-5.png \
           en/figs/feature-branches.png \
           en/figs/filelog.png \
           en/figs/feature-branches.png \
