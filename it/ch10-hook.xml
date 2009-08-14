@@ -4,7 +4,7 @@
 
   <para id="x_1e6">Mercurial offre un potente meccanismo per consentirvi di effettuare azioni automatiche in risposta agli eventi che accadono in un repository. In alcuni casi, potete persino controllare la risposta di Mercurial a questi eventi.</para>
 
-  <para id="x_1e7">Il nome che Mercurial usa per indicare una di queste azioni è <emphasis>hook</emphasis>. Gli hook vengono chiamati <quote>trigger</quote> in alcuni sistemi di controllo di revisione, ma i due nomi si riferiscono alla stessa idea.</para>
+  <para id="x_1e7">Il nome che Mercurial usa per indicare una di queste azioni è <emphasis>hook</emphasis> (letteralmente, gancio). Gli hook vengono chiamati <quote>trigger</quote> (letteralmente, grilletto) in alcuni sistemi di controllo di revisione, ma i due nomi si riferiscono alla stessa idea.</para>
 
   <sect1>
     <title>Un'introduzione agli hook di Mercurial</title>
@@ -51,7 +51,7 @@
 
       <para id="x_1f7">Quando invocate un comando Mercurial in un repository e quel comando causa l'esecuzione di un hook, quell'hook viene eseguito sul <emphasis>vostro</emphasis> sistema, con il <emphasis>vostro</emphasis> account utente, al <emphasis>vostro</emphasis> livello di privilegio. Dato che gli hook sono frammenti di codice eseguibile, dovreste trattarli in maniera adeguatamente sospettosa. Non installate un hook a meno che non confidiate di sapere chi lo ha creato e che cosa fa.</para>
 
-      <para id="x_1f8">In alcuni casi, potreste essere esposti a hook che non avete installato voi. Se lavorate con Mercurial su un sistema che non vi è familiare, Mercurial eseguirà gli hook definiti nel file <filename role="special">~/.hgrc</filename> globale per quel sistema.</para>
+      <para id="x_1f8">In alcuni casi, potreste essere esposti a hook che non avete installato voi. Se lavorate con Mercurial su un sistema che non vi è familiare, sappiate che Mercurial eseguirà gli hook definiti nel file <filename role="special">~/.hgrc</filename> globale per quel sistema.</para>
 
       <para id="x_1f9">Se state lavorando con un repository posseduto da un altro utente, Mercurial può eseguire gli hook definiti nel repository di quell'utente, ma li eseguirà ancora sotto la <quote>vostra identità</quote>. Per esempio, se estraete i cambiamenti da quel repository tramite <command role="hg-cmd">hg pull</command>, e il suo file <filename role="special">.hg/hgrc</filename> definisce un hook <literal role="hook">outgoing</literal> locale, quell'hook verrà eseguito con il vostro account utente anche se non siete il proprietario di quel repository.</para>
 
@@ -280,12 +280,12 @@ pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
 
 	<para id="x_244">La sintassi per le sezioni <literal role="rc-acl.allow">acl.allow</literal> e <literal role="rc-acl.deny">acl.deny</literal> è la stessa. Sulla sinistra di ogni voce si trova un pattern di tipo glob che corrisponde a file e directory relativi alla radice del repository, sulla destra si trova un nome utente.</para>
 
-	<para id="x_245">Nell'esempio seguente, l'utente <literal>docwriter</literal> può trasmettere cambiamenti solo al sottoalbero <filename class="directory">doc</filename> del repository, mentre l'utente <literal>intern</literal> può trasmettere cambiamenti a qualsiasi file o directory tranne <filename class="directory">sorgenti/sensibili</filename>.
+	<para id="x_245">Nell'esempio seguente, l'utente <literal>manualista</literal> può trasmettere cambiamenti solo al sottoalbero <filename class="directory">doc</filename> del repository, mentre l'utente <literal>stagista</literal> può trasmettere cambiamenti a qualsiasi file o directory tranne <filename class="directory">sorgenti/sensibili</filename>.
 	</para>
 	<programlisting>[acl.allow]
-doc/** = docwriter
+doc/** = manualista
 [acl.deny]
-sorgenti/sensibili/** = intern</programlisting>
+sorgenti/sensibili/** = stagista</programlisting>
 
       </sect3>
       <sect3>
@@ -440,9 +440,9 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	<itemizedlist>
 	  <listitem><para id="x_26f"><envar role="rc-item-notify">test</envar>: di default, questo hook non spedisce alcuna email, ma stampa il messaggio che <emphasis>avrebbe</emphasis> inviato. Impostate questo elemento a <literal>false</literal> per consentire la spedizione delle email. La ragione per cui la spedizione delle email è disabilitata di default è che ci vogliono diverse prove per configurare questa estensione esattamente come vorreste, e non starebbe bene infastidire gli interessati con un certo numero di notifiche <quote>guaste</quote> mentre correggete la vostra configurazione.</para>
 	  </listitem>
-	  <listitem><para id="x_270"><envar role="rc-item-notify">config</envar>: il percorso di un file di configurazione che contiene le informazioni di sottoscrizione. Questo viene tenuto separato dal file <filename role="special">~/.hgrc</filename> principale in modo che possiate mantenerlo in un proprio repository. Le persone possono poi clonare quel repository, aggiornare le proprie sottoscrizioni e trasmettere i cambiamenti al vostro server.</para>
+	  <listitem><para id="x_270"><envar role="rc-item-notify">config</envar>: il percorso di un file di configurazione che contiene le informazioni di iscrizione. Questo viene tenuto separato dal file <filename role="special">~/.hgrc</filename> principale in modo che possiate mantenerlo in un proprio repository. Le persone possono poi clonare quel repository, aggiornare le proprie iscrizioni e trasmettere i cambiamenti al vostro server.</para>
 	  </listitem>
-	  <listitem><para id="x_271"><envar role="rc-item-notify">strip</envar>: il numero di parti iniziali da eliminare dal percorso di un repository quando state decidendo se è possibile sottoscriversi alle notifiche per un repository. Per esempio, se i repository sul vostro server si trovano in <filename class="directory">/home/hg/repos</filename>, e <literal role="hg-ext">notify</literal> sta considerando un repository chiamato <filename class="directory">/home/hg/repos/condivisi/test</filename>, impostare <envar role="rc-item-notify">strip</envar> a <literal>4</literal> farà in modo che <literal role="hg-ext">notify</literal> restringa il percorso da considerare a <filename class="directory">condivisi/test</filename> e associ le sottoscrizioni a questo percorso.</para>
+	  <listitem><para id="x_271"><envar role="rc-item-notify">strip</envar>: il numero di parti iniziali da eliminare dal percorso di un repository quando state decidendo se è possibile iscriversi al servizio di notifica per un repository. Per esempio, se i repository sul vostro server si trovano in <filename class="directory">/home/hg/repos</filename>, e <literal role="hg-ext">notify</literal> sta considerando un repository chiamato <filename class="directory">/home/hg/repos/condivisi/test</filename>, impostare <envar role="rc-item-notify">strip</envar> a <literal>4</literal> farà in modo che <literal role="hg-ext">notify</literal> restringa il percorso da considerare a <filename class="directory">condivisi/test</filename> e associ le iscrizioni a questo percorso.</para>
 	  </listitem>
 	  <listitem><para id="x_272"><envar role="rc-item-notify">template</envar>: il testo del template da usare per inviare i messaggi. Questo specifica i contenuti sia delle intestazioni che del corpo del messaggio.</para>
 	  </listitem>
@@ -492,7 +492,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 
       <para id="x_27f">Se un hook restituisce il valore booleano <quote>falso</quote>, si considera terminato con successo. Se restituisce il valore booleano <quote>vero</quote> oppure solleva un'eccezione, si considera fallito. Un modo utile di pensare a questa convenzione di esecuzione è <quote>dimmi se hai fallito</quote>.</para>
 
-      <para id="x_280">Notate che gli identificatori di changeset vengono passati agli hook Python sotto forma di stringhe esadecimali, non degli hash binari che la API Mercurial usa normalmente. Per convertire un hash da esadecimale a binario, usate la funzione <literal>bin</literal>.
+      <para id="x_280">Notate che gli identificatori di changeset vengono passati agli hook Python sotto forma di stringhe esadecimali, non degli hash binari che la API Mercurial usa normalmente. Per convertire un hash da esadecimale a binario, usate la funzione <literal>mercurial.node.bin</literal>.
       </para>
     </sect2>
 
