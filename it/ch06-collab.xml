@@ -36,7 +36,7 @@
 
       <para id="x_452">L'aspetto più importante che dovete tenere presente per qualsiasi modello è il grado di conformità ai bisogni e alle capacità delle persone che lo useranno. Questo potrebbe sembrare ovvio, ma in ogni caso non potete comunque permettervi di dimenticarvelo nemmeno per un momento.</para>
 
-      <para id="x_453">Una volta mi capitò di comporre un modello di workflow che a me sembrava perfettamente sensato, ma che provocò una quantità considerevole di litigi e costernazione tra i membri del mio gruppo di sviluppo. Nonostante i miei tentativi di spiegare perché avessimo bisogno di un insieme complesso di ramificazioni e come i cambiamenti dovessero circolare tra i rami, alcuni membri del gruppo si ribellarono. Sebbene fossero persone intelligenti, non volevano fare attenzione ai vincoli sotto i quali stavamo operando, né affrontare le conseguenze di quei vincoli sui dettagli del modello che stavo difendendo.</para>
+      <para id="x_453">Una volta mi capitò di comporre un modello di workflow che a me sembrava perfettamente sensato, ma che provocò una notevole quantità di litigi e parecchia costernazione tra i membri del mio gruppo di sviluppo. Nonostante i miei tentativi di spiegare perché avessimo bisogno di un insieme complesso di ramificazioni e come i cambiamenti dovessero circolare tra i rami, alcuni membri del gruppo si ribellarono. Sebbene fossero persone intelligenti, non volevano fare attenzione ai vincoli sotto i quali stavamo operando, né affrontare le conseguenze di quei vincoli sui dettagli del modello che stavo difendendo.</para>
 
       <para id="x_454">Evitate di nascondere sotto il tappeto i prevedibili problemi di tipo tecnico o sociale. Qualunque schema adottiate, dovreste avere un piano per affrontare errori e scenari problematici. Prendete in considerazione l'idea di aggiungere meccanismi automatici per prevenire o risolvere velocemente i problemi che siete in grado di anticipare. Per esempio, se intendete avere un ramo con cambiamenti che non desiderate rilasciare al pubblico, fareste meglio a pensare fin dall'inizio alla possibilità che qualcuno possa accidentalmente incorporare quei cambiamenti in un ramo di release. Potete evitare questo particolare problema implementando un hook che prevenga l'unione di cambiamenti da rami non appropriati.</para>
     </sect2>
@@ -50,7 +50,7 @@
 
       <para id="x_457">Una maratona o una sessione di programmazione in un locale sono le occasioni perfette per usare il comando <command role="hg-cmd">hg serve</command>, dato che	<command role="hg-cmd">hg serve</command> non richiede alcuna infrastruttura server elaborata. Potete cominciare a usare <command role="hg-cmd">hg serve</command> in pochi minuti, leggendo la <xref linkend="sec:collab:serve"/> più avanti. Poi vi basta comunicare ai vostri vicini l'esistenza di un server in esecuzione, fargli sapere l'URL a cui devono collegarsi, e avrete un modo rapido da predisporre per lavorare insieme. Gli altri potranno digitare il vostro URL nel proprio browser e revisionare velocemente i vostri cambiamenti, o estrarre la correzione di un bug dal vostro repository e verificarla, o clonare un ramo contenente una nuova funzione e provarla.</para>
 
-      <para id="x_458">Il fascino, e allo stesso tempo il problema, di fare le cose ad hoc in questo modo è che solo le persone che sanno dell'esistenza dei vostri cambiamenti e sanno dove trovarli possono vederli. Un approccio informale di questo tipo non riesce proprio a scalare oltre a una manciata di persone, perché ogni individuo ha bisogno di conoscere <emphasis>n</emphasis> diversi repository da cui estrarre modifiche.</para>
+      <para id="x_458">Il fascino, e allo stesso tempo il problema, di fare le cose ad hoc in questo modo è che solo le persone che sanno dell'esistenza dei vostri cambiamenti e sanno dove trovarli possono vederli. Un approccio informale di questo tipo non riesce proprio a scalare oltre una manciata di persone, perché ogni individuo ha bisogno di conoscere <emphasis>n</emphasis> diversi repository da cui estrarre modifiche.</para>
     </sect2>
 
     <sect2>
@@ -118,43 +118,43 @@
     </sect2>
 
     <sect2>
-      <title>Rami di funzionalità</title>
+      <title>Rami di funzione</title>
 
       <para id="x_469">Per progetti di dimensioni più grandi, un modo efficace di gestire i cambiamenti è quello di dividere un gruppo in piccoli sottogruppi. Ogni sottogruppo gestisce un proprio ramo condiviso, clonato da un singolo ramo <quote>principale</quote> usato dall'intero progetto. Le persone che lavorano su un singolo ramo sono tipicamente piuttosto isolate dagli sviluppi che accadono negli altri rami.</para>
 
       <figure id="fig:collab:feature-branches">
-	<title>Rami di funzionalità</title>
+	<title>Rami di funzione</title>
 	<mediaobject>
 	  <imageobject><imagedata width="100%" fileref="figs/feature-branches.png"/></imageobject>
 	  <textobject><phrase>XXX add text</phrase></textobject>
 	</mediaobject>
       </figure>
 
-      <para id="x_46b">Quando si ritiene che una funzionalità particolare sia in una forma appropriata, qualche membro del sottogruppo di quella funzionalità estrae i cambiamenti dal ramo principale e li unisce al ramo della funzionalità, poi trasmette le modifiche indietro al ramo principale.</para>
+      <para id="x_46b">Quando si ritiene che una funzione particolare sia in una forma appropriata, qualche membro del sottogruppo di quella funzione estrae i cambiamenti dal ramo principale e li unisce al ramo della funzione, poi trasmette le modifiche indietro al ramo principale.</para>
     </sect2>
 
     <sect2>
       <title>Il treno delle release</title>
 
-      <para id="x_46c">L'organizzazione di alcuni progetti può ricordare quella di un <quote>treno</quote>: le release sono fissate a intervalli di alcuni mesi e includono tutte le funzionalità che sono pronte quando il <quote>treno</quote> è pronto a partire.</para>
+      <para id="x_46c">L'organizzazione di alcuni progetti può ricordare quella di un <quote>treno</quote>: le release sono fissate a intervalli di alcuni mesi e includono tutte le funzioni che sono pronte quando il <quote>treno</quote> è pronto a partire.</para>
 
-      <para id="x_46d">Questo modello assomiglia all'impiego dei rami di funzionalità, tranne per il fatto che quando un ramo di funzionalità perde un treno, qualche membro del gruppo di quella funzionalità estrae i cambiamenti che sono partiti con il treno della release e li unisce al ramo della funzionalità, così il gruppo continua a lavorare partendo da quella release, in modo che la funzionalità di cui è responsabile possa essere inclusa nella release successiva.</para>
+      <para id="x_46d">Questo modello assomiglia all'impiego dei rami di funzione, tranne per il fatto che quando un ramo di funzione perde un treno, qualche membro del gruppo di quella funzione estrae i cambiamenti che sono partiti con il treno della release e li unisce al ramo della funzione, così il gruppo continua a lavorare partendo da quella release, in modo che la funzione di cui è responsabile possa essere inclusa nella release successiva.</para>
     </sect2>
 
     <sect2>
       <title>Il modello del kernel di Linux</title>
 
-      <para id="x_46e">Il modello di sviluppo del kernel di Linux è caratterizzato da una struttura gerarchica poco profonda circondata da una nuvola di caos apparente. Dato che la maggior parte degli sviluppatori Linux usa <command>git</command>, uno strumento distribuito di controllo di revisione con caratteristiche simili a Mercurial, è utile descrivere come si lavora in quell'ambiente in modo che, se le idee vi piacciono, possiate tradurre l'approccio da uno strumento all'altro.</para>
+      <para id="x_46e">Il modello di sviluppo del kernel di Linux è caratterizzato da una struttura gerarchica poco profonda circondata da una nuvola di caos apparente. Dato che la maggior parte degli sviluppatori Linux usa <command>git</command>, uno strumento distribuito di controllo di revisione con caratteristiche simili a Mercurial, è utile descrivere come si lavora in quell'ambiente in modo che, se le idee vi piacciono, possiate tradurre il metodo da uno strumento all'altro.</para>
 
       <para id="x_46f">Al centro della comunità siede Linus Torvalds, il creatore di Linux. Linus pubblica un singolo repository di sorgenti che è considerato il ramo <quote>autoritativo</quote> corrente dall'intera comunità di sviluppo. Chiunque può clonare l'albero di Linus, ma Linus è piuttosto selettivo per quanto riguarda gli alberi da cui estrae le modifiche.</para>
 
       <para id="x_470">Linus ha un certo numero di <quote>luogotenenti di fiducia</quote>. Come regola generale, estrae qualunque cambiamento gli trasmettano, nella maggior parte dei casi senza nemmeno revisionare quelle modifiche. Alcuni di quei luogotenenti hanno accettato il ruolo di <quote>manutentori</quote> responsabili di specifici sottosistemi del kernel. Se un programmatore qualsiasi vuole che la propria modifica a un sottosistema del kernel finisca nell'albero di Linus, deve trovare il manutentore di quel sottosistema e chiedergli di accettarla. Se il manutentore revisiona le modifiche e accetta di prenderle, le passerà a Linus al momento giusto.</para>
 
-      <para id="x_471">Ogni singolo luogotenente ha il proprio approccio per revisionare, accettare e pubblicare le modifiche, e per decidere quando passarle a Linus. In più, esistono diversi rami ben noti che vengono usati per scopi differenti. Per esempio, alcune persone mantengono repository <quote>stabili</quote> di vecchie versioni del kernel alle quali applicano correzioni critiche quando è necessario. Alcuni manutentori pubblicano molteplici alberi: uno per modifiche sperimentali, uno per cambiamenti che stanno per passare in alto, e così via. Altri pubblicano semplicemente un singolo albero.</para>
+      <para id="x_471">Ogni singolo luogotenente segue il proprio metodo per revisionare, accettare e pubblicare le modifiche, e per decidere quando passarle a Linus. In più, esistono diversi rami ben noti che vengono usati per scopi differenti. Per esempio, alcune persone mantengono repository <quote>stabili</quote> di vecchie versioni del kernel alle quali applicano correzioni critiche quando è necessario. Alcuni manutentori pubblicano molteplici alberi: uno per modifiche sperimentali, uno per cambiamenti che stanno per passare in alto, e così via. Altri pubblicano semplicemente un singolo albero.</para>
 
       <para id="x_472">Questo modello ha due caratteristiche importanti. La prima è quella di essere <quote>a sola estrazione</quote>. Dovete chiedere, convincere, o implorare un altro sviluppatore di prendere una modifica da voi, perché non c'è quasi nessun albero a cui più di una persona possa trasmettere e non c'è modo di trasmettere cambiamenti a un albero controllato da qualcun altro.</para>
 
-      <para id="x_473">La seconda è quella di essere basato su reputazione e approvazione. Se siete sconosciuti, Linus probabilmente ignorerà le vostre modifiche senza nemmeno rispondervi. Ma il manutentore di un sottosistema probabilmente le revisionerà e sarà disposto ad accettarle se rispettano i suoi criteri di qualità. Più modifiche <quote>buone</quote> contribuite a un manutentore, più è probabile che si fidi del vostro giudizio e accetti i vostri cambiamenti. Se siete ben conosciuti e mantenete un ramo di lunga data per qualcosa che Linus non ha ancora accettato, le persone con interessi simili potranno incorporare regolarmente i vostri cambiamenti per rimanere aggiornati sul vostro lavoro.</para>
+      <para id="x_473">La seconda è quella di essere basato su reputazione e approvazione. Se siete sconosciuti, Linus probabilmente ignorerà le vostre modifiche senza nemmeno rispondervi. Ma il manutentore di un sottosistema probabilmente le revisionerà e sarà disposto ad accettarle se rispettano i suoi criteri di qualità. Più modifiche <quote>buone</quote> presentate a un manutentore, più è probabile che si fidi del vostro giudizio e accetti i vostri cambiamenti. Se siete ben conosciuti e mantenete un ramo di lunga data per qualcosa che Linus non ha ancora accettato, le persone con interessi simili potranno incorporare regolarmente i vostri cambiamenti per rimanere aggiornati sul vostro lavoro.</para>
 
       <para id="x_474">Reputazione e approvazione non oltrepassano necessariamente i confini tecnici e sociali di un sottosistema. Se siete un programmatore rispettato ma specializzato nell'ambito della memorizzazione dei dati e provate a correggere un bug relativo all'infrastruttura di rete, un manutentore del sottosistema esaminerà minuziosamente quel cambiamento come se fosse stato realizzato da un completo sconosciuto.</para>
 
@@ -326,7 +326,7 @@
 	</listitem></itemizedlist>
       <para id="x_4aa">Se vi viene richiesta la password per l'utente remoto, ecco altri possibili cause.</para>
       <itemizedlist>
-	<listitem><para id="x_4ab">La directory personale dell'utente o la sua directory <filename role="special" class="directory">.ssh</filename> potrebbero avere permessi eccessivamente liberali. Come risultato, il demone ssh non si fiderà dei contenuti del file <filename role="special">authorized_keys</filename> e quindi non lo leggerà. Per esempio, una directory personale o una directory <filename role="special" class="directory">.ssh</filename> con il permesso di scrittura di gruppo abilitato causerà spesso questo sintomo.</para>
+	<listitem><para id="x_4ab">La directory personale dell'utente o la sua directory <filename role="special" class="directory">.ssh</filename> potrebbero avere permessi eccessivamente liberali. Come risultato, il demone ssh non si fiderà dei contenuti del file <filename role="special">authorized_keys</filename> e quindi non lo leggerà. Per esempio, una directory personale o una directory <filename role="special" class="directory">.ssh</filename> con il permesso di scrittura di gruppo abilitato causerà spesso questo effetto.</para>
 	</listitem>
 	<listitem><para id="x_4ac">Il file <filename role="special">authorized_keys</filename> dell'utente potrebbe avere un problema. Se l'utente non è l'unico proprietario del file o qualcun altro può scrivere sul file, il demone ssh non si fiderà dei suoi contenuti e quindi non lo leggerà.</para>
 	</listitem></itemizedlist>
@@ -370,7 +370,7 @@ ssh = ssh -C</programlisting>
   Compression yes
   HostName hg.example.com</programlisting>
 
-      <para id="x_4ba">Questo definisce l'alias <literal>hg</literal> per il nome della macchina. Quando usate l'alias sulla riga di comando <command>ssh</command> o in un URL ssh di Mercurial, <command>ssh</command> si connetterà a <literal>hg.example.com</literal> e userà la compressione. Questo vi fornisce sia un nome più corto da digitare sia la compressione, che sono entrambe buone cose di per sé.</para>
+      <para id="x_4ba">Questo definisce l'alias <literal>hg</literal> per il nome della macchina. Quando usate l'alias sulla riga di comando <command>ssh</command> o in un URL ssh di Mercurial, <command>ssh</command> si connetterà a <literal>hg.example.com</literal> e userà la compressione. In questo modo, potete ottenere sia un nome più corto da digitare sia la compressione, che dal canto loro sono entrambe buone cose..</para>
     </sect2>
   </sect1>
 
@@ -404,7 +404,7 @@ ssh = ssh -C</programlisting>
 	<listitem><para id="x_4c1">Il vostro server è configurato per consentirvi di eseguire programmi CGI nella directory dove pianificate di farlo? La maggior parte delle impostazioni di partenza dei server disabilitano esplicitamente la possibilità di eseguire programmi CGI.</para>
 	</listitem></orderedlist>
 
-      <para id="x_4c2">Se non avete un server web installato e non avete una considerevole esperienza nel configurare Apache, dovreste considerare l'uso del server web <literal>lighttpd</literal> invece di Apache. Le configurazioni di Apache hanno la reputazione ben meritata di essere barocche e confuse. Mentre Apache è dotato di un numero maggiore di funzioni rispetto a <literal>lighttpd</literal>, buona parte di queste funzioni non è rilevante per servire repository Mercurial. E <literal>lighttpd</literal> è innegabilmente <emphasis>molto</emphasis> più facile da approcciare di Apache.</para>
+      <para id="x_4c2">Se non avete un server web installato e non avete una considerevole esperienza nel configurare Apache, dovreste considerare l'uso del server web <literal>lighttpd</literal> invece di Apache. Le configurazioni di Apache hanno la reputazione ben meritata di essere complicate e di confondere gli utenti. Mentre Apache è dotato di un numero maggiore di funzioni rispetto a <literal>lighttpd</literal>, buona parte di queste funzioni non è rilevante per servire repository Mercurial. E <literal>lighttpd</literal> è innegabilmente <emphasis>molto</emphasis> più facile da affrontare di Apache.</para>
     </sect2>
 
     <sect2>
@@ -515,7 +515,7 @@ repo2 = /qualche/percorso/a/un/altro</programlisting>
 
       <para id="x_4e3">L'interfaccia web di Mercurial permette agli utenti di scaricare un archivio di qualsiasi revisione. Questo archivio conterrà la fotografia della directory di lavoro scattata su quella revisione, ma non conterrà una copia dei dati del repository.</para>
 
-      <para id="x_4e4">Di default, questa funzionalità è disabilitata. Per abilitarla, dovrete aggiungere un elemento <envar role="rc-item-web">allow_archive</envar> alla sezione <literal role="rc-web">web</literal> del vostro file <filename role="special">~/.hgrc</filename> come spiegato in dettaglio nella prossima sezione.</para>
+      <para id="x_4e4">Di default, questa funzione è disabilitata. Per abilitarla, dovrete aggiungere un elemento <envar role="rc-item-web">allow_archive</envar> alla sezione <literal role="rc-web">web</literal> del vostro file <filename role="special">~/.hgrc</filename> come spiegato in dettaglio nella prossima sezione.</para>
     </sect2>
     <sect2>
       <title>Le opzioni di configurazione web</title>
@@ -587,7 +587,7 @@ style = gitweb</programlisting>
 
 	<para id="x_4f6">Alcuni degli elementi nella sezione <literal role="rc-web">web</literal> di un file <filename role="special">~/.hgrc</filename> possono essere usati solo con il comando <command role="hg-cmd">hg serve</command>.</para>
 	<itemizedlist>
-	  <listitem><para id="x_4f7"><envar role="rc-item-web">accesslog</envar>: percorso. Il nome di un file in cui tenere un registro degli accessi. Normalmente, il comando <command role="hg-cmd">hg serve</command> scrive queste informazioni sul canale di uscita predefinito, non su un file. Le voci del registro vengono scritte nel formato <quote>combined</quote> che è uno standard usato da quasi tutti i server web.</para>
+	  <listitem><para id="x_4f7"><envar role="rc-item-web">accesslog</envar>: percorso. Il nome di un file in cui tenere un registro degli accessi. Normalmente, il comando <command role="hg-cmd">hg serve</command> scrive queste informazioni sul canale di uscita predefinito, non su un file. Le voci del registro vengono scritte nel formato <quote>combinato</quote> che è uno standard usato da quasi tutti i server web.</para>
 	  </listitem>
 	  <listitem><para id="x_4f8"><envar role="rc-item-web">address</envar>: stringa. L'indirizzo locale su cui il server dovrebbe essere in ascolto per le connessioni in entrata. Di default, il server è in ascolto su tutti gli indirizzi.</para>
 	  </listitem>
