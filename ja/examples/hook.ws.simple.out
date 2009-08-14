@@ -1,0 +1,11 @@
+$ \textbf{cat .hg/hgrc}
+[hooks]
+pretxncommit.whitespace = hg export tip | (! egrep -q '^\textbackslash{}+.*[ \textbackslash{}t]$')
+$ \textbf{echo 'a ' > a}
+$ \textbf{hg commit -A -m 'test with trailing whitespace'}
+adding a
+transaction abort!
+rollback completed
+abort: pretxncommit.whitespace hook exited with status 1
+$ \textbf{echo 'a' > a}
+$ \textbf{hg commit -A -m 'drop trailing whitespace and try again'}

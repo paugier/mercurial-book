@@ -1,0 +1,32 @@
+$ \textbf{hg qapplied}
+first.patch
+second.patch
+$ \textbf{hg log -r qbase:qtip}
+changeset:   
+tag:         first.patch
+tag:         qbase
+user:        Bryan O'Sullivan <bos@serpentine.com>
+
+summary:     [mq]: first.patch
+
+changeset:   
+tag:         qtip
+tag:         second.patch
+tag:         tip
+user:        Bryan O'Sullivan <bos@serpentine.com>
+
+summary:     [mq]: second.patch
+
+$ \textbf{hg export second.patch}
+# HG changeset patch
+# User Bryan O'Sullivan <bos@serpentine.com>
+
+# Node ID 
+# Parent  
+[mq]: second.patch
+
+diff -r  -r  other.c
+
+
+@@ -0,0 +1,1 @@
++double u;
