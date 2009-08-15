@@ -23,7 +23,7 @@
   <sect1 id="sec:mq:history">
     <title>La preistoria di Mercurial Queues</title>
 
-    <para id="x_3b3">Verso la fine degli anni '90, diversi sviluppatori del kernel di Linux cominciarono a mantenere alcune <quote>serie di patch</quote> che modificavano il comportamento del kernel. Alcune di queste serie si concentravano sulla stabilità, alcune sull'inclusione di funzionalità e altre erano più sperimentali.</para>
+    <para id="x_3b3">Verso la fine degli anni '90, diversi sviluppatori del kernel di Linux cominciarono a mantenere alcune <quote>serie di patch</quote> che modificavano il comportamento del kernel. Alcune di queste serie si concentravano sulla stabilità, alcune sull'inclusione di funzioni e altre erano più sperimentali.</para>
 
     <para id="x_3b4">La dimensione di queste serie di patch crebbe rapidamente. Nel 2002, Andrew Morton pubblicò alcuni script di shell che aveva usato per automatizzare la gestione delle proprie code di patch. Andrew era riuscito a usare questi script per gestire centinaia (talvolta migliaia) di patch per il kernel di Linux.</para>
 
@@ -196,7 +196,7 @@ hgext.mq =</programlisting>
 
       &interaction.mq.tutorial.add;
 
-      <para id="x_3e2">Tutti i comandi che esaminano la directory di lavoro accettano un'opzione <quote>so cosa sto facendo</quote> che si chiama sempre <option>-f</option>. L'esatto significato di <option>-f</option> dipende dal comando. Per esempio, <command role="hg-cmd">hg qnew <option role="hg-ext-mq-cmd-qnew-opt">-f</option></command> incorporerà i cambiamenti in sospeso nella nuova patch creata, ma <command role="hg-cmd">hg qpop <option role="hg-ext-mq-cmd-qpop-opt">-f</option></command> annullerà le modifiche a qualsiasi file affetto dalla patch che sta estraendo. Assicuratevi di leggere la documentazione per l'opzione <option>-f</option> di un comando prima di usarla!</para>
+      <para id="x_3e2">Tutti i comandi che esaminano la directory di lavoro accettano un'opzione <quote>so cosa sto facendo</quote> che si chiama sempre <option>-f</option>. L'esatto significato di <option>-f</option> dipende dal comando. Per esempio, <command role="hg-cmd">hg qnew <option role="hg-ext-mq-cmd-qnew-opt">-f</option></command> incorporerà i cambiamenti in sospeso nella nuova patch creata, ma <command role="hg-cmd">hg qpop <option role="hg-ext-mq-cmd-qpop-opt">-f</option></command> annullerà le modifiche a qualsiasi file coinvolto dalla patch che sta estraendo. Assicuratevi di leggere la documentazione per l'opzione <option>-f</option> di un comando prima di usarla!</para>
     </sect2>
 
     <sect2>
@@ -382,7 +382,7 @@ hgext.mq =</programlisting>
 
     <para id="x_418">Il riferimento per indice non è molto diverso. La prima patch visualizzata da <command role="hg-ext-mq">qseries</command> è la patch numero zero (sì, è uno di quei sistemi di conteggio che partono da zero), la seconda è la patch numero uno, e così via.</para>
 
-    <para id="x_419">MQ rende anche più facile lavorare con le patch usando i normali comandi Mercurial. Tutti i comandi che accettano un identificatore di changeset accettano anche il nome di una patch applicata. MQ aggiunge un'etichetta eponima per ogni patch applicata alle etichette normalmente presenti nel repository. In più, le etichette speciali <literal role="tag">qbase</literal> e <literal role="tag">qtip</literal> identificano rispettivamente la prima e l'ultima patch applicata.</para>
+    <para id="x_419">MQ rende anche più facile lavorare con le patch usando i normali comandi Mercurial. Tutti i comandi che accettano un identificatore di changeset accettano anche il nome di una patch applicata. MQ aggiunge un'etichetta omonima per ogni patch applicata alle etichette normalmente presenti nel repository. In più, le etichette speciali <literal role="tag">qbase</literal> e <literal role="tag">qtip</literal> identificano rispettivamente la prima e l'ultima patch applicata.</para>
 
     <para id="x_41a">Queste aggiunte alla funzione di etichettatura di Mercurial facilitano ulteriormente l'uso delle patch.</para>
     <itemizedlist>
@@ -509,7 +509,7 @@ hgext.mq =</programlisting>
     <sect2 id="sec:mq:combine">
       <title>Combinare intere patch</title>
 
-      <para id="x_43d">MQ vi fornisce il comando <command role="hg-ext-mq">qfold</command> per consentirvi di combinare intere patch. Questo comando <quote>include</quote> le patch che nominate, nell'ordine in cui le nominate, nell'ultima patch applicata e concatena le loro descrizioni aggiungendole alla fine della descrizione di questa patch. Se le patch che includete sono applicate, devono essere estratte prima di poterle includere.</para>
+      <para id="x_43d">MQ vi fornisce il comando <command role="hg-ext-mq">qfold</command> per consentirvi di combinare intere patch tra loro. Questo comando <quote>include</quote> le patch che nominate, nell'ordine in cui le nominate, nell'ultima patch applicata e concatena le loro descrizioni aggiungendole alla fine della descrizione di questa patch. Se le patch che includete sono applicate, devono essere estratte prima di poterle includere.</para>
 
       <para id="x_43e">L'ordine in cui includete le patch è importante. Se la vostra ultima patch applicata è <literal>foo</literal> e voi utilizzate <command role="hg-ext-mq">qfold</command> per includervi <literal>bar</literal> e <literal>quux</literal>, otterrete una patch che opererà come se aveste applicato prima <literal>foo</literal>, poi <literal>bar</literal>, seguita da <literal>quux</literal>.</para>
     </sect2>
@@ -517,7 +517,7 @@ hgext.mq =</programlisting>
     <sect2>
       <title>Unire parte di una patch a un'altra</title>
 
-      <para id="x_43f">Unire <emphasis>parte</emphasis> di una patch a un'altra patch è più difficile che combinare intere patch.</para>
+      <para id="x_43f">Unire <emphasis>parte</emphasis> di una patch a un'altra patch è più difficile che combinare intere patch tra loro.</para>
 
       <para id="x_440">Se volete spostare alcune modifiche su interi file, potete usare le opzioni <option role="cmd-opt-filterdiff">-i</option> e <option role="cmd-opt-filterdiff">-x</option> di <command>filterdiff</command> per scegliere le modifiche che desiderate ricavare da una patch, aggiungendo il risultato del comando in coda alla patch a cui unire i cambiamenti. Di solito non avrete bisogno di modificare la patch da cui prelevate le modifiche da unire. Piuttosto, MQ rifiuterà alcune parti della patch quando invocate <command role="hg-ext-mq">qpush</command> su di essa (a causa dei blocchi che avete spostato nell'altra patch) e voi potrete semplicemente aggiornare la patch tramite <command role="hg-ext-mq">qrefresh</command> per scartare i blocchi duplicati.</para>
 

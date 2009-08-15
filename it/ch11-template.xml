@@ -113,24 +113,19 @@ style = compact</programlisting>
 
     <itemizedlist>
       <listitem><para id="x_598"><literal>\</literal>:
-	  backslash, <quote><literal>\</literal></quote>, ASCII
-	  134.</para>
+	  backslash, <quote><literal>\</literal></quote>, corrispondente al codice ASCII 134.</para>
       </listitem>
-      <listitem><para id="x_599"><literal>\n</literal>: nuova riga,
-	  ASCII 12.</para>
+      <listitem><para id="x_599"><literal>\n</literal>: nuova riga, codice ASCII 12.</para>
       </listitem>
-      <listitem><para id="x_59a"><literal>\r</literal>: ritorno a capo, ASCII 15.</para>
+      <listitem><para id="x_59a"><literal>\r</literal>: ritorno a capo, codice ASCII 15.</para>
       </listitem>
-      <listitem><para id="x_59b"><literal>\t</literal>: tabulazione, ASCII
-	  11.</para>
+      <listitem><para id="x_59b"><literal>\t</literal>: tabulazione, codice ASCII 11.</para>
       </listitem>
-      <listitem><para id="x_59c"><literal>\v</literal>: tabulazione verticale, ASCII 13.</para>
+      <listitem><para id="x_59c"><literal>\v</literal>: tabulazione verticale, codice ASCII 13.</para>
       </listitem>
-      <listitem><para id="x_59d"><literal>\{</literal>: parentesi graffa aperta, <quote><literal>{</literal></quote>, ASCII
-	  173.</para>
+      <listitem><para id="x_59d"><literal>\{</literal>: parentesi graffa aperta, <quote><literal>{</literal></quote>, codice ASCII 173.</para>
       </listitem>
-      <listitem><para id="x_59e"><literal>\}</literal>: parentesi graffa chusa, <quote><literal>}</literal></quote>, ASCII
-	  175.</para>
+      <listitem><para id="x_59e"><literal>\}</literal>: parentesi graffa chusa, <quote><literal>}</literal></quote>, codice ASCII 175.</para>
       </listitem></itemizedlist>
 
     <para id="x_59f">Come appena indicato, se volete che l'espansione di un template contenga un carattere <quote><literal>\</literal></quote>, <quote><literal>{</literal></quote>, o <quote><literal>{</literal></quote> letterale, dovete effettuarne l'escape.</para>
@@ -141,36 +136,36 @@ style = compact</programlisting>
 
     <para id="x_5a0">Alcuni dei risultati dell'espansione dei template non sono immediatamente facili da usare. Mercurial vi permette di specificare una catena opzionale di <emphasis>filtri</emphasis> per modificare il risultato dell'espansione di una parola chiave. Avete già visto in azione un filtro comune, <literal role="template-kw-filt-date">isodate</literal>, usato precedentemente per rendere leggibile una data.</para>
 
-    <para id="x_5a1">Qui di seguito viene presentata una lista dei filtri più comunemente usati che Mercurial supporta. Mentre alcuni filtri possono essere applicati a qualsiasi testo, altri possono essere usati solo in circostanze specifiche. Il nome di ogni filtro è seguito prima da un'indicazione del contesto in cui può essere usato e poi da una descrizione dei suoi effetti.</para>
+    <para id="x_5a1">Qui di seguito viene presentata una lista dei filtri più comunemente usati che Mercurial supporta. Mentre alcuni filtri possono essere applicati a qualunque testo, altri possono essere usati solo in circostanze specifiche. Il nome di ogni filtro è seguito prima da un'indicazione del contesto in cui può essere usato e poi da una descrizione dei suoi effetti.</para>
 
     <itemizedlist>
-      <listitem><para id="x_5a2"><literal role="template-filter">addbreaks</literal>: qualsiasi testo. Aggiunge un elemento XHTML <quote><literal>&lt;br/&gt;</literal></quote> prima della fine di ogni riga tranne l'ultima. Per esempio, <quote><literal>foo\nbar</literal></quote> diventa <quote><literal>foo&lt;br/&gt;\nbar</literal></quote>.</para>
+      <listitem><para id="x_5a2"><literal role="template-filter">addbreaks</literal>: qualunque testo. Aggiunge un elemento XHTML <quote><literal>&lt;br/&gt;</literal></quote> prima della fine di ogni riga tranne l'ultima. Per esempio, <quote><literal>foo\nbar</literal></quote> diventa <quote><literal>foo&lt;br/&gt;\nbar</literal></quote>.</para>
       </listitem>
       <listitem><para id="x_5a3"><literal role="template-kw-filt-date">age</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta l'età della data, relativa all'ora corrente. Produce stringhe come <quote><literal>10 minuti</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5a4"><literal role="template-filter">basename</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">files</literal> e simili. Tratta il testo come un percorso e restituisce il nome di base. Per esempio, <quote><literal>foo/bar/baz</literal></quote> diventa <quote><literal>baz</literal></quote>.</para>
+      <listitem><para id="x_5a4"><literal role="template-filter">basename</literal>: qualunque testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">files</literal> e simili. Tratta il testo come un percorso e restituisce il nome di base. Per esempio, <quote><literal>foo/bar/baz</literal></quote> diventa <quote><literal>baz</literal></quote>.</para>
       </listitem>
       <listitem><para id="x_5a5"><literal role="template-kw-filt-date">date</literal>: parola chiave <literal role="template-keyword">date</literal>. Presenta una data in un formato simile al comando Unix <literal role="template-keyword">date</literal>, ma includendo il fuso orario. Produce stringhe come <quote><literal>Mon Sep 04 15:13:13 2006 -0700</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5a6"><literal role="template-kw-filt-author">domain</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Trova la prima stringa che somiglia a un indirizzo email e ne estrae il componente del dominio. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>serpentine.com</literal></quote>.</para>
+      <listitem><para id="x_5a6"><literal role="template-kw-filt-author">domain</literal>: qualunque testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Trova la prima stringa che somiglia a un indirizzo email e ne estrae il componente del dominio. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>serpentine.com</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5a7"><literal role="template-kw-filt-author">email</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Estrae la prima stringa che somiglia a un indirizzo email. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>bos@serpentine.com</literal></quote>.</para>
+      <listitem><para id="x_5a7"><literal role="template-kw-filt-author">email</literal>: qualunque testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Estrae la prima stringa che somiglia a un indirizzo email. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>bos@serpentine.com</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5a8"><literal role="template-filter">escape</literal>: qualsiasi testo. Sostituisce i caratteri speciali XML/XHTML <quote><literal>&amp;</literal></quote>, <quote><literal>&lt;</literal></quote> e <quote><literal>&gt;</literal></quote> con entità XML.</para>
+      <listitem><para id="x_5a8"><literal role="template-filter">escape</literal>: qualunque testo. Sostituisce i caratteri speciali XML/XHTML <quote><literal>&amp;</literal></quote>, <quote><literal>&lt;</literal></quote> e <quote><literal>&gt;</literal></quote> con entità XML.</para>
       </listitem>
-      <listitem><para id="x_5a9"><literal role="template-filter">fill68</literal>: qualsiasi testo. Manda a capo il testo per farlo stare in 68 colonne. Questo filtro è utile da applicare prima di combinarlo con il filtro <literal role="template-filter">tabindent</literal>, se volete che il testo non esca dai bordi di una finestra di 80 colonne con caratteri a spaziatura fissa.</para>
+      <listitem><para id="x_5a9"><literal role="template-filter">fill68</literal>: qualunque testo. Manda a capo il testo per farlo stare in 68 colonne. Questo filtro è utile da applicare prima di combinarlo con il filtro <literal role="template-filter">tabindent</literal>, se volete che il testo non esca dai bordi di una finestra di 80 colonne con caratteri a spaziatura fissa.</para>
       </listitem>
-      <listitem><para id="x_5aa"><literal role="template-filter">fill76</literal>: qualsiasi testo. Manda a capo il testo per farlo stare in 76 colonne.</para>
+      <listitem><para id="x_5aa"><literal role="template-filter">fill76</literal>: qualunque testo. Manda a capo il testo per farlo stare in 76 colonne.</para>
       </listitem>
-      <listitem><para id="x_5ab"><literal role="template-filter">firstline</literal>: qualsiasi testo. Produce la prima riga del testo, senza alcun carattere di nuova riga alla fine.</para>
+      <listitem><para id="x_5ab"><literal role="template-filter">firstline</literal>: qualunque testo. Produce la prima riga del testo, senza alcun carattere di nuova riga alla fine.</para>
       </listitem>
       <listitem><para id="x_5ac"><literal role="template-kw-filt-date">hgdate</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta la data come una coppia di numeri leggibili. Produce una stringa come <quote><literal>1157407993 25200</literal></quote>.</para>
       </listitem>
       <listitem><para id="x_5ad"><literal role="template-kw-filt-date">isodate</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta una data come stringa di testo in formato ISO 8601. Produce una stringa come <quote><literal>2006-09-04 15:13:13 -0700</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5ae"><literal role="template-filter">obfuscate</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Riproduce il testo in ingresso rappresentandolo come una sequenza di entità XML. Questo è utile per impedire ad alcuni programmi particolarmente stupidi utilizzati dagli spammer per raccogliere indirizzi email di copiare i dati destinati a essere visualizzati su schermo.</para>
+      <listitem><para id="x_5ae"><literal role="template-filter">obfuscate</literal>: qualunque testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Riproduce il testo in ingresso rappresentandolo come una sequenza di entità XML. Questo è utile per impedire ad alcuni programmi particolarmente stupidi utilizzati dagli spammer per raccogliere indirizzi email di copiare i dati destinati a essere visualizzati su schermo.</para>
       </listitem>
-      <listitem><para id="x_5af"><literal role="template-kw-filt-author">person</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Produce il testo che precede un indirizzo email. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>Bryan O'Sullivan</literal></quote>.</para>
+      <listitem><para id="x_5af"><literal role="template-kw-filt-author">person</literal>: qualunque testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Produce il testo che precede un indirizzo email. Per esempio, <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>Bryan O'Sullivan</literal></quote>.</para>
       </listitem>
       <listitem><para id="x_5b0"><literal role="template-kw-filt-date">rfc822date</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta una data usando lo stesso formato impiegato nelle intestazioni email. Produce una stringa come <quote><literal>Mon, 04 Sep 2006 15:13:13 -0700</literal></quote>.</para>
       </listitem>
@@ -178,13 +173,13 @@ style = compact</programlisting>
       </listitem>
       <listitem><para id="x_5b2"><literal role="template-kw-filt-date">shortdate</literal>: parola chiave <literal role="template-keyword">date</literal>. Rappresenta l'anno, il mese e il giorno della data. Produce una stringa come <quote><literal>2006-09-04</literal></quote>.</para>
       </listitem>
-      <listitem><para id="x_5b3"><literal role="template-filter">strip</literal>: qualsiasi testo. Rimuove lo spazio bianco all'inizio e alla fine di una stringa.</para>
+      <listitem><para id="x_5b3"><literal role="template-filter">strip</literal>: qualunque testo. Rimuove lo spazio bianco all'inizio e alla fine di una stringa.</para>
       </listitem>
-      <listitem><para id="x_5b4"><literal role="template-filter">tabindent</literal>: qualsiasi testo. Produce il testo, facendo cominciare ogni riga tranne la prima con un carattere di tabulazione.</para>
+      <listitem><para id="x_5b4"><literal role="template-filter">tabindent</literal>: qualunque testo. Produce il testo, facendo cominciare ogni riga tranne la prima con un carattere di tabulazione.</para>
       </listitem>
-      <listitem><para id="x_5b5"><literal role="template-filter">urlescape</literal>: qualsiasi testo. Effettua l'escape di tutti i caratteri che sono considerati <quote>speciali</quote> dai riconoscitori di URL. Per esempio, <literal>foo bar</literal> diventa <literal>foo%20bar</literal>.</para>
+      <listitem><para id="x_5b5"><literal role="template-filter">urlescape</literal>: qualunque testo. Effettua l'escape di tutti i caratteri che sono considerati <quote>speciali</quote> dai riconoscitori di URL. Per esempio, <literal>foo bar</literal> diventa <literal>foo%20bar</literal>.</para>
       </listitem>
-      <listitem><para id="x_5b6"><literal role="template-kw-filt-author">user</literal>: qualsiasi testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Restituisce la porzione dell'<quote>utente</quote> di un indirizzo email. Per esempio <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>bos</literal></quote>.</para>
+      <listitem><para id="x_5b6"><literal role="template-kw-filt-author">user</literal>: qualunque testo, ma utile soprattutto per la parola chiave <literal role="template-keyword">author</literal>. Restituisce la porzione dell'<quote>utente</quote> di un indirizzo email. Per esempio <quote><literal>Bryan O'Sullivan &lt;bos@serpentine.com&gt;</literal></quote> diventa <quote><literal>bos</literal></quote>.</para>
       </listitem>
     </itemizedlist>
 

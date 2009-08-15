@@ -4,7 +4,7 @@
 
   <para id="x_4fe">Se da una parte il nucleo di Mercurial è piuttosto completo dal punto di vista delle funzionalità, dall'altra è deliberatamente privo di caratteristiche ornamentali. Questo approccio orientato a preservare la semplicità mantiene il software facile da maneggiare sia per chi ne cura la manutenzione sia per chi lo usa.</para>
 
-  <para id="x_4ff">Tuttavia, Mercurial non vi ingabbia in un insieme di comandi immutabile: potete aggiungere nuove funzioni a Mercurial sotto forma di <emphasis>estensioni</emphasis> (talvolta note come <emphasis>plugin</emphasis>). Abbiamo già discusso alcune di queste estensioni nei capitoli precedenti.</para>
+  <para id="x_4ff">Tuttavia, Mercurial non vi vincola a usare un insieme di comandi immutabile: potete aggiungere nuove funzioni a Mercurial sotto forma di <emphasis>estensioni</emphasis> (talvolta note come <emphasis>plugin</emphasis>). Abbiamo già discusso alcune di queste estensioni nei capitoli precedenti.</para>
   <itemizedlist>
     <listitem><para id="x_500">La <xref linkend="sec:tour-merge:fetch"/> parla dell'estensione <literal role="hg-ext">fetch</literal>, che combina l'estrazione di nuovi cambiamenti e la loro unione con i cambiamenti locali in un singolo comando, <command role="hg-ext-fetch">fetch</command>.</para>
     </listitem>
@@ -41,7 +41,7 @@
     <itemizedlist>
       <listitem><para id="x_50d">L'estensione <literal role="hg-ext">inotify</literal> è specifica per Linux. Dato che si interfaccia direttamente con il sottosistema <literal>inotify</literal> del kernel di Linux, non funziona su altri sistemi operativi.</para>
       </listitem>
-      <listitem><para id="x_50e">L'estensione dovrebbe funzionare su qualsiasi distribuzione Linux rilasciata dopo i primi mesi del 2005. &Egrave; probabile che le distribuzioni più vecchie includano un kernel a cui manca <literal>inotify</literal>, o una versione di <literal>glibc</literal> senza il necessario supporto di interfacciamento.</para>
+      <listitem><para id="x_50e">L'estensione dovrebbe funzionare su qualsiasi distribuzione Linux rilasciata dopo i primi mesi del 2005. &Egrave; probabile che le distribuzioni più vecchie includano un kernel a cui manca <literal>inotify</literal>, o una versione di <literal>glibc</literal> senza il necessario supporto di interfaccia.</para>
       </listitem>
       <listitem><para id="x_50f">Non tutti i file system sono adatti per essere usati con l'estensione <literal role="hg-ext">inotify</literal>. I file system di rete come NFS sono fuori gioco, per esempio, in particolare se state eseguendo Mercurial su diversi sistemi che montano lo stesso file system di rete. Il sistema <literal>inotify</literal> del kernel non ha alcun modo di sapere quali cambiamenti sono avvenuti su un altro sistema. La maggior parte dei file system locali (e.g. ext3, XFS, ReiserFS) dovrebbe andare bene.</para>
       </listitem></itemizedlist>
@@ -92,7 +92,7 @@ inotify =</programlisting>
 
     <para id="x_51f">Se preferite, potete avviare manualmente un demone di stato usando il comando <command role="hg-ext-inotify">inserve</command>, che vi permette di controllare in maniera leggermente più accurata le modalità di esecuzione del demone. Naturalmente, questo comando sarà disponibile solo nel caso in cui l'estensione <literal role="hg-ext">inotify</literal> sia abilitata.</para>
 
-    <para id="x_520">Quando state usando l'estensione <literal role="hg-ext">inotify</literal>, non dovreste notare <emphasis>nessuna differenza</emphasis> nel comportamento di Mercurial, con la sola eccezione dei comandi relativi allo stato, che vengono eseguiti molto più velocemente di quanto accadeva di solito. Dovreste specificatamente aspettarvi che i comandi non stampino messaggi differenti né restituiscano risultati differenti. Se una di queste situazioni si verifica, vi prego di segnalare il bug.</para>
+    <para id="x_520">Quando state usando l'estensione <literal role="hg-ext">inotify</literal>, non dovreste notare <emphasis>nessuna differenza</emphasis> nel comportamento di Mercurial, con la sola eccezione dei comandi relativi allo stato, che vengono eseguiti molto più velocemente di quanto accadeva di solito. Dovreste espressamente aspettarvi che i comandi non stampino messaggi differenti né restituiscano risultati differenti. Se una di queste situazioni si verifica, vi prego di segnalare il bug.</para>
 
   </sect1>
   <sect1 id="sec:hgext:extdiff">
@@ -134,12 +134,12 @@ extdiff =</programlisting>
 
       <para id="x_52c">Potrebbe essere scomodo ricordare le opzioni sia per il comando <command role="hg-ext-extdiff">extdiff</command> che per il visualizzatore di diff che volete usare, quindi l'estensione <literal role="hg-ext">extdiff</literal> vi permette di definire <emphasis>nuovi</emphasis> comandi che invocheranno il vostro visualizzatore di diff con le opzioni giuste.</para>
 
-      <para id="x_52d">Tutto quello che dovete fare è modificare il vostro file <filename role="special">~/.hgrc</filename> aggiungendo una sezione chiamata <literal role="rc-extdiff">extdiff</literal> dove potete definire molteplici comandi. Ecco come aggiungere un comando <literal>kdiff3</literal>. Una volta che lo avete definito, potete digitare <quote><literal>hg kdiff3</literal></quote> e l'estensione <literal role="hg-ext">extdiff</literal> lancerà <command>kdiff3</command> per voi.</para>
+      <para id="x_52d">Tutto quello che dovete fare è modificare il vostro file <filename role="special">~/.hgrc</filename> aggiungendo una sezione chiamata <literal role="rc-extdiff">extdiff</literal> dove potete definire vari comandi. Ecco come aggiungere un comando <literal>kdiff3</literal>. Una volta che lo avete definito, potete digitare <quote><literal>hg kdiff3</literal></quote> e l'estensione <literal role="hg-ext">extdiff</literal> lancerà <command>kdiff3</command> per voi.</para>
       <programlisting>[extdiff]
 cmd.kdiff3 =</programlisting>
-      <para id="x_52e">Se lasciate vuota la parte destra della definizione, come qui sopra, l'estensione <literal role="hg-ext">extdiff</literal> usa il nome del comando che avete definito come il nome del programma esterno da usare. Ma questi nomi non devono necessariamente essere uguali. Qui di seguito definiamo un comando chiamato <quote><literal>hg wibble</literal></quote> che invoca <command>kdiff3</command>.</para>
+      <para id="x_52e">Se lasciate vuota la parte destra della definizione, come qui sopra, l'estensione <literal role="hg-ext">extdiff</literal> usa il nome del comando che avete definito come il nome del programma esterno da usare. Ma questi nomi non devono necessariamente essere uguali. Qui di seguito definiamo un comando chiamato <quote><literal>hg pippo</literal></quote> che invoca <command>kdiff3</command>.</para>
       <programlisting>[extdiff]
- cmd.wibble = kdiff3</programlisting>
+cmd.pippo = kdiff3</programlisting>
 
       <para id="x_52f">Potete anche specificare le opzioni predefinite con cui volete invocare il vostro programma di visualizzazione di diff. Il prefisso da usare è <quote><literal>opts.</literal></quote>, seguito dal nome del comando a cui applicare le opzioni. Questo esempio definisce un comando <quote><literal>hg vimdiff</literal></quote> che esegue l'estensione <literal>DirDiff</literal> dell'editor <command>vim</command>.</para>
       <programlisting>[extdiff]
