@@ -4,7 +4,7 @@
 
   <para id="x_15d">Sebbene sia facile imparare gli usi più semplici di Mercurial Queues, sono un pizzico di disciplina e alcune delle funzioni meno usate di MQ  che rendono possibile lavorare in ambienti di sviluppo complicati.</para>
 
-  <para id="x_15e">In questo capitolo, userò come esempio una tecnica che ho impiegato per gestire lo sviluppo di un driver del kernel di Linux per un dispositivo Infiniband. Il driver in questione è grande (almeno per le dimensioni dei driver), poiché contiene 25.000 righe di codice distribuite su 35 file sorgente. Viene mantenuto da un piccolo gruppo di sviluppatori.</para>
+  <para id="x_15e">In questo capitolo, userò come esempio una tecnica che ho impiegato per gestire lo sviluppo di un driver del kernel di Linux per un dispositivo Infiniband. Il driver in questione è grande (almeno per le dimensioni dei driver), poiché contiene 25.000 righe di codice distribuite su 35 file sorgente, e viene mantenuto da un piccolo gruppo di sviluppatori.</para>
 
   <para id="x_15f">Sebbene la maggior parte del materiale in questo capitolo sia specifica per Linux, gli stessi principi si applicano per qualsiasi base di codice di cui non siate i proprietari principali e su cui dobbiate fare parecchio lavoro.</para>
 
@@ -17,7 +17,7 @@
     <itemizedlist>
       <listitem><para id="x_162">Un obiettivo è l'albero di sviluppo principale del kernel di Linux. In questo caso, le attività di manutenzione del codice sono parzialmente condivise con altri sviluppatori della comunità del kernel, che effettuano modifiche <quote>estemporanee</quote> al driver man mano che sviluppano e rifiniscono i sottosistemi del kernel.</para>
       </listitem>
-      <listitem><para id="x_163">Manteniamo anche un certo numero di <quote>backport</quote> (letteralmente, conversioni all'indietro) verso vecchie versioni del kernel di Linux, per supportare le necessità di clienti che stanno utilizzando distribuzioni di Linux più vecchie che non incorporano i nostri driver. (Effetuare il <emphasis>backport</emphasis> del codice significa modificarlo per farlo funzionare in una versione del suo ambiente di destinazione più vecchia di quella per la quale era stato sviluppato.)</para>
+      <listitem><para id="x_163">Manteniamo anche un certo numero di <quote>backport</quote> (letteralmente, conversioni all'indietro) verso vecchie versioni del kernel di Linux, per soddisfare le necessità di clienti che stanno utilizzando distribuzioni di Linux più vecchie che non incorporano i nostri driver. (Effetuare il <emphasis>backport</emphasis> del codice significa modificarlo per farlo funzionare in una versione del suo ambiente di destinazione più vecchia di quella per la quale era stato sviluppato.)</para>
       </listitem>
       <listitem><para id="x_164">Infine, rilasciamo il software seguendo una tabella di marcia che non è necessariamente allineata con quella usata da chi sviluppa il kernel e da chi distribuisce il sistema operativo, in modo da poter consegnare nuove funzionalità ai clienti senza obbligarli ad aggiornare il loro kernel o la loro intera distribuzione.</para>
       </listitem>
@@ -32,7 +32,7 @@
 
       <para id="x_167">Il secondo è quello di mantenere un singolo albero di sorgenti pieno di istruzioni condizionali che attivano o disattivano parti di codice a seconda dell'ambiente designato. Dato che queste istruzioni <quote>ifdef</quote> non sono permesse nell'albero del kernel di Linux, è necessario seguire una procedura manuale o automatica per eliminarle e produrre un albero pulito. Una base di codice mantenuta in questo modo diventa rapidamente un caos di blocchi condizionali che sono difficili da capire e mantenere.</para>
 
-      <para id="x_168">Nessuno di questi approcci è particolarmente adatto a situazioni in cui non <quote>possedete</quote> la copia ufficiale di un albero di sorgenti. Nel caso di un driver Linux che viene distribuito insieme al kernel standard, l'albero di Linus contiene la copia del codice che verrà considerata ufficiale dal resto del mondo. La versione a monte del <quote>mio</quote> driver può essere modificata da persone che non conosco, senza che io nemmeno lo scopra fino a quando i cambiamenti non appaiono nell'albero di Linus.</para>
+      <para id="x_168">Nessuno di questi approcci è particolarmente adatto a situazioni in cui non <quote>possedete</quote> la copia ufficiale di un albero di sorgenti. Nel caso di un driver Linux che viene distribuito insieme al kernel standard, l'albero di Linus contiene la copia del codice che verrà universalmente considerata ufficiale. La versione a monte del <quote>mio</quote> driver può essere modificata da persone che non conosco, senza che io nemmeno lo scopra fino a quando i cambiamenti non appaiono nell'albero di Linus.</para>
 
       <para id="x_169">Questi approcci hanno la debolezza aggiuntiva di rendere difficile generare patch ben formate da presentare a monte.</para>
 
@@ -49,7 +49,7 @@
 
     <para id="x_16c">Questo ci fornisce un piccolo repository contenente due patch che non hanno alcuna dipendenza reciproca, perché coinvolgono file differenti.</para>
 
-    <para id="x_16d">L'idea alla base dell'applicazione condizionale è la possibilità di <quote>etichettare</quote> una patch con una <emphasis>guardia</emphasis>, che è semplicemente una stringa di testo di vostra scelta, per poi dire a MQ di selezionare le guardie specifiche da usare al momento di applicare le patch. MQ applicherà, o salterà, una patch con guardia, a seconda delle guardie che avete selezionato.</para>
+    <para id="x_16d">L'idea alla base dell'applicazione condizionale è la possibilità di <quote>etichettare</quote> una patch con una <emphasis>guardia</emphasis>, che è semplicemente una stringa di testo di vostra scelta, per poi dire a MQ di selezionare le guardie specifiche da usare al momento di applicare le patch. MQ applicherà, o salterà, una patch con guardia a seconda delle guardie che avete selezionato.</para>
 
     <para id="x_16e">Una patch può avere un numero arbitrario di guardie, ognuna delle quali è <emphasis>positiva</emphasis> (<quote>applica questa patch se questa guardia è selezionata</quote>) o <emphasis>negativa</emphasis> (<quote>salta questa patch se questa guardia è selezionata</quote>). Una patch senza alcuna guardia viene sempre applicata.</para>
 
@@ -57,7 +57,7 @@
   <sect1>
     <title>Controllare le guardie su una patch</title>
 
-    <para id="x_16f">Il comando <command role="hg-ext-mq">qguard</command> vi permette di determinare quali guardie dovrebbero applicarsi a una patch, o di visualizzare le guardie già in effetto. Senza alcun argomento, il comando mostra le guardie della patch attualmente in cima alla pila.</para>
+    <para id="x_16f">Il comando <command role="hg-ext-mq">qguard</command> vi permette di determinare quali guardie dovrebbero applicarsi a una patch, o di visualizzare le guardie già attive. Senza alcun argomento, il comando mostra le guardie della patch attualmente in cima alla pila.</para>
 
     &interaction.mq.guards.qguard;
 
@@ -87,7 +87,7 @@
 
     <para id="x_174">Il comando <command role="hg-ext-mq">qselect</command> determina quali guardie sono attive in un dato momento. Il suo effetto è quello di determinare quali patch verranno applicate da MQ la prossima volta che invocherete <command role="hg-ext-mq">qpush</command>. Non ha alcun altro effetto, in particolare non agisce in alcun modo sulle patch che sono già applicate.</para>
 
-    <para id="x_175">Invocato senza argomenti, il comando <command role="hg-ext-mq">qselect</command> elenca le guardie attualmente in effetto, una per ogni riga. Gli argomenti vengono trattati come i nomi delle guardie da applicare.</para>
+    <para id="x_175">Invocato senza argomenti, il comando <command role="hg-ext-mq">qselect</command> elenca le guardie attualmente attive, una per ogni riga. Gli argomenti vengono trattati come i nomi delle guardie da applicare.</para>
 
     &interaction.mq.guards.qselect.foo;
 
@@ -119,11 +119,11 @@
     <itemizedlist>
       <listitem><para id="x_17c">Una patch che non ha guardie viene sempre applicata.</para>
       </listitem>
-      <listitem><para id="x_17d">Se la patch ha una qualsiasi guardia negativa che corrisponde a una qualsiasi guardia correntemente selezionata, la patch viene saltata.</para>
+      <listitem><para id="x_17d">Se la patch ha una guardia negativa che corrisponde a una guardia attualmente selezionata, la patch viene saltata.</para>
       </listitem>
-      <listitem><para id="x_17e">Se la patch ha una qualsiasi guardia positiva che corrisponde a una qualsiasi guardia correntemente selezionata, la patch viene applicata.</para>
+      <listitem><para id="x_17e">Se la patch ha una guardia positiva che corrisponde a una guardia attualmente selezionata, la patch viene applicata.</para>
       </listitem>
-      <listitem><para id="x_17f">Se la patch ha guardie positive o negative, ma nessuna corrisponde a qualsiasi guardia correntemente selezionata, la patch viene saltata.</para>
+      <listitem><para id="x_17f">Se la patch ha guardie positive o negative, ma nessuna corrisponde a una guardia attualmente selezionata, la patch viene saltata.</para>
       </listitem>
     </itemizedlist>
 
@@ -131,7 +131,7 @@
   <sect1>
     <title>Ridimensionare l'ambiente di lavoro</title>
 
-    <para id="x_180">Lavorando sul driver di dispositivo menzionato in precedenza, non applico le patch a un normale albero del kernel di Linux, ma uso un repository che contiene solo una fotografia dei file sorgente rilevanti per lo sviluppo del dispositivo Infiniband. &Egrave; più facile lavorare con questo repository, perché le sue dimensioni sono l'1% delle dimensioni di un repository del kernel.</para>
+    <para id="x_180">Lavorando sul driver di dispositivo menzionato in precedenza, non applico le patch a un normale albero del kernel di Linux, ma uso un repository che contiene solo una fotografia dei file sorgente rilevanti per lo sviluppo del dispositivo Infiniband. Lavorare con questo repository è più facile, perché le sue dimensioni sono l'1% delle dimensioni di un repository del kernel.</para>
 
     <para id="x_181">Poi scelgo una versione <quote>di base</quote> sulla quale le patch vengono applicate. Questa è una fotografia dell'albero del kernel di Linux scattata su una revisione di mia scelta. Quando scatto la fotografia, registro l'identificatore di changeset proveniente dal repository del kernel nel messaggio di commit. Dato che la fotografia mantiene la <quote>forma</quote> e il contenuto delle parti rilevanti dell'albero del kernel, posso applicare le mie patch sul mio repository ridotto o su un normale albero del kernel.</para>
 
@@ -145,25 +145,25 @@
 
     <para id="x_184">La sequenza dei gruppi di patch che mantengo è la seguente. L'ordine di questi gruppi è importante per i motivi che verranno descritti dopo aver introdotto i gruppi.</para>
     <itemizedlist>
-      <listitem><para id="x_185">Il gruppo delle patch <quote>accettate</quote>. Sono le patch che il gruppo di sviluppo ha proposto al mantenitore del sottosistema Infiniband e che sono state accettate, ma che non sono presenti nella fotografia su cui si basa il repository ridotto. Queste sono patch <quote>a sola lettura</quote>, presenti unicamente allo scopo di trasformare l'albero in uno stato simile a quello in cui si trova nel repository del mantenitore a monte.</para>
+      <listitem><para id="x_185">Il gruppo delle patch <quote>accettate</quote>. Sono le patch che il gruppo di sviluppo ha proposto al manutentore del sottosistema Infiniband e che sono state accettate, ma che non sono presenti nella fotografia su cui si basa il repository ridotto. Queste sono patch <quote>a sola lettura</quote>, presenti unicamente allo scopo di trasformare l'albero in uno stato simile a quello in cui si trova nel repository del manutentore a monte.</para>
       </listitem>
-      <listitem><para id="x_186">Il gruppo delle patch da <quote>rielaborare</quote>. Sono le patch che ho proposto ma per le quali il mantenitore a monte ha richiesto alcune modifiche prima di poterle accettare.</para>
+      <listitem><para id="x_186">Il gruppo delle patch da <quote>rielaborare</quote>. Sono le patch che ho proposto ma per le quali il manutentore a monte ha richiesto alcune modifiche prima di poterle accettare.</para>
       </listitem>
-      <listitem><para id="x_187">Il gruppo delle patch <quote>in sospeso</quote>. Sono le patch che non ho ancora proposto al mantenitore a monte, ma su cui dobbiamo finire di lavorare. Queste patch saranno <quote>a sola lettura</quote> per un po'. Se il mantenitore a monte le accetta al momento di proporle, le sposterò alla fine del gruppo <quote>accettate</quote>. Se ne richiede la modifica, le sposterò all'inizio del gruppo da <quote>rielaborare</quote>.</para>
+      <listitem><para id="x_187">Il gruppo delle patch <quote>in sospeso</quote>. Sono le patch che non ho ancora proposto al manutentore a monte, ma su cui dobbiamo finire di lavorare. Queste patch saranno <quote>a sola lettura</quote> per un po'. Se il manutentore a monte le accetta al momento di proporle, le sposterò alla fine del gruppo <quote>accettate</quote>. Se ne richiede la modifica, le sposterò all'inizio del gruppo da <quote>rielaborare</quote>.</para>
       </listitem>
       <listitem><para id="x_188">Il gruppo delle patch <quote>in corso</quote>. Sono le patch che vengono attivamente sviluppate e che non dovrebbero essere ancora presentate a nessuno.</para>
       </listitem>
       <listitem><para id="x_189">Il gruppo delle patch di <quote>backport</quote>. Sono le patch che riadattano l'albero dei sorgenti a una vecchia versione dell'albero del kernel.</para>
       </listitem>
-      <listitem><para id="x_18a">Il gruppo delle patch da <quote>non rilasciare</quote>. Sono le patch che per qualche ragione non dovrebbero mai essere presentate a monte. Per esempio, una patch di questo tipo potrebbe modificare le stringhe di identificazione incluse nei driver per rendere più facile distinguere, nel testo del campo, tra una versione del driver presa dall'albero e una versione consegnata a un rivenditore di distribuzioni.</para>
+      <listitem><para id="x_18a">Il gruppo delle patch da <quote>non rilasciare</quote>. Sono le patch che per qualche ragione non dovrebbero mai essere presentate a monte. Per esempio, una patch di questo tipo potrebbe modificare le stringhe di identificazione incluse nei driver per rendere più facile distinguere, nel testo del campo, una versione del driver presa dall'albero da una versione consegnata a un rivenditore di distribuzioni.</para>
       </listitem>
     </itemizedlist>
 
-    <para id="x_18b">Tornando alle ragioni per cui i gruppi di patch sono ordinati in questo modo, ci piacerebbe che le patch più in basso nella pila siano il più possibile stabili, in modo da non aver bisogno di rielaborare le patch più in alto a causa di modifiche a loro contesto. Mettere le patch che non verranno mai cambiate all'inizio del file <filename role="special">series</filename> serve proprio a questo scopo.</para>
+    <para id="x_18b">Tornando alle ragioni per cui i gruppi di patch sono ordinati in questo modo, ci piacerebbe che le patch più in basso nella pila siano il più possibile stabili, in modo da non aver bisogno di rielaborare le patch più in alto a causa di modifiche al loro contesto. Mettere le patch che non verranno mai cambiate all'inizio del file <filename role="special">series</filename> serve proprio a questo scopo.</para>
 
     <para id="x_18c">Ci piacerebbe anche applicare le patch che sappiamo di aver bisogno di modificare su un albero di sorgenti che somiglia il più possibile all'albero a monte. Questo è il motivo per cui teniamo le patch accettate in giro per un po'.</para>
 
-    <para id="x_18d">Le patch di <quote>backport</quote> e da <quote>non rilasciare</quote> si trovano alla fine del file <filename role="special">series</filename>. Le patch di backport devono essere applicate su tutte le altre patch, e le patch da <quote>non rilasciare</quote> potrebbero anche rimanere in un posto sicuro.</para>
+    <para id="x_18d">Le patch di <quote>backport</quote> e da <quote>non rilasciare</quote> si trovano alla fine del file <filename role="special">series</filename>. Le patch di <quote>backport</quote> devono essere applicate su tutte le altre patch, e anche le patch da <quote>non rilasciare</quote> dovrebbero essere messe in un posto sicuro.</para>
 
   </sect1>
   <sect1>
@@ -172,13 +172,13 @@
     <para id="x_18e">Nel mio lavoro, uso un certo numero di guardie per controllare quali patch devono essere applicate.</para>
 
     <itemizedlist>
-      <listitem><para id="x_18f">Le patch <quote>accettate</quote> sono sorvegliate da <literal>accepted</literal>. Questa guardia è abilitata per la maggior parte del tempo. Quando sto applicando le patch su un albero dove le patch sono già presenti, posso disabilitare questa patch così le patch che la seguono verranno applicate in maniera pulita.</para>
+      <listitem><para id="x_18f">Le patch <quote>accettate</quote> sono sorvegliate da <literal>accettate</literal>. Questa guardia è abilitata per la maggior parte del tempo. Quando sto applicando le patch su un albero dove le patch sono già presenti, posso disabilitare questa guardia così le patch che la seguono verranno applicate in maniera pulita.</para>
       </listitem>
       <listitem><para id="x_190">Le patch che sono <quote>terminate</quote>, ma non sono ancora state proposte, non hanno guardie. Se sto applicando la pila delle patch a una copia dell'albero a monte, non ho bisogno di abilitare alcuna guardia per ottenere un albero di sorgenti ragionevolmente sicuro.</para>
       </listitem>
-      <listitem><para id="x_191">Le patch che hanno bisogno di essere rielaborate prima di venire nuovamente presentate sono sorvegliate da <literal>rework</literal>.</para>
+      <listitem><para id="x_191">Le patch che hanno bisogno di essere rielaborate prima di venire nuovamente presentate sono sorvegliate da <literal>rielaborare</literal>.</para>
       </listitem>
-      <listitem><para id="x_192">Per quelle patch che sono ancora in lavorazione, uso <literal>devel</literal>.</para>
+      <listitem><para id="x_192">Per quelle patch che sono ancora in lavorazione, uso <literal>sviluppo</literal>.</para>
       </listitem>
       <listitem><para id="x_193">Una patch di backport potrebbe avere diverse guardie, una per ogni versione del kernel a cui si applica. Per esempio, una patch che effettua il backport di una parte del codice alla versione 2.6.9 del kernel avrà una guardia <literal>2.6.9</literal>.</para>
       </listitem>
@@ -190,9 +190,9 @@
 
       <para id="x_195">Usando MQ, scrivere una patch di backport è un processo semplice. Tutto quello che una patch di questo tipo deve fare è modificare una parte di codice che usa una funzione del kernel non presente in una vecchia versione del kernel, in modo che il driver continui a funzionare correttamente con la vecchia versione.</para>
 
-      <para id="x_196">Un obiettivo utile da raggiungere nella scrittura di una buona patch di backport è far sembrare che il codice sia stato scritto per la vecchia versione del kernel che state considerando. Meno intrusiva è la patch, più facile sarà da capire e mantenere. Se state scrivendo una collezione di patch di backport per evitare l'effetto <quote>caos</quote> causato da molte istruzioni <literal>#ifdef</literal> (contenenti blocchi di codice che vengono usati solo in maniera condizionata) nel vostro codice, evitate di introdurre nelle patch <literal>#ifdef</literal> dipendenti dalle versioni del kernel. Piuttosto, scrivete diverse patch, ognuna delle quali provoca cambiamenti incondizionati, e controllate la loro applicazione usando le guardie.</para>
+      <para id="x_196">Un obiettivo utile da raggiungere nella scrittura di una buona patch di backport è far sembrare che il codice sia stato scritto per la vecchia versione del kernel che state considerando. Meno intrusiva è la patch, più facile sarà da capire e mantenere. Se state scrivendo una collezione di patch di backport per evitare l'effetto <quote>caos</quote> causato da molte istruzioni <literal>#ifdef</literal> (contenenti blocchi di codice che vengono usati solo in maniera condizionata) nel vostro codice, evitate di introdurre <literal>#ifdef</literal> dipendenti dalle versioni del kernel nelle patch. Piuttosto, scrivete diverse patch, ognuna delle quali provoca cambiamenti incondizionati, e controllate la loro applicazione usando le guardie.</para>
 
-      <para id="x_197">Ci sono due ragioni per separare le patch di backport in un gruppo distinto dalle patch <quote>normali</quote> i cui effetti vengono modificati da quelle. Il primo è che mescolarle insieme rende più difficile usare uno strumento come l'estensione <literal role="hg-ext">patchbomb</literal> per automatizzare il processo di spedizione delle patch a un mantenitore a monte. Il secondo è che le patch di backport potrebbero perturbare il contesto in cui una successiva patch normale viene applicata, rendendo impossibile applicare la patch normale in maniera pulita <emphasis>senza</emphasis> che la patch di backport precedente sia già stata applicata.</para>
+      <para id="x_197">Ci sono due ragioni per separare le patch di backport in un gruppo distinto dalle patch <quote>normali</quote> i cui effetti vengono modificati da quelle. Il primo è che mescolarle insieme rende più difficile usare uno strumento come l'estensione <literal role="hg-ext">patchbomb</literal> per automatizzare il processo di spedizione delle patch a un manutentore a monte. Il secondo è che le patch di backport potrebbero perturbare il contesto in cui una successiva patch normale viene applicata, rendendo impossibile applicare la patch normale in maniera pulita <emphasis>senza</emphasis> che la patch di backport precedente sia già stata applicata.</para>
 
     </sect2>
   </sect1>
@@ -225,7 +225,7 @@ extdiff =</programlisting>
       <programlisting>[extdiff]
 cmd.interdiff = hg-interdiff</programlisting>
       <para id="x_1a0">Questa riga ordina a <literal role="hg-ext">hgext</literal> di rendere disponibile il comando <literal>interdiff</literal>, in modo che possiate ridurre l'invocazione precedente di <command role="hg-ext-extdiff">extdiff</command> a qualcosa di un po' più maneggevole.</para>
-      <programlisting>hg interdiff -r A:B my-change.patch</programlisting>
+      <programlisting>hg interdiff -r A:B mio-cambiamento.patch</programlisting>
 
       <note>
 	<para id="x_1a1">Il comando <command>interdiff</command> funziona bene solo se i file sottostanti dai quali vengono generate le versioni di una patch rimangono gli stessi. Se create una patch, modificate i file sottostanti e poi rigenerate la patch, <command>interdiff</command> potrebbe non produrre alcun risultato utile.</para>
