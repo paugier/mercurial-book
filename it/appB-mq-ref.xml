@@ -23,7 +23,7 @@
     <sect2>
 	<title><command role="hg-ext-mq">qdelete</command>&emdash;elimina una patch dal file <filename role="special">series</filename></title>
 
-      <para id="x_5ec">Il comando <command role="hg-ext-mq">qdelete</command> rimuove la voce relativa a una patch dal file <filename role="special">series</filename> nella directory <filename role="special" class="directory">.hg/patches</filename>. Non estrae la patch se la patch è già applicata. Di default, non cancella il file della patch, perciò dovrete usare l'opzione <option role="hg-ext-mq-cmd-qdel-opt">-f</option> se volete fare questo.</para>
+      <para id="x_5ec">Il comando <command role="hg-ext-mq">qdelete</command> rimuove la voce relativa a una patch dal file <filename role="special">series</filename> nella directory <filename role="special" class="directory">.hg/patches</filename>. Non estrae la patch se la patch è già applicata. Per default, non cancella il file della patch, perciò dovrete usare l'opzione <option role="hg-ext-mq-cmd-qdel-opt">-f</option> se volete fare questo.</para>
 
       <para id="x_5ed">Opzioni:</para>
       <itemizedlist>
@@ -95,7 +95,7 @@
     <sect2>
       <title><command role="hg-ext-mq">qnew</command>&emdash;crea una nuova patch</title>
 
-      <para id="x_5fe">Il comando <command role="hg-ext-mq">qnew</command> crea una nuova patch. Prende come argomento obbligatorio il nome da usare per il file di patch. La nuova patch viene creata vuota di default, viene aggiunta al file <filename role="special">series</filename> dopo l'ultima patch applicata e viene immediatamente inserita sopra quella patch.</para>
+      <para id="x_5fe">Il comando <command role="hg-ext-mq">qnew</command> crea una nuova patch. Prende come argomento obbligatorio il nome da usare per il file di patch. La nuova patch viene creata vuota per default, viene aggiunta al file <filename role="special">series</filename> dopo l'ultima patch applicata e viene immediatamente inserita sopra quella patch.</para>
 
       <para id="x_5ff">Se <command role="hg-ext-mq">qnew</command> trova qualche file modificato nella directory di lavoro, si rifiuterà di creare una nuova patch a meno che non usiate l'opzione <option role="hg-ext-mq-cmd-qnew-opt">-f</option> (vedete più avanti). Questo comportamento vi permette di aggiornare l'ultima patch applicata tramite <command role="hg-ext-mq">qrefresh</command> prima di applicare una nuova patch.</para>
 
@@ -117,15 +117,15 @@
     <sect2>
       <title><command role="hg-ext-mq">qpop</command>&emdash;estrae le patch dalla pila</title>
 
-      <para id="x_604">Il comando <command role="hg-ext-mq">qpop</command> rimuove patch applicate dalla cima della pila delle patch applicate. Di default, rimuove solo una patch.</para>
+      <para id="x_604">Il comando <command role="hg-ext-mq">qpop</command> rimuove patch applicate dalla cima della pila delle patch applicate. Per default, rimuove solo una patch.</para>
 
       <para id="x_605">Questo comando rimuove dal repository i changeset che rappresentano le patch estratte e aggiorna la directory di lavoro per annullare gli effetti delle patch.</para>
 
-      <para id="x_606">Questo comando accetta un argomento opzionale che viene usato per indicare il nome o l'indice numerico della patch da estrarre. Se viene passato un nome, il comando continuerà a estrarre patch fino a quando la patch nominata sarà in cima alla pila delle patch applicate. Se viene passato un numero, <command role="hg-ext-mq">qpop</command> tratterà il numero come un indice d'accesso alle voci nel file della serie, partendo da zero (le righe vuote e le righe contenenti solo commenti non vengono contate). Il comando continuerà a estrarre patch fino a quando la patch identificata dall'indice dato sarà in cima alla pila delle patch applicate.</para>
+      <para id="x_606">Questo comando accetta un argomento opzionale che viene usato per indicare il nome o l'indice numerico della patch da estrarre. Se viene passato un nome, il comando continuerà a estrarre patch fino a quando la patch nominata sarà in cima alla pila delle patch applicate. Se viene passato un numero, <command role="hg-ext-mq">qpop</command> tratterà il numero come un indice d'accesso alle voci presenti nel file della serie, partendo da zero (le righe vuote e le righe contenenti solo commenti non vengono contate). Il comando continuerà a estrarre patch fino a quando la patch identificata dall'indice dato sarà in cima alla pila delle patch applicate.</para>
 
-      <para id="x_607">Il comando <command role="hg-ext-mq">qpop</command> non legge e non modifica né le patch né il file <filename role="special">series</filename>. Perciò, potete tranquillamente usare <command role="hg-ext-mq">qpop</command> su una patch che avete rimosso dal file <filename role="special">series</filename>, o su una patch che avete rinominato o completamente cancellato. Negli ultimi due casi, usate il nome che la patch aveva quando l'avete applicata.</para>
+      <para id="x_607">Il comando <command role="hg-ext-mq">qpop</command> non legge e non modifica né le patch né il file <filename role="special">series</filename>. Perciò, potete tranquillamente usare <command role="hg-ext-mq">qpop</command> su una patch che avete rimosso dal file <filename role="special">series</filename>, oppure su una patch che avete rinominato o completamente cancellato. Negli ultimi due casi, usate il nome che la patch aveva quando l'avete applicata.</para>
 
-      <para id="x_608">Di default, il comando <command role="hg-ext-mq">qpop</command> non estrarrà alcuna patch se la directory di lavoro è stata modificata. Potete cambiare questo comportamento usando l'opzione <option role="hg-ext-mq-cmd-qpop-opt">-f</option>, che annulla tutte le modifiche nella directory di lavoro.</para>
+      <para id="x_608">Per default, il comando <command role="hg-ext-mq">qpop</command> non estrarrà alcuna patch se la directory di lavoro è stata modificata. Potete cambiare questo comportamento usando l'opzione <option role="hg-ext-mq-cmd-qpop-opt">-f</option>, che annulla tutte le modifiche nella directory di lavoro.</para>
 
       <para id="x_609">Opzioni:</para>
       <itemizedlist>
@@ -137,7 +137,7 @@
 	</listitem>
       </itemizedlist>
 
-      <para id="x_60d">Il comando <command role="hg-ext-mq">qpop</command> rimuove una riga dalla fine del file <filename role="special">status</filename> per ogni patch che ha estratto.</para>
+      <para id="x_60d">Il comando <command role="hg-ext-mq">qpop</command> rimuove una riga alla fine del file <filename role="special">status</filename> per ogni patch che ha estratto.</para>
 
     </sect2>
     <sect2>
