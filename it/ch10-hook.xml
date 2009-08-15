@@ -359,7 +359,7 @@ incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
       <sect3>
 	<title>Correlare i nomi utente Mercurial ai nomi utente Bugzilla</title>
 
-	<para id="x_259">Di default, l'hook <literal role="hg-ext">bugzilla</literal> prova a utilizzare l'indirizzo email di chi ha eseguito il commit del changeset come il nome utente Bugzilla con cui aggiornare un bug. Se questa impostazione non vi soddisfa, potete correlare gli indirizzi email degli utenti Mercurial ai nomi utente Bugzilla tramite una sezione <literal role="rc-usermap">usermap</literal>.</para>
+	<para id="x_259">Per default, l'hook <literal role="hg-ext">bugzilla</literal> prova a utilizzare l'indirizzo email di chi ha eseguito il commit del changeset come il nome utente Bugzilla con cui aggiornare un bug. Se questa impostazione non vi soddisfa, potete correlare gli indirizzi email degli utenti Mercurial ai nomi utente Bugzilla tramite una sezione <literal role="rc-usermap">usermap</literal>.</para>
 
 	<para id="x_25a">Ogni elemento nella sezione <literal role="rc-usermap">usermap</literal> contiene un indirizzo email sulla sinistra e un nome utente Bugzilla sulla destra.</para>
 	<programlisting>[usermap]
@@ -424,7 +424,7 @@ cd `dirname $0` &amp;&amp; ./processmail "$1" nessuno@example.com</programlistin
 
       <para id="x_26b">Come l'hook <literal role="hg-ext">bugzilla</literal>, anche l'hook <literal role="hg-ext">notify</literal> è guidato da un template, in modo che possiate personalizzare il contenuto dei messaggi di notifica inviati.</para>
 
-      <para id="x_26c">Di default, l'hook <literal role="hg-ext">notify</literal> include un diff di ogni changeset che spedisce, ma potete limitare le dimensioni del diff oppure disattivarlo interamente. L'inclusione del diff è utile per consentire agli interessati di revisionare i cambiamenti immediatamente piuttosto che obbligarli a cliccare per seguire un URL.</para>
+      <para id="x_26c">Per default, l'hook <literal role="hg-ext">notify</literal> include un diff di ogni changeset che spedisce, ma potete limitare le dimensioni del diff oppure disattivarlo interamente. L'inclusione del diff è utile per consentire agli interessati di revisionare i cambiamenti immediatamente piuttosto che obbligarli a cliccare per seguire un URL.</para>
 
       <sect3>
 	<title>Configurare l'hook <literal role="hg-ext">notify</literal></title>
@@ -438,7 +438,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 
 	<para id="x_26e">Le informazioni di configurazione per questo hook si trovano nella sezione <literal role="rc-notify">notify</literal> del file <filename role="special">~/.hgrc</filename>.</para>
 	<itemizedlist>
-	  <listitem><para id="x_26f"><envar role="rc-item-notify">test</envar>: di default, questo hook non spedisce alcuna email, ma stampa il messaggio che <emphasis>avrebbe</emphasis> inviato. Impostate questo elemento a <literal>false</literal> per consentire la spedizione delle email. La ragione per cui la spedizione delle email è disabilitata di default è che ci vogliono diverse prove per configurare questa estensione esattamente come vorreste, e non starebbe bene infastidire gli interessati con un certo numero di notifiche <quote>guaste</quote> mentre correggete la vostra configurazione.</para>
+	  <listitem><para id="x_26f"><envar role="rc-item-notify">test</envar>: per default, questo hook non spedisce alcuna email, ma stampa il messaggio che <emphasis>avrebbe</emphasis> inviato. Impostate questo elemento a <literal>false</literal> per consentire la spedizione delle email. La ragione per cui la spedizione delle email è disabilitata per default è che ci vogliono diverse prove per configurare questa estensione esattamente come vorreste, e non starebbe bene infastidire gli interessati con un certo numero di notifiche <quote>guaste</quote> mentre correggete la vostra configurazione.</para>
 	  </listitem>
 	  <listitem><para id="x_270"><envar role="rc-item-notify">config</envar>: il percorso di un file di configurazione che contiene le informazioni di iscrizione. Questo viene tenuto separato dal file <filename role="special">~/.hgrc</filename> principale in modo che possiate mantenerlo in un proprio repository. Le persone possono poi clonare quel repository, aggiornare le proprie iscrizioni e trasmettere i cambiamenti al vostro server.</para>
 	  </listitem>
@@ -446,7 +446,7 @@ incoming.notify = python:hgext.notify.hook</programlisting>
 	  </listitem>
 	  <listitem><para id="x_272"><envar role="rc-item-notify">template</envar>: il testo del template da usare per inviare i messaggi. Questo specifica i contenuti sia delle intestazioni che del corpo del messaggio.</para>
 	  </listitem>
-	  <listitem><para id="x_273"><envar role="rc-item-notify">maxdiff</envar>: il massimo numero di righe di dati di diff da aggiungere alla fine di un messaggio. Se un diff è più lungo di questo limite, viene troncato. Di default, questo valore è impostato a 300. Impostate questo valore a <literal>0</literal> per omettere i diff dalle email di notifica.</para>
+	  <listitem><para id="x_273"><envar role="rc-item-notify">maxdiff</envar>: il massimo numero di righe di dati di diff da aggiungere alla fine di un messaggio. Se un diff è più lungo di questo limite, viene troncato. Per default, questo valore è impostato a 300. Impostate questo valore a <literal>0</literal> per omettere i diff dalle email di notifica.</para>
 	  </listitem>
 	  <listitem><para id="x_274"><envar role="rc-item-notify">sources</envar>: una lista di modalità di provenienza dei changeset da considerare. Questo vi permette di limitare <literal role="hg-ext">notify</literal> in modo che spedisca email riguardanti solo utenti remoti che hanno trasmesso modifiche a questo repository attraverso un server, per esempio. Leggete la <xref linkend="sec:hook:sources"/> per sapere quali modalità potete specificare qui.</para>
 	  </listitem></itemizedlist>

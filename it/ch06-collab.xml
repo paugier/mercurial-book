@@ -207,7 +207,7 @@
 
       <para id="x_483">Il comando <command role="hg-cmd">hg serve</command> non sa nulla del firewall che potreste avere installato a protezione del vostro sistema o della vostra rete: non è in grado di scoprire se avete un firewall né di controllarlo. Se altre persone non riescono ad accedere a un'istanza di <command role="hg-cmd">hg serve</command> in esecuzione, la seconda cosa che dovreste fare (<emphasis>dopo</emphasis> aver verificato che stiano usando l'URL corretto) è controllare la configurazione del vostro firewall.</para>
 
-      <para id="x_484">Di default, <command role="hg-cmd">hg serve</command> accetta connessioni in entrata sulla porta 8000. Se un altro processo sta già occupando la porta che volete usare, potete specificare una porta differente tramite l'opzione <option role="hg-opt-serve">-p</option>.</para>
+      <para id="x_484">Per default, <command role="hg-cmd">hg serve</command> accetta connessioni in entrata sulla porta 8000. Se un altro processo sta già occupando la porta che volete usare, potete specificare una porta differente tramite l'opzione <option role="hg-opt-serve">-p</option>.</para>
 
       <para id="x_485">Normalmente, quando <command role="hg-cmd">hg serve</command> parte, non stampa alcuna informazione, cosa che potrebbe intimidirvi. Se volete avere una conferma che il comando stia eseguendo correttamente, e volete scoprire l'esatto URL che dovreste inviare ai vostri collaboratori, lanciate <command role="hg-cmd">hg serve</command> con l'opzione <option role="hg-opt-global">-v</option>.</para>
     </sect2>
@@ -316,7 +316,7 @@
 	</listitem>
 	<listitem><para id="x_4a5">Se l'errore è di tipo <quote>permission denied</quote> (permesso negato), potreste aver digitato in maniera inesatta il nome utente sul server, o la passphrase della vostra chiave, o la password dell'utente remoto.</para>
 	</listitem></itemizedlist>
-      <para id="x_4a6">Riepilogando, se avete problemi di comunicazione con il demone ssh del server, per prima cosa assicuratevi che ne esista uno in esecuzione. Su molti sistemi sarà installato ma disabilitato di default. Una volta che avete compiuto questo passo, dovreste controllare che il firewall del server sia configurato per consentire connessioni in entrata verso la porta su cui il demone ssh si trova in ascolto (di solito, la 22). Non preoccupatevi di altri errori di configurazione più esotici fino a quando non avete controllato questi due.</para>
+      <para id="x_4a6">Riepilogando, se avete problemi di comunicazione con il demone ssh del server, per prima cosa assicuratevi che ne esista uno in esecuzione. Su molti sistemi sarà installato ma disabilitato per default. Una volta che avete compiuto questo passo, dovreste controllare che il firewall del server sia configurato per consentire connessioni in entrata verso la porta su cui il demone ssh si trova in ascolto (di solito, la 22). Non preoccupatevi di altri errori di configurazione più esotici fino a quando non avete controllato questi due.</para>
 
       <para id="x_4a7">Se state usando un agente di autenticazione sul lato client per memorizzare le passphrase per le vostre chiavi, dovreste essere in grado di accedere al server senza che vi vengano chieste una passphrase o una password. Se vi viene comunque richiesta una passphrase, ecco alcune possibili cause.</para>
       <itemizedlist>
@@ -455,7 +455,7 @@ find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
 	<para id="x_4d1">Per completare i miei esperimenti, ho provato a configurare il sempre più popolare server web <literal>lighttpd</literal> per condividere lo stesso repository come appena descritto nel caso di Apache. Avevo già superato tutti i problemi illustrati con Apache, molti dei quali non sono dovuti a uno specifico server. Come risultato, ero piuttosto sicuro che i miei permessi per i file e le directory fossero corretti e che il mio script <filename role="special">hgweb.cgi</filename> fosse adeguatamente modificato.</para>
 
-	<para id="x_4d2">Una volta messo in esecuzione Apache, riuscire a condividere il repository tramite <literal>lighttpd</literal> è stato un attimo (in altre parole, anche se state provando a usare <literal>lighttpd</literal>, dovreste leggere la sezione su Apache). Per prima cosa ho dovuto modificare la sezione <literal>mod_access</literal> del suo file di configurazione per abilitare <literal>mod_cgi</literal> e <literal>mod_userdir</literal>, che erano entrambi disabilitati di default sul mio sistema. Poi ho aggiunto alcune righe alla fine del file di configurazione per configurare questi moduli.</para>
+	<para id="x_4d2">Una volta messo in esecuzione Apache, riuscire a condividere il repository tramite <literal>lighttpd</literal> è stato un attimo (in altre parole, anche se state provando a usare <literal>lighttpd</literal>, dovreste leggere la sezione su Apache). Per prima cosa ho dovuto modificare la sezione <literal>mod_access</literal> del suo file di configurazione per abilitare <literal>mod_cgi</literal> e <literal>mod_userdir</literal>, che erano entrambi disabilitati per default sul mio sistema. Poi ho aggiunto alcune righe alla fine del file di configurazione per configurare questi moduli.</para>
 	<programlisting>userdir.path = "public_html"
 cgi.assign = (".cgi" =&gt; "" )</programlisting>
 	<para id="x_4d3">Fatto questo, <literal>lighttpd</literal> ha funzionato immediatamente. Se avessi configurato <literal>lighttpd</literal> prima di Apache, mi sarei quasi certamente imbattuto negli stessi problemi di configurazione a livello di sistema incontrati con Apache. Tuttavia, ho trovato <literal>lighttpd</literal> notevolmente più facile da configurare di Apache, anche se ho usato Apache per più di una decade e questa è stata la mia prima esperienza con <literal>lighttpd</literal>.</para>
@@ -476,7 +476,7 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 
       <para id="x_4d7">Una volta effettuata questa configurazione di base, provando a visitare <literal>http://nomemacchina/~nomeutente/hgwebdir.cgi</literal> con il vostro browser, dovreste vedere una lista di repository vuota. Se ottenete una finestra bianca o un messaggio di errore, provate a ripercorrere la lista di possibili problemi già vista nella <xref linkend="sec:collab:wtf"/>.</para>
 
-      <para id="x_4d8">Lo script <filename role="special">hgwebdir.cgi</filename> si basa su un file di configurazione esterno. Di default, cerca un file chiamato <filename role="special">hgweb.config</filename> nella stessa directory in cui si trova. Dovrete creare questo file e renderlo leggibile agli altri. Il formato di questo file è simile a quello di un file <quote>ini</quote> di Windows, riconoscibile dal modulo <literal>ConfigParser</literal> <citation>web:configparser</citation> di Python.</para>
+      <para id="x_4d8">Lo script <filename role="special">hgwebdir.cgi</filename> si basa su un file di configurazione esterno. Per default, cerca un file chiamato <filename role="special">hgweb.config</filename> nella stessa directory in cui si trova. Dovrete creare questo file e renderlo leggibile agli altri. Il formato di questo file è simile a quello di un file <quote>ini</quote> di Windows, riconoscibile dal modulo <literal>ConfigParser</literal> <citation>web:configparser</citation> di Python.</para>
 
       <para id="x_4d9">Il modo più facile di configurare <filename role="special">hgwebdir.cgi</filename> è tramite una sezione chiamata <literal>collections</literal>. Questo pubblicherà automaticamente <emphasis>tutti</emphasis> i repository contenuti nelle directory che nominate. La sezione dovrebbe somigliare a questa:</para>
       <programlisting>[collections]
@@ -515,7 +515,7 @@ repo2 = /qualche/percorso/a/un/altro</programlisting>
 
       <para id="x_4e3">L'interfaccia web di Mercurial permette agli utenti di scaricare un archivio di qualsiasi revisione. Questo archivio conterrà la fotografia della directory di lavoro scattata su quella revisione, ma non conterrà una copia dei dati del repository.</para>
 
-      <para id="x_4e4">Di default, questa funzione è disabilitata. Per abilitarla, dovrete aggiungere un elemento <envar role="rc-item-web">allow_archive</envar> alla sezione <literal role="rc-web">web</literal> del vostro file <filename role="special">~/.hgrc</filename> come spiegato in dettaglio nella prossima sezione.</para>
+      <para id="x_4e4">Per default, questa funzione è disabilitata. Per abilitarla, dovrete aggiungere un elemento <envar role="rc-item-web">allow_archive</envar> alla sezione <literal role="rc-web">web</literal> del vostro file <filename role="special">~/.hgrc</filename> come spiegato in dettaglio nella prossima sezione.</para>
     </sect2>
     <sect2>
       <title>Le opzioni di configurazione web</title>
@@ -567,7 +567,7 @@ allow_archive = bz2 gz zip</programlisting>
 	  <programlisting>[web]
 style = gitweb</programlisting>
 	</listitem>
-	<listitem><para id="x_4f1"><envar role="rc-item-web">templates</envar>: percorso. La directory in cui cercare i file di template. Di default, Mercurial li cerca nella directory in cui è stato installato.</para>
+	<listitem><para id="x_4f1"><envar role="rc-item-web">templates</envar>: percorso. La directory in cui cercare i file di template. Per default, Mercurial li cerca nella directory in cui è stato installato.</para>
 	</listitem></itemizedlist>
       <para id="x_4f2">Se state usando <filename role="special">hgwebdir.cgi</filename>, potete inserire gli elementi di configurazione <envar role="rc-item-web">motd</envar> e <envar role="rc-item-web">style</envar> nella sezione <literal role="rc-web">web</literal> del file <filename role="special">hgweb.config</filename> invece che nel file <filename role="special">~/.hgrc</filename>, nel caso lo troviate più conveniente.</para>
 
@@ -589,11 +589,11 @@ style = gitweb</programlisting>
 	<itemizedlist>
 	  <listitem><para id="x_4f7"><envar role="rc-item-web">accesslog</envar>: percorso. Il nome di un file in cui tenere un registro degli accessi. Normalmente, il comando <command role="hg-cmd">hg serve</command> scrive queste informazioni sul canale di uscita predefinito, non su un file. Le voci del registro vengono scritte nel formato <quote>combinato</quote> che è uno standard usato da quasi tutti i server web.</para>
 	  </listitem>
-	  <listitem><para id="x_4f8"><envar role="rc-item-web">address</envar>: stringa. L'indirizzo locale su cui il server dovrebbe essere in ascolto per le connessioni in entrata. Di default, il server è in ascolto su tutti gli indirizzi.</para>
+	  <listitem><para id="x_4f8"><envar role="rc-item-web">address</envar>: stringa. L'indirizzo locale su cui il server dovrebbe essere in ascolto per le connessioni in entrata. Per default, il server è in ascolto su tutti gli indirizzi.</para>
 	  </listitem>
 	  <listitem><para id="x_4f9"><envar role="rc-item-web">errorlog</envar>: percorso. Il nome di un file in cui tenere un registro degli errori. Normalmente, il comando <command role="hg-cmd">hg serve</command> scrive queste informazioni sul canale di uscita predefinito, non su un file.</para>
 	  </listitem>
-	  <listitem><para id="x_4fa"><envar role="rc-item-web">ipv6</envar>: booleano. Indica se usare il protocollo IPv6. Di default, IPv6 non viene usato.</para>
+	  <listitem><para id="x_4fa"><envar role="rc-item-web">ipv6</envar>: booleano. Indica se usare il protocollo IPv6. Per default, IPv6 non viene usato.</para>
 	  </listitem>
 	  <listitem><para id="x_4fb"><envar role="rc-item-web">port</envar>: intero. Il numero di porta TCP su cui il server dovrebbe essere in ascolto. Il numero di porta predefinito è 8000.</para>
 	  </listitem></itemizedlist>
@@ -619,7 +619,7 @@ style = gitweb</programlisting>
     <sect2>
       <title>Rendere Mercurial meno prevenuto</title>
 
-      <para id="x_6b2">Un file <filename>hgrc</filename> globale può essere utile nella situazione in cui gli utenti stanno estraendo cambiamenti posseduti da altri utenti. Di default, Mercurial non si fida della maggior parte degli elementi di configurazione contenuti nel file <filename>.hg/hgrc</filename> all'interno di un repository che è posseduto da un utente differente. Se cloniamo o estraiamo i cambiamenti da un repository di questo tipo, Mercurial stamperà un avvertimento dicendo che non si fida dei dati nel file <filename>.hg/hgrc</filename> di quel repository.</para>
+      <para id="x_6b2">Un file <filename>hgrc</filename> globale può essere utile nella situazione in cui gli utenti stanno estraendo cambiamenti posseduti da altri utenti. Per default, Mercurial non si fida della maggior parte degli elementi di configurazione contenuti nel file <filename>.hg/hgrc</filename> all'interno di un repository che è posseduto da un utente differente. Se cloniamo o estraiamo i cambiamenti da un repository di questo tipo, Mercurial stamperà un avvertimento dicendo che non si fida dei dati nel file <filename>.hg/hgrc</filename> di quel repository.</para>
 
       <para id="x_6b3">Se tutti i membri di uno specifico gruppo Unix fanno parte dello stesso gruppo di sviluppo e <emphasis>dovrebbero</emphasis> fidarsi l'uno delle impostazioni di configurazione dell'altro, o se vogliamo fidarci di alcuni utenti particolari, possiamo rimpiazzare il comportamento guardingo predefinito di Mercurial creando un file <filename>hgrc</filename> di sistema come il seguente:</para>
 
