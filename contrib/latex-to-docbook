@@ -1,0 +1,198 @@
+#!/usr/bin/python
+#
+# This is the most horrible of hacks. Pretend you're not looking.</para>
+
+import cStringIO as StringIO
+import re, sys
+
+sections = {
+    'chapter': 'chapter',
+    'section': 'sect1',
+    'subsection': 'sect2',
+    'subsubsection': 'sect3',
+    }
+
+envs = {
+    'codesample2': 'programlisting',
+    'codesample4': 'programlisting',
+    'enumerate': 'orderedlist',
+    'figure': 'informalfigure',
+    'itemize': 'itemizedlist',
+    'note': 'note',
+    'quote': 'blockquote',
+    }
+
+def process(ifp, ofp):
+    print >> ofp, '<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->\n'
+    stack = []
+    para = True
+    inlist = 0
+    for line in ifp:
+        if line.startswith('%%% Local Variables:'):
+            break
+        line = (line.rstrip()
+                .replace('~', ' ')
+                .replace('&', '&amp;')
+                .replace('---', '&emdash;')
+                .replace('\_', '_')
+                .replace('\{', '{')
+                .replace('\}', '}')
+                .replace('\$', '$')
+                .replace('\%', '%')
+                .replace('\#', '#')
+                .replace('<', '&lt;')
+                .replace('>', '&gt;')
+                .replace('``', '<quote>')
+                .replace("''", '</quote>')
+                .replace('\\', '\\'))
+        line = re.sub(r'\s*\\(?:centering|small)\b\s*', '', line)
+        line = re.sub(r'\\(?:hgrc\\|hgrc)\b',
+                      r'<filename role="special"> /.hgrc</filename>', line)
+        line = re.sub(r'\\item\[(?P<key>[^]]+)\]', r'\item \g<key>:', line)
+        line = re.sub(r'\\bug{(?P<id>\d+)}',
+                      r'<ulink role="hg-bug" url="http://www.selenic.com/mercurial/bts/issue\g<id>">issue \g<id></ulink>', line)
+        line = re.sub(r'\\cite{([^}]+)}', r'<citation>\1</citation>', line)
+        line = re.sub(r'\\hggopt{(?P<opt>[^}]+)}',
+                      r'<option role="hg-opt-global">\g<opt></option>', line)
+        line = re.sub(r'\\hgxopt{(?P<ext>[^}]+)}{(?P<cmd>[^}]+)}{(?P<opt>[^}]+)}',
+                      r'<option role="hg-ext-\g<ext>-cmd-\g<cmd>-opt">\g<opt></option>', line)
+        line = re.sub(r'\\hgxcmd{(?P<ext>[^}]+)}{(?P<cmd>[^}]+)}',
+                      r'<command role="hg-ext-\g<ext>">\g<cmd></command>', line)
+        line = re.sub(r'\\hgext{(?P<ext>[^}]+)}',
+                      r'<literal role="hg-ext">\g<ext></literal>', line)
+        line = re.sub(r'\\hgopt{(?P<cmd>[^}]+)}{(?P<opt>[^}]+)}',
+                      r'<option role="hg-opt-\g<cmd>">\g<opt></option>',
+                      line)
+        line = re.sub(r'\\cmdopt{(?P<cmd>[^}]+)}{(?P<opt>[^}]+)}',
+                      r'<option role="cmd-opt-\g<cmd>">\g<opt></option>',
+                      line)
+        line = re.sub(r'\\hgcmd{(?P<cmd>[^}]+)}',
+                      r'<command role="hg-cmd">hg \g<cmd></command>', line)
+        line = re.sub(r'\\caption{(?P<text>[^}]+?)}',
+                      r'<caption><para>\g<text></para></caption>', line)
+        line = re.sub(r'\\grafix{(?P<name>[^}]+)}',
+                      r'<mediaobject><imageobject><imagedata fileref="\g<name>"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>', line)
+        line = re.sub(r'\\envar{(?P<name>[^}]+)}',
+                      r'<envar>\g<name></envar>', line)
+        line = re.sub(r'\\rcsection{(?P<sect>[^}]+)}',
+                      r'<literal role="rc-\g<sect>">\g<sect></literal>', line)
+        line = re.sub(r'\\rcitem{(?P<sect>[^}]+)}{(?P<name>[^}]+)}',
+                      r'<envar role="rc-item-\g<sect>">\g<name></envar>', line)
+        line = re.sub(r'\\dirname{(?P<dir>[^}]+?)}',
+                      r'<filename class="directory">\g<dir></filename>', line)
+        line = re.sub(r'\\filename{(?P<file>[^}]+?)}',
+                      r'<filename>\g<file></filename>', line)
+        line = re.sub(r'\\tildefile{(?P<file>[^}]+)}',
+                      r'<filename role="home">~/\g<file></filename>', line)
+        line = re.sub(r'\\sfilename{(?P<file>[^}]+)}',
+                      r'<filename role="special">\g<file></filename>', line)
+        line = re.sub(r'\\sdirname{(?P<dir>[^}]+)}',
+                      r'<filename role="special" class="directory">\g<dir></filename>', line)
+        line = re.sub(r'\\interaction{(?P<id>[^}]+)}',
+                      r'<!-- &interaction.\g<id>; -->', line)
+        line = re.sub(r'\\excode{(?P<id>[^}]+)}',
+                      r'<!-- &example.\g<id>; -->', line)
+        line = re.sub(r'\\pymod{(?P<mod>[^}]+)}',
+                      r'<literal role="py-mod">\g<mod></literal>', line)
+        line = re.sub(r'\\pymodclass{(?P<mod>[^}]+)}{(?P<class>[^}]+)}',
+                      r'<literal role="py-mod-\g<mod>">\g<class></literal>', line)
+        line = re.sub(r'\\url{(?P<url>[^}]+)}',
+                      r'<ulink url="\g<url>">\g<url></ulink>', line)
+        line = re.sub(r'\\href{(?P<url>[^}]+)}{(?P<text>[^}]+)}',
+                      r'<ulink url="\g<url>">\g<text></ulink>', line)
+        line = re.sub(r'\\command{(?P<cmd>[^}]+)}',
+                      r'<command>\g<cmd></command>', line)
+        line = re.sub(r'\\option{(?P<opt>[^}]+)}',
+                      r'<option>\g<opt></option>', line)
+        line = re.sub(r'\\ref{(?P<id>[^}]+)}', r'<xref linkend="\g<id>"/>', line)
+        line = re.sub(r'\\emph{(?P<txt>[^}]+)}',
+                      r'<emphasis>\g<txt></emphasis>', line)
+        line = re.sub(r'\\texttt{(?P<txt>[^}]+)}',
+                      r'<literal>\g<txt></literal>', line)
+        line = re.sub(r'\\textbf{(?P<txt>[^}]+)}',
+                      r'<emphasis role="bold">\g<txt></emphasis>', line)
+        line = re.sub(r'\\hook{(?P<name>[^}]+)}',
+                      r'<literal role="hook">\g<name></literal>', line)
+        line = re.sub(r'\\tplfilter{(?P<name>[^}]+)}',
+                      r'<literal role="template-filter">\g<name></literal>', line)
+        line = re.sub(r'\\tplkword{(?P<name>[^}]+)}',
+                      r'<literal role="template-keyword">\g<name></literal>', line)
+        line = re.sub(r'\\tplkwfilt{(?P<tpl>[^}]+)}{(?P<name>[^}]+)}',
+                      r'<literal role="template-kw-filt-\g<tpl>">\g<name></literal>', line)
+        line = re.sub(r'\\[vV]erb(.)(?P<txt>[^\1]+?)\1',
+                      r'<literal>\g<txt></literal>', line)
+        line = re.sub(r'\\package{(?P<name>[^}]+)}',
+                      r'<literal role="package">\g<name></literal>', line)
+        line = re.sub(r'\\hgcmdargs{(?P<cmd>[^}]+)}{(?P<args>[^}]+)}',
+                      r'<command role="hg-cmd">hg \g<cmd> \g<args></command>',
+                      line)
+        line = re.sub(r'\\cmdargs{(?P<cmd>[^}]+)}{(?P<args>[^}]+)}',
+                      r'<command>\g<cmd> \g<args></command>',
+                      line)
+        m = re.match(r'\\(chapter|section|subsection|subsubsection){(.*)}', line)
+        if m:
+            kind, content = m.groups()
+            sec = sections[kind]
+            while stack and stack[-1] >= sec:
+                close = stack.pop()
+                print >> ofp, '</%s>' % close
+            stack.append(sec)
+            print >> ofp, '<%s>\n<title>%s</title>' % (sec, content)
+        else:
+            m = re.match(r'\s*\\(begin|end){(?P<sect>[^}]+)}', line)
+            if m:
+                if not para:
+                    print >> ofp, '</para>'
+                    if inlist:
+                        ofp.write('</listitem>')
+                    para = True
+                state, env = m.groups()
+                env = envs[env]
+                if state == 'begin':
+                    ofp.write('<')
+                    if env in ('itemizedlist', 'orderedlist'):
+                        inlist = 1
+                else:
+                    ofp.write('</')
+                    if env in ('itemizedlist', 'orderedlist'):
+                        inlist = 0
+                print >> ofp, env + '>'
+            else:
+                if line.startswith('\\item '):
+                    if inlist > 1:
+                        print >> ofp, '</para>'
+                        print >> ofp, '</listitem>'
+                    else:
+                        inlist = 2
+                    para = True
+                    line = line[6:]
+                if line and para:
+                    if inlist:
+                        ofp.write('<listitem>')
+                    ofp.write('<para>')
+                    para = False
+                if not line and not para:
+                    print >> ofp, '</para>'
+                    if inlist:
+                        ofp.write('</listitem>')
+                    para = True
+                print >> ofp, line
+    while stack:
+        print >> ofp, '</%s>' % stack.pop()
+    ofp.write('\n'.join(['\n<!--',
+                         'local variables: ',
+                         'sgml-parent-document: ("00book.xml" "book" "chapter")',
+                         'end:',
+                         '-->']))
+
+
+if __name__ == '__main__':
+    for name in sys.argv[1:]:
+        if not name.endswith('.tex'):
+            continue
+        newname = name[:-3] + 'xml'
+        ofp = StringIO.StringIO()
+        process(open(name), ofp)
+        s = ofp.getvalue()
+        s = re.sub('\n+</para>', '</para>', s, re.M)
+        open(newname, 'w').write(s)

@@ -1,0 +1,533 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:branch">
+  <?dbhtml filename="managing-releases-and-branchy-development.html"?>
+  <title>Managing releases and branchy development</title>
+
+  <para id="x_369">Mercurial provides several mechanisms for you to manage a
+    project that is making progress on multiple fronts at once.  To
+    understand these mechanisms, let's first take a brief look at a
+    fairly normal software project structure.</para>
+
+  <para id="x_36a">Many software projects issue periodic <quote>major</quote>
+    releases that contain substantial new features.  In parallel, they
+    may issue <quote>minor</quote> releases.  These are usually
+    identical to the major releases off which they're based, but with
+    a few bugs fixed.</para>
+
+  <para id="x_36b">In this chapter, we'll start by talking about how to keep
+    records of project milestones such as releases.  We'll then
+    continue on to talk about the flow of work between different
+    phases of a project, and how Mercurial can help you to isolate and
+    manage this work.</para>
+
+  <sect1>
+    <title>Giving a persistent name to a revision</title>
+
+    <para id="x_36c">Once you decide that you'd like to call a particular
+      revision a <quote>release</quote>, it's a good idea to record
+      the identity of that revision. This will let you reproduce that
+      release at a later date, for whatever purpose you might need at
+      the time (reproducing a bug, porting to a new platform, etc).
+      &interaction.tag.init;</para>
+
+    <para id="x_36d">Mercurial lets you give a permanent name to any revision
+      using the <command role="hg-cmd">hg tag</command> command.  Not
+      surprisingly, these names are called <quote>tags</quote>.</para>
+
+    &interaction.tag.tag;
+
+    <para id="x_36e">A tag is nothing more than a <quote>symbolic name</quote>
+      for a revision.  Tags exist purely for your convenience, so that
+      you have a handy permanent way to refer to a revision; Mercurial
+      doesn't interpret the tag names you use in any way.  Neither
+      does Mercurial place any restrictions on the name of a tag,
+      beyond a few that are necessary to ensure that a tag can be
+      parsed unambiguously.  A tag name cannot contain any of the
+      following characters:</para>
+    <itemizedlist>
+      <listitem><para id="x_36f">Colon (ASCII 58,
+	  <quote><literal>:</literal></quote>)</para>
+      </listitem>
+      <listitem><para id="x_370">Carriage return (ASCII 13,
+	  <quote><literal>\r</literal></quote>)</para>
+      </listitem>
+      <listitem><para id="x_371">Newline (ASCII 10,
+	  <quote><literal>\n</literal></quote>)</para>
+      </listitem></itemizedlist>
+
+    <para id="x_372">You can use the <command role="hg-cmd">hg tags</command>
+      command to display the tags present in your repository.  In the
+      output, each tagged revision is identified first by its name,
+      then by revision number, and finally by the unique hash of the
+      revision.</para>
+
+    &interaction.tag.tags;
+
+    <para id="x_373">Notice that <literal>tip</literal> is listed in the output
+      of <command role="hg-cmd">hg tags</command>.  The
+      <literal>tip</literal> tag is a special <quote>floating</quote>
+      tag, which always identifies the newest revision in the
+      repository.</para>
+
+    <para id="x_374">In the output of the <command role="hg-cmd">hg
+	tags</command> command, tags are listed in reverse order, by
+      revision number.  This usually means that recent tags are listed
+      before older tags.  It also means that <literal>tip</literal> is
+      always going to be the first tag listed in the output of
+      <command role="hg-cmd">hg tags</command>.</para>
+
+    <para id="x_375">When you run <command role="hg-cmd">hg log</command>, if it
+      displays a revision that has tags associated with it, it will
+      print those tags.</para>
+
+    &interaction.tag.log;
+
+    <para id="x_376">Any time you need to provide a revision ID to a Mercurial
+      command, the command will accept a tag name in its place.
+      Internally, Mercurial will translate your tag name into the
+      corresponding revision ID, then use that.</para>
+
+    &interaction.tag.log.v1.0;
+
+    <para id="x_377">There's no limit on the number of tags you can have in a
+      repository, or on the number of tags that a single revision can
+      have.  As a practical matter, it's not a great idea to have
+      <quote>too many</quote> (a number which will vary from project
+      to project), simply because tags are supposed to help you to
+      find revisions.  If you have lots of tags, the ease of using
+      them to identify revisions diminishes rapidly.</para>
+
+    <para id="x_378">For example, if your project has milestones as frequent as
+      every few days, it's perfectly reasonable to tag each one of
+      those.  But if you have a continuous build system that makes
+      sure every revision can be built cleanly, you'd be introducing a
+      lot of noise if you were to tag every clean build.  Instead, you
+      could tag failed builds (on the assumption that they're rare!),
+      or simply not use tags to track buildability.</para>
+
+    <para id="x_379">If you want to remove a tag that you no longer want, use
+      <command role="hg-cmd">hg tag --remove</command>.</para>
+
+    &interaction.tag.remove;
+
+    <para id="x_37a">You can also modify a tag at any time, so that it identifies
+      a different revision, by simply issuing a new <command
+	role="hg-cmd">hg tag</command> command. You'll have to use the
+      <option role="hg-opt-tag">-f</option> option to tell Mercurial
+      that you <emphasis>really</emphasis> want to update the
+      tag.</para>
+
+    &interaction.tag.replace;
+
+    <para id="x_37b">There will still be a permanent record of the previous
+      identity of the tag, but Mercurial will no longer use it.
+      There's thus no penalty to tagging the wrong revision; all you
+      have to do is turn around and tag the correct revision once you
+      discover your error.</para>
+
+    <para id="x_37c">Mercurial stores tags in a normal revision-controlled file
+      in your repository.  If you've created any tags, you'll find
+      them in a file in the root of your repository named <filename
+	role="special">.hgtags</filename>.  When you run the <command
+	role="hg-cmd">hg tag</command> command, Mercurial modifies
+      this file, then automatically commits the change to it.  This
+      means that every time you run <command role="hg-cmd">hg
+	tag</command>, you'll see a corresponding changeset in the
+      output of <command role="hg-cmd">hg log</command>.</para>
+
+    &interaction.tag.tip;
+
+    <sect2>
+      <title>Handling tag conflicts during a merge</title>
+
+      <para id="x_37d">You won't often need to care about the <filename
+	  role="special">.hgtags</filename> file, but it sometimes
+	makes its presence known during a merge.  The format of the
+	file is simple: it consists of a series of lines.  Each line
+	starts with a changeset hash, followed by a space, followed by
+	the name of a tag.</para>
+
+      <para id="x_37e">If you're resolving a conflict in the <filename
+	  role="special">.hgtags</filename> file during a merge,
+	there's one twist to modifying the <filename
+	  role="special">.hgtags</filename> file: when Mercurial is
+	parsing the tags in a repository, it
+	<emphasis>never</emphasis> reads the working copy of the
+	<filename role="special">.hgtags</filename> file.  Instead, it
+	reads the <emphasis>most recently committed</emphasis>
+	revision of the file.</para>
+
+      <para id="x_37f">An unfortunate consequence of this design is that you
+	can't actually verify that your merged <filename
+	  role="special">.hgtags</filename> file is correct until
+	<emphasis>after</emphasis> you've committed a change.  So if
+	you find yourself resolving a conflict on <filename
+	  role="special">.hgtags</filename> during a merge, be sure to
+	run <command role="hg-cmd">hg tags</command> after you commit.
+	If it finds an error in the <filename
+	  role="special">.hgtags</filename> file, it will report the
+	location of the error, which you can then fix and commit.  You
+	should then run <command role="hg-cmd">hg tags</command>
+	again, just to be sure that your fix is correct.</para>
+    </sect2>
+
+    <sect2>
+      <title>Tags and cloning</title>
+
+      <para id="x_380">You may have noticed that the <command role="hg-cmd">hg
+	  clone</command> command has a <option
+	  role="hg-opt-clone">-r</option> option that lets you clone
+	an exact copy of the repository as of a particular changeset.
+	The new clone will not contain any project history that comes
+	after the revision you specified.  This has an interaction
+	with tags that can surprise the unwary.</para>
+
+      <para id="x_381">Recall that a tag is stored as a revision to
+	the <filename role="special">.hgtags</filename> file. When you
+	create a tag, the changeset in which its recorded refers to an
+	older changeset.  When you run <command role="hg-cmd">hg clone
+	  -r foo</command> to clone a repository as of tag
+	<literal>foo</literal>, the new clone <emphasis>will not
+	  contain any revision newer than the one the tag refers to,
+	  including the revision where the tag was created</emphasis>.
+	The result is that you'll get exactly the right subset of the
+	project's history in the new repository, but
+	<emphasis>not</emphasis> the tag you might have
+	expected.</para>
+    </sect2>
+
+    <sect2>
+      <title>When permanent tags are too much</title>
+
+      <para id="x_382">Since Mercurial's tags are revision controlled and carried
+	around with a project's history, everyone you work with will
+	see the tags you create.  But giving names to revisions has
+	uses beyond simply noting that revision
+	<literal>4237e45506ee</literal> is really
+	<literal>v2.0.2</literal>.  If you're trying to track down a
+	subtle bug, you might want a tag to remind you of something
+	like <quote>Anne saw the symptoms with this
+	  revision</quote>.</para>
+
+      <para id="x_383">For cases like this, what you might want to use are
+	<emphasis>local</emphasis> tags. You can create a local tag
+	with the <option role="hg-opt-tag">-l</option> option to the
+	<command role="hg-cmd">hg tag</command> command.  This will
+	store the tag in a file called <filename
+	  role="special">.hg/localtags</filename>.  Unlike <filename
+	  role="special">.hgtags</filename>, <filename
+	  role="special">.hg/localtags</filename> is not revision
+	controlled.  Any tags you create using <option
+	  role="hg-opt-tag">-l</option> remain strictly local to the
+	repository you're currently working in.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>The flow of changes&emdash;big picture vs. little</title>
+
+    <para id="x_384">To return to the outline I sketched at the
+      beginning of the chapter, let's think about a project that has
+      multiple concurrent pieces of work under development at
+      once.</para>
+
+    <para id="x_385">There might be a push for a new <quote>main</quote> release;
+      a new minor bugfix release to the last main release; and an
+      unexpected <quote>hot fix</quote> to an old release that is now
+      in maintenance mode.</para>
+
+    <para id="x_386">The usual way people refer to these different concurrent
+      directions of development is as <quote>branches</quote>.
+      However, we've already seen numerous times that Mercurial treats
+      <emphasis>all of history</emphasis> as a series of branches and
+      merges.  Really, what we have here is two ideas that are
+      peripherally related, but which happen to share a name.</para>
+    <itemizedlist>
+      <listitem><para id="x_387"><quote>Big picture</quote> branches represent
+	  the sweep of a project's evolution; people give them names,
+	  and talk about them in conversation.</para>
+      </listitem>
+      <listitem><para id="x_388"><quote>Little picture</quote> branches are
+	  artefacts of the day-to-day activity of developing and
+	  merging changes.  They expose the narrative of how the code
+	  was developed.</para>
+      </listitem></itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Managing big-picture branches in repositories</title>
+
+    <para id="x_389">The easiest way to isolate a <quote>big picture</quote>
+      branch in Mercurial is in a dedicated repository.  If you have
+      an existing shared repository&emdash;let's call it
+      <literal>myproject</literal>&emdash;that reaches a
+      <quote>1.0</quote> milestone, you can start to prepare for
+      future maintenance releases on top of version 1.0 by tagging the
+      revision from which you prepared the 1.0 release.</para>
+
+    &interaction.branch-repo.tag;
+
+    <para id="x_38a">You can then clone a new shared
+      <literal>myproject-1.0.1</literal> repository as of that
+      tag.</para>
+
+    &interaction.branch-repo.clone;
+
+    <para id="x_38b">Afterwards, if someone needs to work on a bug fix that ought
+      to go into an upcoming 1.0.1 minor release, they clone the
+      <literal>myproject-1.0.1</literal> repository, make their
+      changes, and push them back.</para>
+
+    &interaction.branch-repo.bugfix;
+
+    <para id="x_38c">Meanwhile, development for
+      the next major release can continue, isolated and unabated, in
+      the <literal>myproject</literal> repository.</para>
+
+    &interaction.branch-repo.new;
+  </sect1>
+
+  <sect1>
+    <title>Don't repeat yourself: merging across branches</title>
+
+    <para id="x_38d">In many cases, if you have a bug to fix on a maintenance
+      branch, the chances are good that the bug exists on your
+      project's main branch (and possibly other maintenance branches,
+      too).  It's a rare developer who wants to fix the same bug
+      multiple times, so let's look at a few ways that Mercurial can
+      help you to manage these bugfixes without duplicating your
+      work.</para>
+
+    <para id="x_38e">In the simplest instance, all you need to do is pull changes
+      from your maintenance branch into your local clone of the target
+      branch.</para>
+
+    &interaction.branch-repo.pull;
+
+    <para id="x_38f">You'll then need to merge the heads of the two branches, and
+      push back to the main branch.</para>
+
+    &interaction.branch-repo.merge;
+  </sect1>
+
+  <sect1>
+    <title>Naming branches within one repository</title>
+
+    <para id="x_390">In most instances, isolating branches in repositories is the
+      right approach.  Its simplicity makes it easy to understand; and
+      so it's hard to make mistakes.  There's a one-to-one
+      relationship between branches you're working in and directories
+      on your system.  This lets you use normal (non-Mercurial-aware)
+      tools to work on files within a branch/repository.</para>
+
+    <para id="x_391">If you're more in the <quote>power user</quote> category
+      (<emphasis>and</emphasis> your collaborators are too), there is
+      an alternative way of handling branches that you can consider.
+      I've already mentioned the human-level distinction between
+      <quote>small picture</quote> and <quote>big picture</quote>
+      branches.  While Mercurial works with multiple <quote>small
+	picture</quote> branches in a repository all the time (for
+      example after you pull changes in, but before you merge them),
+      it can <emphasis>also</emphasis> work with multiple <quote>big
+	picture</quote> branches.</para>
+
+    <para id="x_392">The key to working this way is that Mercurial lets you
+      assign a persistent <emphasis>name</emphasis> to a branch.
+      There always exists a branch named <literal>default</literal>.
+      Even before you start naming branches yourself, you can find
+      traces of the <literal>default</literal> branch if you look for
+      them.</para>
+
+    <para id="x_393">As an example, when you run the <command role="hg-cmd">hg
+	commit</command> command, and it pops up your editor so that
+      you can enter a commit message, look for a line that contains
+      the text <quote><literal>HG: branch default</literal></quote> at
+      the bottom. This is telling you that your commit will occur on
+      the branch named <literal>default</literal>.</para>
+
+    <para id="x_394">To start working with named branches, use the <command
+	role="hg-cmd">hg branches</command> command.  This command
+      lists the named branches already present in your repository,
+      telling you which changeset is the tip of each.</para>
+
+    &interaction.branch-named.branches;
+
+    <para id="x_395">Since you haven't created any named branches yet, the only
+      one that exists is <literal>default</literal>.</para>
+
+    <para id="x_396">To find out what the <quote>current</quote> branch is, run
+      the <command role="hg-cmd">hg branch</command> command, giving
+      it no arguments.  This tells you what branch the parent of the
+      current changeset is on.</para>
+
+    &interaction.branch-named.branch;
+
+    <para id="x_397">To create a new branch, run the <command role="hg-cmd">hg
+	branch</command> command again.  This time, give it one
+      argument: the name of the branch you want to create.</para>
+
+    &interaction.branch-named.create;
+
+    <para id="x_398">After you've created a branch, you might wonder what effect
+      the <command role="hg-cmd">hg branch</command> command has had.
+      What do the <command role="hg-cmd">hg status</command> and
+      <command role="hg-cmd">hg tip</command> commands report?</para>
+
+    &interaction.branch-named.status;
+
+    <para id="x_399">Nothing has changed in the
+      working directory, and there's been no new history created.  As
+      this suggests, running the <command role="hg-cmd">hg
+	branch</command> command has no permanent effect; it only
+      tells Mercurial what branch name to use the
+      <emphasis>next</emphasis> time you commit a changeset.</para>
+
+    <para id="x_39a">When you commit a change, Mercurial records the name of the
+      branch on which you committed.  Once you've switched from the
+      <literal>default</literal> branch to another and committed,
+      you'll see the name of the new branch show up in the output of
+      <command role="hg-cmd">hg log</command>, <command
+	role="hg-cmd">hg tip</command>, and other commands that
+      display the same kind of output.</para>
+
+    &interaction.branch-named.commit;
+
+    <para id="x_39b">The <command role="hg-cmd">hg log</command>-like commands
+      will print the branch name of every changeset that's not on the
+      <literal>default</literal> branch.  As a result, if you never
+      use named branches, you'll never see this information.</para>
+
+    <para id="x_39c">Once you've named a branch and committed a change with that
+      name, every subsequent commit that descends from that change
+      will inherit the same branch name.  You can change the name of a
+      branch at any time, using the <command role="hg-cmd">hg
+	branch</command> command.</para>
+
+    &interaction.branch-named.rebranch;
+
+    <para id="x_39d">In practice, this is something you won't do very often, as
+      branch names tend to have fairly long lifetimes.  (This isn't a
+      rule, just an observation.)</para>
+  </sect1>
+
+  <sect1>
+    <title>Dealing with multiple named branches in a
+      repository</title>
+
+    <para id="x_39e">If you have more than one named branch in a repository,
+      Mercurial will remember the branch that your working directory
+      is on when you start a command like <command role="hg-cmd">hg
+	update</command> or <command role="hg-cmd">hg pull
+	-u</command>.  It will update the working directory to the tip
+      of this branch, no matter what the <quote>repo-wide</quote> tip
+      is.  To update to a revision that's on a different named branch,
+      you may need to use the <option role="hg-opt-update">-C</option>
+      option to <command role="hg-cmd">hg update</command>.</para>
+
+    <para id="x_39f">This behavior is a little subtle, so let's see it in
+      action.  First, let's remind ourselves what branch we're
+      currently on, and what branches are in our repository.</para>
+
+    &interaction.branch-named.parents;
+
+    <para id="x_3a0">We're on the <literal>bar</literal> branch, but there also
+      exists an older <command role="hg-cmd">hg foo</command>
+      branch.</para>
+
+    <para id="x_3a1">We can <command role="hg-cmd">hg update</command> back and
+      forth between the tips of the <literal>foo</literal> and
+      <literal>bar</literal> branches without needing to use the
+      <option role="hg-opt-update">-C</option> option, because this
+      only involves going backwards and forwards linearly through our
+      change history.</para>
+
+    &interaction.branch-named.update-switchy;
+
+    <para id="x_3a2">If we go back to the <literal>foo</literal> branch and then
+      run <command role="hg-cmd">hg update</command>, it will keep us
+      on <literal>foo</literal>, not move us to the tip of
+      <literal>bar</literal>.</para>
+
+    &interaction.branch-named.update-nothing;
+
+    <para id="x_3a3">Committing a new change on the <literal>foo</literal> branch
+      introduces a new head.</para>
+
+    &interaction.branch-named.foo-commit;
+  </sect1>
+
+  <sect1>
+    <title>Branch names and merging</title>
+
+    <para id="x_3a4">As you've probably noticed, merges in Mercurial are not
+      symmetrical. Let's say our repository has two heads, 17 and 23.
+      If I <command role="hg-cmd">hg update</command> to 17 and then
+      <command role="hg-cmd">hg merge</command> with 23, Mercurial
+      records 17 as the first parent of the merge, and 23 as the
+      second.  Whereas if I <command role="hg-cmd">hg update</command>
+      to 23 and then <command role="hg-cmd">hg merge</command> with
+      17, it records 23 as the first parent, and 17 as the
+      second.</para>
+
+    <para id="x_3a5">This affects Mercurial's choice of branch name when you
+      merge.  After a merge, Mercurial will retain the branch name of
+      the first parent when you commit the result of the merge.  If
+      your first parent's branch name is <literal>foo</literal>, and
+      you merge with <literal>bar</literal>, the branch name will
+      still be <literal>foo</literal> after you merge.</para>
+
+    <para id="x_3a6">It's not unusual for a repository to contain multiple heads,
+      each with the same branch name.  Let's say I'm working on the
+      <literal>foo</literal> branch, and so are you.  We commit
+      different changes; I pull your changes; I now have two heads,
+      each claiming to be on the <literal>foo</literal> branch.  The
+      result of a merge will be a single head on the
+      <literal>foo</literal> branch, as you might hope.</para>
+
+    <para id="x_3a7">But if I'm working on the <literal>bar</literal> branch, and
+      I merge work from the <literal>foo</literal> branch, the result
+      will remain on the <literal>bar</literal> branch.</para>
+
+    &interaction.branch-named.merge;
+
+    <para id="x_3a8">To give a more concrete example, if I'm working on the
+      <literal>bleeding-edge</literal> branch, and I want to bring in
+      the latest fixes from the <literal>stable</literal> branch,
+      Mercurial will choose the <quote>right</quote>
+      (<literal>bleeding-edge</literal>) branch name when I pull and
+      merge from <literal>stable</literal>.</para>
+  </sect1>
+
+  <sect1>
+    <title>Branch naming is generally useful</title>
+
+    <para id="x_3a9">You shouldn't think of named branches as applicable only to
+      situations where you have multiple long-lived branches
+      cohabiting in a single repository.  They're very useful even in
+      the one-branch-per-repository case.</para>
+
+    <para id="x_3aa">In the simplest case, giving a name to each branch gives you
+      a permanent record of which branch a changeset originated on.
+      This gives you more context when you're trying to follow the
+      history of a long-lived branchy project.</para>
+
+    <para id="x_3ab">If you're working with shared repositories, you can set up a
+      <literal role="hook">pretxnchangegroup</literal> hook on each
+      that will block incoming changes that have the
+      <quote>wrong</quote> branch name.  This provides a simple, but
+      effective, defence against people accidentally pushing changes
+      from a <quote>bleeding edge</quote> branch to a
+      <quote>stable</quote> branch.  Such a hook might look like this
+      inside the shared repo's <filename role="special">
+	/.hgrc</filename>.</para>
+    <programlisting>[hooks]
+pretxnchangegroup.branch = hg heads --template '{branches} ' | grep mybranch</programlisting>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->

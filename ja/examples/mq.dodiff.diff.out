@@ -1,0 +1,13 @@
+$ \textbf{echo 'this is my first line' > oldfile}
+$ \textbf{echo 'my first line is here' > newfile}
+$ \textbf{diff -u oldfile newfile > tiny.patch}
+$ \textbf{cat tiny.patch}
+
+
+@@ -1 +1 @@
+-this is my first line
++my first line is here
+$ \textbf{patch < tiny.patch}
+patching file oldfile
+$ \textbf{cat oldfile}
+my first line is here

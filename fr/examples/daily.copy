@@ -51,9 +51,9 @@ hg init copy-example
 cd copy-example
 echo a > a
 echo b > b
-mkdir c
-mkdir c/a
-echo c > c/a/c
+mkdir z
+mkdir z/a
+echo c > z/a/c
 hg ci -Ama
 
 #$ name: simple
@@ -70,13 +70,13 @@ ls d
 
 #$ name: dir-src
 
-hg copy c e
+hg copy z e
 
 #$ name: dir-src-dest
 
-hg copy c d
+hg copy z d
 
 #$ name: after
 
-cp a z
-hg copy --after a z
+cp a n
+hg copy --after a n

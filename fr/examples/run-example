@@ -7,6 +7,7 @@
 import cStringIO
 import errno
 import getopt
+import glob
 import os
 import pty
 import re
@@ -18,23 +19,23 @@ import sys
 import tempfile
 import time
 
-tex_subs = {
-    '\\': '\\textbackslash{}',
-    '{': '\\{',
-    '}': '\\}',
+xml_subs = {
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;',
     }
 
 def gensubs(s):
     start = 0
     for i, c in enumerate(s):
-        sub = tex_subs.get(c)
+        sub = xml_subs.get(c)
         if sub:
             yield s[start:i]
             start = i + 1
             yield sub
     yield s[start:]
 
-def tex_escape(s):
+def xml_escape(s):
     return ''.join(gensubs(s))
         
 def maybe_unlink(name):
@@ -53,7 +54,92 @@ def find_path_to(program):
             return p
     return None
         
+def result_name(name):
+    return os.path.normpath(os.path.join('results', name.replace(os.sep, '-')))
+
+def wopen(name):
+    path = os.path.dirname(name)
+    if path:
+        try:
+            os.makedirs(path)
+        except OSError, err:
+            if err.errno != errno.EEXIST:
+                raise
+    return open(name, 'w')
+
 class example:
+    entities = dict.fromkeys(l.rstrip() for l in open('auto-snippets.xml'))
+
+    def __init__(self, name, verbose, keep_change):
+        self.name = os.path.normpath(name)
+        self.verbose = verbose
+        self.keep_change = keep_change
+        
+    def status(self, s):
+        sys.stdout.write(s)
+        if not s.endswith('\n'):
+            sys.stdout.flush()
+
+    def rename_output(self, base, ignore=[]):
+        mangle_re = re.compile('(?:' + '|'.join(ignore) + ')')
+        def mangle(s):
+            return mangle_re.sub('', s)
+        def matchfp(fp1, fp2):
+            while True:
+                s1 = mangle(fp1.readline())
+                s2 = mangle(fp2.readline())
+                if cmp(s1, s2):
+                    break
+                if not s1:
+                    return True
+            return False
+
+        oldname = result_name(base + '.out')
+        tmpname = result_name(base + '.tmp')
+        errname = result_name(base + '.err')
+        errfp = open(errname, 'w+')
+        for line in open(tmpname):
+            errfp.write(mangle_re.sub('', line))
+        os.rename(tmpname, result_name(base + '.lxo'))
+        errfp.seek(0)
+        try:
+            oldfp = open(oldname)
+        except IOError, err:
+            if err.errno != errno.ENOENT:
+                raise
+            os.rename(errname, oldname)
+            return False
+        if matchfp(oldfp, errfp):
+            os.unlink(errname)
+            return False
+        else:
+            print >> sys.stderr, '\nOutput of %s has changed!' % base
+            if self.keep_change:
+                os.rename(errname, oldname)
+                return False
+            else:
+                os.system('diff -u %s %s 1>&2' % (oldname, errname))
+            return True
+
+class static_example(example):
+    def run(self):
+        self.status('running %s\n' % self.name)
+        s = open(self.name).read().rstrip()
+        s = s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        ofp = wopen(result_name(self.name + '.tmp'))
+        ofp.write('<!-- BEGIN %s -->\n' % self.name)
+        ofp.write('<programlisting>')
+        ofp.write(s)
+        ofp.write('</programlisting>\n')
+        ofp.write('<!-- END %s -->\n' % self.name)
+        ofp.close()
+        self.rename_output(self.name)
+        norm = self.name.replace(os.sep, '-')
+        example.entities[
+            '<!ENTITY %s SYSTEM "results/%s.lxo">' % (norm, norm)] = 1
+
+
+class shell_example(example):
     shell = '/usr/bin/env bash'
     ps1 = '__run_example_ps1__ '
     ps2 = '__run_example_ps2__ '
@@ -61,9 +147,8 @@ class example:
     
     timeout = 10
 
-    def __init__(self, name, verbose):
-        self.name = name
-        self.verbose = verbose
+    def __init__(self, name, verbose, keep_change):
+        example.__init__(self, name, verbose, keep_change)
         self.poll = select.poll()
 
     def parse(self):
@@ -76,11 +161,6 @@ class example:
                 yield cfp.getvalue()
                 cfp.seek(0)
                 cfp.truncate()
-        
-    def status(self, s):
-        sys.stdout.write(s)
-        if not s.endswith('\n'):
-            sys.stdout.flush()
 
     def send(self, s):
         if self.verbose:
@@ -146,12 +226,12 @@ class example:
         maybe_unlink(self.name + '.run')
 
         rcfile = os.path.join(tmpdir, '.hgrc')
-        rcfp = open(rcfile, 'w')
+        rcfp = wopen(rcfile)
         print >> rcfp, '[ui]'
         print >> rcfp, "username = Bryan O'Sullivan <bos@serpentine.com>"
         
         rcfile = os.path.join(tmpdir, '.bashrc')
-        rcfp = open(rcfile, 'w')
+        rcfp = wopen(rcfile)
         print >> rcfp, 'PS1="%s"' % self.ps1
         print >> rcfp, 'PS2="%s"' % self.ps2
         print >> rcfp, 'unset HISTFILE'
@@ -230,12 +310,22 @@ class example:
                                 return 1
                             assert os.sep not in out
                             if ofp is not None:
+                                ofp.write('</screen>\n')
+                                ofp.write('<!-- END %s -->\n' % ofp_basename)
                                 ofp.close()
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
                                 ofp_basename = '%s.%s' % (self.name, out)
+                                norm = os.path.normpath(ofp_basename)
+                                norm = norm.replace(os.sep, '-')
+                                example.entities[
+                                    '<!ENTITY interaction.%s '
+                                    'SYSTEM "results/%s.lxo">'
+                                    % (norm, norm)] = 1
                                 read_hint = ofp_basename + ' '
-                                ofp = open(ofp_basename + '.tmp', 'w')
+                                ofp = wopen(result_name(ofp_basename + '.tmp'))
+                                ofp.write('<!-- BEGIN %s -->\n' % ofp_basename)
+                                ofp.write('<screen>')
                             else:
                                 ofp = None
                         elif pi == 'ignore':
@@ -248,14 +338,15 @@ class example:
                         # first, print the command we ran
                         if not hunk.startswith('#'):
                             nl = hunk.endswith('\n')
-                            hunk = ('%s \\textbf{%s}' %
+                            hunk = ('<prompt>%s</prompt> '
+                                    '<userinput>%s</userinput>' %
                                     (prompts[ps],
-                                     tex_escape(hunk.rstrip('\n'))))
+                                     xml_escape(hunk.rstrip('\n'))))
                             if nl: hunk += '\n'
                         ofp.write(hunk)
                         # then its output
-                        ofp.write(tex_escape(output))
-                    ps = newps
+                        ofp.write(xml_escape(output))
+                        ps = newps
                 self.status('\n')
             except:
                 print >> sys.stderr, '(killed)'
@@ -267,6 +358,8 @@ class example:
                     ps, output = self.sendreceive('exit\n', read_hint)
                     if ofp is not None:
                         ofp.write(output)
+                        ofp.write('</screen>\n')
+                        ofp.write('<!-- END %s -->\n' % ofp_basename)
                         ofp.close()
                         err |= self.rename_output(ofp_basename, ignore)
                     os.close(self.cfd)
@@ -281,68 +374,40 @@ class example:
                     elif os.WIFSIGNALED(rc):
                         print >> sys.stderr, '(signal %s)' % os.WTERMSIG(rc)
                 else:
-                    open(self.name + '.run', 'w')
+                    wopen(result_name(self.name + '.run'))
                 return err
         finally:
             shutil.rmtree(tmpdir)
-
-    def rename_output(self, base, ignore):
-        mangle_re = re.compile('(?:' + '|'.join(ignore) + ')')
-        def mangle(s):
-            return mangle_re.sub('', s)
-        def matchfp(fp1, fp2):
-            while True:
-                s1 = mangle(fp1.readline())
-                s2 = mangle(fp2.readline())
-                if cmp(s1, s2):
-                    break
-                if not s1:
-                    return True
-            return False
-
-        oldname = base + '.out'
-        tmpname = base + '.tmp'
-        errname = base + '.err'
-        errfp = open(errname, 'w+')
-        for line in open(tmpname):
-            errfp.write(mangle_re.sub('', line))
-        os.rename(tmpname, base + '.lxo')
-        errfp.seek(0)
-        try:
-            oldfp = open(oldname)
-        except IOError, err:
-            if err.errno != errno.ENOENT:
-                raise
-            os.rename(errname, oldname)
-            return False
-        if matchfp(oldfp, errfp):
-            os.unlink(errname)
-            return False
-        else:
-            print >> sys.stderr, '\nOutput of %s has changed!' % base
-            os.system('diff -u %s %s 1>&2' % (oldname, errname))
-            return True
 
 def print_help(exit, msg=None):
     if msg:
         print >> sys.stderr, 'Error:', msg
     print >> sys.stderr, 'Usage: run-example [options] [test...]'
     print >> sys.stderr, 'Options:'
-    print >> sys.stderr, '  -a --all       run all tests in this directory'
+    print >> sys.stderr, '  -a --all       run all examples in this directory'
     print >> sys.stderr, '  -h --help      print this help message'
+    print >> sys.stderr, '     --keep      keep new output as desired output'
     print >> sys.stderr, '  -v --verbose   display extra debug output'
     sys.exit(exit)
 
 def main(path='.'):
+    if os.path.realpath(path).split(os.sep)[-1] != 'examples':
+        print >> sys.stderr, 'Not being run from the examples directory!'
+        sys.exit(1)
+
     opts, args = getopt.getopt(sys.argv[1:], '?ahv',
-                               ['all', 'help', 'verbose'])
+                               ['all', 'help', 'keep', 'verbose'])
     verbose = False
     run_all = False
+    keep_change = False
+
     for o, a in opts:
         if o in ('-h', '-?', '--help'):
             print_help(0)
         if o in ('-a', '--all'):
             run_all = True
+        if o in ('--keep',):
+            keep_change = True
         if o in ('-v', '--verbose'):
             verbose = True
     errs = 0
@@ -354,19 +419,20 @@ def main(path='.'):
                 print >> sys.stderr, '%s: %s' % (a, err.strerror)
                 errs += 1
                 continue
-            if stat.S_ISREG(st.st_mode) and st.st_mode & 0111:
-                if example(a, verbose).run():
-                    errs += 1
+            if stat.S_ISREG(st.st_mode):
+                if st.st_mode & 0111:
+                    if shell_example(a, verbose, keep_change).run():
+                        errs += 1
+                elif a.endswith('.lst'):
+                    static_example(a, verbose, keep_change).run()
             else:
                 print >> sys.stderr, '%s: not a file, or not executable' % a
                 errs += 1
     elif run_all:
-        names = os.listdir(path)
+        names = glob.glob("*") + glob.glob("app*/*") + glob.glob("ch*/*")
         names.sort()
         for name in names:
-            if name == 'run-example' or name.startswith('.'): continue
-            if name.endswith('.out') or name.endswith('~'): continue
-            if name.endswith('.run'): continue
+            if name == 'run-example' or name.endswith('~'): continue
             pathname = os.path.join(path, name)
             try:
                 st = os.lstat(pathname)
@@ -375,12 +441,20 @@ def main(path='.'):
                 if err.errno != errno.ENOENT:
                     raise
                 continue
-            if stat.S_ISREG(st.st_mode) and st.st_mode & 0111:
-                if example(pathname, verbose).run():
-                    errs += 1
-        print >> open(os.path.join(path, '.run'), 'w'), time.asctime()
+            if stat.S_ISREG(st.st_mode):
+                if st.st_mode & 0111:
+                    if shell_example(pathname, verbose, keep_change).run():
+                        errs += 1
+                elif pathname.endswith('.lst'):
+                    static_example(pathname, verbose, keep_change).run()
+        print >> wopen(os.path.join(path, '.run')), time.asctime()
     else:
         print_help(1, msg='no test names given, and --all not provided')
+
+    fp = wopen('auto-snippets.xml')
+    for key in sorted(example.entities.iterkeys()):
+        print >> fp, key
+    fp.close()
     return errs
 
 if __name__ == '__main__':

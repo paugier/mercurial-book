@@ -1,0 +1,39 @@
+#!/bin/bash
+
+cat > hello.c <<EOF
+int main()
+{
+    printf("hello world!\n");
+}
+EOF
+
+cat > goodbye.c <<EOF
+int main()
+{
+    printf("goodbye world!\n");
+}
+EOF
+
+#$ name: init
+
+hg init myproject
+
+#$ name: ls
+
+ls -l
+
+#$ name: ls2
+
+ls -al myproject
+
+#$ name: add
+
+cd myproject
+cp ../hello.c .
+cp ../goodbye.c .
+hg add
+hg status
+
+#$ name: commit
+
+hg commit -m 'Initial commit'

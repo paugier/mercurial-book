@@ -1,0 +1,66 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<appendix id="chap:srcinstall">
+  <?dbhtml filename="installing-mercurial-from-source.html"?>
+  <title>Installing Mercurial from source</title>
+
+  <sect1 id="sec:srcinstall:unixlike">
+    <title>On a Unix-like system</title>
+
+    <para id="x_5e0">If you are using a Unix-like system that has a sufficiently
+      recent version of Python (2.3 or newer) available, it is easy to
+      install Mercurial from source.</para>
+    <orderedlist>
+      <listitem><para id="x_5e1">Download a recent source tarball from <ulink
+	    url="http://www.selenic.com/mercurial/download">http://www.selenic.com/mercurial/download</ulink>.</para>
+      </listitem>
+      <listitem><para id="x_5e2">Unpack the tarball:</para>
+	<programlisting>gzip -dc mercurial-MYVERSION.tar.gz | tar xf -</programlisting>
+      </listitem>
+      <listitem><para id="x_5e3">Go into the source directory and run the
+	  installer script.  This will build Mercurial and install it
+	  in your home directory.</para>
+	<programlisting>cd mercurial-MYVERSION
+python setup.py install --force --home=$HOME</programlisting>
+      </listitem>
+    </orderedlist>
+    <para id="x_5e4">Once the install finishes, Mercurial will be in the
+      <literal>bin</literal> subdirectory of your home directory.
+      Don't forget to make sure that this directory is present in your
+      shell's search path.</para>
+
+    <para id="x_5e5">You will probably need to set the <envar>PYTHONPATH</envar>
+      environment variable so that the Mercurial executable can find
+      the rest of the Mercurial packages.  For example, on my laptop,
+      I have set it to <literal>/home/bos/lib/python</literal>.  The
+      exact path that you will need to use depends on how Python was
+      built for your system, but should be easy to figure out.  If
+      you're uncertain, look through the output of the installer
+      script above, and see where the contents of the
+      <literal>mercurial</literal> directory were installed to.</para>
+
+  </sect1>
+  <sect1>
+    <title>On Windows</title>
+
+    <para id="x_5e6">Building and installing Mercurial on Windows requires a
+      variety of tools, a fair amount of technical knowledge, and
+      considerable patience.  I very much <emphasis>do not
+	recommend</emphasis> this route if you are a <quote>casual
+	user</quote>.  Unless you intend to hack on Mercurial, I
+      strongly suggest that you use a binary package instead.</para>
+
+    <para id="x_5e7">If you are intent on building Mercurial from source on
+      Windows, follow the <quote>hard way</quote> directions on the
+      Mercurial wiki at <ulink
+	url="http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall">http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall</ulink>, 
+      and expect the process to involve a lot of fiddly work.</para>
+
+  </sect1>
+</appendix>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "appendix")
+end:
+-->

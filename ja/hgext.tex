@@ -1,0 +1,591 @@
+\chapter{Adding functionality with extensions}
+\label{chap:hgext}
+
+Mercurial は機能性の見地から見た場合には申し分無い一方で、
+変り種の機能群は故意に除外されています。
+簡潔さを保つ遣り方は、
+保守担当と利用者の両方に対してソフトウェアの扱いやすさを維持します。
+
+しかし Mercurial は、
+利用者を杓子定規なコマンド群の只中に利用者を閉じ込めるようなことはしません。
+\emph{イクステンション}
+（この種のものは\emph{プラグイン}と呼ばれることもあります）
+として機能を追加することができるのです。
+幾つかのイクステンションについては、
+既に前の章で話題にしています。
+
+\begin{itemize}
+\item \ref{sec:tour-merge:fetch}~節では
+  \hgext{fetch} イクステンションを取り上げています。
+  このイクステンションは、新たな変更の取得と手元の変更へのマージを、
+  単一のコマンド \hgxcmd{fetch}{fetch} で実施します。
+
+\item \hgext{bisect} は、
+  バグの原因となる変更を効率的に検索するイクステンションで、
+  \ref{sec:undo:bisect}~節で取り上げました。
+
+\item \ref{chap:hook}~章では、
+  フックに関連した有用な機能を持つイクステンションを取り上げました。
+  \hgext{acl} はアクセスコントロールリストの機能を、
+  \hgext{bugzilla} は Bugzilla バグ追跡システムとの統合を、
+  \hgext{notify} は変更追加時における電子メール通知の機能を、
+  Mercurial に追加します。
+
+\item Mercurial Queues パッチ管理イクステンションは、
+  ２つの章と１つの appendix を丸々費やすに値する価値を持っています。
+  \ref{chap:mq}~章は基本を、
+  \ref{chap:mq-collab}~章はより進んだ話題を、
+  そして appendix~\ref{chap:mqref} は各コマンドの詳細を取り上げています。
+
+\end{itemize}
+
+本章では、
+上記以外の Mercurial で利用可能な幾つかのイクステンションについて取り上げ、
+その上で、
+自分でイクステンションを実装する際に必要と思われる仕組みについて、
+簡単に触れようと思います。
+
+\begin{itemize}
+\item \ref{sec:hgext:inotify}~節では、
+  \hgext{inotify} 
+  イクステンションによる\emph{絶大な}性能改善の可能性について取り上げます。
+
+\end{itemize}
+
+\section{Improve performance with the \hgext{inotify} extension}
+\label{sec:hgext:inotify}
+
+一般的な Mercurial の操作が 100 倍速くなることに興味があるのでしたら、
+ぜひこの節を読んでください。
+
+Mercurial は通常の環境であっても高い性能でを発揮します。
+XXXX 否定の接続の筈 XXXX
+例えば \hgcmd{status} コマンドの実行の際には、
+ファイルの状態を表示するために、
+リポジトリ配下の殆ど全てのディレクトリとファイルに対する走査が必要です。
+他の多くの Mercurial コマンドも、
+舞台裏では同様の作業を必要としています。
+例えば \hgcmd{diff} コマンドは、
+状態比較機構\footnote{訳注: \ref{sec:concepts:dirstate}~節参照
+}を用いることで、
+明らかに変更されていないファイルに対して、
+実行コストの高い比較処理が実施されることを回避しています。
+
+ファイル状態の取得は性能確保上重要なことなので、
+Mercurial の開発者達は、
+ギリギリのところまでこの部分の実装を最適化してきました。
+しかし \hgcmd{status} 実行の際には、
+前回の確認以降の変更の有無を知るために、
+コストの高いシステムコールを、
+Mercurial の管理下にあるファイル毎に最低１回発行する必要がある、
+という事実は回避しようがありません。
+一定以上の大きさのリポジトリでは、
+この処理には長い時間がかかります。
+
+影響の大きさを数値化すべく、
+150,000 のファイルを管理するリポジトリで実験を行った結果、
+いずれのファイルも変更\emph{されていない}場合であっても、
+\hgcmd{status} の実行には１０秒を要します。
+
+多くの近代的 OS は、ファイル更新の通知機構を備えています。
+適切なサービスにプログラムを登録しておくことで、
+対象となるファイルに関する生成・変更・削除といったイベントが発生する都度、
+OS が通知をしてくれます。
+Linux 環境では、
+\texttt{inotify} 
+と呼ばれるカーネルコンポネントが通知機構を提供します。
+
+Mercurial の \hgext{inotify} イクステンションは、
+カーネルの \texttt{inotify} と連携することで、
+\hgcmd{status} コマンドを最適化します。
+\hgext{inotify} イクステンションは２つの要素から構成されています。
+デーモン部分がバックグラウンドで稼動することで、
+\texttt{inotify} カーネルコンポネントから通知を受け取ります。
+デーモン部分は、
+通常の Mercurial コマンドからの接続要求も受け付けます。
+\hgext{inotify} イクステンションは、
+ファイルシステムの走査の代替としてデーモンを必要とするため、
+Mercurial の挙動そのものを改変します。
+デーモンはリポジトリ状態に関する完全な情報を保持しているので、
+リポジトリ配下のディレクトリやファイルを走査すること無しに、
+即座に応答を返すことができます。
+
+先に述べたとおり、
+通常の Mercurial では、
+150,000 のファイルを管理するリポジトリでの 
+\hgcmd{status} 実行に１０秒を要しました。
+\hgext{inotify} イクステンションを有効にすることで、
+実行に要する時間は\emph{1000倍}早い0.1~秒まで低減できました。
+
+話を先に進める前に、
+以下の点に注意してください。
+
+\begin{itemize}
+\item \hgext{inotify} は Linux 環境固有のイクステンションです。
+  Linux の \texttt{inotify} サブシステムと直接連携するため、
+  他の OS 環境下では機能しません。
+
+\item 2005 年初旬以後にリリースされた 
+  Linux ディストリビューションでの利用をお薦めします。
+  それ以前のディストリビューションは、
+  \texttt{inotify} が組み込まれていないか、
+  必要な API を \texttt{glibc} が提供していないものと思われます\footnote{
+  訳注: man ページによれば、
+  \texttt{inotify} の利用に当たっては、
+  2.6.13 版以後のカーネルと 2.4 版以後の \texttt{glibc} が必要だそうです。
+  }。
+
+\item 全てのファイルシステムが
+  \hgext{inotify} イクステンションの利用に適しているとは限りません。
+  典型的な例としては、
+  同一のネットワークファイルシステムを、
+  Mercurial を稼動させる複数のシステムでマウントしているような場合です。
+  カーネルの \texttt{inotify} サブシステムは、
+  リモートホストでの変更を知る術を持ちません。
+  殆どのローカルファイルシステム（例えば ext3、XFS や ReiserFS）は、
+  上手く機能する筈です。
+
+\end{itemize}
+
+\hgext{inotify} イクステンションは、
+2007 年 5 月の時点では Mercurial に同梱されていません\footnote{訳注:
+2007 年 10 月の 0.9.5 版段階でも同梱されていません}ので、
+他のイクステンションと比較して多少の準備作業が必要ですが、
+性能向上にはそれだけの価値があります。
+
+\hgext{inotify} イクステンションは目下、
+Mercurial ソースコードへのパッチと、
+\texttt{inotify} サブシステム連携の 
+Python バインディングライブラリの２つの要素から構成されています。
+
+\begin{note}
+  \texttt{inotify} の 
+  Python バインディングライブラリには\emph{２種類}あります。
+  １つは \texttt{pyinotify} と呼ばれるもので、
+  幾つかの Linux ディストリビューションには
+  \texttt{python-inotify} という名前で同梱されています。
+  実用に供するには非常にバグが多く効率も悪いので、
+  このライブラリは使うべきでは\emph{ありません}。
+\end{note}
+
+事を進めるに当たっては、
+既に機能しているインストール済み
+Mercurial を複製するのが良いでしょう。
+To get going, it's best to already have a functioning copy of
+Mercurial installed. XXXXXX
+
+\begin{note}
+  以下の手順を踏む場合、
+  最も最新の``最先端な''Mercurial 実装で、
+  既にインストール済みの Mercurial を\emph{置き換える}ことになります。
+  これは警告です。
+\end{note}
+
+\begin{enumerate}
+\item \texttt{inotify} の Python バインディングのリポジトリを複製します。
+  ビルドおよびインストールを行ってください。
+
+  \begin{codesample4}
+    hg clone http://hg.kublai.com/python/inotify
+    cd inotify
+    python setup.py build --force
+    sudo python setup.py install --skip-build
+  \end{codesample4}
+
+\item Mercurial の \dirname{crew} リポジトリを複製します。
+  Mercurial Queues により
+  \dirname{crew} リポジトリのローカルコピー\footnote{訳注：
+  ここでは \dirname{crew} から更に \dirname{inotify} を複製していますが、
+  \hgext{inotify} イクステンション利用のためだけにビルドする場合、
+  直接 \dirname{crew} で作業しても問題無い筈です。
+  }にパッチを当てる為に、
+  \hgext{inotify} パッチのリポジトリも複製してください。
+
+  \begin{codesample4}
+    hg clone http://hg.intevation.org/mercurial/crew
+    hg clone crew inotify
+    hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches
+  \end{codesample4}
+
+\item Mercurial Queues イクステンション（\hgext{mq}）
+  が利用可能であることを確認してください。
+  MQ を利用したことが無い場合、
+  まずは \ref{sec:mq:start}~節を読んでください。
+
+\item \dirname{inotify} （ローカル）リポジトリに移動して、
+  \hgxcmd{mq}{qpush} コマンドの \hgxopt{mq}{qpush}{-a} オプションを使用して、
+  全ての \hgext{inotify} パッチを適用してください。
+
+  \begin{codesample4}
+    cd inotify
+    hg qpush -a
+  \end{codesample4}
+
+  \hgxcmd{mq}{qpush} がエラーメッセージを表示した場合は、
+  作業を継続せずに開発コミュニティに助けを求めてください。
+
+\item パッチ適用版の Mercurial をビルドおよびインストールします。
+
+  \begin{codesample4}
+    python setup.py build --force
+    sudo python setup.py install --skip-build
+  \end{codesample4}
+
+\end{enumerate}
+
+適切にパッチが適用された版の Mercurial が一旦できてしまえば、
+\hgext{inotify} イクステンションを有効にするために必要なことは、
+\hgrc ファイルに以下の記述を追加することだけです。
+
+\begin{codesample2}
+  [extensions]
+  inotify =
+\end{codesample2}
+
+\hgext{inotify} イクステンションが有効化されると、
+リポジトリの状態を必要とするコマンドの初回起動の時点で、
+Mercurial は自動的且つ透過的に状態管理用デーモンを起動します。
+状態管理デーモンは、リポジトリごとに起動されます。
+
+状態管理デーモンはひそやかに起動され、バックグラウンドで実行し続けます。
+\hgext{inotify} イクステンションを有効にした複数のリポジトリで、
+幾つかのコマンドを実行した後に、
+実行中のプロセス一覧を見れば、
+カーネルからの通知と
+Mercurial からの問い合わせの両方を待っている複数の 
+\texttt{hg} プロセスを見ることができる筈です。
+
+\hgext{inotify} イクステンションを有効にした際でも、
+リポジトリにおける Mercurial コマンドの初回起動は、
+通常の Mercurial コマンド実行と同程度の性能で実行されます。
+これは状態管理デーモンによる通常の状態走査が必要なためで、
+後にカーネルからの更新通知を受け取る際の基底状態となります。
+しかし、これ以降の状態確認の必要な\emph{全ての}コマンド実行は、
+どんなに小さなサイズのリポジトリであっても、
+目に見えて速くなっている筈です。
+リポジトリが大きければ大きいほど、
+目に見えて性能が大きく改善されることでしょう。
+\hgext{inotify} デーモンは、
+どんなサイズのリポジトリであっても、
+状態取得操作を殆ど瞬時に終了させることができます。
+
+\hgxcmd{inotify}{inserve} コマンドにより、
+状態管理デーモンを手動で起動することもできます。
+手動での起動により、
+デーモンの実行に関して幾分明瞭な制御を手にすることができます。
+このコマンドの起動は、
+当然 \hgext{inotify} 
+イクステンションが有効になっている場合に限り使用可能です。
+
+\hgext{inotify} イクステンションを使用している際には、
+状態関連コマンドの実行全般がそれ以前と比較して速くなっている点を除けば、
+Mercurial の挙動は\emph{全く変わらない}筈です。
+
+とりわけ、コマンドの出力は異ならず、同じ結果を返す筈です。
+\hgext{inotify} イクステンションの有無で異なる結果が変える場合、
+障害として報告をしてください。
+
+\section{Flexible diff support with the \hgext{extdiff} extension}
+\label{sec:hgext:extdiff}
+
+Mercurial の組み込み \hgcmd{diff} コマンドは、
+unified 差分をそのまま出力します。
+
+\interaction{extdiff.diff}
+
+変更内容の表示に外部ツールを使いたい場合は、
+\hgext{extdiff} イクステンションが良いでしょう。
+\hgext{extdiff} イクステンションにより、
+変更内容表示に例えばグラフィカルな外部差分ツールが利用できるようになります。
+
+\hgext{extdiff} イクステンションは
+Mercurial に同梱されているので簡単に利用できます。
+\hgrc ファイルの
+\rcsection{extensions} セクションに、
+イクステンションを有効にする記述を１行追加するだけで良いのです。
+
+\begin{codesample2}
+  [extensions]
+  extdiff =
+\end{codesample2}
+
+この設定により、
+\hgxcmd{extdiff}{extdiff} コマンドが利用可能になりますが、
+基底状態ではこのコマンドは、
+組み込みの \hgcmd{diff} コマンドと同じ形式の unified 差分を、
+システムの \command{diff} コマンドにより生成します。
+
+\interaction{extdiff.extdiff}
+
+組み込みの \hgcmd{diff} コマンドの結果出力と厳密には一致しません\footnote{
+訳注: どの部分を指して「一致しない」と言っているのか？}が、
+同じオプションを指定してもシステム\footnote{訳注:
+ここで言う「system」とは？ XXXXX}ごとに
+（システムの）\command{diff} コマンドの出力が異なるからです。
+
+上記の出力結果に ``\texttt{making snapshot}''
+行が含まれていることからも察することができますが、
+\hgxcmd{extdiff}{extdiff} 
+コマンドはソースツリーに関するスナップショットを２つ作成します。
+１つ目のスナップショットはソースのリビジョンのもので、
+２つ目は作業領域ディレクトリにおける対象リビジョンのものです\footnote{訳注:
+作業領域ディレクトリの「親リビジョン」と「現行状態」}。
+\hgxcmd{extdiff}{extdiff} 
+コマンドはこれらのスナップショットを一時ディレクトリに作成し、
+これらのディレクトリ名を引数にして外部の差分表示ツールを起動し、
+その後一時ディレクトリを削除します。
+実行効率上、
+２つのリビジョンの間で差分のあるディレクトリ・
+ファイルのスナップショットだけが作成されます。
+
+スナップショットディレクトリの名前は、
+元となるリポジトリのベース名と同じ名前を持ちます。
+\dirname{/quux/bar/foo} というリポジトリの場合、
+個々のスナップショットのディレクトリ（ベース）名は \dirname{foo} となります。
+対応するチェンジセットIDがある場合、
+スナップショットのディレクトリ名にはチェンジセットIDが付与されます。
+\texttt{a631aca1083f} 版に対するスナップショットのディレクトリ名は
+\dirname{foo.a631aca1083f} となります。
+作業領域ディレクトリの現行状態に対するスナップショットは、
+チェンジセットIDが付与されませんので、
+この例では単に \dirname{foo} という名前になります。
+実際の挙動を見るために、
+再度前出の \hgxcmd{extdiff}{extdiff} の実行例を見てみましょう。
+差分出力のヘッダ部に、
+スナップショットディレクトリの名前が埋め込まれているのに気付くことでしょう。
+
+\hgxcmd{extdiff}{extdiff} コマンドには、
+２つの重要なオプションがあります。
+\hgxopt{extdiff}{extdiff}{-p} オプションは、
+システムの \command{diff} 
+コマンドの代替として使用される差分表示プログラムを指定します。
+\hgxopt{extdiff}{extdiff}{-o} オプションは、
+\hgxcmd{extdiff}{extdiff} 
+が外部の差分表示プログラム起動時に指定するオプション
+（デフォルトでは ``\texttt{-Npru}'' が指定され、
+\command{diff} を使用する場合にのみ意味を持ちます）
+を指定します。
+それ以外の点では、
+\hgxcmd{extdiff}{extdiff} コマンドは
+組み込みの \hgcmd{diff} コマンドと同様に振舞いますので、
+オプション名やオプション指定の文法、
+比較対象リビジョンを指定する引数、
+比較したいファイル名の指定などは、
+組み込みの \hgcmd{diff} と同じように指定できます。
+
+実行例として、
+（通常の \hgcmd{diff} による）unified 差分の代わりに、
+システム標準の \command{diff} コマンドによる context 差分
+（\cmdopt{diff}{-c} オプション使用）を、
+デフォルトの３行ではなく５行の context 行
+（\cmdopt{diff}{-C} オプションでの \texttt{5} 指定）
+で表示する方法を示します。
+
+\interaction{extdiff.extdiff-ctx}
+
+グラフィカルな差分ツールの起動は非常に簡単です。
+\command{kdiff3} 起動の例を示します。
+
+\begin{codesample2}
+  hg extdiff -p kdiff3 -o ''
+\end{codesample2}
+
+利用する差分表示コマンドがディレクトリ指定を扱えない場合でも、
+簡単なスクリプトを使うことでその問題を解決できます。
+そのようなスクリプトによる
+\hgext{mq} イクステンションと
+\command{interdiff} コマンドの連携例は、
+\ref{mq-collab:tips:interdiff}~節を参照してください。
+
+\subsection{Defining command aliases}
+
+\hgxcmd{extdiff}{extdiff} コマンドや利用する差分表示コマンドの、
+両方のオプションを覚えておくのは面倒ですので、
+\hgext{extdiff} イクステンションは、
+使用する差分表示コマンドを正しいオプションで起動する
+\emph{新しい}コマンドを定義できるようになっています。
+
+新しいコマンド定義のために必要なのは、
+\hgrc ファイルを編集し、
+\rcsection{extdiff} という名前のセクションを追加するだけです。
+このセクションでは、
+複数のコマンドを定義することができます。
+以下に \texttt{kdiff3} コマンドを追加する例を示します。
+一旦定義してしまえば、
+``\texttt{hg kdiff3}''と入力するだけで
+\hgext{extdiff} イクステンションが
+\command{kdiff3} を起動します。
+
+\begin{codesample2}
+  [extdiff]
+  cmd.kdiff3 =
+\end{codesample2}
+
+定義の右辺を上記例のように空にした場合、
+\hgext{extdiff} イクステンションは、
+定義したコマンドの名前を実行すべき外部プログラムの名前と見なします。
+しかし、これらの名前が一致している必要はありません。
+以下の例では、
+\command{kdiff3} を実行するコマンドを
+``\texttt{hg wibble}'' という名前で定義しています。
+
+\begin{codesample2}
+  [extdiff]
+  cmd.wibble = kdiff3
+\end{codesample2}
+
+差分表示プログラム起動の際のデフォルトオプションも指定することができます。
+``\texttt{opts.}'' 接頭辞に続いて、
+オプションを適用したいコマンド名を記述してください。
+以下の例では、
+\command{vim} エディタの \texttt{DirDiff} 拡張を実行する
+``\texttt{hg vimdiff}'' コマンドを定義しています。
+
+\begin{codesample2}
+  [extdiff]  
+  cmd.vimdiff = vim
+  opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'
+\end{codesample2}
+
+\section{Cherrypicking changes with the \hgext{transplant} extension}
+\label{sec:hgext:transplant}
+
+※ Brendan とチャットでの話し合いが必要
+
+\section{Send changes via email with the \hgext{patchbomb} extension}
+\label{sec:hgext:patchbomb}
+
+多くのプロジェクトでは、
+共有リポジトリに最終成果をコミットする前に、
+変更内容をメーリングリストに投稿して査読や論評を行う
+``変更レビュー''の文化を持っています。
+リポジトリへのアクセス権を持たない人々からの変更依頼を適用する、
+門番の役割を果たす人々がいるプロジェクトもあります。
+
+Mercurial の \hgext{patchbomb} イクステンションを利用することで、
+レビューや提案のための電子メールによる変更送信が容易になります。
+このイクステンションの名前は、
+変更がパッチ形式で整形され、
+１チェンジセット毎に１つの電子メールで送信されることに由来しています。
+電子メールによる一連の変更の送信が、
+受信者のメールボックスにとって``爆撃''（bombing）
+のようであることから、``patchbomb''と呼ばれています。
+
+\hgext{patchbomb} イクステンションの基本的な設定記述は、
+いつものように \hgrc への１行か２行程度の記述だけです。
+
+\begin{codesample2}
+  [extensions]
+  patchbomb =
+\end{codesample2}
+
+一旦イクステンションを有効にしたならば、
+\hgxcmd{patchbomb}{email} という新たなコマンドが利用可能になります。
+
+\hgxcmd{patchbomb}{email} コマンドの安全且つ最善の実行手順は、
+\emph{必ず} \hgxopt{patchbomb}{email}{-n} 
+オプションを付けて一旦実行してみることです。
+\hgxopt{patchbomb}{email}{-n} オプション付きの実行は、
+実際の電子メール送信は行わずに、
+送信\emph{されるであろう}内容を表示します。
+変更内容にざっと目を通して、
+送信内容が適切であることを確認したならば、
+\hgxopt{patchbomb}{email}{-n} 
+オプション抜きで再度
+\hgxcmd{patchbomb}{email} コマンドを実行してください。
+
+\hgxcmd{patchbomb}{email} コマンドは、
+他の Mercurial コマンドと同様のリビジョン指定が可能です。
+例えば以下の実行例では、
+リビジョン 7 から \texttt{tip} までの全てのリビジョン
+（リビジョン 7 および \texttt{tip} も含みます）が送信されます。
+
+\begin{codesample2}
+  hg email -n 7:tip
+\end{codesample2}
+
+比較対象の\emph{リポジトリ}を指定することもできます。
+リビジョン指定無しでリポジトリを指定した場合、
+\hgxcmd{patchbomb}{email} コマンドは、
+遠隔リポジトリに存在しないローカルリポジトリの全てのリビジョンを送信します。
+リビジョンないし（\hgxopt{patchbomb}{email}{-b} オプションによる）
+ブランチ名を追加指定することで、
+送信されるリビジョンを制限することができます。
+
+送信先アドレスを指定しない
+\hgxcmd{patchbomb}{email} 実行は完璧に安全で、
+その場合には \hgxcmd{patchbomb}{email} は対話的に入力を求めてきます
+（Linux や Unix ライクなシステムを利用している場合、
+これらのヘッダ値入力の際には、
+\texttt{readline} 様式の編集機能が利用可能です）。
+
+単一のリビジョンだけを送信する場合、
+\hgxcmd{patchbomb}{email} コマンドの基底動作では、
+コミットメッセージの最初の１行を送信する電子メールのサブジェクトに利用します。
+
+複数のリビジョンを送信する場合、
+\hgxcmd{patchbomb}{email} コマンドはチェンジセット毎に電子メールを送信します。
+この場合、
+送信しようとする一連の変更の目的を記述した前置きの電子メールを、
+一連のメール送信の先触れとして送信します。
+
+\subsection{Changing the behaviour of patchbombs}
+
+電子メールによる変更内容送信の形式が、
+全てのプロジェクトで厳密に同じわけでは無いことから、
+\hgext{patchbomb} イクステンションは、
+コマンド行でのオプション指定による幾つかの適合処理を実施します。
+
+\begin{itemize}
+\item コマンド行での \hgxopt{patchbomb}{email}{-s} オプションにより、
+  前置きメッセージのサブジェクトを指定できます。
+  このオプションには、
+  サブジェクトとして使用するテキストを指定します。
+
+\item \hgxopt{patchbomb}{email}{-f} オプションにより、
+  電子メールの送信元アドレスを変更できます。
+  このオプションには、
+  送信元アドレスとして使用する電子メールアドレスを指定します。
+
+\item 基底動作では、電子メールごとに unified 差分（
+  形式の詳細に関しては \ref{sec:mq:patch}~節を参照してください）
+  を送信します。
+  \hgxopt{patchbomb}{email}{-b} オプションを指定することで、
+  バイナリバンドル形式での送信を選択できます。
+
+\item unified 差分の通常の出力\footnote{訳注:
+  「Mercurial における通常の出力」の意味？
+  それとも「patchbomb における通常の出力」の意味？
+  }はメタデータヘッダから始まります。
+  \hgxopt{patchbomb}{email}{--plain} オプションを指定することで、
+  これらを省略した簡素な形式の差分を送信することができます。
+
+\item 差分部分は通常、
+  パッチの説明部分と同じ MIME パートに``並べて''送信されます。
+  メールの最初の MIME パートからしか引用できないメールツールもあるため、
+  最も多くの読み手にとって、
+  一番容易に差分を引用して返信できるのがこの形式です。
+  説明部分と差分部分を別々の MIME パートとして送信したい場合は、
+  \hgxopt{patchbomb}{email}{-a} オプションを指定してください。
+
+\item \hgxopt{patchbomb}{email}{-m} オプションを指定することで、
+  電子メールでの送信の替わりに、
+  \texttt{mbox} 形式のメールフォルダへの書き込みを行うことができます。
+  このオプションには、書き込み先ファイル名を指定します。
+
+\item 各パッチおよび前置きメッセージに対して、
+  \command{diffstat} 形式の要約を付与したい場合は、
+  \hgxopt{patchbomb}{email}{-d} オプションを指定してください。
+  \command{diffstat} コマンドは、
+  パッチ適用先ファイル名と、
+  影響を受ける行数、
+  および各ファイル毎の変更量を表すヒストグラムを一覧表示します。
+  メールの読み手は、
+  この情報からパッチの複雑度に関する質的な一覧性を得ることができます。
+
+\end{itemize}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

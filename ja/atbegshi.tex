@@ -1,0 +1,11 @@
+\usepackage{atbegshi} % defnes '\AtBeginShipoutFirst'
+
+% encoding specified below depends not on one of file content
+% but on TeX processing internal one.
+\ifnum 42146=\euc"A4A2
+  % \AtBeginDvi does not work correctly with current HYPERREF package
+  \AtBeginShipoutFirst{\special{pdf:tounicode EUC-UCS2}}
+\else
+  % \AtBeginDvi does not work correctly with current HYPERREF package
+  \AtBeginShipoutFirst{\special{pdf:tounicode 90ms-RKSJ-UCS2}}
+\fi

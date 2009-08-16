@@ -1,0 +1,32 @@
+#!/bin/bash
+
+echo '[extensions]' >> $HGRC
+echo 'hgext.mq =' >> $HGRC
+
+#$ name: go
+
+hg init myrepo
+cd myrepo
+hg qinit
+hg qnew bad.patch
+echo a > a
+hg add a
+hg qrefresh
+hg qdelete bad.patch
+hg qpop
+hg qdelete bad.patch
+
+#$ name: convert
+
+hg qnew good.patch
+echo a > a
+hg add a
+hg qrefresh -m 'Good change'
+hg qfinish tip
+hg qapplied
+hg tip --style=compact
+
+#$ name: import
+
+hg qimport -r tip
+hg qapplied

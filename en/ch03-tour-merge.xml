@@ -1,0 +1,454 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:tour-merge">
+  <?dbhtml filename="a-tour-of-mercurial-merging-work.html"?>
+  <title>A tour of Mercurial: merging work</title>
+
+  <para id="x_338">We've now covered cloning a repository, making changes in a
+    repository, and pulling or pushing changes from one repository
+    into another.  Our next step is <emphasis>merging</emphasis>
+    changes from separate repositories.</para>
+
+  <sect1>
+    <title>Merging streams of work</title>
+
+    <para id="x_339">Merging is a fundamental part of working with a distributed
+      revision control tool.  Here are a few cases in which the need
+      to merge work arises.</para>
+    <itemizedlist>
+      <listitem>
+	<para id="x_33a">Alice and Bob each have a personal copy of a
+	  repository for a project they're collaborating on.  Alice
+	  fixes a bug in her repository; Bob adds a new feature in
+	  his.  They want the shared repository to contain both the
+	  bug fix and the new feature.</para>
+      </listitem>
+      <listitem>
+	<para id="x_33b">Cynthia frequently works on several different
+	  tasks for a single project at once, each safely isolated in
+	  its own repository. Working this way means that she often
+	  needs to merge one piece of her own work with
+	  another.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para id="x_33c">Because we need to merge often, Mercurial makes
+      the process easy.  Let's walk through a merge.  We'll begin by
+      cloning yet another repository (see how often they spring up?)
+      and making a change in it.</para>
+
+    &interaction.tour.merge.clone;
+
+    <para id="x_33d">We should now have two copies of
+      <filename>hello.c</filename> with different contents.  The
+      histories of the two repositories have also diverged, as
+      illustrated in <xref
+	linkend="fig:tour-merge:sep-repos"/>.  Here is a copy of our
+      file from one repository.</para>
+
+    &interaction.tour.merge.cat1;
+
+    <para id="x_722">And here is our slightly different version from the other
+      repository.</para>
+
+    &interaction.tour.merge.cat2;
+
+    <figure id="fig:tour-merge:sep-repos">
+      <title>Divergent recent histories of the <filename
+	  class="directory">my-hello</filename> and <filename
+	  class="directory">my-new-hello</filename>
+	repositories</title>
+      <mediaobject>
+	<imageobject><imagedata fileref="figs/tour-merge-sep-repos.png"/></imageobject>
+	<textobject><phrase>XXX add text</phrase></textobject>
+      </mediaobject>
+    </figure>
+
+    <para id="x_33f">We already know that pulling changes from our <filename
+	class="directory">my-hello</filename> repository will have no
+      effect on the working directory.</para>
+
+    &interaction.tour.merge.pull;
+
+    <para id="x_340">However, the <command role="hg-cmd">hg pull</command>
+      command says something about <quote>heads</quote>.</para>
+
+    <sect2>
+      <title>Head changesets</title>
+
+      <para id="x_341">Remember that Mercurial records what the parent
+	of each change is.  If a change has a parent, we call it a
+	child or descendant of the parent.  A head is a change that
+	has no children.  The tip revision is thus a head, because the
+	newest revision in a repository doesn't have any children.
+	There are times when a repository can contain more than one
+	head.</para>
+
+      <figure id="fig:tour-merge:pull">
+	<title>Repository contents after pulling from <filename
+	    class="directory">my-hello</filename> into <filename
+	    class="directory">my-new-hello</filename></title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="figs/tour-merge-pull.png"/>
+	  </imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_343">In <xref linkend="fig:tour-merge:pull"/>, you can
+	see the effect of the pull from <filename
+	  class="directory">my-hello</filename> into <filename
+	  class="directory">my-new-hello</filename>.  The history that
+	was already present in <filename
+	  class="directory">my-new-hello</filename> is untouched, but
+	a new revision has been added.  By referring to <xref
+	  linkend="fig:tour-merge:sep-repos"/>, we can see that the
+	<emphasis>changeset ID</emphasis> remains the same in the new
+	repository, but the <emphasis>revision number</emphasis> has
+	changed.  (This, incidentally, is a fine example of why it's
+	not safe to use revision numbers when discussing changesets.)
+	We can view the heads in a repository using the <command
+	  role="hg-cmd">hg heads</command> command.</para>
+
+      &interaction.tour.merge.heads;
+    </sect2>
+
+    <sect2>
+      <title>Performing the merge</title>
+
+      <para id="x_344">What happens if we try to use the normal <command
+	  role="hg-cmd">hg update</command> command to update to the
+	new tip?</para>
+
+      &interaction.tour.merge.update;
+
+      <para id="x_345">Mercurial is telling us that the <command
+	  role="hg-cmd">hg update</command> command won't do a merge;
+	it won't update the working directory when it thinks we might
+	want to do a merge, unless we force it to do so.
+	(Incidentally, forcing the update with <command>hg update
+	  -C</command> would revert any uncommitted changes in the
+	working directory.)</para>
+
+      <para id="x_723">To start a merge between the two heads, we use the
+	<command role="hg-cmd">hg merge</command> command.</para>
+
+      &interaction.tour.merge.merge;
+
+      <para id="x_347">We resolve the contents of <filename>hello.c</filename>
+
+This updates the working directory so that it
+	contains changes from <emphasis>both</emphasis> heads, which
+	is reflected in both the output of <command role="hg-cmd">hg
+	  parents</command> and the contents of
+	<filename>hello.c</filename>.</para>
+
+      &interaction.tour.merge.parents;
+    </sect2>
+
+    <sect2>
+      <title>Committing the results of the merge</title>
+
+      <para id="x_348">Whenever we've done a merge, <command role="hg-cmd">hg
+	  parents</command> will display two parents until we <command
+	  role="hg-cmd">hg commit</command> the results of the
+	  merge.</para>
+
+	&interaction.tour.merge.commit;
+
+      <para id="x_349">We now have a new tip revision; notice that it has
+	<emphasis>both</emphasis> of our former heads as its parents.
+	These are the same revisions that were previously displayed by
+	<command role="hg-cmd">hg parents</command>.</para>
+
+      &interaction.tour.merge.tip;
+
+      <para id="x_34a">In <xref
+	  linkend="fig:tour-merge:merge"/>, you can see a
+	representation of what happens to the working directory during
+	the merge, and how this affects the repository when the commit
+	happens.  During the merge, the working directory has two
+	parent changesets, and these become the parents of the new
+	changeset.</para>
+
+      <figure id="fig:tour-merge:merge">
+	<title>Working directory and repository during merge, and
+	  following commit</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="figs/tour-merge-merge.png"/>
+	  </imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_69c">We sometimes talk about a merge having
+	<emphasis>sides</emphasis>: the left side is the first parent
+	in the output of <command role="hg-cmd">hg parents</command>,
+	and the right side is the second.  If the working directory
+	was at e.g. revision 5 before we began a merge, that revision
+	will become the left side of the merge.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Merging conflicting changes</title>
+
+    <para id="x_34b">Most merges are simple affairs, but sometimes you'll find
+      yourself merging changes where each side modifies the same portions
+      of the same files.  Unless both modifications are identical,
+      this results in a <emphasis>conflict</emphasis>, where you have
+      to decide how to reconcile the different changes into something
+      coherent.</para>
+
+    <figure id="fig:tour-merge:conflict">
+      <title>Conflicting changes to a document</title>
+      <mediaobject>
+	<imageobject><imagedata fileref="figs/tour-merge-conflict.png"/></imageobject>
+	<textobject><phrase>XXX add text</phrase></textobject>
+      </mediaobject>
+    </figure>
+
+    <para id="x_34d"><xref linkend="fig:tour-merge:conflict"/> illustrates
+      an instance of two conflicting changes to a document.  We
+      started with a single version of the file; then we made some
+      changes; while someone else made different changes to the same
+      text.  Our task in resolving the conflicting changes is to
+      decide what the file should look like.</para>
+
+    <para id="x_34e">Mercurial doesn't have a built-in facility for handling
+      conflicts. Instead, it runs an external program, usually one
+      that displays some kind of graphical conflict resolution
+      interface.  By default, Mercurial tries to find one of several
+      different merging tools that are likely to be installed on your
+      system.  It first tries a few fully automatic merging tools; if
+      these don't succeed (because the resolution process requires
+      human guidance) or aren't present, it tries a few
+      different graphical merging tools.</para>
+
+    <para id="x_34f">It's also possible to get Mercurial to run a
+      specific program or script, by setting the
+      <envar>HGMERGE</envar> environment variable to the name of your
+      preferred program.</para>
+
+    <sect2>
+      <title>Using a graphical merge tool</title>
+
+      <para id="x_350">My preferred graphical merge tool is
+	<command>kdiff3</command>, which I'll use to describe the
+	features that are common to graphical file merging tools.  You
+	can see a screenshot of <command>kdiff3</command> in action in
+	<xref linkend="fig:tour-merge:kdiff3"/>.  The kind of
+	merge it is performing is called a <emphasis>three-way
+	  merge</emphasis>, because there are three different versions
+	of the file of interest to us.  The tool thus splits the upper
+	portion of the window into three panes:</para>
+      <itemizedlist>
+	<listitem><para id="x_351">At the left is the <emphasis>base</emphasis>
+	    version of the file, i.e. the most recent version from
+	    which the two versions we're trying to merge are
+	    descended.</para>
+	</listitem>
+	<listitem><para id="x_352">In the middle is <quote>our</quote> version of
+	    the file, with the contents that we modified.</para>
+	</listitem>
+	<listitem><para id="x_353">On the right is <quote>their</quote> version
+	    of the file, the one that from the changeset that we're
+	    trying to merge with.</para>
+	</listitem></itemizedlist>
+      <para id="x_354">In the pane below these is the current
+	<emphasis>result</emphasis> of the merge. Our task is to
+	replace all of the red text, which indicates unresolved
+	conflicts, with some sensible merger of the
+	<quote>ours</quote> and <quote>theirs</quote> versions of the
+	file.</para>
+
+      <para id="x_355">All four of these panes are <emphasis>locked
+	  together</emphasis>; if we scroll vertically or horizontally
+	in any of them, the others are updated to display the
+	corresponding sections of their respective files.</para>
+
+      <figure id="fig:tour-merge:kdiff3">
+	<title>Using <command>kdiff3</command> to merge versions of a
+	  file</title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata width="100%" fileref="figs/kdiff3.png"/></imageobject>
+	  <textobject>
+	    <phrase>XXX add text</phrase>
+	  </textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_357">For each conflicting portion of the file, we can choose to
+	resolve the conflict using some combination of text from the
+	base version, ours, or theirs.  We can also manually edit the
+	merged file at any time, in case we need to make further
+	modifications.</para>
+
+      <para id="x_358">There are <emphasis>many</emphasis> file merging tools
+	available, too many to cover here.  They vary in which
+	platforms they are available for, and in their particular
+	strengths and weaknesses.  Most are tuned for merging files
+	containing plain text, while a few are aimed at specialised
+	file formats (generally XML).</para>
+    </sect2>
+
+    <sect2>
+      <title>A worked example</title>
+
+      <para id="x_359">In this example, we will reproduce the file modification
+	history of <xref linkend="fig:tour-merge:conflict"/>
+	above.  Let's begin by creating a repository with a base
+	version of our document.</para>
+
+      &interaction.tour-merge-conflict.wife;
+
+      <para id="x_35a">We'll clone the repository and make a change to the
+	file.</para>
+
+      &interaction.tour-merge-conflict.cousin;
+
+      <para id="x_35b">And another clone, to simulate someone else making a
+	change to the file. (This hints at the idea that it's not all
+	that unusual to merge with yourself when you isolate tasks in
+	separate repositories, and indeed to find and resolve
+	conflicts while doing so.)</para>
+
+      &interaction.tour-merge-conflict.son;
+
+      <para id="x_35c">Having created two
+	different versions of the file, we'll set up an environment
+	suitable for running our merge.</para>
+
+      &interaction.tour-merge-conflict.pull;
+
+      <para id="x_35d">In this example, I'll set
+	<envar>HGMERGE</envar> to tell Mercurial to use the
+	non-interactive <command>merge</command> command.  This is
+	bundled with many Unix-like systems. (If you're following this
+	example on your computer, don't bother setting
+	<envar>HGMERGE</envar>.  You'll get dropped into a GUI file
+	merge tool instead, which is much preferable.)</para>
+
+      &interaction.tour-merge-conflict.merge;
+
+      <para id="x_35f">Because <command>merge</command> can't resolve the
+	conflicting changes, it leaves <emphasis>merge
+	  markers</emphasis> inside the file that has conflicts,
+	indicating which lines have conflicts, and whether they came
+	from our version of the file or theirs.</para>
+
+      <para id="x_360">Mercurial can tell from the way <command>merge</command>
+	exits that it wasn't able to merge successfully, so it tells
+	us what commands we'll need to run if we want to redo the
+	merging operation.  This could be useful if, for example, we
+	were running a graphical merge tool and quit because we were
+	confused or realised we had made a mistake.</para>
+
+      <para id="x_361">If automatic or manual merges fail, there's nothing to
+	prevent us from <quote>fixing up</quote> the affected files
+	ourselves, and committing the results of our merge:</para>
+
+      &interaction.tour-merge-conflict.commit;
+
+      <note>
+	<title>Where is the <command>hg resolve</command> command?</title>
+
+	<para id="x_724">The <command>hg resolve</command> command was introduced
+	  in Mercurial 1.1, which was released in December 2008. If
+	  you are using an older version of Mercurial (run <command>hg
+	    version</command> to see), this command will not be
+	  present.  If your version of Mercurial is older than 1.1,
+	  you should strongly consider upgrading to a newer version
+	  before trying to tackle complicated merges.</para>
+      </note>
+    </sect2>
+  </sect1>
+
+  <sect1 id="sec:tour-merge:fetch">
+    <title>Simplifying the pull-merge-commit sequence</title>
+
+    <para id="x_362">The process of merging changes as outlined above is
+      straightforward, but requires running three commands in
+      sequence.</para>
+    <programlisting>hg pull -u
+hg merge
+hg commit -m 'Merged remote changes'</programlisting>
+    <para id="x_363">In the case of the final commit, you also need to enter a
+      commit message, which is almost always going to be a piece of
+      uninteresting <quote>boilerplate</quote> text.</para>
+
+    <para id="x_364">It would be nice to reduce the number of steps needed, if
+      this were possible.  Indeed, Mercurial is distributed with an
+      extension called <literal role="hg-ext">fetch</literal> that
+      does just this.</para>
+
+    <para id="x_365">Mercurial provides a flexible extension mechanism that lets
+      people extend its functionality, while keeping the core of
+      Mercurial small and easy to deal with.  Some extensions add new
+      commands that you can use from the command line, while others
+      work <quote>behind the scenes,</quote> for example adding
+      capabilities to Mercurial's built-in server mode.</para>
+
+    <para id="x_366">The <literal role="hg-ext">fetch</literal>
+      extension adds a new command called, not surprisingly, <command
+	role="hg-cmd">hg fetch</command>.  This extension acts as a
+      combination of <command role="hg-cmd">hg pull -u</command>,
+      <command role="hg-cmd">hg merge</command> and <command
+	role="hg-cmd">hg commit</command>.  It begins by pulling
+      changes from another repository into the current repository.  If
+      it finds that the changes added a new head to the repository, it
+      updates to the new head, begins a merge, then (if the merge
+      succeeded) commits the result of the merge with an
+      automatically-generated commit message.  If no new heads were
+      added, it updates the working directory to the new tip
+      changeset.</para>
+
+    <para id="x_367">Enabling the <literal
+	role="hg-ext">fetch</literal> extension is easy.  Edit the
+      <filename role="special">.hgrc</filename> file in your home
+      directory, and either go to the <literal
+	role="rc-extensions">extensions</literal> section or create an
+      <literal role="rc-extensions">extensions</literal> section. Then
+      add a line that simply reads
+      <quote><literal>fetch=</literal></quote>.</para>
+
+    <programlisting>[extensions]
+fetch =</programlisting>
+
+    <para id="x_368">(Normally, the right-hand side of the
+      <quote><literal>=</literal></quote> would indicate where to find
+      the extension, but since the <literal
+	role="hg-ext">fetch</literal> extension is in the standard
+      distribution, Mercurial knows where to search for it.)</para>
+  </sect1>
+
+  <sect1>
+    <title>Renaming, copying, and merging</title>
+
+    <para id="x_729">During the life of a project, we will often want to change
+      the layout of its files and directories. This can be as simple
+      as renaming a single file, or as complex as restructuring the
+      entire hierarchy of files within the project.</para>
+
+    <para id="x_72a">Mercurial supports these kinds of complex changes fluently,
+      provided we tell it what we're doing.  If we want to rename a
+      file, we should use the <command>hg rename</command><footnote>
+	<para id="x_72b">If you're a Unix user, you'll be glad to know that the
+	  <command>hg rename</command> command can be abbreviated as
+	  <command>hg mv</command>.</para>
+      </footnote> command to rename it, so that Mercurial can do the
+      right thing later when we merge.</para>
+
+    <para id="x_72c">We will cover the use of these commands in more detail in
+      <xref linkend="chap:daily.copy"/>.</para>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->

@@ -1,0 +1,91 @@
+% The use of oneside here is a temporary hack; \marginpar entries
+% don't show up on odd pages of PDF output without it.  Sigh.
+\documentclass[oneside]{jbook}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% output format independent part:
+%%%%
+
+%\usepackage{enumerate}
+\usepackage{fullpage}
+\usepackage{makeidx}
+\usepackage{fancyvrb}
+\usepackage{custom}
+
+%%%%
+%%%% output format specific part:
+%%%%
+
+\usepackage[dvipdfm]{color} % prevents COLOR.STY from using DVIPS.DEF driver
+\usepackage[dvipdfm]{graphicx}
+\usepackage{pslatex}
+
+\input{atbegxxx}
+
+% leave hyperref until last
+\usepackage[
+  dvipdfm,
+  colorlinks=true,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  bookmarkstype=toc,
+  pdftitle={Mercurial による分散構成管理},
+  pdfsubject={構成管理},
+  pdfkeywords={Mercurial, 構成管理, 分散構成管理},
+  pdfauthor={Bryan O'Sullivan}
+  ]{hyperref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% output format independent part:
+%%%%
+
+\include{99defs}
+
+%%%%
+%%%% output format specific part:
+%%%%
+
+\newcommand{\grafix}[2][]{\includegraphics[#1]{#2}}
+\newcommand{\grafixL}[1]{\includegraphics[angle=90,height=\textwidth]{#1}}
+
+% Note: blah blah.
+\newsavebox{\notebox}
+\newenvironment{note}{
+  \vspace{1.5\kanjicharheight}
+  \begin{center}
+    \begin{lrbox}{\notebox}
+      \begin{minipage}{0.8\textwidth}
+        \textbf{備考:}\space
+}{
+      \end{minipage}
+    \end{lrbox}
+    \fbox{\usebox{\notebox}}
+  \end{center}
+  \vspace{1.5\kanjicharheight}
+}
+\newenvironment{caution}{
+  \vspace{1.5\kanjicharheight}
+  \begin{center}
+    \begin{lrbox}{\notebox}
+      \begin{minipage}{0.8\textwidth}
+        \textbf{注意:}\space%
+}{
+      \end{minipage}
+    \end{lrbox}
+    \fbox{\usebox{\notebox}}
+  \begin{center}
+  \vspace{1.5\kanjicharheight}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{00book}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
