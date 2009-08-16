@@ -273,9 +273,9 @@
       <sect3>
 	<title>Ricompressione di rete</title>
 
-	<para id="x_327">Nel memorizzare le revisioni su disco, Mercurial usa l'algoritmo di compressione <quote>deflate</quote> (lo stesso usato dal popolare formato <literal>zip</literal>), che bilancia una buona velocità con un rispettabile rapporto di compressione. Tuttavia, quando trasmette i dati di una revisione attraverso una connessione di rete, Mercurial decomprime i dati di revisione compressi.</para>
+	<para id="x_327">Nel memorizzare le revisioni su disco, Mercurial usa l'algoritmo di compressione <quote>deflate</quote> (lo stesso usato dal popolare formato <literal>zip</literal>), che concilia una buona velocità con un rispettabile rapporto di compressione. Tuttavia, quando trasmette i dati di una revisione attraverso una connessione di rete, Mercurial decomprime i dati di revisione compressi.</para>
 
-	<para id="x_328">Se la connessione avviene via HTTP, Mercurial ricomprime l'intero flusso di dati usando un algoritmo che ha un rapporto di compressione migliore (l'algoritmo Burrows-Wheeler del rinomato pacchetto di compressione <literal>bzip2</literal>). Questa combinazione di algoritmo e compressione dell'intero flusso (invece di una revisione alla volta) riduce sostanzialmente il numero di byte da trasferire, producendo prestazioni di trasmissione migliori sulla maggior parte delle reti.</para>
+	<para id="x_328">Se la connessione avviene via HTTP, Mercurial ricomprime l'intero flusso di dati usando un algoritmo che ha un rapporto di compressione migliore (l'algoritmo Burrows-Wheeler del rinomato pacchetto di compressione <literal>bzip2</literal>). Questa combinazione di algoritmo e compressione dell'intero flusso (invece di una revisione alla volta) riduce notevolmente il numero di byte da trasferire, producendo prestazioni di trasmissione migliori sulla maggior parte delle reti.</para>
 
 	<para id="x_329">Se la connessione avviene via <command>ssh</command>, Mercurial <emphasis>non</emphasis> ricomprime il flusso, perché <command>ssh</command> è già in grado di farlo da sé. Potete dire a Mercurial di usare sempre la funzione di compressione di <command>ssh</command> modificando il file <filename>.hgrc</filename> che si trova nella vostra directory personale nel modo seguente.</para>
 
