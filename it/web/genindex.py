@@ -50,7 +50,7 @@ for c in chapters:
                 'filename': filename,
                 'title': title,
                 }
-            print('<li class="zebra_%(ab)s"><span class="chapinfo">%(date)s<a href="/feeds/comments/%(chapid)s/"><img src="figs/rss.png"/></a></span>%(num)s. <a href="%(filename)s">%(title)s</a></li>' % args, file=fp)
+            print('<li class="zebra_%(ab)s"><span class="chapinfo">%(date)s</span>%(num)s. <a href="%(filename)s">%(title)s</a></li>' % args, file=fp)
             break
 
 print('</ul></div>', file=fp)
