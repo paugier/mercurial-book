@@ -1,0 +1,889 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter>
+<title>Un rapide tour de Mercurial</title>
+<para>\label{chap:tour-basic}</para>
+
+<sect1>
+<title>Installer Mercurial sur votre système</title>
+<para>\label{sec:tour:install}</para>
+
+<para>Des paquetages binaires de Mercurial sont disponibles pour la plupart
+des systèmes d'exploitation, ce qui rend facile l'utilisation immédiate
+de Mercurial sur votre ordinateur.</para>
+
+<sect2>
+<title>Linux</title>
+
+<para>Parce que chaque distribution de Linux a ses propres outils de gestion
+de paquets, politiques et rythmes de développements, il est difficile de
+donner un ensemble d'instructions uniques pour installer les binaires de
+Mercurial. La version de Mercurial avec laquelle vous vous retrouverez
+dépendra grandement de l'activité de la personne en charge du paquetage
+pour la distribution.</para>
+
+<para>Pour rester simple, je me concentrerai sur l'installation de Mercurial
+en ligne de commande, sous les distributions les plus courantes. La
+plupart des distributions fournissent des gestionnaires graphiques de
+paquetage qui vous permettront d'installer Mercurial en quelques clicks.
+Le paquetage devrait se nommer \textit{mercurial}.</para>
+
+<itemizedlist>
+<listitem><para>Debian:</para>
+</listitem><programlisting>
+<listitem><para>    apt-get install mercurial</para>
+</listitem></programlisting></para>
+</listitem>
+<listitem><para>Fedora Core:
+</para>
+</listitem><programlisting>
+<listitem><para>    yum install mercurial
+</para>
+</listitem></programlisting>
+
+</para>
+</listitem>
+<listitem><para>Gentoo:
+</para>
+</listitem><programlisting>
+<listitem><para>    emerge mercurial
+</para>
+</listitem></programlisting>
+
+</para>
+</listitem>
+<listitem><para>OpenSUSE:
+</para>
+</listitem><programlisting>
+<listitem><para>    yum install mercurial
+</para>
+</listitem></programlisting>
+
+</para>
+</listitem>
+<listitem><para>Ubuntu: Le paquetage de Mercurial d'Ubuntu est construit sur celui de Debian.
+              Pour l'installer, exécutez simplement les commandes suivantes:
+</para>
+</listitem><programlisting>
+<listitem><para>    apt-get install mercurial
+</para>
+</listitem></programlisting>
+<listitem><para>  Les paquetages Ubuntu pour Mercurial ont tendance à être un peu en retard
+  par rapport au paquetage Debian (au moment de l'écriture de ce livre, il
+  faut compter à peu près un retard de 7 mois), ce qui signifie que parfois
+  sur Ubuntu, vous risquez de rencontrer des problèmes qui ont été corrigés
+  depuis longtemps dans les paquetages Debian.
+</para>
+</listitem></itemizedlist>
+
+</sect2>
+<sect2>
+<title>Solaris</title>
+
+<para>SunFreeWare, à <ulink url="http://www.saufreeware.com">http://www.saufreeware.com</ulink>, est une bonne source
+pour trouver un vaste nombre de paquets précompilés pour 32 ou 64 bits
+Intel et les architecture Sparc, dont les versions courantes de Mercurial.
+</para>
+
+</sect2>
+<sect2>
+<title>Mac OS X</title>
+
+<para>Lee Cantey publie un installateur de Mercurial pour Mac OS X sur le site
+<ulink url="http://mercurial.berkwood.com">http://mercurial.berkwood.com</ulink>.  Ce paquetage fonctionne sur les
+architectures Intel- et PowerPC. Avant de vous en servir, vous devez
+installer une version Universelle MacPython <citation>web:macpython</citation>. C'est
+assez facile à faire : suivez simplement les instructions sur le site
+de Lee.
+</para>
+
+<para>Il est aussi possible d'installer Mercurial en utilisant Fink ou MacPorts,
+deux outils de gestion de paquetage libres pour Mac OS X. Si vous avez
+Fink, utilisez <command>sudo fink install mercurial-py25</command>. Si vous avez
+MacPorts, <command>sudo port install mercurial</command>.
+</para>
+
+</sect2>
+<sect2>
+<title>Windows</title>
+
+<para>Lee Cantey publie aussi un installateur de Mercurial pour Windows sur le site
+<ulink url="http://mercurial.berkwood.com">http://mercurial.berkwood.com</ulink>. Ce paquetage n'a aucune dépendance
+externe, il fonctionne <quote>tout court</quote>.
+</para>
+
+<note>
+<para>  La version de Windows de Mercurial ne convertie pas automatiquement
+  les retours chariot Windows et Unix. Si vous désirez partager votre
+  travail avec des utilisateurs Unix, vous devez faire un peu de configuration
+  supplémentaire. XXX En dire plus.
+</para>
+</note>
+
+</sect2>
+</sect1>
+<sect1>
+<title>Commencer à utiliser Mercurial</title>
+
+<para>Pour commencer, nous utiliserons la commande <command role="hg-cmd">hg version</command> pour vérifier
+si Mercurial est installé proprement. Les informations affichées sur la
+version ne sont pas réellement importantes en soit, c'est surtout de savoir
+si elles s'affichent qui nous intéresse.
+<!-- &interaction.tour.version; -->
+</para>
+
+<sect2>
+<title>L'aide intégrée</title>
+
+<para>Mercurial fournit un système d'aide intégré, ce qui est inestimable quand
+vous vous retrouvez coincé à essayer de vous rappeler comment lancer telle
+ou telle commande.
+Si c'est le cas, exécutez simplement <command role="hg-cmd">hg help</command>; il vous aidera à imprimer
+une brève liste de commandes, avec une description de ce qu'elles font. Si vous
+demandez de l'aide sur une commande spécifique (voir ci-dessous), il affichera
+des informations plus détaillées.
+<!-- &interaction.tour.help; -->
+Pour un niveau d'informations encore plus détaillées (ce dont vous aurez rarement
+besoin), exécuter <command role="hg-cmd">hg help <option role="hg-opt-global">-v</option></command>.  L'option <option role="hg-opt-global">-v</option> est
+l'abréviation de <option role="hg-opt-global">--verbose</option>, et indique à Mercurial d'afficher plus
+d'informations que d'habitude.
+</para>
+
+</sect2>
+</sect1>
+<sect1>
+<title>Travailler avec un dépôt</title>
+
+<para>Avec Mercurial, tout se déroule au sein du <emphasis>dépôt</emphasis>\footnote{NdT: Dépôt est
+la traduction que j'ai retenue pour tout l'ouvrage du terme anglais \textit{repository}}.
+Le dépôt d'un projet contient tous les fichiers qui <quote>appartiennent</quote> au projet.
+</para>
+
+<para>Il n'y a rien de particulièrement magique au sujet de ce dépôt, c'est
+simplement une arborescence sur votre système de fichiers que Mercurial
+traite de manière spéciale. Vous pouvez renommer ou effacer ce répertoire
+à n'importe quel moment, en utilisant la ligne de commande ou votre
+explorateur de fichiers.
+</para>
+
+<sect2>
+<title>Faire une copie locale de votre dépôt</title>
+
+<para><emphasis>Copier</emphasis> un dépôt est juste un peu spécial. Bien que vous
+puissiez utiliser une commande habituelle de copie pour copier
+votre dépôt, il vaut mieux utiliser une commande fournie par
+Mercurial. Cette commande est appelée <command role="hg-cmd">hg clone</command>, car elle
+crée une copie identique à un dépôt existant.
+<!-- &interaction.tour.clone; -->
+Si votre opération de clonage réussit, vous devriez maintenant
+avoir un répertoire local appelé <filename class="directory">hello</filename>. Ce répertoire
+contiendra quelques fichiers.
+<!-- &interaction.tour.ls; -->
+Ces fichiers ont le même contenu et historique dans votre dépôt
+qu'ils ont dans le dépôt que vous avez cloné.
+</para>
+
+<para>Chaque dépôt Mercurial est complet, autonome et indépendant. Il
+contient sa propre copie privée des fichiers du projet et de leur
+historique. Le clone d'un dépôt se souvient de la localisation du
+dépôt à partir duquel il a été clôné, mais il ne communique pas avec
+ce dernier, ou un autre, à moins que vous ne lui demandiez.
+</para>
+
+<para>Ce que tout ceci signifie pour le moment est que nous sommes libres
+d'expérimenter avec ce dépôt, confiants dans le fait qu'il s'agit d'un
+<quote>bac à sable</quote> qui n'affectera personne d'autre.
+</para>
+
+</sect2>
+<sect2>
+<title>Quel est le contenu d'un dépôt ?</title>
+
+<para>Prêtons plus attention un instant au contenu d'un dépôt. Nous voyons
+qu'il contient un répertoire nommé <filename class="directory">.hg</filename>. C'est ici que Mercurial
+conserve toutes ses métadonnées.
+<!-- &interaction.tour.ls-a; -->
+</para>
+
+<para>Le contenu du répertoire <filename class="directory">.hg</filename> et ses sous répertoires sont les
+seuls propres à Mercurial. Tous les autres fichiers et répertoires dans
+le dépôt sont à vous, et vous pouvez en faire ce que vous voulez.
+</para>
+
+<para>Pour introduire un peu de terminologie, le répertoire <filename class="directory">.hg</filename> est
+un <quote>vrai</quote> dépôt, et tous les fichiers et les répertoires qui coexistent
+avec lui, sont désignés sous le nom <emphasis>espace de travail</emphasis>\footnote{NdT:
+\textit{working directory}}. Une manière facile de se rappeler cette
+distinction est de retenir que le <emphasis>dépôt</emphasis> contient l'<emphasis>historique</emphasis>
+de votre projet, alors que l'<emphasis>espace de travail</emphasis> contient une \emph{copie
+ponctuelle}\footnote{NdT: Ce terme est une traduction du terme anglais
+\textit{snapshot}. Il est traduit ici pour faciliter la lecture, mais ne sera
+plus traduit par la suite.} de votre projet à un certain point de son
+historique.
+</para>
+
+</sect2>
+</sect1>
+<sect1>
+<title>Une ballade dans l'historique</title>
+
+<para>Une des premières choses que vous aurez envie de faire avec un nouveau
+dépôt, sera de comprendre son historique. La commande <command role="hg-cmd">hg log</command> vous
+donne une vue de l'historique.
+<!-- &interaction.tour.log; -->
+Par défaut, cette commande affiche à l'écran un bref paragraphe pour chaque
+révision enregistrée pour ce projet. Dans la terminologie de Mercurial, nous
+appelons chacun de ces évènements enregistrés un <emphasis>changeset</emphasis>, parce
+qu'il contient un ensemble de modifications sur plusieurs fichiers.
+</para>
+
+<para>La commande <command role="hg-cmd">hg log</command> affiche ainsi ces informations:
+</para>
+<itemizedlist>
+<listitem><para><literal>changeset</literal>: Ce champ contient un nombre, séparé par deux points
+  (:), d'une chaine hexadécimale. Il s'agit en fait d'<emphasis>identifiants</emphasis>
+  d'un \textit{changeset}. Il y a deux identifiants car le numéro de
+  la révision est plus court et plus à facile à saisir qu'une séquence
+  hexadécimale.
+</para>
+</listitem>
+<listitem><para><literal>user</literal>: L'identité de la personne qui a créée ce  %%% laisser le terme anglais car il sera affiché
+  \textit{changeset}. C'est un champ libre de forme, mais la plupart du
+  temps il contient le nom et l'email de la personne.
+</para>
+</listitem>
+<listitem><para><literal>date</literal>: La date et l'heure à laquelle le \textit{changeset}
+  a été créé, ainsi que le \textit{fuseau horaire} dans laquelle il a été créé. %%%TODO: Translate 'timezone' properly : FUSEAU
+  (La date et l'heure sont locales à ce \textit{fuseau}, elles indiquent
+  donc quelle date et heure il était pour la personne qui a créé ce %%%TODO: je suppose (quelle "heure")  OUI
+  \textit{changeset}.)
+</para>
+</listitem>
+<listitem><para><literal>résumé</literal>: La première du message que le créateur a associé à
+  son \textit{changeset} pour le décrire.
+</para>
+</listitem></itemizedlist>
+
+<para>Par défaut, la commande <command role="hg-cmd">hg log</command> n'affiche qu'un résumé, il manque
+beaucoup de détails.
+</para>
+
+<para>La figure <xref linkend="fig:tour-basic:history"/> fournit une représentation graphique
+de l'historique du dépôt <filename class="directory">hello</filename>, pour rendre plus facile de voir
+dans quelle direction l'historique se <quote>déroule</quote>\footnote{NdT: \textit{flowing in}.}.
+Nous reviendrons régulièrement sur cette représentation dans ce chapitre et
+ceux qui suivent.
+</para>
+
+<informalfigure>
+
+<para>  <mediaobject><imageobject><imagedata fileref="tour-history"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>
+  <caption><para>Représentation graphique du dépôt <filename class="directory">hello</para></caption> </filename>
+  \label{fig:tour-basic:history}
+</para>
+</informalfigure>
+
+<sect2>
+<title>Changesets, révisions, et discuter avec les autres</title>
+<para>%%% je propose "colaboration"
+</para>
+
+<para>Comme l'anglais est réputé pour être un langage maladroit, et que l'informatique
+est la source de bien des erreurs de terminologies (pourquoi utiliser un
+seul terme quand quatre feront l'affaire ?), la gestion de version a une
+variété de mots et de phrases qui veulent dire la même chose. Si vous
+discutez d'historique de Mercurial avec d'autres personnes,
+%%%TODO: ça ne veut rien dire: il faut supprimer une des personnes : soit "quelqu'un",
+% soit "à d'autres personnes"
+vous constaterez que souvent le mot <quote>\textit{changeset}</quote> est contracté simplement
+en <quote>change</quote> ou (à l'écrit) <quote>cset</quote>, et même parfois un
+\textit{changeset} simplement <quote>révision</quote>, abrégé en <quote>rev</quote>.
+</para>
+
+<para>Bien que le <emphasis>mot</emphasis> que vous utilisez pour désigner le concept de
+\textit{changeset} importe peu, l'<emphasis>identifiant</emphasis> que vous utilisez
+pour désigner un <emphasis>changeset</emphasis> \textit{spécifique} a une grande
+importance. Rappelez vous que le champ \textit{changeset} affiché par la
+commande <command role="hg-cmd">hg log</command> identifie un \textit{changeset} à la fois avec
+un numéro de révision et une séquence hexadécimale.
+</para>
+
+<itemizedlist>
+<listitem><para>Le numéro de révision est <emphasis>seulement valable dans ce dépôt</emphasis>,
+</para>
+</listitem>
+<listitem><para>alors que la séquence hexadécimale est un \emph{identifiant
+	permanent, et invariant } qui pourra toujours être associé au
+	\textit{changeset} exact de <emphasis>chaque</emphasis> copie de votre dépôt.
+</para>
+</listitem></itemizedlist>
+
+<para>La distinction est importante. Si vous envoyez un email à quelqu'un en
+parlant de la <quote>révision 33</quote>, il est très probable que sa révision 33
+<emphasis>ne sera pas la même</emphasis> que la votre. La raison de ceci est que le
+numéro de révision dépend de l'ordre dans lequel les modifications sont
+arrivées dans le dépôt, et il n'y a aucune garantie que les mêmes changements
+soient arrivés dans le même ordre dans différents dépôts. Trois modifications
+$a,b,c$ peuvent aisément apparaitre dans un dépôt comme $0,1,2$, et dans
+un autre comme $1,0,2$.
+</para>
+
+<para>Mercurial utilise les numéros de révision uniquement comme des raccourcis
+pratiques. Si vous devez discuter d'un \textit{changeset} avec quelqu'un,
+ou identifer un \textit{changeset} pour une quelquonque %%%TODO: our : "pour" ou "ou"
+raison (par exemple, un rapport de \textit{bug}), utilisez la séquence
+hexadécimale.
+</para>
+
+</sect2>
+<sect2>
+<title>Afficher une révision spécifique</title>
+
+<para>Pour réduire la sortie de <command role="hg-cmd">hg log</command> à une seule révision, utilisez
+l'option <option role="hg-opt-log">-r</option> (ou <option role="hg-opt-log">--rev</option>). Vous pouvez utiliser
+le numéro de révision ou la séquence hexadécimale comme identifiant, et
+demander autant de révisions que vous le souhaitez.
+<!-- &interaction.tour.log-r; -->
+</para>
+
+<para>Si vous voulez voir l'historique de plusieurs révisions sans avoir à
+les énumérer, vous pouvez utiliser la <emphasis>\textit{range notation</emphasis>}
+\footnote{NdT: Il n'est pas aisé de traduire ce terme, donc je le  %%%TODO : intervalle de numérotation ?
+laisse en anglais} qui vous permet d'exprimer l'idée <quote>je veux toutes
+les révisions entre $a$ et $b$, inclus</quote>.
+<!-- &interaction.tour.log.range; -->
+Mercurial respecte aussi l'ordre dans lequel vous spécifiez les
+révisions, ainsi <command role="hg-cmd">hg log -r 2:4</command> affichera $2,3,4$ alors que
+<command role="hg-cmd">hg log -r 4:2</command> affichera $4,3,2$.
+</para>
+
+</sect2>
+<sect2>
+<title>Informations détaillées</title>
+
+
+<para>Le résumé affiché par <command role="hg-cmd">hg log</command> est suffisant si vous savez déjà ce %%%TODO: je pense que le premier "si" est de trop : exact
+que vous cherchez. En revanche, vous aurez probablement besoin de voir une description
+complète du changement, ou une liste des fichiers modifiés si vous
+cherchez à déterminer qu'un \textit{changeset} est bien celui que vous%%%TODO: les propositions sont mal construites : après un "si...." il faut une proposition sans "si... donc ici : "si ... recherchez", ben quoi ?
+recherchez. L'option \hgopt{-v} de la commande <command role="hg-cmd">hg log</command> (ou
+\hgopt{--verbose}) vous donne ces informations supplémentaires.
+<!-- &interaction.tour.log-v; -->
+</para>
+
+<para>Si vous voulez voir à la fois la description et le contenu d'une
+modification, ajouter l'option <option role="hg-opt-log">-p</option> (ou <option role="hg-opt-log">--patch</option>).
+Ceci affiche le contenu d'une modification comme un <emphasis>diff unifié</emphasis>
+\footnote{NdT: \textit{unified diff}} (si vous n'avez jamais vu de diff
+unifié avant, consultez la section <xref linkend="sec:mq:patch"/> pour un rapide
+survol).
+</para>
+
+<para><!-- &interaction.tour.log-vp; -->
+</para>
+
+</sect2>
+</sect1>
+<sect1>
+<title>Tout sur les options de commandes</title>
+
+
+<para>Avant d'aller plus loin sur le fonctionnement des commandes de Mercurial,
+étudions un moment comment elles fonctionnent de manière générale. Vous
+trouverez ça probablement utile pour la suite de notre parcours.
+</para>
+
+<para>Mercurial utilise une approche directe et cohérente pour interpréter %%%TODO: une manière d'approche ?
+les options que vous passez aux commandes. Il suit une convention commune
+à la plupart des systèmes Unix et Linux modernes.
+</para>
+
+<itemizedlist>
+<listitem><para>Chaque option a un nom complet. Par exemple, comme nous l'avons déjà
+      vu, la commande <command role="hg-cmd">hg log</command> accepte l'option <option role="hg-opt-log">--rev</option>.%%%TODO: commande ou command e\hgcmd...?
+</para>
+</listitem>
+<listitem><para>La plupart des options disposent de noms abrégés. Aussi, au lieu d'utiliser
+  <option role="hg-opt-log">--rev</option>, vous pouvez utiliser <option role="hg-opt-log">-r</option>. (Les options qui
+  n'ont pas de noms abrégés sont généralement rarement utilisées, pour cette raison).
+</para>
+</listitem>
+<listitem><para>Les noms complets commencent par deux tirets (i.e. <option role="hg-opt-log">--rev</option>),
+  alors que les options courtes commencent avec un seul (i.e. <option role="hg-opt-log">-r</option>).
+</para>
+</listitem>
+<listitem><para>Les noms des options sont cohérents entre les commandes. Par exemple,
+  chaque commande qui accepte un \textit{changeset ID} ou un numéro de révision
+  accepte aussi <option role="hg-opt-log">-r</option> et <option role="hg-opt-log">--rev</option> comme arguments.
+  %TODO: Small mistake here, shouldn't have log here... shouldn't it ?
+</para>
+</listitem></itemizedlist>
+
+<para>Dans les exemples de ce livre, j'utilise les noms abrégés plutôt que les noms
+complets. Ceci est une préférence personnelle, pas une recommandation.
+</para>
+
+<para>La plupart des commandes qui affichent une quelconque sortie à l'écran,
+afficheront davantage avec l'option <option role="hg-opt-global">-v</option> (ou <option role="hg-opt-global">--verbose</option>), et
+moins avec l'option <option role="hg-opt-global">-q</option> (ou <option role="hg-opt-global">--quiet</option>).
+</para>
+
+</sect1>
+<sect1>
+<title>Faire et vérifier des modifications</title>
+
+<para>Maintenant que nous avons une bonne idée des commandes pour consulter
+l'historique de Mercurial, regardons comment faire des modifications et
+les examiner.
+</para>
+
+
+<para>La première chose que nous allons faire c'est isoler notre expérience dans
+un dépôt à part. Nous allons utiliser la commande <command role="hg-cmd">hg clone</command>, mais nous
+n'avons pas besoin de faire une copie de dépôt distant. Comme nous avons
+déjà une copie locale, nous pouvons juste faire un clone de celle-ci à la
+place. C'est beaucoup plus rapide que de faire une copie à travers le
+réseau, et un dépôt cloné localement prend également moins d'espace disque.
+</para>
+
+<para><!-- &interaction.tour.reclone; -->
+</para>
+
+<para>On notera au passage qu'il est souvent considéré comme une bonne pratique
+de conserver une copie <quote>immaculée</quote> du dépôt distant, à partir de laquelle
+vous pourrez faire des copies locales temporaires pour créer des <quote>bacs à
+sable</quote> pour chaque tâche sur laquelle vous souhaitez travailler. Ceci vous
+permet de travailler sur plusieurs choses en parallèle, chacune isolée les
+unes des autres en attendant que ces tâches soient finies et que vous soyez
+prêt à les réintégrer. Parce que les copies locales sont peu coûteuses, il
+est très rapide de créer ou détruire des dépôts dès que vous en avez besoin.
+</para>
+
+<para>%% Note: la dernière phrase n'est pas une traduction littérale, mais je
+%% pense qu'elle exprime plus clairement en français ce que veut dire son
+%% équivalent anglais. : OUI
+</para>
+
+<para>Dans notre dépôt <filename class="directory">my-hello</filename>, nous avons un fichier <filename>hello.c</filename>
+qui contient le classique programme <quote>hello, world</quote>. Nous allons utiliser
+l'ancienne et vénérable commande <command>sed</command> pour l'éditer afin qu'il
+affiche une seconde ligne à l'écran. (J'utilise <command>sed</command> seulement parce
+qu'il est ainsi facile d'écrire des exemples sous forme de script. Comme
+vous n'avez pas ces contraintes, vous n'utiliserez probablement pas <command>sed</command>
+mais plutôt votre éditeur de texte favori).
+</para>
+
+<para><!-- &interaction.tour.sed; -->
+</para>
+
+<para>La commande <command role="hg-cmd">hg status</command> de Mercurial nous dira de quels fichiers Mercurial
+s'occupe au sein de ce dépôt.
+<!-- &interaction.tour.status; -->
+La commande <command role="hg-cmd">hg status</command> n'affiche rien sur la sortie pour quelques fichiers
+mais une ligne commence par <quote><literal>M</literal></quote> for <filename>hello.c</filename>. À moins que
+vous ne lui indiquiez de le faire, <command role="hg-cmd">hg status</command> n'affichera aucune sortie
+pour les fichiers qui n'ont pas été modifiés.
+</para>
+
+<para>Le caractère <quote><literal>M</literal></quote> indique que Mercurial a remarqué que nous avions
+modifié le fichier <filename>hello.c</filename>. Nous n'avons pas besoin d'<emphasis>informer</emphasis>
+Mercurial que nous allons modifier un fichier avant de le faire, ou que nous
+venons de le modifier, il est capable de s'en rendre compte tout seul.
+</para>
+
+<para>C'est pratique de savoir que nous avons modifié <filename>hello.c</filename>, mais il
+serait encore plus pratique de savoir ce que nous avons modifié exactement. Pour
+cela, nous avons la commande  <command role="hg-cmd">hg diff</command>.
+</para>
+
+<para><!-- &interaction.tour.diff; -->
+</para>
+
+</sect1>
+<sect1>
+<title>Enregister les modifications dans un nouveau \textit{changeset}</title>
+
+<para>Nous pouvons modifier des fichiers, compiler et tester nos modifications,
+et utiliser les commandes <command role="hg-cmd">hg status</command> et <command role="hg-cmd">hg diff</command> pour voir les
+modifications effectuées, jusqu'au moment où nous serons assez satisfaits
+pour décider d'enregistrer notre travail dans un \textit{changeset}.
+</para>
+
+<para>La commande <command role="hg-cmd">hg commit</command> vous laisse créer un nouveau \textit{changeset},
+nous désignerons généralement cette opération par <quote>faire un commit</quote> ou
+<quote>commiter</quote>\footnote{NdT: De mon expérience, la plupart des francophones
+utilisent  régulièrement, à l'oral, cette expression, mais bien évidement
+il ne s'agit pas d'un terme de terminologie correcte, ni même français.}
+</para>
+
+<sect2>
+<title>Définir le nom d'utilisateur</title>
+
+<para>Quand vous exécutez la commande <command role="hg-cmd">hg commit</command> pour la première fois, elle
+n'est pas garantie de réussir. Mercurial enregistre votre nom et votre
+adresse avec chaque modification que vous effectuez, de manière à ce que
+vous soyez capable (ou d'autres le soient) de savoir qui a fait quelle
+modification. Mercurial essaye automatiquement de découvrir un nom
+d'utilisateur qui ait un minimum de sens pour effectuer l'opération
+de \textit{commit} avec. Il va essayer chacune des méthodes suivantes,
+dans l'ordre:
+</para>
+<orderedlist>
+<listitem><para>Si vous spécifiez l'option <option role="hg-opt-commit">-u</option> avec la commande
+  <command role="hg-cmd">hg commit</command>, suivi d'un nom d'utilisateur, ceci aura toujours la
+  priorité sur les autres méthodes ci dessous.
+</para>
+</listitem>
+<listitem><para>Si vous avez défini une variable d'environnement <envar>HGUSER</envar>,
+  c'est cette valeur qui est alors utilisée.
+</para>
+</listitem>
+<listitem><para>Si vous créez un fichier nommé <filename role="special">.hgrc</filename> dans votre
+   répertoire \textit{home}, avec une entrée <envar role="rc-item-ui">username</envar>,
+   c'est la valeur associée qui sera utilisée. Pour voir à quoi
+   ressemble le contenu de ce fichier regardez la
+   section <xref linkend="sec:tour-basic:username"/> ci-dessous.
+</para>
+</listitem>
+<listitem><para>Si vous avez défini une variable d'environnement <envar>EMAIL</envar>
+  celle ci sera utilisée ensuite.
+</para>
+</listitem>
+<listitem><para>Enfin, Mercurial interrogera votre système pour trouver votre
+  nom d'utilisateur local ainsi que le nom de la machine hôte, et il
+  fabriquera un nom d'utilisateur à partir de ces données. Comme il arrive
+  souvent que ce genre de noms soit totalement inutile, il vous
+  préviendra en affichant un message d'avertissement.
+</para>
+</listitem></orderedlist>
+
+<para>Si tous ces mécanismes échouent, Mercurial n'exécutera pas la commande,
+affichant un message d'erreur. Dans ce cas, il ne vous laissera pas
+effectuer de \textit{commit} tant que vous n'aurez pas défini un nom
+d'utilisateur.
+</para>
+
+<para>Vous devriez penser à utiliser la variable d'environement <envar>HGUSER</envar>
+et l'option <option role="hg-opt-commit">-u</option> comme moyen pour \emph{changer le nom
+d'utilisateur} par défaut. Pour une utilisation normale, la manière la plus
+simple et robuste d'opérer est de créer un fichier <filename role="special">.hgrc</filename>,
+voir ci-dessous pour les détails à ce sujet.
+</para>
+
+<sect3>
+<title>Créer un fichier de configuration pour Mercurial</title>
+<para>\label{sec:tour-basic:username}
+</para>
+
+<para>Pour définir un nom d'utilisateur, utilisez votre éditeur de texte favori
+pour créer un fichier <filename role="special">.hgrc</filename> dans votre répertoire \textit{home}.
+Mercurial va utiliser ce fichier pour retrouver votre configuration personnelle.
+Le contenu initial devrait ressembler à ceci:
+</para>
+<programlisting>
+<para>  # This is a Mercurial configuration file.
+  [ui]
+  username = Firstname Lastname &lt;email.address@domain.net&gt;
+</para>
+</programlisting>
+<para>La ligne avec <literal>[ui]</literal> commence une <emphasis>section</emphasis> du fichier de
+configuration, ainsi la ligne <quote><literal>username = ...</literal></quote> signifie <quote>
+définir la valeur de l'élément <literal>username</literal> dans la section
+<literal>ui</literal></quote>. Une section continue jusqu'à ce qu'une nouvelle
+commence, ou que la fin du fichier soit atteinte. Mercurial ignore
+les lignes vides et traite tout texte situé à la suite d'un
+<quote><literal>#</literal></quote> jusqu'à la fin de la ligne comme un commentaire.
+</para>
+
+</sect3>
+<sect3>
+<title>Choisir un nom d'utilisateur</title>
+
+<para>Vous pouvez utiliser n'importe quelle valeur pour votre <literal>username</literal>,
+car cette information est destinée à d'autres personnes et non à être
+interprétée par Mercurial. La convention que la plupart des personnes
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; local
+suivent est d'utiliser leurs noms suivies de leurs adresses emails,
+comme montrée ci-dessus:
+</para>
+
+<note>
+<para>  Le mécanisme interne du serveur \textit{web} intégré à Mercurial,
+  masque les adresses emails, pour rendre plus difficile leurs
+  récupérations par les outils utilisés par les \textit{spammmers}.
+  Ceci réduit la probabilité que de recevoir encore plus de
+  \textit{spam} si vous vous publiez un dépôt sur internet.
+</para>
+</note>
+
+</sect3>
+</sect2>
+<sect2>
+<title>Rédiger un message de \textit{commit}</title>
+
+<para>Lorsqu'on effectue une opération de \textit{commit}, Mercurial
+lance automatiquement un éditeur de texte pour permettre de saisir
+un message qui décrira les modifications effectuées dans ce
+\textit{changeset}. Ce message est nommé le \emph{message de
+\textit{commit}}. Ce sera un enregistrement pour tout lecteur
+expliquant le pourquoi et le comment de vos modifications, et il sera
+affiché par la commande <command role="hg-cmd">hg log</command>.
+<!-- &interaction.tour.commit; -->
+</para>
+
+<para>L'éditeur que la commande <command role="hg-cmd">hg commit</command> déclenche ne contiendra
+qu'une ligne vide suivi d'un certain nombre de lignes commençant
+par <quote><literal>HG:</literal></quote>.
+</para>
+<programlisting>
+<para>  <emphasis>empty line</emphasis>
+  HG: changed hello.c
+</para>
+</programlisting>
+<para>Mercurial ignore les lignes qui commencent avec <quote><literal>HG:</literal></quote>, il
+ne les utilise que pour nous indiquer quels fichiers modifiés il se
+prépare à \textit{commiter}. Modifier ou effacer ces lignes n'a
+aucune conséquence sur l'opération de \textit{commit}.
+</para>
+
+</sect2>
+<sect2>
+<title>Rédiger un message \textit{approprié}</title>
+
+<para>Comme <command role="hg-cmd">hg log</command> n'affiche que la première ligne du message de
+\textit{commit} par défaut, il est souvent considéré comme une bonne
+pratique de rédiger des messages de \textit{commit} qui tiennent
+sur une seule ligne. Voilà un exemple concret de message de
+\textit{commit} qui <emphasis>ne suit pas</emphasis> cette directive, et qui a donc
+un résumé peu lisible.
+</para>
+
+<programlisting>
+<para>  changeset:   73:584af0e231be
+  user:        Censored Person &lt;censored.person@example.org&gt;
+  date:        Tue Sep 26 21:37:07 2006 -0700
+  summary:     include buildmeister/commondefs.   Add an exports and install
+</para>
+</programlisting>
+
+<para>A ce sujet, il faut noter qu'il n'existe pas de règle absolue dans ce
+domaine. Mercurial lui-même n'interprète pas les contenus des messages
+de \textit{commit}, ainsi votre projet est libre de concevoir différentes
+politiques de mise en page des messages.
+</para>
+
+<para>Ma préférence personnelle va au message court, mais informatif, qui offre
+des précisions supplémentaires par rapport à ce que pourrait m'apprendre une commande
+<command role="hg-cmd">hg log --patch</command>.
+</para>
+
+</sect2>
+<sect2>
+<title>Annuler un \textit{commit}</title>
+
+<para>Si, en rédigeant le message, vous décidez que finalement vous ne
+voulez pas effectuer ce \textit{commit}, il suffit de quitter simplement
+l'éditeur sans sauver. Ceci n'aura aucune conséquence sur le dépôt ou
+les fichiers de l'espace de travail.
+</para>
+
+<para>Si vous exécuter la commande <command role="hg-cmd">hg commit</command> sans aucun argument, elle
+enregistre toutes les modifications que vous avez faites, comme le montre
+les commandes <command role="hg-cmd">hg status</command> et <command role="hg-cmd">hg diff</command>.
+</para>
+
+</sect2>
+<sect2>
+<title>Admirer votre travail</title>
+
+<para>Une fois que votre \textit{commit} est terminé, vous pouvez utiliser
+la commande <command role="hg-cmd">hg tip</command> pour afficher le \textit{changeset} que nous
+venons de créer. Cette commande produit une sortie à l'écran qui est
+identique à celle du <command role="hg-cmd">hg log</command>, mais qui n'affiche que la dernière
+révision du dépôt.
+<!-- &interaction.tour.tip; -->
+On fait couramment référence à la dernière révision du dépôt comme
+étant la révision \textit{tip}, ou plus simplement le \textit{tip}.
+</para>
+
+</sect2>
+</sect1>
+<sect1>
+<title>Partager ses modifications</title>
+
+<para>Nous avons mentionné plus haut que les dépôts de Mercurial
+sont autosuffisants. Ce qui signifie que le \textit{changeset}
+que vous venez de créer existe seulement dans votre répertoire
+<filename class="directory">my-hello</filename>. Étudions comment propager cette modification
+dans d'autres dépôts.
+</para>
+
+<sect2>
+<title>Récupérer les modifications d'autres dépôts</title>
+<para>\label{sec:tour:pull}
+</para>
+
+<para>Pour commencer, construisons un clone de notre dépôt <filename class="directory">hello</filename>
+qui ne contiendra pas le changement que nous venons d'effectuer. Nous
+l'appellerons notre dépôt temporaire <filename class="directory">hello-pull</filename>.
+</para>
+
+<para><!-- &interaction.tour.clone-pull; -->
+</para>
+
+<para>Nous allons utiliser la commande <command role="hg-cmd">hg pull</command> pour apporter les
+modifications depuis <filename class="directory">my-hello</filename> dans <filename class="directory">hello-pull</filename>.
+Néanmoins, récupérer aveuglement des modifications depuis un dépôt
+a quelque chose d'un peu effrayant. Mercurial propose donc une
+commande <command role="hg-cmd">hg incoming</command> qui permet de savoir quelles modifications
+la commande <command role="hg-cmd">hg pull</command> <emphasis>pourrait</emphasis> entraîner dans notre dépôt,
+et ceci sans effectuer réellement de modification dessus.
+<!-- &interaction.tour.incoming; -->
+(Bien évidement, quelqu'un pourrait ajouter des modifications
+supplémentaires sur le dépôt que nous étudions avec <command role="hg-cmd">hg incoming</command>,
+avant que nous ayons effectué notre <command role="hg-cmd">hg pull</command>, avec comme
+triste conséquence que nous aurons récupéré des modifications que
+nous n'attendions pas.)
+</para>
+
+<para>Apporter les modifications rapatriées dans un dépôt se résume donc
+à exécuter la commande <command role="hg-cmd">hg pull</command>, et préciser depuis quel dépôt
+effectuer le <command role="hg-cmd">hg pull</command>.
+<!-- &interaction.tour.pull; -->
+</para>
+
+<para>Comme vous le voyez avec une sortie avant et après de la commande
+<command role="hg-cmd">hg tip</command>, nous avons réussi à récupérer aisément les modifications
+dans notre dépôt. Il reste néanmoins quelque chose à faire avant de
+placer ces modifications dans l'espace de travail.
+</para>
+
+</sect2>
+<sect2>
+<title>Mise à jour de l'espace de travail</title>
+
+<para>Nous avons jusqu'à maintenant grossièrement définie la relation
+entre un dépôt et un espace de travail. La commande <command role="hg-cmd">hg pull</command> que
+nous avons exécutée dans la section <xref linkend="sec:tour:pull"/> a apporté
+des modifications, que nous avons vérifiées, dans notre dépôt, mais
+il n'y a aucune trace de ces modifications dans notre espace de travail.
+En effet, <command role="hg-cmd">hg pull</command> ne touche pas (par défaut) à l'espace de
+travail. C'est la commande <command role="hg-cmd">hg update</command> qui s'en charge.
+<!-- &interaction.tour.update; -->
+</para>
+
+<para>Il peut sembler un peu étrange que la commande <command role="hg-cmd">hg pull</command> ne mette
+pas à jour l'espace de travail automatiquement. Il y a en fait une
+très bonne raison à cela : vous pouvez utilisez la commande
+</para>
+
+<para><command role="hg-cmd">hg update</command> pour mettre à jour votre espace de travail à l'état
+dans lequel il était à <emphasis>n'importe quelle révision</emphasis> de l'historique
+du dépôt. Si vous aviez un espace de travail contenant une ancienne
+révision&emdash;pour chercher l'origine d'un \textit{bug}, par exemple&emdash;et
+que vous effectuiez un <command role="hg-cmd">hg pull</command> qui mettrait à jour automatiquement
+votre espace de travail, vous ne seriez probablement pas très satisfait.
+</para>
+
+<para>Néanmoins, comme les opérations de \textit{pull} sont très souvent
+suivies d'un \textit{update}, Mercurial vous permet de combiner les
+deux aisément en passant l'option <option role="hg-opt-pull">-u</option> à la commande
+<command role="hg-cmd">hg pull</command>
+</para>
+<programlisting>
+<para>  hg pull -u
+</para>
+</programlisting>
+
+<para>Si vous étudiez de nouveau la sortie de la commande <command role="hg-cmd">hg pull</command> dans
+la section <xref linkend="sec:tour:pull"/> quand nous l'avons exécutée sans l'option
+<option role="hg-opt-pull">-u</option>, vous pouvez constater qu'elle a affiché un rappel assez
+utile : vous devez encore effectuer une opération pour mettre à jour
+votre espace de travail:
+</para>
+
+<programlisting>
+<para>  (run 'hg update' to get a working copy)
+</para>
+</programlisting>
+
+<para>Pour découvrir sur quelle révision de l'espace de travail on est, utilisez
+la commande <command role="hg-cmd">hg parents</command>.
+<!-- &interaction.tour.parents; -->
+Si vous regardez de nouveau le dessin <xref linkend="fig:tour-basic:history"/>, vous
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; local
+verrez les flèches reliant entre eux les \textit{changeset}. Le nœud
+d'où la flèche <emphasis>part</emphasis> est dans chaque cas un parent,
+et le nœud où la flèche <emphasis>arrive</emphasis> est un enfant.
+</para>
+
+<para>L'espace de travail a un parent de la même manière, c'est ce \textit{changeset}
+que l'espace de travail contient à ce moment.
+%%%TODO : difficile à comprendre : l'espace de travail a un parent, de la même manière, c'est ce changeset que l'espace...
+</para>
+
+<para>Pour mettre à jour l'espace de travail d'une révision particulière,
+indiquez un numéro de révision ou un \textit{changeset ID} à la commande
+<command role="hg-cmd">hg update</command>.
+<!-- &interaction.tour.older; -->
+Si vous ne précisez pas de manière explicite de numéro de révision
+la commande <command role="hg-cmd">hg update</command> mettra à jour votre espace de travail avec
+le contenu de la révsion \textit{tip}, comme montré dans l'exemple
+ci dessus lors du second appel à <command role="hg-cmd">hg update</command>.
+</para>
+
+</sect2>
+<sect2>
+<title>Transférer les modifications à un autre dépôt</title>
+
+<para>Mercurial vous laisse transférer les modifications à un autre
+dépôt, depuis votre dépôt actuel. Comme dans l'exemple du
+<command role="hg-cmd">hg pull</command> ci-dessus, nous allons créer un dépôt temporaire
+vers lequel transférer\footnote{NdT: Les francophones disent souvent
+<quote>pousser</quote> tout simplement} nos modifications.
+<!-- &interaction.tour.clone-push; -->
+La commande <command role="hg-cmd">hg outgoing</command> nous indique quels changements nous
+allons transférer vers l'autre serveur ?
+<!-- &interaction.tour.outgoing; -->
+Et la commande <command role="hg-cmd">hg push</command> effectue réellement le transfert.
+<!-- &interaction.tour.push; -->
+Comme avec <command role="hg-cmd">hg pull</command>, la commande <command role="hg-cmd">hg push</command> ne met pas à jour
+le répertoire de travail du dépôt dans lequel il transfère les
+modifications. (À l'inverse de <command role="hg-cmd">hg pull</command>, <command role="hg-cmd">hg push</command> ne fournit
+pas d'option <literal>-u</literal> pour forcer la mise à jour de l'espace
+de travail cible).
+</para>
+
+<para>Qu'est ce qui se passe lorsque vous essayez de récupérer ou de transférer
+vos modifications et que le dépôt cible a déjà reçu ces modifications ?
+Rien de bien excitant.
+<!-- &interaction.tour.push.nothing; -->
+</para>
+
+</sect2>
+<sect2>
+<title>Partager ses modifications à travers le réseau</title>
+
+<para>Les commandes que nous avons étudiées dans les sections précédentes
+ne sont pas limitées aux dépôt locaux. Chacune fonctionne de la même
+manière à travers une connexion réseau, il suffit de lui passer une
+URL à la place d'un chemin de fichier local.
+</para>
+
+<para><!-- &interaction.tour.outgoing.net; -->
+Dans cet exemple, nous allons voir quels changements nous pourrions
+transférer vers le dépôt distant, mais le dépôt est, de manière tout
+à fait compréhensible, pas configuré pour accepter des modifications
+d'utilisateurs anonymes.
+<!-- &interaction.tour.push.net; -->
+</para>
+
+</sect2>
+</sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->
