@@ -1,0 +1,31 @@
+<!-- BEGIN mq.tutorial.qnew2 -->
+<screen><prompt>$</prompt> <userinput>hg qnew seconda.patch</userinput>
+<prompt>$</prompt> <userinput>hg log --style=compact --limit=2</userinput>
+2[qtip,seconda.patch,tip]   2d7ecb80769d   2009-06-05 15:51 +0000   bos
+  [mq]: seconda.patch
+
+1[prima.patch,qbase]   8593307a06ec   2009-06-05 15:51 +0000   bos
+  [mq]: prima.patch
+
+<prompt>$</prompt> <userinput>echo 'riga 4' &gt;&gt; file1</userinput>
+<prompt>$</prompt> <userinput>hg qrefresh</userinput>
+<prompt>$</prompt> <userinput>hg tip --style=compact --patch</userinput>
+2[qtip,seconda.patch,tip]   78d47e79ab59   2009-06-05 15:51 +0000   bos
+  [mq]: seconda.patch
+
+diff -r 8593307a06ec -r 78d47e79ab59 file1
+--- a/file1	Fri Jun 05 15:51:00 2009 +0000
++++ b/file1	Fri Jun 05 15:51:02 2009 +0000
+@@ -1,3 +1,4 @@
+ riga 1
+ riga 2
+ riga 3
++riga 4
+
+<prompt>$</prompt> <userinput>hg annotate file1</userinput>
+0: riga 1
+1: riga 2
+1: riga 3
+2: riga 4
+</screen>
+<!-- END mq.tutorial.qnew2 -->

@@ -1,0 +1,21 @@
+<!-- BEGIN ch10/notify-config.lst -->
+<programlisting>[notify]
+# spedisci davvero le email
+test = false
+# i dati delle sottoscrizioni si trovano nel repository notify
+config = /home/hg/repos/notify/notify.conf
+# i repository si trovano in /home/hg/repos sul server, quindi
+# eliminiamo 4 caratteri "/"
+strip = 4
+template = X-Hg-Repo: {webroot}\n
+  Subject: {webroot}: {desc|firstline|strip}\n
+  From: {author}
+  \n\n
+  changeset {node|short} nel repository {root}
+  \n\ndettagli:
+  {baseurl}{webroot}?cmd=changeset;node={node|short}
+  descrizione: {desc|tabindent|strip}
+
+[web]
+baseurl = http://hg.example.com/</programlisting>
+<!-- END ch10/notify-config.lst -->
