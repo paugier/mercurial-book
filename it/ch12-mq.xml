@@ -30,7 +30,7 @@
     <sect2 id="sec:mq:quilt">
       <title>Una <quote>coperta a scacchi</quote></title>
 
-      <para id="x_3b5">All'inizio del 2003, Andreas Gruenbacher e Martin Quinson presero in prestito l'approccio degli script di Andrew e pubblicarono uno strumento chiamato <quote>patchwork quilt</quote> (letteralmente, coperta a scacchi) <citation>web:quilt</citation>, o semplicemente <quote>quilt</quote> (si veda <citation>gruenbacher:2005</citation> per un articolo che lo descrive). Dato che quilt sostanzialmente automatizzava la gestione delle patch, guadagnò rapidamente un grande seguito tra gli sviluppatori di software open source.</para>
+      <para id="x_3b5">All'inizio del 2003, Andreas Gruenbacher e Martin Quinson presero in prestito l'approccio degli script di Andrew e pubblicarono uno strumento chiamato <quote>patchwork quilt</quote> (letteralmente, coperta a scacchi) <citation><xref linkend="bib:quilt"/></citation>, o semplicemente <quote>quilt</quote> (si veda <citation><xref linkend="bib:gru05"/></citation> per un articolo che lo descrive). Dato che quilt sostanzialmente automatizzava la gestione delle patch, guadagnò rapidamente un grande seguito tra gli sviluppatori di software open source.</para>
 
       <para id="x_3b6">Quilt gestisce una <emphasis>pila di patch</emphasis> per un albero di directory. Per cominciare a usarlo, dite a quilt di gestire un albero di directory e quali file volete che gestisca, in modo che memorizzi i nomi e il contenuto di quei file. Per correggere un bug, create una nuova patch (usando un singolo comando), modificate i file che dovete correggere, poi <quote>aggiornate</quote> la patch.</para>
 
@@ -279,7 +279,7 @@ hgext.mq =</programlisting>
 
       <para id="x_3fb">Sfortunatamente, non esiste alcuna tecnica particolare per gestire i blocchi rifiutati. Molto spesso, dovrete esaminare il file <filename role="special">.rej</filename> e modificare il file di destinazione, applicando a mano i blocchi rifiutati.</para>
 
-      <para id="x_3fd">Un programmatore del kernel di Linux, Chris Mason (l'autore di Mercurial Queues), ha realizzato uno strumento chiamato <command>mpatch</command> (<ulink url="http://oss.oracle.com/~mason/mpatch/">http://oss.oracle.com/~mason/mpatch/</ulink>), che adotta un metodo semplice per automatizzare l'applicazione dei blocchi rifiutati da <command>patch</command>. Il comando <command>mpatch</command> può aiutarvi nel caso il blocco sia stato rifiutato per quattro tipiche ragioni:</para>
+      <para id="x_3fd">Un programmatore del kernel di Linux, Chris Mason (l'autore di Mercurial Queues), ha realizzato uno strumento chiamato <command>mpatch</command> <citation><xref linkend="bib:mpatch"/></citation>, che adotta un metodo semplice per automatizzare l'applicazione dei blocchi rifiutati da <command>patch</command>. Il comando <command>mpatch</command> può aiutarvi nel caso il blocco sia stato rifiutato per quattro tipiche ragioni:</para>
 
       <itemizedlist>
 	<listitem><para id="x_3fe">il contesto in mezzo a un blocco è cambiato;</para>
@@ -460,11 +460,11 @@ hgext.mq =</programlisting>
 
     <para id="x_430">Una volta che avete lavorato con le patch per un po', vi troverete desiderosi di utilizzare strumenti che vi aiutino a capire e manipolare le patch di cui vi state occupando.</para>
 
-    <para id="x_431">Il comando <command>diffstat</command> <citation>web:diffstat</citation> genera un istogramma delle modifiche effettuate a ogni file in una patch. Fornisce un buon modo per <quote>farsi un'idea</quote> di una patch&emdash;quali file coinvolge e quante modifiche introduce a ogni file e nell'insieme. (Trovo che sia una buona idea usare regolarmente l'opzione <option role="cmd-opt-diffstat">-p</option> di <command>diffstat</command>, poiché altrimenti il comando proverà a manipolare i prefissi dei nomi di file in un modo che almeno io trovo inevitabilmente confuso.)</para>
+    <para id="x_431">Il comando <command>diffstat</command> <citation><xref linkend="bib:diffstat"/></citation> genera un istogramma delle modifiche effettuate a ogni file in una patch. Fornisce un buon modo per <quote>farsi un'idea</quote> di una patch&emdash;quali file coinvolge e quante modifiche introduce a ogni file e nell'insieme. (Trovo che sia una buona idea usare regolarmente l'opzione <option role="cmd-opt-diffstat">-p</option> di <command>diffstat</command>, poiché altrimenti il comando proverà a manipolare i prefissi dei nomi di file in un modo che almeno io trovo inevitabilmente confuso.)</para>
 
     &interaction.mq.tools.tools;
 
-    <para id="x_432">Il pacchetto <literal role="package">patchutils</literal> <citation>web:patchutils</citation> è inestimabile. Fornisce un insieme di piccole utilità che seguono la <quote>filosofia Unix</quote>: ognuna effettua una singola operazione utile su una patch. Il comando di <literal role="package">patchutils</literal> che uso di più è <command>filterdiff</command>, che estrae sottoinsiemi di un file di patch. Per esempio, data una patch che modifica centinaia di file attraverso dozzine di directory, una singola invocazione di <command>filterdiff</command> può generare una patch più piccola che coinvolge solo i file il cui nome corrisponde a un particolare pattern di tipo glob. Leggete la <xref linkend="mq-collab:tips:interdiff"/> per un altro esempio.</para>
+    <para id="x_432">Il pacchetto <literal role="package">patchutils</literal> <citation><xref linkend="bib:patchutils"/></citation> è inestimabile. Fornisce un insieme di piccole utilità che seguono la <quote>filosofia Unix</quote>: ognuna effettua una singola operazione utile su una patch. Il comando di <literal role="package">patchutils</literal> che uso di più è <command>filterdiff</command>, che estrae sottoinsiemi di un file di patch. Per esempio, data una patch che modifica centinaia di file attraverso dozzine di directory, una singola invocazione di <command>filterdiff</command> può generare una patch più piccola che coinvolge solo i file il cui nome corrisponde a un particolare pattern di tipo glob. Leggete la <xref linkend="mq-collab:tips:interdiff"/> per un altro esempio.</para>
 
   </sect1>
   <sect1>

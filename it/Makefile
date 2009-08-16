@@ -8,8 +8,9 @@ include Makefile.vars
 
 xml-src-files := \
 	00book.xml \
-	$(wildcard ch*.xml)
-	#$(wildcard app*.xml)
+	$(wildcard ch*.xml) \
+	$(wildcard app*.xml) \
+	bibliography.xml
 
 xsltproc-opts := --nonet --xinclude
 xmllint-opts := --noout --nonet --valid --path '$(dtd-url)'
