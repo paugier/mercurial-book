@@ -58,3 +58,35 @@ valid: .validated-00book.xml
 clean:
 	rm -f $(web-local)/index-read.html.in
 	rm -rf $(obj-web)
+
+image-folder := figs
+# graphs, figures, screenshots
+image-files := $(wildcard $(image-folder)/*.dot $(image-folder)/*.svg $(image-folder)/*.png)
+# graphs
+image-dot := $(filter %.dot, $(image-files))
+# figures
+image-svg := $(filter %.svg, $(image-files))
+# screenshots
+image-png := $(filter %.png, $(image-files))
+
+figs-folder := examples/figs
+figs-web := \
+	$(image-dot:$(image-folder)/%.dot=$(figs-folder)/%.png) \
+	$(image-svg:$(image-folder)/%.svg=$(figs-folder)/%.png) \
+	$(image-png:$(image-folder)/%.png=$(figs-folder)/%.png)
+
+figs: $(figs-web)
+
+#$(figs-folder)/%.png: $(image-folder)/%.png $(image-folder)/%.svg
+$(figs-folder)/%.png: $(image-folder)/%.svg
+	inkscape -D -d 120 -e $@ $<
+
+$(figs-folder)/%.png: $(figs-folder)/%.svg
+	inkscape -D -d 120 -e $@ $<
+	rm $<
+
+$(figs-folder)/%.png: $(image-folder)/%.png
+	cp $< $@
+
+$(figs-folder)/%.svg: $(image-folder)/%.dot
+	dot -Tsvg -o $@ $<
