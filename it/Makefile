@@ -16,24 +16,24 @@ xsltproc-opts := --nonet --xinclude
 xmllint-opts := --noout --nonet --valid --path '$(dtd-url)'
     
 obj-web := html
-figs-web := ${obj-web}/figs
+figs-web-folder := $(obj-web)/figs
 script-web := $(obj-web)/javascript
 web-global := ../web
 web-local := web
 
-html: ${obj-web}/index.html ${web-local}/index-read.html.in
+html: $(obj-web)/index.html $(web-local)/index-read.html.in
 
 #$(obj-web)/index.html: ../stylesheets/system-xsl .validated-00book.xml #../web/index-read.html.in
 $(obj-web)/index.html: .validated-00book.xml
 	xsltproc $(xsltproc-opts) -o $(obj-web)/x ../stylesheets/it/web.xsl 00book.xml
 #	xsltproc $(xsltproc-opts) -o $(obj-web)/x ../stylesheets/chunk-stylesheet.xsl 00book.xml
-	cp ${web-global}/styles.css ${obj-web}
-	mkdir -p ${figs-web}
-	cp -f ${web-global}/icons/*.png $(figs-web)
-	cp -f examples/figs/*.png $(figs-web)
+	cp $(web-global)/styles.css $(obj-web)
+	mkdir -p $(figs-web-folder)
+	cp -f $(web-global)/icons/*.png $(figs-web-folder)
+	cp -f examples/figs/*.png $(figs-web-folder)
 	mkdir -p $(script-web)
 	cp -f $(web-local)/*.js $(script-web)
-	sed -i -e "s|/support/||g" ${obj-web}/*.html
+	sed -i -e "s|/support/||g" $(obj-web)/*.html
 #	python ../web/texpand.py ../web/index-read.html.in html/read/index.html
 #	for i in $(obj-web-read)/*.html; do \
 #	  gzip -9 -c $$i > $$i.gz; \
