@@ -10,10 +10,10 @@
     <para id="x_339">Le unioni giocano un ruolo fondamentale quando si lavora con uno strumento di controllo di revisione distribuito. Ecco alcuni casi in cui può presentarsi il bisogno di unire tra loro due o più flussi di lavoro.</para>
     <itemizedlist>
       <listitem>
-	<para id="x_33a">Alice e Bruno hanno ognuno una copia personale di un repository per un progetto su cui stanno collaborando. Mentre Alice corregge un bug nel suo repository, Bruno aggiunge una nuova funzione nel proprio. Entrambi vogliono che il repository condiviso contenga sia la correzione del bug sia la nuova funzione.</para>
+	<para id="x_33a">Alice e Bruno hanno entrambi una copia personale di un repository per un progetto su cui stanno collaborando. Mentre Alice corregge un bug nel suo repository, Bruno aggiunge una nuova funzione nel proprio. Entrambi vogliono che il repository condiviso contenga sia la correzione del bug sia la nuova funzione.</para>
       </listitem>
       <listitem>
-	<para id="x_33b">Cinzia lavora frequentemente su più attività differenti alla volta per un singolo progretto, ognuna isolata al sicuro nel proprio repository. Lavorando in questo modo, Cinzia ha spesso bisogno di unire una parte del proprio lavoro con un'altra.</para>
+	<para id="x_33b">Cinzia lavora frequentemente su più attività differenti alla volta per un singolo progetto, ognuna isolata al sicuro nel proprio repository. Lavorando in questo modo, Cinzia ha spesso bisogno di unire una parte del proprio lavoro con un'altra.</para>
       </listitem>
     </itemizedlist>
 
@@ -41,7 +41,7 @@
 
     &interaction.tour.merge.pull;
 
-    <para id="x_340">Tuttavia, il comando <command role="hg-cmd">hg pull</command> dice qualcosa a proposito di <quote>teste</quote> (in inglese, <quote>heads</quote>).</para>
+    <para id="x_340">Tuttavia, il comando <command role="hg-cmd">hg pull</command> dice qualcosa a proposito di <quote>teste</quote> (in inglese, heads).</para>
 
     <sect2>
       <title>Le teste di un repository</title>
@@ -111,7 +111,7 @@
   <sect1>
     <title>Risolvere i conflitti tra cambiamenti</title>
 
-    <para id="x_34b">La maggior parte delle unioni è semplice, ma talvolta vi troverete a unire cambiamenti in cui ognuna delle due parti modifica le stesse porzioni degli stessi file. A meno che entrambe le modifiche siano identiche, questo risulterà in un <emphasis>conflitto</emphasis> che dovrete cercare di riconciliare decidendo come combinare i diversi cambiamenti in un risultato coerente.</para>
+    <para id="x_34b">La maggior parte delle unioni è semplice, ma a volte vi troverete a unire cambiamenti in cui ognuna delle due parti modifica le stesse porzioni degli stessi file. A meno che entrambe le modifiche siano identiche, questa situazione risulterà in un <emphasis>conflitto</emphasis> che dovrete cercare di riconciliare decidendo come combinare i diversi cambiamenti in un risultato coerente.</para>
 
     <figure id="fig:tour-merge:conflict">
       <title>Modifiche in conflitto a un documento</title>
@@ -125,7 +125,7 @@
 
     <para id="x_34e">Mercurial non è dotato di alcuna funzione predefinita per gestire i conflitti. Invece, richiama un programma esterno, di solito uno che mostra un qualche tipo di interfaccia grafica per la risoluzione dei conflitti, trovato tra i tanti strumenti di unione differenti che è probabile siano installati sul vostro sistema. Come prima cosa, Mercurial prova a cercare alcuni strumenti di unione completamente automatici; poi, se non riesce a trovarli (perché il processo di risoluzione richiede una guida umana) o se non sono presenti, prova a richiamare diversi strumenti grafici di unione.</para>
 
-    <para id="x_34f">&Egrave; anche possibile far eseguire a Mercurial uno specifico programma, impostando il valore della variable di ambiente <envar>HGMERGE</envar> al nome del vostro programma preferito.</para>
+    <para id="x_34f">&Egrave; anche possibile far eseguire a Mercurial uno specifico programma, impostando il valore della variable d'ambiente <envar>HGMERGE</envar> al nome del vostro programma preferito.</para>
 
     <sect2>
       <title>Usare uno strumento grafico di unione</title>
@@ -208,7 +208,7 @@ hg commit -m 'Incorporati i cambiamenti remoti'</programlisting>
 
     <para id="x_364">Se fosse possibile, sarebbe comodo ridurre il numero di passi necessari. In effetti, Mercurial viene distribuito con un'estensione chiamata <literal role="hg-ext">fetch</literal> pensata proprio per questo scopo.</para>
 
-    <para id="x_365">Mercurial fornisce un meccanismo flessibile per consentire ad altre persone di estendere le sue funzionalità, preservando le dimensioni ridotte e la manutenibilità del proprio nucleo. Alcune estensioni aggiungono nuovi comandi che potete usare dalla riga di comando, mentre altri lavorano <quote>dietro le quinte</quote>, per esempio accrescendo le funzionalità della modalità server predefinita di Mercurial.</para>
+    <para id="x_365">Mercurial fornisce un meccanismo flessibile per consentire ad altre persone di estendere le sue funzionalità, preservando le dimensioni ridotte e la manutenibilità del proprio nucleo. Alcune estensioni aggiungono nuovi comandi che potete usare dalla riga di comando, mentre altre lavorano <quote>dietro le quinte</quote>, per esempio accrescendo la funzionalità della modalità server predefinita di Mercurial.</para>
 
     <para id="x_366">L'estensione <literal role="hg-ext">fetch</literal> aggiunge un nuovo comando chiamato, naturalmente, <command role="hg-cmd">hg fetch</command>. Questa estensione agisce come una combinazione di <command role="hg-cmd">hg pull -u</command>, <command role="hg-cmd">hg merge</command> e <command role="hg-cmd">hg commit</command>. Comincia propagando verso il repository corrente i cambiamenti estratti da un altro repository. Se si accorge che i cambiamenti hanno aggiunto una nuova testa al repository, aggiorna la directory di lavoro alla nuova testa, poi avvia il processo di unione e infine, se l'unione ha successo, ne inserisce il risultato nel repository con un messaggio di commit generato automaticamente. Se non sono state aggiunte nuove teste, il comando si limita ad aggiornare la directory di lavoro alla nuova revisione di punta.</para>
 
