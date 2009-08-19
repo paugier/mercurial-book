@@ -12,7 +12,7 @@ chapters = (sorted(glob.glob('../ch*.xml')) +
 fp = open('index-read.html.in', 'w', encoding='utf-8')
 
 print('''
-<div class="navheader"><h1 class="booktitle">Mercurial: la guida definitiva<div class="authors">di Bryan O'Sullivan</div></h1></div>
+<div class="navheader"><h1 class="booktitle">Mercurial: la guida definitiva<div class="authors">di Bryan O&#8217;Sullivan</div></h1></div>
 <div class="book"><ul class="booktoc">''', file=fp)
 
 ch = 0

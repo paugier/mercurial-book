@@ -20,13 +20,13 @@
   <!-- Overriding parameters for the Italian localisation -->
   
   <xsl:template name="user.header.navigation">
-    <div class="navheader"><h2 class="booktitle"><a href="/">Mercurial: la guida definitiva</a> <span class="authors">di Bryan O'Sullivan</span></h2></div>
+    <div class="navheader"><h2 class="booktitle"><a href="/">Mercurial: la guida definitiva</a> <span class="authors">di Bryan O&#8217;Sullivan</span></h2></div>
   </xsl:template>
   
   <xsl:template name="user.footer.content">
     <div class="hgfooter">
       <p><img src="figs/rss.png"/> Volete rimanere aggiornati? Abbonatevi al feed delle modifiche per il <a class="feed" href="http://bitbucket.org/gpiancastelli/hgbook-it/atom">libro italiano</a>.</p>
-      <p>Copyright 2006, 2007, 2008, 2009 Bryan O'Sullivan.
+      <p>Copyright 2006, 2007, 2008, 2009 Bryan O&#8217;Sullivan.
       Icone realizzate da <a href="mailto:mattahan@gmail.com">Paul Davey</a> alias <a href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
       <p>Copyright 2009 <a href="mailto:giulio.piancastelli@gmail.com">Giulio Piancastelli</a> per la traduzione italiana.</p>
     </div>
