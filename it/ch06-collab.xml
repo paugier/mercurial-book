@@ -2,7 +2,7 @@
   <?dbhtml filename="collaborare-con-altre-persone.html"?>
   <title>Collaborare con altre persone</title>
 
-  <para id="x_44a">Essendo uno strumento completamente decentralizzato, Mercurial non impone alcuna politica su come le persone dovrebbero lavorare insieme. Tuttavia, se per voi il controllo di revisione distribuito è una novità, conoscere alcuni strumenti ed esempi può aiutarvi a ragionare sui possibili modelli di workflow da adottare.</para>
+  <para id="x_44a">Essendo uno strumento completamente decentralizzato, Mercurial non impone alcuna politica su come le persone dovrebbero lavorare insieme. Tuttavia, se per voi il controllo di revisione distribuito è una novità, conoscere alcuni strumenti ed esempi può aiutarvi a ragionare sui possibili modelli di workflow (letteralmente, flusso di lavoro) da adottare.</para>
 
   <sect1>
     <title>L'interfaccia web di Mercurial</title>
@@ -11,7 +11,7 @@
 
     <para id="x_44c">L'interfaccia web vi permette di navigare interattivamente un singolo repository o una collezione di repository. Potete vedere la cronologia di un repository, esaminare qualsiasi cambiamento (con i commenti e le differenze) e vedere il contenuto di qualsiasi file o directory. Potete persino ottenere una vista della cronologia che vi fornisce una rappresentazione grafica delle relazioni tra le unioni e i singoli cambiamenti.</para>
 
-    <para id="x_44d">L'interfaccia web offre ai visitatori anche i feed RSS e Atom dei cambiamenti in un repository. Questo vi permette di <quote>abbonarvi</quote> a un repository usando il vostro lettore di feed preferito e di venire automaticamente informati sulle attività in quel repository non appena cominciano. Trovo questa possibilità molto più conveniente rispetto al modello di iscrizione a una mailing list a cui sono spedite le notifiche, in quanto non richiede alcuna configurazione aggiuntiva da parte di chiunque stia servendo il repository.</para>
+    <para id="x_44d">L'interfaccia web offre ai visitatori anche i feed RSS e Atom dei cambiamenti in un repository. Questo vi permette di <quote>abbonarvi</quote> a un repository usando il vostro lettore di feed preferito e di venire automaticamente informati sulle attività in quel repository non appena vengono compiute. Trovo questa possibilità molto più conveniente rispetto al modello di iscrizione a una mailing list a cui sono spedite le notifiche, in quanto non richiede alcuna configurazione aggiuntiva da parte di chiunque stia condividendo il repository.</para>
 
     <para id="x_44e">L'interfaccia web consente agli utenti remoti anche di clonare un repository, estrarne i cambiamenti e (quando il server è configurato per permetterlo) trasmettervi le proprie modifiche. Mercurial comprime aggressivamente i dati incapsulando il protocollo HTTP in modo da lavorare con grande efficienza persino attraverso connessioni di rete a banda ridotta.</para>
 
@@ -23,7 +23,7 @@
 
     <para id="x_69e">Per repository destinati a progetti di lunga durata che vorreste mantenere disponibili permanentemente, potete rivolgervi ai diversi servizi di hosting pubblici esistenti. Alcuni ospitano gratuitamente i progetti open source, mentre altri offrono un hosting commerciale a pagamento. Una lista aggiornata di questi servizi è disponibile all'indirizzo <ulink url="http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting">http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting</ulink>.</para>
 
-    <para id="x_6a0">Se invece preferite tenere i repository sui vostri server, Mercurial è dotato di un supporto predefinito per diverse tecnologie di hosting popolari, in particolar modo CGI (acronimo di Common Gateway Interface) e WSGI (acronimo di Web Services Gateway Interface). Leggete la <xref linkend="sec:collab:cgi"/> per i dettagli sulle configurazioni di CGI e WSGI.</para>
+    <para id="x_6a0">Se invece preferite tenere i repository sui vostri server, Mercurial è dotato di un supporto predefinito per diverse tecnologie di hosting popolari, in particolar modo CGI (acronimo di Common Gateway Interface, interfaccia di gateway comune) e WSGI (acronimo di Web Server Gateway Interface, interfaccia di gateway per server web). Leggete la <xref linkend="sec:collab:cgi"/> per i dettagli sulle configurazioni di CGI e WSGI.</para>
   </sect1>
 
   <sect1>
@@ -46,7 +46,7 @@
 
       <para id="x_455">Non vorrei suggerire che un approccio in cui <quote>tutto è permesso</quote> sia qualcosa di sostenibile, ma è un modello che è facile da capire e funziona perfettamente in alcune situazioni inusuali.</para>
 
-      <para id="x_456">Per esempio, molti progetti hanno un gruppo sparso di collaboratori che si incontrano fisicamente solo di rado. Alcuni gruppi preferiscono superare l'isolamento del lavoro a distanza organizzando <quote>maratone</quote> occasionali in cui un certo numero di persone si ritrova insieme in un'unico luogo (la stanza delle riunioni di un'azienda, la sala delle conferenze in un hotel, posti di questo tipo) e passa diversi giorni più o meno chiuso lì, a lavorare intensamente su una manciata di progetti.</para>
+      <para id="x_456">Per esempio, molti progetti hanno un gruppo sparpagliato di collaboratori che si incontrano fisicamente solo di rado. Alcuni gruppi preferiscono superare l'isolamento del lavoro a distanza organizzando <quote>maratone</quote> occasionali in cui un certo numero di persone si ritrova insieme in un'unico luogo (la stanza delle riunioni di un'azienda, la sala delle conferenze in un hotel, posti di questo tipo) e passa diversi giorni più o meno chiuso lì, a lavorare intensamente su una manciata di progetti.</para>
 
       <para id="x_457">Una maratona o una sessione di programmazione in un locale sono le occasioni perfette per usare il comando <command role="hg-cmd">hg serve</command>, dato che	<command role="hg-cmd">hg serve</command> non richiede alcuna infrastruttura server elaborata. Potete cominciare a usare <command role="hg-cmd">hg serve</command> in pochi minuti, leggendo la <xref linkend="sec:collab:serve"/> più avanti. Poi vi basta comunicare ai vostri vicini l'esistenza di un server in esecuzione, fargli sapere l'URL a cui devono collegarsi, e avrete un modo rapido da predisporre per lavorare insieme. Gli altri potranno digitare il vostro URL nel proprio browser e revisionare velocemente i vostri cambiamenti, o estrarre la correzione di un bug dal vostro repository e verificarla, o clonare un ramo contenente una nuova funzione e provarla.</para>
 
@@ -60,7 +60,7 @@
 
       <para id="x_45a">I collaboratori cominciano clonando una copia di questo repository, potendo estrarne i cambiamenti ogni volta che ne hanno bisogno. Alcuni sviluppatori (forse tutti) hanno il permesso di trasmettere le modifiche al repository quando sono pronte per essere viste da altre persone.</para>
 
-      <para id="x_45b">In questo modello, può ancora aver senso che alcune persone propaghino i cambiamenti direttamente tra loro, senza passare dal repository centrale. Considerate il caso in cui io ho creato una possibile correzione di un bug, ma sono preoccupato che, se la pubblicassi sul repository centrale, tutti gli altri possano successivamente danneggiare i propri alberi nel momento in cui la estraggono. Per ridurre il danno potenziale, posso chiedervi di clonare temporaneamente il mio repository in un vostro repository privato e di collaudare la correzione. Questo ci permette di rimandare la pubblicazione di cambiamenti potenzialmente pericolosi fino a quando non hanno subìto una ragionevole verifica.</para>
+      <para id="x_45b">In questo modello, può ancora avere senso che alcune persone propaghino i cambiamenti direttamente tra loro, senza passare dal repository centrale. Considerate il caso in cui io ho creato una correzione sperimentale di un bug, ma sono preoccupato che, se la pubblicassi sul repository centrale, tutti gli altri possano successivamente danneggiare i propri alberi nel momento in cui la estraggono. Per ridurre il danno potenziale, posso chiedervi di clonare temporaneamente il mio repository in un vostro repository privato e di collaudare la correzione. Questo ci permette di rimandare la pubblicazione di cambiamenti potenzialmente pericolosi fino a quando non hanno subìto una ragionevole verifica.</para>
 
       <para id="x_45c">Se un gruppo sta mantenendo il repository sui propri server in questo tipo di scenario, di solito i membri useranno il protocollo <command>ssh</command> per trasmettere in sicurezza i cambiamenti al repository centrale, come documentato nella <xref linkend="sec:collab:ssh"/>. Di solito, viene anche pubblicata una copia del repository in sola lettura via HTTP, come nella <xref linkend="sec:collab:cgi"/>. Pubblicare via HTTP soddisfa le necessità di chi non ha accesso in scrittura e di chi preferisce usare un browser per navigare la cronologia del repository.</para>
     </sect2>
@@ -72,7 +72,7 @@
 
       <para id="x_6a2">Per esempio, un servizio di hosting ben ingegnerizzato consentirà agli sviluppatori di clonare le proprie copie di un repository con un singolo clic, in modo da farli lavorare in spazi separati e lasciarli condividere i propri cambiamenti quando sono pronti.</para>
 
-      <para id="x_6a3">In più, un buon servizio di hosting permetterà alle persone di comunicare tra loro, per esempio per segnalare che <quote>questo albero contiene modifiche pronte per la tua revisione</quote>.</para>
+      <para id="x_6a3">In più, un buon servizio di hosting permetterà ai propri utentei di comunicare tra loro, per esempio per segnalare che <quote>questo albero contiene modifiche pronte per la tua revisione</quote>.</para>
     </sect2>
 
     <sect2>
@@ -104,7 +104,7 @@
 
       &interaction.branching.clone;
 
-      <para id="x_465">Se abbiamo bisogno di fare una modifica al ramo stabile, possiamo clonare <emphasis>quel</emphasis> repository, fare i nostri cambiamenti, effettuarne il commit, e trasmetterli indietro a quello stesso repository.</para>
+      <para id="x_465">Se abbiamo bisogno di fare una modifica al ramo stabile, possiamo clonare <emphasis>quel</emphasis> repository, fare i nostri cambiamenti, effettuarne il commit e trasmetterli indietro a quello stesso repository.</para>
 
       &interaction.branching.stable;
 
@@ -120,7 +120,7 @@
     <sect2>
       <title>Rami di funzione</title>
 
-      <para id="x_469">Per progetti di dimensioni più grandi, un modo efficace di gestire i cambiamenti è quello di dividere un gruppo in piccoli sottogruppi. Ogni sottogruppo gestisce un proprio ramo condiviso, clonato da un singolo ramo <quote>principale</quote> usato dall'intero progetto. Le persone che lavorano su un singolo ramo sono tipicamente piuttosto isolate dagli sviluppi che accadono negli altri rami.</para>
+      <para id="x_469">Per progetti di dimensioni più grandi, un modo efficace per gestire i cambiamenti è quello di dividere un gruppo in piccoli sottogruppi. Ogni sottogruppo gestisce un proprio ramo condiviso, clonato da un singolo ramo <quote>principale</quote> usato dall'intero progetto. Le persone che lavorano su un singolo ramo sono tipicamente piuttosto isolate dagli sviluppi che avvengono negli altri rami.</para>
 
       <figure id="fig:collab:feature-branches">
 	<title>Rami di funzione</title>
@@ -166,9 +166,9 @@
 
       <para id="x_476">Nella comunità open source si tenta continuamente di stabilire, attraverso accese discussioni, se un modello di sviluppo in cui le persone non fanno altro che estrarre cambiamenti le une dalle altre sia <quote>meglio</quote> di un modello in cui più persone possono trasmettere modifiche a un repository condiviso.</para>
 
-      <para id="x_477">Tipicamente, i sostenitori del modello a scrittura condivisa usano strumenti che impongono attivamente questo approccio. Se state usando uno strumento centralizzato di controllo di revisione come Subversion, non c'è alcun modo di scegliere il modello che userete: lo strumento vi fornisce un modello a scrittura condivisa e se volete fare qualcos'altro dovete costruire il vostro approccio al di sopra di quel modello (per esempio, applicando una patch a mano).</para>
+      <para id="x_477">Tipicamente, i sostenitori del modello a scrittura condivisa usano strumenti che impongono attivamente questo approccio. Se state usando uno strumento centralizzato di controllo di revisione come Subversion, non c'è alcun modo di scegliere il modello che userete: lo strumento vi fornisce un modello a scrittura condivisa e se volete fare qualcos'altro dovete strutturare il vostro metodo al di sopra di quel modello (per esempio, applicando una patch a mano).</para>
 
-      <para id="x_478">Un buon sistema distribuito di controllo di revisione supporterà entrambi i modelli. Voi e i vostri collaboratori poterete quindi strutturare il modo di lavorare insieme sulla base dei vostri bisogni e delle vostre preferenze, non delle acrobazie a cui vi costringono gli strumenti.</para>
+      <para id="x_478">Un buon sistema distribuito di controllo di revisione supporterà entrambi i modelli. Voi e i vostri collaboratori potrete quindi organizzare il modo di lavorare insieme sulla base dei vostri bisogni e delle vostre preferenze, non delle acrobazie a cui vi costringono gli strumenti.</para>
     </sect2>
     <sect2>
       <title>Dove la collaborazione incontra la gestione dei rami</title>
@@ -306,7 +306,7 @@
 
       <para id="x_4a0">Dato che ssh può essere complicato da configurare se non siete esperti, un certo numero di cose potrebbero andare storte. Aggiungete Mercurial a tutto questo, e le possibilità di fare confusione aumenteranno ulteriormente. La maggior parte di questi potenziali problemi si presenta sul lato server, non sul lato client. La buona notizia è che, una volta che avete una configurazione funzionante, di solito continuerà a funzionare indefinitamente.</para>
 
-      <para id="x_4a1">Prima di provare a usare Mercurial per comunicare con un server ssh, è preferibile che vi assicuriate di poter usare i normali comandi <command>ssh</command> o <command>putty</command> per contattare il server. Se incontrate problemi usando direttamente questi comandi, Mercurial sicuramente non funzionerà e quel che è peggio è che nasconderà il problema sottostante. Ogni volta che avete un problema relativo a ssh con Mercurial, per cominciare dovreste accertarvi nuovamente che i semplici comandi ssh lato client funzionino <emphasis>prima</emphasis> di preoccuparvi di eventuali problemi con Mercurial.</para>
+      <para id="x_4a1">Prima di provare a usare Mercurial per comunicare con un server ssh, è preferibile che vi assicuriate di poter usare i normali comandi <command>ssh</command> o <command>putty</command> per contattare il server. Se incontrate problemi usando direttamente questi comandi, Mercurial sicuramente non funzionerà e in più nasconderà il problema sottostante. Ogni volta che avete un problema relativo a ssh con Mercurial, per cominciare dovreste accertarvi nuovamente che i semplici comandi ssh lato client funzionino <emphasis>prima</emphasis> di preoccuparvi di eventuali problemi con Mercurial.</para>
 
       <para id="x_4a2">La prima cosa di cui accertarsi sul lato server è che siate in grado di entrare nel sistema da un'altra macchina. Se non potete usare <command>ssh</command> o <command>putty</command> per entrare, il messaggio di errore che vi viene mostrato potrebbe darvi alcuni suggerimenti per capire che cosa non va. I problemi più comuni sono i seguenti.</para>
       <itemizedlist>
@@ -334,7 +334,7 @@
       <para id="x_4ad">In un mondo ideale, dovreste essere in grado di eseguire il comando seguente con successo e ottenere come risultato la stampa di una riga contenente la data e l'ora correnti.</para>
       <programlisting>ssh mioserver date</programlisting>
 
-      <para id="x_4ae">Se gli script di accesso sul vostro server stampano messaggi informativi o altri tipi di testo anche quando eseguite comandi non interattivi come questo, dovreste correggerli prima di continuare, in modo che stampino solo se vengono eseguiti interattivamente. Altrimenti, questi messaggi come minimo confonderanno le stampe di Mercurial, o peggio, potrebbero potenzialmente causare problemi durante l'esecuzione remota dei comandi Mercurial. Mercurial prova a scoprire e ignorare questi messaggi durante le sessioni <command>ssh</command> non interattive, ma non è infallibile. (Se state modificando i vostri script di accesso sul vostro server, potete vedere se uno script di accesso viene eseguito in una shell interattiva controllando il codice restituito dal comando <literal>tty -s</literal>.)</para>
+      <para id="x_4ae">Se gli script di accesso sul vostro server stampano messaggi informativi o altri tipi di testo anche quando eseguite comandi non interattivi come questo, dovreste correggerli prima di continuare, in modo che stampino solo se vengono eseguiti interattivamente. Altrimenti, questi messaggi come minimo confonderanno le stampe di Mercurial e nel caso peggiore potrebbero causare problemi durante l'esecuzione remota dei comandi Mercurial. Mercurial prova a individuare e ignorare questi messaggi durante le sessioni <command>ssh</command> non interattive, ma non è infallibile. (Se state modificando i vostri script di accesso sul vostro server, potete vedere se uno script di accesso viene eseguito in una shell interattiva controllando il codice restituito dal comando <literal>tty -s</literal>.)</para>
 
       <para id="x_4af">Dopo aver verificato che il buon vecchio ssh stia funzionando con il vostro server, il passo successivo è quello di assicurarsi che Mercurial sia in esecuzione sul server. Il comando seguente dovrebbe terminare con successo:</para>
 
@@ -351,7 +351,7 @@
 	<listitem><para id="x_4b4">La variabile d'ambiente <envar>PYTHONPATH</envar> potrebbe aver bisogno di contenere il percorso ai moduli Python di Mercurial. Potrebbe non essere per niente impostata, potrebbe essere sbagliata, o potrebbe venire impostata solo se l'accesso è interattivo.</para>
 	</listitem></itemizedlist>
 
-      <para id="x_4b5">Se riuscite a eseguire <command role="hg-cmd">hg version</command> attraverso una connessione ssh, ben fatto! Siete riusciti a configurare il client e il server. Ora dovreste essere in grado di usare Mercurial per accedere ai repository ospitato da quel nome utente su quel server. Se a questo punto incontrate qualche problema con Mercurial e ssh, provate a usare l'opzione <option role="hg-opt-global">--debug</option> per avere un'immagine più chiara di quello che sta succedendo.</para>
+      <para id="x_4b5">Se riuscite a eseguire <command role="hg-cmd">hg version</command> attraverso una connessione ssh, ben fatto! Siete riusciti a configurare il client e il server. Ora dovreste essere in grado di usare Mercurial per accedere ai repository ospitati da quel nome utente su quel server. Se a questo punto incontrate qualche problema con Mercurial e ssh, provate a usare l'opzione <option role="hg-opt-global">--debug</option> per avere un'immagine più chiara di quello che sta succedendo.</para>
     </sect2>
     <sect2>
       <title>Usare la compressione con ssh</title>
@@ -370,12 +370,12 @@ ssh = ssh -C</programlisting>
   Compression yes
   HostName hg.example.com</programlisting>
 
-      <para id="x_4ba">Questo definisce l'alias <literal>hg</literal> per il nome della macchina. Quando usate l'alias sulla riga di comando <command>ssh</command> o in un URL ssh di Mercurial, <command>ssh</command> si connetterà a <literal>hg.example.com</literal> e userà la compressione. In questo modo, potete ottenere sia un nome più corto da digitare sia la compressione, che dal canto loro sono entrambe buone cose..</para>
+      <para id="x_4ba">Questo definisce l'alias <literal>hg</literal> per il nome della macchina. Quando usate l'alias sulla riga di comando <command>ssh</command> o in un URL ssh di Mercurial, <command>ssh</command> si connetterà a <literal>hg.example.com</literal> e userà la compressione. In questo modo, potete ottenere sia un nome più corto da digitare sia la compressione, che dal canto loro sono entrambe buone cose.</para>
     </sect2>
   </sect1>
 
   <sect1 id="sec:collab:cgi">
-    <title>Servire i dati attraverso HTTP usando CGI</title>
+    <title>Condividere i dati attraverso HTTP usando CGI</title>
 
     <para id="x_6a8">Il modo più semplice per condividere uno o più repository in modo permanente è quello di usare un server web e il supporto CGI di Mercurial.</para>
 
@@ -404,7 +404,7 @@ ssh = ssh -C</programlisting>
 	<listitem><para id="x_4c1">Il vostro server è configurato per consentirvi di eseguire programmi CGI nella directory dove pianificate di farlo? La maggior parte delle impostazioni di partenza dei server disabilitano esplicitamente la possibilità di eseguire programmi CGI.</para>
 	</listitem></orderedlist>
 
-      <para id="x_4c2">Se non avete un server web installato e non avete una considerevole esperienza nel configurare Apache, dovreste considerare l'uso del server web <literal>lighttpd</literal> invece di Apache. Le configurazioni di Apache hanno la reputazione ben meritata di essere complicate e di confondere gli utenti. Mentre Apache è dotato di un numero maggiore di funzioni rispetto a <literal>lighttpd</literal>, buona parte di queste funzioni non è rilevante per servire repository Mercurial. E <literal>lighttpd</literal> è innegabilmente <emphasis>molto</emphasis> più facile da affrontare di Apache.</para>
+      <para id="x_4c2">Se non avete un server web installato e non avete una considerevole esperienza nel configurare Apache, dovreste considerare l'uso del server web <literal>lighttpd</literal> invece di Apache. Le configurazioni di Apache hanno la reputazione ben meritata di essere complicate e di confondere gli utenti. Sebbene Apache sia dotato di un numero maggiore di funzioni rispetto a <literal>lighttpd</literal>, buona parte di queste funzioni non è rilevante per servire repository Mercurial. E <literal>lighttpd</literal> è innegabilmente <emphasis>molto</emphasis> più facile da affrontare di Apache.</para>
     </sect2>
 
     <sect2>
@@ -423,7 +423,7 @@ chmod 755 ~/public_html/hgweb.cgi</programlisting>
       <sect3 id="sec:collab:wtf">
 	<title>Che cosa <emphasis>potrebbe</emphasis> andare storto?</title>
 
-	<para id="x_4c7">Una volta che avete copiato lo script CGI al suo posto, aprite un browser web e provate a visitare l'URL <literal>http://nomemacchina/~nomeutente/hgweb.cgi</literal>, <emphasis>ma</emphasis> raccogliete le forze per affrontare un fallimento immediato. C'è un'alta probabilità che la visita a questo URL fallisca e ci sono molte possibili ragioni per questo. In effetti, probabilmente vi imbatterete in quasi tutti i possibili errori descritti più avanti, quindi leggete attentamente. Quelli che seguono sono tutti i problemi che ho incontrato sul sistema operativo Fedora 7, con un'installazione vergine di Apache e un account utente che ho creato espressamente per effettuare questo esercizio.</para>
+	<para id="x_4c7">Una volta che avete copiato lo script CGI al suo posto, aprite un browser web e provate a visitare l'URL <literal>http://nomemacchina/~nomeutente/hgweb.cgi</literal>, <emphasis>ma</emphasis> raccogliete le forze per affrontare un fallimento immediato. C'è un'alta probabilità che la visita a questo URL fallisca e ci sono molte possibili ragioni per questo. In effetti, probabilmente vi imbatterete in quasi tutti i possibili errori descritti più avanti, quindi leggete attentamente. Quelli che seguono sono tutti i problemi che ho incontrato sul sistema operativo Fedora 7, con un'installazione vergine di Apache e un account utente creato espressamente per effettuare questo esercizio.</para>
 
 	<para id="x_4c8">Il vostro server web potrebbe aver disabilitato le directory di pubblicazione per utente. Se state usando Apache, cercate la direttiva <literal>UserDir</literal> nel vostro file di configurazione. Se non è presente, o se è presente ma il suo valore è <literal>disabled</literal>, allora le directory per utente sono disabilitate. Altrimenti, la stringa che segue <literal>UserDir</literal> è il nome della sottodirectory della vostra directory personale che verrà letta da Apache, per esempio <filename class="directory">public_html</filename>.</para>
 
@@ -478,16 +478,16 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 
       <para id="x_4d8">Lo script <filename role="special">hgwebdir.cgi</filename> si basa su un file di configurazione esterno. Per default, cerca un file chiamato <filename role="special">hgweb.config</filename> nella stessa directory in cui si trova. Dovrete creare questo file e renderlo leggibile agli altri. Il formato di questo file è simile a quello di un file <quote>ini</quote> di Windows, riconoscibile dal modulo <literal>ConfigParser</literal> <citation><xref linkend="bib:cp"/></citation> di Python.</para>
 
-      <para id="x_4d9">Il modo più facile di configurare <filename role="special">hgwebdir.cgi</filename> è tramite una sezione chiamata <literal>collections</literal>. Questo pubblicherà automaticamente <emphasis>tutti</emphasis> i repository contenuti nelle directory che nominate. La sezione dovrebbe somigliare a questa:</para>
+      <para id="x_4d9">Il modo più facile di configurare <filename role="special">hgwebdir.cgi</filename> è tramite una sezione chiamata <literal>collections</literal> che vi consentirà di pubblicare automaticamente <emphasis>tutti</emphasis> i repository contenuti nelle directory che nominate. La sezione dovrebbe somigliare a questa:</para>
       <programlisting>[collections]
 /mia/radice = /mia/radice</programlisting>
-      <para id="x_4da">Mercurial la interpreta guardando al nome della directory sul lato <emphasis>destro</emphasis> del segno <quote><literal>=</literal></quote>, trovando i repository nella gerarchia contenuta in quella directory e usando il testo sul lato <emphasis>sinistro</emphasis> per eliminare il testo corrispondente dai nomi che elencherà effettivamente nell'interfaccia web. I componenti del percorso che rimangono dopo questa eliminazione formano un <quote>percorso virtuale</quote>.</para>
+      <para id="x_4da">Mercurial la interpreta guardando al nome della directory sul lato <emphasis>destro</emphasis> del segno <quote><literal>=</literal></quote>, individuando i repository nella gerarchia contenuta in quella directory e usando il testo sul lato <emphasis>sinistro</emphasis> per eliminare il testo corrispondente dai nomi che elencherà effettivamente nell'interfaccia web. I componenti del percorso che rimangono dopo questa eliminazione formano un <quote>percorso virtuale</quote>.</para>
 
       <para id="x_4db">Dato l'esempio precedente, se abbiamo un repository il cui percorso locale è <filename class="directory">/mia/radice/questo/repository</filename>, lo script CGI eliminerà la parte <filename class="directory">/mia/radice</filename> iniziale dal nome e pubblicherà il repository con il percorso virtuale <filename class="directory">questo/repository</filename>. Se l'URL per il nostro script CGI è <literal>http://nomemacchina/~nomeutente/hgwebdir.cgi</literal>, l'URL completo per quel repository sarà <literal>http://nomemacchina/~nomeutente/hgwebdir.cgi/questo/repository</literal>.</para>
 
       <para id="x_4dc">Se sostituiamo <filename class="directory">/mia/radice</filename> sul lato sinstro di questo esempio con <filename class="directory">/mia</filename>, allora <filename role="special">hgwebdir.cgi</filename> eliminerà solo <filename class="directory">/mia</filename> dal nome del repository e ci darà il percorso virtuale <filename class="directory">radice/questo/repository</filename> invece di	<filename class="directory">questo/repository</filename>.</para>
 
-      <para id="x_4dd">Lo script <filename role="special">hgwebdir.cgi</filename> cercherà i repository ricorsivamente in ogni directory elencata nella sezione <literal>collections</literal> del suo file di configurazione, ma <emphasis>non</emphasis> navigherà ricorsivamente nei repository che trova.</para>
+      <para id="x_4dd">Lo script <filename role="special">hgwebdir.cgi</filename> cercherà i repository ricorsivamente in ogni directory elencata nella sezione <literal>collections</literal> del suo file di configurazione, ma <emphasis>non</emphasis> navigherà ricorsivamente nei repository che trova.<footnote><para id="x_ff3">[NdT] A partire dalla versione 1.3, Mercurial supporta i repository innestati.</para></footnote></para>
 
       <para id="x_4de">Il meccanismo delle collezioni nella sezione <literal>collections</literal> facilita la pubblicazione di molti repository in modalità <quote>spara e dimentica</quote>. Dovete impostare lo script CGI e il file di configurazione una volta sola, dopodiché potete pubblicare o ritirare un repository in ogni momento semplicemente spostandolo dentro o fuori dalla gerarchia di directory in cui <filename role="special">hgwebdir.cgi</filename> è configurato per guardare.</para>
 
@@ -496,8 +496,8 @@ chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 
 	<para id="x_4df">In aggiunta al meccanismo basato su <literal>collections</literal>, lo script <filename role="special">hgwebdir.cgi</filename> vi consente di pubblicare una lista specifica di repository. Per fare questo, create una sezione <literal>paths</literal> con un contenuto simile al seguente.</para>
 	<programlisting>[paths]
-repo1 = /mio/percorso/a/qualche/repository
-repo2 = /qualche/percorso/a/un/altro</programlisting>
+repo1 = /mio/percorso/vero/qualche/repository
+repo2 = /qualche/percorso/verso/un/altro</programlisting>
 	<para id="x_4e0">In questo caso, il percorso virtuale (il componente che apparirà in un URL) è sul lato sinistro di ogni definizione, mentre il percorso del repository è sulla destra. Notate che non c'è bisogno che esista  alcuna relazione tra il percorso virtuale che scegliete e l'ubicazione di un repository sul vostro file system.</para>
 
 	<para id="x_4e1">Se lo desiderate, potete usare entrambe le sezioni	  <literal>collections</literal> e <literal>paths</literal> contemporaneamente in un unico file di configurazione.</para>

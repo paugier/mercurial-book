@@ -5,11 +5,11 @@
   <sect1>
     <title>Aggiungere file a un repository Mercurial</title>
 
-    <para id="x_1a3">Mercurial lavora solo con i file che gli dite di gestire nel vostro repository. Il comando <command role="hg-cmd">hg status</command> vi dirà quali sono i file che Mercurial non conosce, usando un <quote><literal>?</literal></quote> per mostrare questi file.</para>
+    <para id="x_1a3">Mercurial lavora solo con i file che gli dite di amministrare nel vostro repository. Il comando <command role="hg-cmd">hg status</command> vi dirà quali sono i file che Mercurial non conosce, usando un <quote><literal>?</literal></quote> per mostrare questi file.</para>
 
     <para id="x_1a4">Per dire a Mercurial di tenere traccia di un file, usate il comando <command role="hg-cmd">hg add</command>. Una volta che avete aggiunto un file, la voce per quel file nell'elenco visualizzato da <command role="hg-cmd">hg status</command> cambia da <quote><literal>?</literal></quote> ad <quote><literal>A</literal></quote>.</para>
 
-      &interaction.daily.files.add;
+    &interaction.daily.files.add;
 
     <para id="x_1a5">Dopo aver eseguito <command role="hg-cmd">hg commit</command>, i file che avete aggiunto prima dell'inserimento non verranno più elencati dal comando <command role="hg-cmd">hg status</command>, perché il comportamento predefinito di <command role="hg-cmd">hg status</command> è quello di segnalarvi solo i file <quote>interessanti</quote> come (per esempio) quelli che avete modificato, rimosso, o rinominato. Se avete un repository che contiene migliaia di file, vorrete raramente sapere qualcosa dei file che Mercurial ha già registrato ma che non sono cambiati. (Potete comunque ottenere questa informazione, come vedremo più avanti.)</para>
 
@@ -51,7 +51,7 @@
 
     &interaction.daily.files.remove;
 
-    <para id="x_1b0">Dopo che avete rimosso un file tramite <command role="hg-cmd">hg remove</command>, Mercurial non terrà più traccia di quel file anche se ricreate un file con lo stesso nome nella vostra directory di lavoro. Se ricreate davvero un file con lo stesso nome e volete che Mercurial registri il nuovo file, usate semplicemente <command role="hg-cmd">hg add</command>. Mercurial saprà che il nuovo file non è in alcun modo legato al vecchio file con lo stesso nome.</para>
+    <para id="x_1b0">Dopo che avete rimosso un file tramite <command role="hg-cmd">hg remove</command>, Mercurial non terrà più traccia di quel file anche se ricreate un file con lo stesso nome nella vostra directory di lavoro. Se ricreate davvero un file con lo stesso nome e volete che Mercurial amministri il nuovo file, usate semplicemente <command role="hg-cmd">hg add</command>. Mercurial saprà che il nuovo file non è in alcun modo legato al vecchio file con lo stesso nome.</para>
 
     <sect2>
       <title>La rimozione di un file non ha effetti sulla sua cronologia.</title>
@@ -74,7 +74,7 @@
 
       &interaction.daily.files.missing;
 
-      <para id="x_1b7">Se il vostro repository contiene un file che <command role="hg-cmd">hg status</command> riporta come mancante, e volete che il file rimanga assente, potete eseguire <command role="hg-cmd">hg remove <option role="hg-opt-remove">--after</option></command> in qualsiasi momento, per dire a Mercurial che volevate effettivamente rimuovere il file.</para>
+      <para id="x_1b7">Se il vostro repository contiene un file che <command role="hg-cmd">hg status</command> segnala come mancante e volete che il file rimanga assente, potete eseguire <command role="hg-cmd">hg remove <option role="hg-opt-remove">--after</option></command> in qualsiasi momento per dire a Mercurial che volevate effettivamente rimuovere il file.</para>
 
       &interaction.daily.files.remove-after;
 
@@ -383,9 +383,9 @@
 
     <para id="x_6d0">Per esempio, un sistema distribuito di controllo di revisione non può, per sua natura, offrire un meccanismo di bloccaggio dei file. Quindi non esiste alcun meccanismo predefinito per evitare che due persone apportino cambiamenti in conflitto a un file binario. Se fate parte di un gruppo in cui diverse persone potrebbero modificare frequentemente i file binari, potrebbe non essere una buona idea impiegare Mercurial&emdash;o un qualsiasi altro sistema distribuito di controllo di revisione&emdash;per gestire quei file.</para>
 
-    <para id="x_6d1">Quando memorizza le modifiche a un file, di solito Mercurial salva solo le differenze tra la versione corrente del file e quella precedente. Per la maggior parte dei file di testo questo approccio si rivela estremamente efficiente. Tuttavia, alcuni file (in particolare i file binari) sono fatti in modo tale che persino una piccola modifica al contenuto logico del file risulta nel cambiamento di molti o della maggior parte dei byte contenuti nel file. Per esempio, i file compressi sono particolarmente sensibili a questo effetto. Se le differenze tra ogni versione di un file e la successiva sono sempre grandi, Mercurial non riuscirà a memorizzare la cronologia del file in maniera molto efficiente. Questo potrebbe avere effetti sia sul bisogno di spazio di memorizzazione locale sia sulla quantità di tempo che viene impiegata per clonare un repository.</para>
+    <para id="x_6d1">Quando Mercurial memorizza le modifiche a un file, di solito salva solo le differenze tra la versione corrente del file e quella precedente. Per la maggior parte dei file di testo questo approccio si rivela estremamente efficiente. Tuttavia, alcuni file (in particolare i file binari) sono fatti in modo tale che persino una piccola modifica al contenuto logico del file risulta nel cambiamento di molti o della maggior parte dei byte contenuti nel file. Per esempio, i file compressi sono particolarmente sensibili a questo effetto. Se le differenze tra ogni versione di un file e la successiva sono sempre grandi, Mercurial non riuscirà a memorizzare la cronologia del file in maniera molto efficiente. Questo potrebbe avere effetti sia sul bisogno di spazio di memorizzazione locale sia sulla quantità di tempo che viene impiegata per clonare un repository.</para>
 
-    <para id="x_6d2">Per avere un'idea di come questo problema potrebbe riguardarvi nella pratica, supponete di voler usare Mercurial per gestire un documento OpenOffice. OpenOffice memorizza i documenti su disco sotto forma di file zip compressi. Modificate anche solo una lettera nel vostro documento in OpenOffice e quasi ogni byte nell'intero file cambierà quando lo salverete. Ora supponete che le dimensioni di quel file siano di 2MB. Dato che la maggior parte del file cambia ogni volta che lo salvate, Mercurial dovrà memorizzare tutti i 2MB del file ogni volta che eseguite un commit, anche se dal vostro punto di vista forse solo poche parole vengono cambiate ogni volta. Un singolo file modificato frequentemente che non rispetti le assunzioni dei meccanismi di memorizzazione di Mercurial può facilmente avere un effetto fuori misura sulle dimensioni del repository.</para>
+    <para id="x_6d2">Per avere un'idea di come questo problema potrebbe riguardarvi nella pratica, supponete di voler usare Mercurial per gestire un documento OpenOffice. OpenOffice memorizza i documenti su disco sotto forma di file ZIP compressi. Modificate anche solo una lettera nel vostro documento in OpenOffice e quasi ogni byte nell'intero file cambierà quando lo salverete. Ora supponete che le dimensioni di quel file siano pari a 2MB. Dato che la maggior parte del file cambia ogni volta che lo salvate, Mercurial dovrà memorizzare tutti i 2MB del file ogni volta che eseguite un commit, anche se dal vostro punto di vista forse solo poche parole vengono cambiate ogni volta. Un singolo file modificato frequentemente che non rispetti le assunzioni dei meccanismi di memorizzazione di Mercurial può facilmente avere un effetto fuori misura sulle dimensioni del repository.</para>
 
     <para id="x_6d3">Anche peggio, se due di voi modificano il documento OpenOffice su cui state lavorando, non c'è alcun modo utile di effettuare un'unione tra le diverse versioni. In effetti, non c'è nemmeno un buon modo di capire quali sono le differenze tra i vostri rispettivi cambiamenti.</para>
 

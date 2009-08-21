@@ -29,7 +29,7 @@
 
     </sect2>
     <sect2>
-      <title>Gestire i file archiviati</title>
+      <title>Gestire i file monitorati</title>
 
       <para id="x_2ee">Mercurial usa una struttura chiamata <emphasis>manifest</emphasis> (in italiano, manifesto) per collezionare informazioni sui file di cui tiene traccia. Ogni voce nel manifest contiene informazioni sui file presenti in un singolo changeset e registra quali file sono contenuti nel changeset, la revisione di ogni file e alcuni altri metadati sui file.</para>
 
@@ -45,7 +45,7 @@
 
       <para id="x_2f0">Nell'ambito di un changelog, di un manifest, o di un filelog, ogni revisione mantiene un puntatore al suo genitore diretto (o ai suoi due genitori, se è una revisione di unione). Come ho già detto, esistono anche relazioni tra revisioni <emphasis>attraverso</emphasis> queste strutture, e tali relazioni sono di natura gerarchica.</para>
 
-      <para id="x_2f1">Per ogni changeset nel repository, esiste esattamente una revisione memorizzata nel changelog. Ogni revisione del changelog contiene un puntatore a una singola revisione del manifest. Una revisione del manifest include un puntatore a una singola revisione di ogni filelog archiviato quando il changeset è stato creato. Queste relazioni sono illustrate nella <xref linkend="fig:concepts:metadata"/>.</para>
+      <para id="x_2f1">Per ogni changeset nel repository, esiste esattamente una revisione memorizzata nel changelog. Ogni revisione del changelog contiene un puntatore a una singola revisione del manifest. Una revisione del manifest include un puntatore a una singola revisione di ogni filelog registrato quando il changeset è stato creato. Queste relazioni sono illustrate nella <xref linkend="fig:concepts:metadata"/>.</para>
 
       <figure id="fig:concepts:metadata">
 	<title>Relazioni tra i metadati</title>
@@ -81,13 +81,13 @@
 
       <para id="x_2f8">In più, Mercurial tratta ogni scrittura come parte di una <emphasis>transazione</emphasis> che può coinvolgere un qualsiasi numero di file. Una transazione è <emphasis>atomica</emphasis>: o l'intera transazione ha successo e i suoi effetti sono visibili in lettura in un unico passo, oppure l'operazione viene completamente annullata. Questa garanzia di atomicità significa che se state eseguendo due copie di Mercurial, una che sta leggendo dati e l'altra che sta scrivendo, la copia che agisce in lettura non vedrà mai un risultato parzialmente scritto che potrebbe confonderla.</para>
 
-      <para id="x_2f9">Il fatto che Mercurial operi solo aggiungendo dati alla fine dei file rende più facile fornire questa garanzia transazionale. Più è facile fare cose come queste, più dovreste avere fiducia che vengano fatte correttamente.</para>
+      <para id="x_2f9">Il fatto che Mercurial operi solo aggiungendo dati alla fine dei file rende più facile fornire questa garanzia transazionale. Più è facile fare cose come queste, più dovreste avere fiducia nel fatto che vengano eseguite correttamente.</para>
 
     </sect2>
     <sect2>
       <title>Reperimento veloce</title>
 
-      <para id="x_2fa">Mercurial evita astutamente un'insidia comune a tutti i primi sistemi di controllo di revisione: il problema del <emphasis>reperimento inefficiente</emphasis>. La maggior parte dei sistemi di controllo di revisione memorizza i contenuti di una revisione come una serie incrementale di modifiche rispetto a una <quote>fotografia</quote>. (Alcuni basano la fotografia sulla revisione più vecchia, altri su quella più nuova.) Per ricostruire una revisione specifica, dovete leggere prima la fotografia e poi ognuna delle revisioni tra la fotografia e la revisione che volete. Più cronologia accumula un file, più revisioni dovete leggere, quindi più tempo viene impiegato per ricostruire una particolare revisione.</para>
+      <para id="x_2fa">Mercurial evita astutamente un'insidia comune a tutti i primi sistemi di controllo di revisione: il problema del <emphasis>reperimento inefficiente</emphasis>. La maggior parte dei sistemi di controllo di revisione memorizza i contenuti di una revisione come una serie incrementale di modifiche rispetto a una <quote>fotografia</quote>. (Alcuni basano la fotografia sulla revisione più vecchia, altri su quella più recente.) Per ricostruire una revisione specifica, dovete leggere prima la fotografia e poi ognuna delle revisioni tra la fotografia e la revisione che volete. Più cronologia accumula un file, più revisioni dovete leggere, quindi più tempo viene impiegato per ricostruire una particolare revisione.</para>
 
       <figure id="fig:concepts:snapshot">
 	<title>Fotografia di un revlog, con delta incrementali</title>
@@ -130,7 +130,7 @@
 
     <para id="x_305">Nella <xref linkend="fig:concepts:revlog"/>, potete vedere un esempio della struttura concettuale di un revlog. I filelog, i manifest e i changelog hanno tutti questa identica struttura e differiscono solo per il tipo di dati memorizzati in ogni delta e fotografia.</para>
 
-    <para id="x_306">La prima revisione in un revlog (nella parte inferiore dell'immagine) presenta un identificatore nullo in entrambi gli spazi riservati ai genitori. Per una revisione <quote>normale</quote>, lo spazio del primo genitore contiene l'identificatore della revisione genitore e lo spazio del secondo contiene l'identificatore nullo, indicando che la revisione possiede un solo vero genitore. Due revisioni qualsiasi che possiedano lo stesso genitore si chiamano rami. Una revisione che rappresenta un'unione tra rami ha due identificatori di revisione normali negli spazi dedicati ai propri genitori.</para>
+    <para id="x_306">La prima revisione in un revlog (nella parte inferiore dell'immagine) presenta un identificatore nullo in entrambi gli spazi riservati ai genitori. Per una revisione <quote>normale</quote>, lo spazio del primo genitore contiene l'identificatore della revisione genitore e lo spazio del secondo contiene l'identificatore nullo, indicando che la revisione possiede un solo vero genitore. Due revisioni qualsiasi che possiedano lo stesso genitore si chiamano <emphasis>rami</emphasis>. Una revisione che rappresenta un'unione tra rami ha due identificatori di revisione normali negli spazi dedicati ai propri genitori.</para>
 
     <figure id="fig:concepts:revlog">
       <title>La struttura concettuale di un revlog</title>
@@ -146,16 +146,16 @@
 
     <para id="x_307">Nella directory di lavoro, Mercurial mantiene una fotografia dei file contenuti nel repository scattata su un changeset particolare.</para>
 
-    <para id="x_308">La directory di lavoro <quote>sa</quote> quale changeset contiene. Quando aggiornate la directory di lavoro per contenere un particolare changeset, Mercurial cerca la revisione appropriata del manifest per trovare quali file aveva registrato nel momento in cui quel changeset è stato inserito e qual era la revisione corrente di ogni file in quel momento. Poi, ricrea una copia di tutti quei file, con gli stessi contenuti che avevano quando il changeset è stato inserito.</para>
+    <para id="x_308">La directory di lavoro <quote>sa</quote> quale changeset contiene. Quando aggiornate la directory di lavoro per contenere un particolare changeset, Mercurial cerca la revisione appropriata del manifest per trovare quali file aveva registrato nel momento in cui quel changeset è stato inserito e qual era la revisione corrente di ogni file in quel momento. Poi, ricrea una copia di tutti quei file con gli stessi contenuti che avevano quando il changeset è stato inserito.</para>
 
-    <para id="x_309">Il <emphasis>dirstate</emphasis> (letteralmente, stato della directory) è una struttura speciale che contiene le informazioni possedute da Mercurial sulla directory di lavoro. Viene mantenuto sotto forma di un file chiamato <filename>.hg/dirstate</filename> all'interno di un repository. Il dirstate contiene i dettagli del changeset a cui la directory di lavoro è aggiornata e di tutti i file di cui Mercurial sta tenendo traccia nella directory di lavoro. Il dirstate permette a Mercurial anche di notare velocemente i file modificati, registrando le loro date e dimensioni al momento dell'aggiornamento.</para>
+    <para id="x_309">Il <emphasis>dirstate</emphasis> (letteralmente, stato della directory) è una struttura speciale che contiene le informazioni possedute da Mercurial sulla directory di lavoro. Viene mantenuto sotto forma di un file chiamato <filename>.hg/dirstate</filename> all'interno di un repository. Il dirstate contiene i dettagli del changeset a cui la directory di lavoro è aggiornata e di tutti i file che Mercurial sta monitorando nella directory di lavoro. Il dirstate permette a Mercurial anche di notare velocemente i file modificati, registrando le loro date e dimensioni al momento dell'aggiornamento.</para>
 
     <para id="x_30a">Il dirstate riserva spazio per due genitori, esattamente come una revisione di un revlog, in modo da poter rappresentare sia una normale revisione (con un genitore) che un'unione di due revisioni precedenti. Quando usate il comando <command role="hg-cmd">hg update</command>, il changeset a cui aggiornate la directory di lavoro viene memorizzato nello spazio del <quote>primo genitore</quote> e l'identificatore nullo nello spazio del secondo. Quando incorporate un altro changeset tramite <command role="hg-cmd">hg merge</command>, il primo genitore rimane lo stesso e il secondo genitore diventa il changeset che state incorporando. Il comando <command role="hg-cmd">hg parents</command> vi dice quali sono i genitori del dirstate.</para>
 
     <sect2>
       <title>Cosa succede quando eseguite un commit</title>
 
-      <para id="x_30b">Il dirstate mantiene le informazioni sui genitori per altri scopi oltre alla mera contabilità. Mercurial usa i genitori del dirstate come <emphasis>i genitori di un nuovo changeset</emphasis> quando effettuate un commit.</para>
+      <para id="x_30b">Il dirstate mantiene le informazioni sui genitori per altri scopi in aggiunta alla mera contabilità. Mercurial usa i genitori del dirstate come <emphasis>i genitori di un nuovo changeset</emphasis> quando effettuate un commit.</para>
 
       <figure id="fig:concepts:wdir">
 	<title>La directory di lavoro può avere due genitori</title>
@@ -287,11 +287,11 @@ ssh = ssh -C</programlisting>
     <sect2>
       <title>Ordinamento e atomicità delle operazioni di lettura e scrittura</title>
 
-      <para id="x_32a">Quando si cerca di garantire che una lettura non veda scritture parziali, non è sufficiente limitarsi ad aggiungere in coda ai file le nuove informazioni. Se ricordate la <xref linkend="fig:concepts:metadata"/>, le revisioni in un changelog puntano alle revisioni nel manifest e le revisioni nel manifest puntano alle revisioni nel filelog. Questa gerarchia è intenzionale.</para>
+      <para id="x_32a">Quando si cerca di garantire che una lettura non veda scritture parziali, non è sufficiente limitarsi ad aggiungere in coda ai file le nuove informazioni. Se ricordate la <xref linkend="fig:concepts:metadata"/>, le revisioni in un changelog puntano alle revisioni nel manifest e le revisioni nel manifest puntano alle revisioni nei filelog. Questa gerarchia è intenzionale.</para>
 
-      <para id="x_32b">Un'operazione di scrittura avvia una transazione modificando i dati nel filelog e nel manifest, senza modificare alcun dato contenuto nel changelog prima che di aver terminato con quelli. Un'operazione di lettura comincia leggendo i dati nel changelog, poi i dati nel manifest seguiti dai dati nel filelog.</para>
+      <para id="x_32b">Un'operazione di scrittura avvia una transazione modificando i dati nei filelog e nel manifest, senza modificare alcun dato contenuto nel changelog prima che di aver terminato con quelli. Un'operazione di lettura comincia leggendo i dati nel changelog, poi i dati nel manifest seguiti dai dati nei filelog.</para>
 
-      <para id="x_32c">Dato che la scrittura ha sempre terminato di modificare i dati nel filelog e nel manifest prima di modificare il changelog, una lettura non vedrà mai il changelog puntare verso una revisione parzialmente modificata del manifest e non vedrà mai il manifest puntare verso una revisione parzialmente modificata del filelog.</para>
+      <para id="x_32c">Dato che la scrittura ha sempre terminato di modificare i dati nei filelog e nel manifest prima di modificare il changelog, una lettura non vedrà mai il changelog puntare verso una revisione parzialmente modificata del manifest e non vedrà mai il manifest puntare verso una revisione parzialmente modificata di un filelog.</para>
 
     </sect2>
     <sect2>
@@ -319,13 +319,13 @@ ssh = ssh -C</programlisting>
 
       <para id="x_333">Mercurial adotta anche una strategia <quote>copy-on-write</quote> per clonare un repository su disco locale. Invece di copiare ogni file di revlog dal vecchio repository al nuovo, utilizza <quote>collegamenti fisici</quote> per indicare che <quote>due nomi puntano allo stesso file</quote>. Quando Mercurial sta per modificare uno dei file di un revlog, controlla per vedere se il numero di nomi che puntano al file è più grande di uno. Se è così, questo significa che più di un repository sta usando il file, quindi Mercurial ne crea una nuova copia riservata a questo repository.</para>
 
-      <para id="x_334">Alcuni sviluppatori di sistemi per il controllo di revisione hanno fatto notare che la creazione di una copia privata completa di un file non usa lo spazio su disco in maniera molto efficiente. Sebbene questo sia vero, lo spazio su disco è piuttosto economico, e questo metodo consente di avere le prestazioni migliori rinviando la maggior parte della contabilità al sistema operativo. Molto probabilmente, una strategia alternativa ridurrebbe le prestazioni e aumenterebbe la complessità del software, ma velocità e semplicità sono aspetti chiave per la <quote>facilità</quote> nell'uso quotidiano.</para>
+      <para id="x_334">Alcuni sviluppatori di sistemi per il controllo di revisione hanno fatto notare che la creazione di una copia privata completa di un file non sfrutta lo spazio su disco in maniera molto efficiente. Sebbene questo sia vero, lo spazio su disco è piuttosto economico, e questo metodo consente di avere le prestazioni migliori rinviando la maggior parte della contabilità al sistema operativo. Molto probabilmente, una strategia alternativa ridurrebbe le prestazioni e aumenterebbe la complessità del software, ma velocità e semplicità sono aspetti chiave per la <quote>facilità</quote> nell'uso quotidiano.</para>
 
     </sect2>
     <sect2>
       <title>Altre informazioni contenute nel dirstate</title>
 
-      <para id="x_335">Dato che Mercurial non vi obbliga a dirgli quando state modificando un file, usa il dirstate per memorizzare alcune informazioni aggiuntive in modo da poter determinare efficientemente se avete modificato un file. Per ogni file nella directory di lavoro, Mercurial memorizza la data in cui ha registrato una modifica al file per l'ultima volta e la dimensione che il file aveva in quel momento.</para>
+      <para id="x_335">Dato che Mercurial non vi obbliga a dirgli quando state modificando un file, usa il dirstate per memorizzare alcune informazioni aggiuntive in modo da poter determinare in maniera efficiente se avete modificato un file. Per ogni file nella directory di lavoro, Mercurial memorizza la data in cui ha registrato una modifica al file per l'ultima volta e la dimensione che il file aveva in quel momento.</para>
 
       <para id="x_336">Quando utilizzate esplicitamente <command role="hg-cmd">hg add</command>, <command role="hg-cmd">hg remove</command>, <command role="hg-cmd">hg rename</command>, o <command role="hg-cmd">hg copy</command> su un file, Mercurial aggiorna il dirstate in modo che sappia cosa fare con quel file quando effettuate un commit.</para>
 
@@ -333,7 +333,7 @@ ssh = ssh -C</programlisting>
 
       <itemizedlist>
 	<listitem>
-	  <para id="x_726">Quando Mercurial controlla lo stato di un file nella directory di lavoro, per prima cosa confronta la data dell'ultima modifica del file con la data registrata nel dirstate che indica l'ultima volta in cui Mercurial ha registrato una modifica per quel file. Se le due date sono le stesse, il file non deve essere stato modificato, quindi Mercurial non ha bisogno di fare ulteriori controlli.</para>
+	  <para id="x_726">Quando Mercurial controlla lo stato di un file nella directory di lavoro, per prima cosa confronta la data dell'ultima modifica del file con la data memorizzata nel dirstate che indica l'ultima volta in cui Mercurial ha registrato una modifica per quel file. Se le due date sono le stesse, il file non deve essere stato modificato, quindi Mercurial non ha bisogno di fare ulteriori controlli.</para>
 	</listitem>
 	<listitem>
 	  <para id="x_727">Se la dimensione del file è cambiata, il file deve essere stato modificato. Solo nel caso in cui la data di modifica sia cambiata, ma non la dimensione, Mercurial ha effettivamente bisogno di leggere i contenuti del file per vedere se è stato modificato.</para>
