@@ -42,7 +42,7 @@
 
       <para id="x_da">&Egrave; pratica comune usare Mercurial mantenendo in repository differenti i rami di sviluppo separati di un progetto. Il vostro gruppo di sviluppo potrebbe avere un repository condiviso per la release <quote>0.9</quote> del vostro progetto e un altro, contenente cambiamenti differenti, per la release <quote>1.0</quote>.</para>
 
-      <para id="x_db">In questa situazione, potete immaginare che pasticcio accadrebbe se aveste un repository <quote>0.9</quote> locale e vi propagaste accidentalmente i cambiamenti dal repository <quote>1.0</quote> condiviso. Nel caso peggiore, potreste non fare abbastanza attenzione e trasmettere quei cambiamenti nell'albero <quote>0.9</quote> condiviso, confondendo tutti gli altri sviluppatori (ma non preoccupatevi, ritorneremo a questo orribile scenario più avanti). Tuttavia, è più probabile che notiate immediatamente l'errore, perché Mercurial vi mostrerà l'URL da cui sta estraendo i cambiamenti, o perché vedrete Mercurial propagare un numero sospettosamente alto di cambiamenti nel repository.</para>
+      <para id="x_db">In questa situazione, potete immaginare che pasticcio accadrebbe se aveste un repository <quote>0.9</quote> locale e vi propagaste accidentalmente i cambiamenti dal repository <quote>1.0</quote> condiviso. Nel caso peggiore, potreste non fare abbastanza attenzione e trasmettere quei cambiamenti nell'albero <quote>0.9</quote> condiviso, disorientando tutti gli altri sviluppatori (ma non preoccupatevi, ritorneremo a questo orribile scenario più avanti). Tuttavia, è più probabile che notiate immediatamente l'errore, perché Mercurial vi mostrerà l'URL da cui sta estraendo i cambiamenti, o perché vedrete Mercurial propagare un numero sospettosamente alto di cambiamenti nel repository.</para>
 
       <para id="x_dc">Il comando <command role="hg-cmd">hg rollback</command> cancellerà scrupolosamente tutti i changeset che avete appena estratto. Mercurial raggruppa tutti i cambiamenti provenienti da un'invocazione di <command role="hg-cmd">hg pull</command> in una singola transazione, quindi un'unica invocazione di <command role="hg-cmd">hg rollback</command> è tutto quello che vi serve per annullare questo errore.</para>
 
@@ -64,7 +64,7 @@
 
       &interaction.rollback.twice;
 
-      <para id="x_e1">Una volta che avete abortito una transazione in un repository, non potete effettuare un'altra cancellazione in quel repository fino a quando non avete eseguito un nuovo inserimento o una nuova estrazione.</para>
+      <para id="x_e1">Una volta che avete abortito una transazione in un repository, non potete effettuare un'altra volta questa operazione in quel repository fino a quando non avete eseguito un nuovo inserimento o una nuova estrazione.</para>
 
     </sect2>
   </sect1>
@@ -271,7 +271,7 @@
 	</listitem>
 	<listitem><para id="x_116">Esegue il commit del risultato come un nuovo changeset che ha <literal>backout</literal> come genitore.</para>
 	</listitem>
-	<listitem><para id="x_117">Se specificate l'opzione <option role="hg-opt-backout">--merge</option> sulla riga di comando, esegue un'unione con <literal>orig</literal> e inserisce i risultati dell'unione nel repository.</para>
+	<listitem><para id="x_117">Se specificate l'opzione <option role="hg-opt-backout">--merge</option> sulla riga di comando, esegue un'unione con <literal>orig</literal> ma non inserisce i risultati dell'unione nel repository.</para>
 	</listitem></orderedlist>
 
       <para id="x_118">In alternativa, sarebbe possibile implementare <command role="hg-cmd">hg backout</command> utilizzando <command role="hg-cmd">hg export</command> per esportare il changeset da ritirare sotto forma di diff e poi impiegando l'opzione <option role="cmd-opt-patch">--reverse</option> del comando <command>patch</command> per invertire l'effetto del cambiamento senza gingillarsi con la directory di lavoro. Questo procedimento sembra molto più semplice, ma non funzionerebbe affatto altrettanto bene.</para>
@@ -412,9 +412,9 @@
 
     <para id="x_12e">Ora introdurremo un po' di terminologia, giusto per chiarire quali sono le parti del processo di ricerca di cui siete responsabili voi e quali sono quelle di cui è responsabile Mercurial. Un <emphasis>test</emphasis> è qualcosa che <emphasis>voi</emphasis> eseguite quando <command role="hg-cmd">hg bisect</command> sceglie un changeset. Una <emphasis>sonda</emphasis> è ciò che <command role="hg-cmd">hg bisect</command> esegue per dirvi se una revisione è buona. Infine, useremo la parola <quote>bisezione</quote> per intendere la <quote>ricerca tramite il comando <command role="hg-cmd">hg bisect</command></quote>.</para>
 
-    <para id="x_12f">Un modo semplice per automatizzare il processo di ricerca sarebbe quello di collaudare semplicemente ogni changeset. Tuttavia, questo approccio è scarsamente scalabile. Se ci volessero dieci minuti per collaudare un singolo changeset e il vostro repository contenesse 10.000 changeset, l'approccio completo impiegherebbe una media di 35 <emphasis>giorni</emphasis> per trovare il changeset che ha introdotto un bug. Anche se sapeste che il bug è stato introdotto in uno degli ultimi 500 changeset e limitaste la ricerca a quelli, dovrebbero trascorrere più di 40 ore per trovare il changeset che ha introdotto il vostro bug.</para>
+    <para id="x_12f">Un modo semplice per automatizzare il processo di ricerca sarebbe quello di collaudare semplicemente tutti i changeset. Tuttavia, questo approccio è scarsamente scalabile. Se ci volessero dieci minuti per collaudare un singolo changeset e il vostro repository contenesse 10.000 changeset, l'approccio completo impiegherebbe una media di 35 <emphasis>giorni</emphasis> per trovare il changeset che ha introdotto un bug. Anche se sapeste che il bug è stato introdotto in uno degli ultimi 500 changeset e limitaste la ricerca a quelli, dovrebbero trascorrere più di 40 ore per trovare il changeset che ha introdotto il vostro bug.</para>
 
-    <para id="x_130">Il comando <command role="hg-cmd">hg bisect</command> invece usa la propria conoscenza della <quote>forma</quote> della cronologia delle revisioni del vostro progetto per effettuare una ricerca in tempo proporzionale al <emphasis>logaritmo</emphasis> del numero dei changeset da controllare (il tipo di ricerca che esegue viene chiamata ricerca dicotomica). Con questo approccio, la ricerca attraverso 10.000 changeset impiegherà meno di 3 ore, anche a 10 minuti per ogni test (la ricerca richiederà circa 14 test). Limitate la vostra ricerca agli ultimi cento changeset e il tempo impiegato sarà solo circa un'ora (approssimativamente sette test).</para>
+    <para id="x_130">Il comando <command role="hg-cmd">hg bisect</command> invece usa la propria conoscenza della <quote>forma</quote> della cronologia delle revisioni del vostro progetto per effettuare una ricerca in tempo proporzionale al <emphasis>logaritmo</emphasis> del numero dei changeset da controllare (il tipo di ricerca che esegue viene chiamata ricerca dicotomica). Con questo approccio, la ricerca attraverso 10.000 changeset impiegherà meno di 3 ore, anche a 10 minuti per test (la ricerca richiederà circa 14 test). Limitate la vostra ricerca agli ultimi cento changeset e il tempo impiegato sarà solo circa un'ora (approssimativamente sette test).</para>
 
     <para id="x_131">Il comando <command role="hg-cmd">hg bisect</command> è consapevole della natura <quote>ramificata</quote> della cronologia delle revisioni di un progetto Mercurial, quindi non ha problemi a trattare con rami, unioni, o molteplici teste in un repository. Opera in maniera così efficiente perché è in grado di potare interi rami di cronologia con una singola sonda.</para>
 
@@ -510,7 +510,7 @@
     <sect2>
       <title>Fornite informazioni consistenti</title>
 
-      <para id="x_14b">Il comando <command role="hg-cmd">hg bisect</command> vi richiede di indicare correttamente il risultato di ogni test che eseguite. Se gli dite che un test è fallito quando in realtà ha avuto successo, il comando <emphasis>potrebbe</emphasis> essere in grado di scoprire l'inconsistenza. Se riesce a identificare un'incosistenza nei vostri resoconti, vi dirà che un particolare changeset è sia funzionante che guasto. Tuttavia, non è in grado di farlo perfettamente ed è ugualmente probabile che vi restituisca il changeset sbagliato come causa del bug.</para>
+      <para id="x_14b">Il comando <command role="hg-cmd">hg bisect</command> vi richiede di indicare correttamente il risultato di ogni test che eseguite. Se gli dite che un test è fallito quando in realtà ha avuto successo, il comando <emphasis>potrebbe</emphasis> essere in grado di scoprire l'inconsistenza. Se riesce a identificare un'inconsistenza nei vostri resoconti, vi dirà che un particolare changeset è sia funzionante che guasto. Tuttavia, non è in grado di farlo perfettamente ed è ugualmente probabile che vi restituisca il changeset sbagliato come causa del bug.</para>
 
     </sect2>
     <sect2>

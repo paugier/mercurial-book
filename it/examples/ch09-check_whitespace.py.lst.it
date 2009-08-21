@@ -27,7 +27,7 @@ def spazio_bianco_in_coda(righe_di_diff):
             numriga = int(m.group(1))
             continue
         # corpo - cerca una riga aggiunta con spazio bianco in coda
-        m = re.match(r'\+.*\s$', riga)
+        m = re.match(r'\+.*[ \t]$', riga)
         if m:
             yield nomefile, numriga
         if riga and riga[0] in ' +':
