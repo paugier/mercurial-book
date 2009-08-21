@@ -6,10 +6,10 @@
 
   <para id="x_15e">In questo capitolo, userò come esempio una tecnica che ho impiegato per gestire lo sviluppo di un driver del kernel di Linux per un dispositivo Infiniband. Il driver in questione è grande (almeno per le dimensioni dei driver), poiché contiene 25.000 righe di codice distribuite su 35 file sorgente, e viene mantenuto da un piccolo gruppo di sviluppatori.</para>
 
-  <para id="x_15f">Sebbene la maggior parte del materiale in questo capitolo sia specifica per Linux, gli stessi principi si applicano per qualsiasi base di codice di cui non siate i proprietari principali e su cui dobbiate fare parecchio lavoro.</para>
+  <para id="x_15f">Sebbene la maggior parte del materiale in questo capitolo sia specifica per Linux, gli stessi principi si applicano nel caso in cui dobbiate fare parecchio lavoro su una qualsiasi base di codice di cui non siete i proprietari principali.</para>
 
   <sect1>
-    <title>Il problema dei molti obiettivi</title>
+    <title>Il problema di gestire molti obiettivi</title>
 
     <para id="x_160">Il kernel di Linux cambia rapidamente e non è mai stato stabile internamente, in quanto gli sviluppatori effettuano frequentemente modifiche drastiche tra una release e l'altra. Questo significa che, di solito, una versione del driver che funziona bene con una particolare versione rilasciata del kernel non potrà nemmeno essere <emphasis>compilata</emphasis> correttamente su qualsiasi altra versione del kernel.</para>
 
@@ -17,9 +17,9 @@
     <itemizedlist>
       <listitem><para id="x_162">Un obiettivo è l'albero di sviluppo principale del kernel di Linux. In questo caso, le attività di manutenzione del codice sono parzialmente condivise con altri sviluppatori della comunità del kernel, che effettuano modifiche <quote>estemporanee</quote> al driver man mano che sviluppano e rifiniscono i sottosistemi del kernel.</para>
       </listitem>
-      <listitem><para id="x_163">Manteniamo anche un certo numero di <quote>backport</quote> (letteralmente, conversioni all'indietro) verso vecchie versioni del kernel di Linux, per soddisfare le necessità di clienti che stanno utilizzando distribuzioni di Linux più vecchie che non incorporano i nostri driver. (Effetuare il <emphasis>backport</emphasis> del codice significa modificarlo per farlo funzionare in una versione del suo ambiente di destinazione più vecchia di quella per la quale era stato sviluppato.)</para>
+      <listitem><para id="x_163">Manteniamo anche un certo numero di <quote>backport</quote> (letteralmente, conversioni all'indietro) verso vecchie versioni del kernel di Linux, per soddisfare le necessità di clienti che stanno utilizzando distribuzioni di Linux più vecchie che non incorporano i nostri driver. (Effettuare il <emphasis>backport</emphasis> del codice significa modificarlo per farlo funzionare in una versione del suo ambiente di destinazione più vecchia di quella per la quale era stato sviluppato.)</para>
       </listitem>
-      <listitem><para id="x_164">Infine, rilasciamo il software seguendo una tabella di marcia che non è necessariamente allineata con quella usata da chi sviluppa il kernel e da chi distribuisce il sistema operativo, in modo da poter consegnare nuove funzionalità ai clienti senza obbligarli ad aggiornare il loro kernel o la loro intera distribuzione.</para>
+      <listitem><para id="x_164">Infine, rilasciamo il software seguendo una tabella di marcia che non è necessariamente allineata con quella usata da chi sviluppa il kernel e da chi distribuisce il sistema operativo, in modo da poter consegnare nuove funzioni ai clienti senza obbligarli ad aggiornare il loro kernel o la loro intera distribuzione.</para>
       </listitem>
     </itemizedlist>
 
@@ -28,7 +28,7 @@
 
       <para id="x_165">Ci sono due modi <quote>standard</quote> per mantenere un software che deve funzionare in molti ambienti diversi.</para>
 
-      <para id="x_166">Il primo è mantenere un certo numero di rami, ognuno dedicato a un singolo ambiente. Il problema di questo approccio è che dovete mantenere una ferrea disciplina nel flusso dei cambiamenti tra i repository. Una nuova funzione o correzione di bug deve prendere vita in un repository <quote>intatto</quote>, poi passare a tutti i repository di backport. Le modifiche di backport dovrebbero propagarsi verso un numero di rami più limitato, in quanto l'applicazione di una modifica di backport su un ramo a cui non appartiene probabilmente impedirà al driver di essere compilato.</para>
+      <para id="x_166">Il primo è mantenere un certo numero di rami, ognuno dedicato a un singolo obiettivo. Il problema di questo approccio è che dovete mantenere una ferrea disciplina nel flusso dei cambiamenti tra i repository. Una nuova funzione o correzione di bug deve prendere vita in un repository <quote>intatto</quote>, poi passare a tutti i repository di backport. Le modifiche di backport dovrebbero propagarsi verso un numero di rami più limitato, in quanto l'applicazione di una modifica di backport su un ramo a cui non appartiene probabilmente impedirà al driver di essere compilato.</para>
 
       <para id="x_167">Il secondo è quello di mantenere un singolo albero di sorgenti pieno di istruzioni condizionali che attivano o disattivano parti di codice a seconda dell'ambiente designato. Dato che queste istruzioni <quote>ifdef</quote> non sono permesse nell'albero del kernel di Linux, è necessario seguire una procedura manuale o automatica per eliminarle e produrre un albero pulito. Una base di codice mantenuta in questo modo diventa rapidamente un caos di blocchi condizionali che sono difficili da capire e mantenere.</para>
 
@@ -135,7 +135,7 @@
 
     <para id="x_181">Poi scelgo una versione <quote>di base</quote> sulla quale le patch vengono applicate. Questa è una fotografia dell'albero del kernel di Linux scattata su una revisione di mia scelta. Quando scatto la fotografia, registro l'identificatore di changeset proveniente dal repository del kernel nel messaggio di commit. Dato che la fotografia mantiene la <quote>forma</quote> e il contenuto delle parti rilevanti dell'albero del kernel, posso applicare le mie patch sul mio repository ridotto o su un normale albero del kernel.</para>
 
-    <para id="x_182">Normalmente, l'albero di base a cui applicare le patch dovrebbe essere una fotografia di un albero a monte molto recente. Questa è la condizione migliore per facilitare lo sviluppo di patch che possono essere presentate a monte con poche o addirittura nessuna modifica.</para>
+    <para id="x_182">Normalmente, l'albero di base su cui applicare le patch dovrebbe essere una fotografia di un albero a monte molto recente. Questa è la condizione migliore per facilitare lo sviluppo di patch che possono essere presentate a monte con poche o addirittura nessuna modifica.</para>
 
   </sect1>
   <sect1>
@@ -172,7 +172,7 @@
     <para id="x_18e">Nel mio lavoro, uso un certo numero di guardie per controllare quali patch devono essere applicate.</para>
 
     <itemizedlist>
-      <listitem><para id="x_18f">Le patch <quote>accettate</quote> sono sorvegliate da <literal>accettate</literal>. Questa guardia è abilitata per la maggior parte del tempo. Quando sto applicando le patch su un albero dove le patch sono già presenti, posso disabilitare questa guardia così le patch che la seguono verranno applicate in maniera pulita.</para>
+      <listitem><para id="x_18f">Le patch <quote>accettate</quote> sono sorvegliate da <literal>accettate</literal>. Questa guardia è abilitata per la maggior parte del tempo. Quando sto applicando le patch su un albero dove sono già presenti, posso disabilitare questa guardia così le patch che la seguono verranno applicate in maniera pulita.</para>
       </listitem>
       <listitem><para id="x_190">Le patch che sono <quote>terminate</quote>, ma non sono ancora state proposte, non hanno guardie. Se sto applicando la pila delle patch a una copia dell'albero a monte, non ho bisogno di abilitare alcuna guardia per ottenere un albero di sorgenti ragionevolmente sicuro.</para>
       </listitem>
@@ -202,7 +202,7 @@
     <sect2>
       <title>Organizzare le patch in directory</title>
 
-      <para id="x_198">Se state lavorando su un progetto considerevole con MQ, non è difficile accumulare un grande numero di patch. Per esempio, mi è capitato di avere un repository di patch contenente più di 250 patch.</para>
+      <para id="x_198">Se state lavorando su un progetto di dimensioni considerevoli con MQ, non è difficile accumulare un grande numero di patch. Per esempio, mi è capitato di avere un repository di patch contenente più di 250 patch.</para>
 
       <para id="x_199">Se riuscite a raggruppare queste patch in categorie logiche separate, potete memorizzarle in directory differenti, in quanto MQ non ha problemi a usare nomi di patch che contengono separatori di percorso.</para>
 
@@ -210,14 +210,14 @@
     <sect2 id="mq-collab:tips:interdiff">
       <title>Visualizzare la cronologia di una patch</title>
 
-      <para id="x_19a">Se sviluppate un insieme di patch per un lungo periodo, è una buona idea mantenerle in un repository, come discusso nella <xref linkend="sec:mq:repo"/>. Se fate in questo modo, scoprirete velocemente che è impraticabile usare il comando <command role="hg-cmd">hg diff</command> per esaminare la cronolgia dei cambiamenti di una patch. In parte, questo succede perché state osservando la derivata seconda del codice reale (un diff di un diff), ma anche perché MQ aggiunge rumore al processo modificando le marcature temporali e i nomi di directory quando aggiorna una patch.</para>
+      <para id="x_19a">Se sviluppate un insieme di patch per un lungo periodo, è una buona idea mantenerle in un repository, come discusso nella <xref linkend="sec:mq:repo"/>. Se fate in questo modo, scoprirete velocemente che è impraticabile usare il comando <command role="hg-cmd">hg diff</command> per esaminare la cronologia dei cambiamenti di una patch. In parte, questo succede perché state osservando la derivata seconda del codice reale (un diff di un diff), ma anche perché MQ aggiunge rumore al processo modificando le marcature temporali e i nomi di directory quando aggiorna una patch.</para>
 
-      <para id="x_19b">Tuttavia, potete usare l'estensione <literal role="hg-ext">extdiff</literal> inclusa in Mercurial per rendere leggibile il diff di due versioni di una patch. Per fare questo, avrete bisogno di un pacchetto di terze parti chiamato <literal role="package">patchutils</literal> <citation><xref linkend="bib:patchutils"/></citation>. Il pacchetto fornisce un comando chiamato <command>interdiff</command> che mostra le differenze tra due diff di un diff. Usato su due versioni dello stesso diff, genera un diff che rappresenta le differenze tra la prima e la seconda versione.</para>
+      <para id="x_19b">Tuttavia, potete usare l'estensione <literal role="hg-ext">extdiff</literal> inclusa in Mercurial per rendere leggibile il diff di due versioni di una patch. Per fare questo, avrete bisogno di un pacchetto di terze parti chiamato <literal role="package">patchutils</literal> <citation><xref linkend="bib:patchutils"/></citation>. Il pacchetto fornisce un comando chiamato <command>interdiff</command> che mostra le differenze tra due diff come un diff. Usato su due versioni dello stesso diff, genera un diff che rappresenta le differenze tra la prima e la seconda versione.</para>
 
       <para id="x_19c">Potete abilitare l'estensione <literal role="hg-ext">extdiff</literal> nel solito modo, aggiungendo una riga alla sezione <literal role="rc-extensions">extensions</literal> del vostro file <filename role="special">~/.hgrc</filename>.</para>
       <programlisting>[extensions]
 extdiff =</programlisting>
-      <para id="x_19d">Il comando <command>interdiff</command> si aspetta che gli vengano passati i nomi di due file, ma l'estensione <literal role="hg-ext">extdiff</literal> passa una coppia di directory al programma che invoca, ognuna delle quali può contenere un numero arbitrario di file. Quindi abbiamo bisogno di un piccolo programma che invochi <command>interdiff</command> su ogni coppia di file in quelle due directory. Questo programma è disponibile sotto il nome di <filename role="special">hg-interdiff</filename> nella directory <filename class="directory">examples</filename> del repository di codice sorgente che accompagna questo libro.<footnote><para id="x_ffa">FIXME Where in the world is the file in that repository?</para></footnote></para>
+      <para id="x_19d">Il comando <command>interdiff</command> si aspetta che gli vengano passati i nomi di due file, ma l'estensione <literal role="hg-ext">extdiff</literal> passa una coppia di directory al programma che invoca, ognuna delle quali può contenere un numero arbitrario di file. Quindi abbiamo bisogno di un piccolo programma che invochi <command>interdiff</command> su ogni coppia di file in quelle due directory. Questo programma è disponibile sotto il nome di <filename role="special">hg-interdiff</filename> nella directory <filename class="directory">contrib</filename> del repository di codice sorgente che accompagna questo libro.<footnote><para id="x_ffa">[NdT] Potete scaricare il programma <filename role="special">hg-interdiff</filename> dal <ulink role="hg-script" url="http://bitbucket.org/bos/hgbook/raw/tip/contrib/hg-interdiff">repository Mercurial del libro</ulink> ospitato su Bitbucket.</para></footnote></para>
 
       <para id="x_19e">Dopo aver incluso il programma <filename role="special">hg-interdiff</filename> nel percorso di ricerca della vostra shell, potete eseguirlo come segue, dall'interno di una directory di patch gestita da MQ:</para>
       <programlisting>hg extdiff -p hg-interdiff -r A:B mio-cambiamento.patch</programlisting>
