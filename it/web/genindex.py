@@ -12,7 +12,7 @@ chapters = (sorted(glob.glob('../ch*.xml')) +
 fp = open('index-read.html.in', 'w', encoding='utf-8')
 
 print('''
-<div class="navheader"><h1 class="booktitle">Mercurial: la guida definitiva<div class="authors">di Bryan O&#8217;Sullivan</div></h1></div>
+<div class="navheader"><h1 class="booktitle">Mercurial: la guida definitiva<div class="authors">di Bryan O\&#8217;Sullivan</div></h1></div>
 <div class="book"><ul class="booktoc">''', file=fp)
 
 ch = 0
@@ -40,6 +40,8 @@ for c in chapters:
             else:
                 num = ch
                 ch += 1
+            if title.find('&') >= 0:
+                title = title.replace('&', '\&')
             ab += 1
             date = os.popen('hg log -l1 --template "{date|isodate}" ' + c).read().split(None, 1)[0]
             args = {
