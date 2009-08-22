@@ -2,12 +2,13 @@
 
 import glob, os, re
 
-chapter_re = re.compile(r'<(chapter|appendix|preface)\s+id="([^"]+)">')
+chapter_re = re.compile(r'<(chapter|appendix|preface|bibliography)\s+id="([^"]+)">')
 filename_re = re.compile(r'<\?dbhtml filename="([^"]+)"\?>')
 title_re = re.compile(r'<title>(.*)</title>')
 
 chapters = (sorted(glob.glob('../ch*.xml')) +
-            sorted(glob.glob('../app*.xml')))
+            sorted(glob.glob('../app*.xml')) +
+            sorted(glob.glob('../biblio*.xml')))
 
 fp = open('index-read.html.in', 'w', encoding='utf-8')
 
@@ -34,11 +35,13 @@ for c in chapters:
         if m:
             title = m.group(1)
         if filename and title and chapid:
-            if chaptype == 'appendix':
-                num = chr(ord('A') + app)
+            if chaptype == 'bibliography':
+                num = ''
+            elif chaptype == 'appendix':
+                num = str(chr(ord('A') + app)) + '. '
                 app += 1
             else:
-                num = ch
+                num = str(ch) + '. '
                 ch += 1
             if title.find('&') >= 0:
                 title = title.replace('&', '\&')
@@ -52,7 +55,7 @@ for c in chapters:
                 'filename': filename,
                 'title': title,
                 }
-            print('<li class="zebra_%(ab)s"><span class="chapinfo">%(date)s</span>%(num)s. <a href="%(filename)s">%(title)s</a></li>' % args, file=fp)
+            print('<li class="zebra_%(ab)s"><span class="chapinfo">%(date)s</span>%(num)s<a href="%(filename)s">%(title)s</a></li>' % args, file=fp)
             break
 
 print('</ul></div>', file=fp)
