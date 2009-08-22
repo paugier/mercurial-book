@@ -2,7 +2,7 @@
   <?dbhtml filename="una-panoramica-di-mercurial-le-unioni.html"?>
   <title>Una panoramica di Mercurial: le unioni</title>
 
-  <para id="x_338">Finora abbiamo parlato di come clonare un repository, effettuare modifiche in un repository ed estrarre o trasmettere cambiamenti da un repository all'altro. Il nostro prossimo passo sarà quello di <emphasis>unire</emphasis> le modifiche provenienti da repository separati.</para>
+  <para id="x_338">Finora abbiamo parlato di come clonare un repository, effettuare modifiche in un repository ed estrarre o trasmettere cambiamenti da un repository all&rsquo;altro. Il nostro prossimo passo sarà quello di <emphasis>unire</emphasis> le modifiche provenienti da repository separati.</para>
 
   <sect1>
     <title>Unire flussi di lavoro</title>
@@ -13,7 +13,7 @@
 	<para id="x_33a">Alice e Bruno hanno entrambi una copia personale di un repository per un progetto su cui stanno collaborando. Mentre Alice corregge un bug nel suo repository, Bruno aggiunge una nuova funzione nel proprio. Entrambi vogliono che il repository condiviso contenga sia la correzione del bug sia la nuova funzione.</para>
       </listitem>
       <listitem>
-	<para id="x_33b">Cinzia lavora frequentemente su più attività differenti alla volta per un singolo progetto, ognuna isolata al sicuro nel proprio repository. Lavorando in questo modo, Cinzia ha spesso bisogno di unire una parte del proprio lavoro con un'altra.</para>
+	<para id="x_33b">Cinzia lavora frequentemente su più attività differenti alla volta per un singolo progetto, ognuna isolata al sicuro nel proprio repository. Lavorando in questo modo, Cinzia ha spesso bisogno di unire una parte del proprio lavoro con un&rsquo;altra.</para>
       </listitem>
     </itemizedlist>
 
@@ -21,11 +21,11 @@
 
     &interaction.tour.merge.clone;
 
-    <para id="x_33d">Ora abbiamo due copie di <filename>hello.c</filename> con contenuti differenti e le cronologie dei due repository divergono l'una dall'altra, come illustrato nella <xref linkend="fig:tour-merge:sep-repos"/>. Ecco la copia del nostro file presente nel primo repository.</para>
+    <para id="x_33d">Ora abbiamo due copie di <filename>hello.c</filename> con contenuti differenti e le cronologie dei due repository divergono l&rsquo;una dall&rsquo;altra, come illustrato nella <xref linkend="fig:tour-merge:sep-repos"/>. Ecco la copia del nostro file presente nel primo repository.</para>
 
     &interaction.tour.merge.cat1;
 
-    <para id="x_722">Ed ecco la versione leggermente differente contenuta nell'altro repository.</para>
+    <para id="x_722">Ed ecco la versione leggermente differente contenuta nell&rsquo;altro repository.</para>
 
     &interaction.tour.merge.cat2;
 
@@ -37,7 +37,7 @@
       </mediaobject>
     </figure>
 
-    <para id="x_33f">Sappiamo già che l'estrazione dei cambiamenti dal nostro repository <filename class="directory">mio-hello</filename> non avrà alcun effetto sulla directory di lavoro.</para>
+    <para id="x_33f">Sappiamo già che l&rsquo;estrazione dei cambiamenti dal nostro repository <filename class="directory">mio-hello</filename> non avrà alcun effetto sulla directory di lavoro.</para>
 
     &interaction.tour.merge.pull;
 
@@ -46,7 +46,7 @@
     <sect2>
       <title>Le teste di un repository</title>
 
-      <para id="x_341">Come ricorderete, Mercurial memorizza l'identità del genitore di ogni changeset. Se un cambiamento possiede un genitore, lo chiamiamo figlio o discendente del genitore. Una testa è un changeset che non ha figli. Quindi, la revisione di punta è una testa, perché la revisione più recente in un repository non possiede alcun figlio. Ci sono occasioni in cui un repository può contenere più di una testa.</para>
+      <para id="x_341">Come ricorderete, Mercurial memorizza l&rsquo;identità del genitore di ogni changeset. Se un cambiamento possiede un genitore, lo chiamiamo figlio o discendente del genitore. Una testa è un changeset che non ha figli. Quindi, la revisione di punta è una testa, perché la revisione più recente in un repository non possiede alcun figlio. Ci sono occasioni in cui un repository può contenere più di una testa.</para>
 
       <figure id="fig:tour-merge:pull">
 	<title>I contenuti del repository dopo aver propagato i cambiamenti da <filename class="directory">mio-hello</filename> a <filename class="directory">mio-nuovo-hello</filename></title>
@@ -58,33 +58,33 @@
 	</mediaobject>
       </figure>
 
-      <para id="x_343">Dalla <xref linkend="fig:tour-merge:pull"/>, potete vedere l'effetto della propagazione dei cambiamenti dal repository  <filename class="directory">mio-hello</filename> al repository <filename class="directory">mio-nuovo-hello</filename>. La cronologia già presente in <filename class="directory">mio-nuovo-hello</filename> non viene toccata, ma al repository è stata aggiunta una nuova revisione. Riferendoci alla <xref linkend="fig:tour-merge:sep-repos"/>, possiamo vedere che nel nuovo repository l'<emphasis>identificatore di changeset</emphasis> rimane lo stesso, ma il <emphasis>numero di revisione</emphasis> è cambiato. (Questo, incidentalmente, è un buon esempio del perché sia inopportuno usare i numeri di revisione per discutere i changeset.) Possiamo vedere le teste di un repository utilizzando il comando <command role="hg-cmd">hg heads</command>.</para>
+      <para id="x_343">Dalla <xref linkend="fig:tour-merge:pull"/>, potete vedere l&rsquo;effetto della propagazione dei cambiamenti dal repository  <filename class="directory">mio-hello</filename> al repository <filename class="directory">mio-nuovo-hello</filename>. La cronologia già presente in <filename class="directory">mio-nuovo-hello</filename> non viene toccata, ma al repository è stata aggiunta una nuova revisione. Riferendoci alla <xref linkend="fig:tour-merge:sep-repos"/>, possiamo vedere che nel nuovo repository l&rsquo;<emphasis>identificatore di changeset</emphasis> rimane lo stesso, ma il <emphasis>numero di revisione</emphasis> è cambiato. (Questo, incidentalmente, è un buon esempio del perché sia inopportuno usare i numeri di revisione per discutere i changeset.) Possiamo vedere le teste di un repository utilizzando il comando <command role="hg-cmd">hg heads</command>.</para>
 
       &interaction.tour.merge.heads;
     </sect2>
 
     <sect2>
-      <title>Effettuare l'unione</title>
+      <title>Effettuare l&rsquo;unione</title>
 
       <para id="x_344">Cosa succede se proviamo a usare normalmente il comando <command role="hg-cmd">hg update</command> per aggiornare la directory di lavoro alla nuova punta?</para>
 
       &interaction.tour.merge.update;
 
-      <para id="x_345">Mercurial ci sta dicendo che <command role="hg-cmd">hg update</command> non è in grado di effettuare un'unione. Il comando non aggiornerà la directory di lavoro se pensa che potremmo voler eseguire un'unione, a meno che non gli chiediamo esplicitamente di farlo. (Incidentalmente, forzare l'aggiornamento tramite <command>hg update -C</command> provocherebbe la perdita di tutte le modifiche contenute nella directory di lavoro e non ancora inserite nel repository.)</para>
+      <para id="x_345">Mercurial ci sta dicendo che <command role="hg-cmd">hg update</command> non è in grado di effettuare un&rsquo;unione. Il comando non aggiornerà la directory di lavoro se pensa che potremmo voler eseguire un&rsquo;unione, a meno che non gli chiediamo esplicitamente di farlo. (Incidentalmente, forzare l&rsquo;aggiornamento tramite <command>hg update -C</command> provocherebbe la perdita di tutte le modifiche contenute nella directory di lavoro e non ancora inserite nel repository.)</para>
 
-      <para id="x_723">Per avviare un'unione tra le due teste, usiamo il comando <command role="hg-cmd">hg merge</command>.</para>
+      <para id="x_723">Per avviare un&rsquo;unione tra le due teste, usiamo il comando <command role="hg-cmd">hg merge</command>.</para>
 
       &interaction.tour.merge.merge;
 
-      <para id="x_347">Il contenuto del file <filename>hello.c</filename> viene sistemato. L'operazione aggiorna la directory di lavoro in modo che contenga le modifiche provenienti da <emphasis>entrambe</emphasis> le teste, cosa che si riflette sia nell'elenco visualizzato dal comando <command role="hg-cmd">hg parents</command> sia nei contenuti del file <filename>hello.c</filename>.</para>
+      <para id="x_347">Il contenuto del file <filename>hello.c</filename> viene sistemato. L&rsquo;operazione aggiorna la directory di lavoro in modo che contenga le modifiche provenienti da <emphasis>entrambe</emphasis> le teste, cosa che si riflette sia nell&rsquo;elenco visualizzato dal comando <command role="hg-cmd">hg parents</command> sia nei contenuti del file <filename>hello.c</filename>.</para>
 
       &interaction.tour.merge.parents;
     </sect2>
 
     <sect2>
-      <title>Inserire i risultati dell'unione nel repository</title>
+      <title>Inserire i risultati dell&rsquo;unione nel repository</title>
 
-      <para id="x_348">Ogni volta che eseguiamo un'unione, il comando <command role="hg-cmd">hg parents</command> mostrerà due genitori fino a quando non invocheremo <command role="hg-cmd">hg commit</command> per inserire i risultati dell'unione nel repository.</para>
+      <para id="x_348">Ogni volta che eseguiamo un&rsquo;unione, il comando <command role="hg-cmd">hg parents</command> mostrerà due genitori fino a quando non invocheremo <command role="hg-cmd">hg commit</command> per inserire i risultati dell&rsquo;unione nel repository.</para>
 
       &interaction.tour.merge.commit;
 
@@ -92,10 +92,10 @@
 
       &interaction.tour.merge.tip;
 
-      <para id="x_34a">Nella <xref linkend="fig:tour-merge:merge"/>, potete vedere una rappresentazione di quanto accade alla directory di lavoro durante l'unione e di come questo abbia effetto sul repository quando avviene l'inserimento. Durante l'unione, la directory di lavoro possiede due changeset genitori che poi diventano i genitori del nuovo changeset.</para>
+      <para id="x_34a">Nella <xref linkend="fig:tour-merge:merge"/>, potete vedere una rappresentazione di quanto accade alla directory di lavoro durante l&rsquo;unione e di come questo abbia effetto sul repository quando avviene l&rsquo;inserimento. Durante l&rsquo;unione, la directory di lavoro possiede due changeset genitori che poi diventano i genitori del nuovo changeset.</para>
 
       <figure id="fig:tour-merge:merge">
-	<title>Lo stato della directory di lavoro e del repository durante l'unione e dopo l'inserimento</title>
+	<title>Lo stato della directory di lavoro e del repository durante l&rsquo;unione e dopo l&rsquo;inserimento</title>
 	<mediaobject>
 	  <imageobject>
 	    <imagedata fileref="figs/tour-merge-merge.png"/>
@@ -104,7 +104,7 @@
 	</mediaobject>
       </figure>
 
-      <para id="x_69c">Talvolta si dice che un'unione è composta da due <emphasis>parti</emphasis>: la parte sinistra è costituita dal primo genitore elencato da <command role="hg-cmd">hg parents</command> e la parte destra dal secondo. Se per esempio la directory di lavoro si fosse trovata alla revisione 5 prima che cominciassimo l'unione, quella revisione sarebbe diventata la parte sinistra dell'unione.</para>
+      <para id="x_69c">Talvolta si dice che un&rsquo;unione è composta da due <emphasis>parti</emphasis>: la parte sinistra è costituita dal primo genitore elencato da <command role="hg-cmd">hg parents</command> e la parte destra dal secondo. Se per esempio la directory di lavoro si fosse trovata alla revisione 5 prima che cominciassimo l&rsquo;unione, quella revisione sarebbe diventata la parte sinistra dell&rsquo;unione.</para>
     </sect2>
   </sect1>
 
@@ -125,7 +125,7 @@
 
     <para id="x_34e">Mercurial non è dotato di alcuna funzione predefinita per gestire i conflitti. Invece, richiama un programma esterno, di solito uno che mostra un qualche tipo di interfaccia grafica per la risoluzione dei conflitti, trovato tra i tanti strumenti di unione differenti che è probabile siano installati sul vostro sistema. Come prima cosa, Mercurial prova a cercare alcuni strumenti di unione completamente automatici; poi, se non riesce a trovarli (perché il processo di risoluzione richiede una guida umana) o se non sono presenti, prova a richiamare diversi strumenti grafici di unione.</para>
 
-    <para id="x_34f">&Egrave; anche possibile far eseguire a Mercurial uno specifico programma, impostando il valore della variable d'ambiente <envar>HGMERGE</envar> al nome del vostro programma preferito.</para>
+    <para id="x_34f">&Egrave; anche possibile far eseguire a Mercurial uno specifico programma, impostando il valore della variable d&rsquo;ambiente <envar>HGMERGE</envar> al nome del vostro programma preferito.</para>
 
     <sect2>
       <title>Usare uno strumento grafico di unione</title>
@@ -138,7 +138,7 @@
 	</listitem>
 	<listitem><para id="x_353">a destra troviamo la <quote>loro</quote> versione del file, quella che proviene dal changeset che stiamo cercando di incorporare.</para>
 	</listitem></itemizedlist>
-      <para id="x_354">Il pannello sottostante contiene il <emphasis>risultato</emphasis> corrente dell'unione. Il nostro compito è quello di sostituire tutto il testo in rosso, che indica conflitti irrisolti, con una qualche combinazione ragionevole della <quote>nostra</quote> e della <quote>loro</quote> versione del file.</para>
+      <para id="x_354">Il pannello sottostante contiene il <emphasis>risultato</emphasis> corrente dell&rsquo;unione. Il nostro compito è quello di sostituire tutto il testo in rosso, che indica conflitti irrisolti, con una qualche combinazione ragionevole della <quote>nostra</quote> e della <quote>loro</quote> versione del file.</para>
 
       <para id="x_355">Tutti e quattro questi pannelli sono <emphasis>collegati tra loro</emphasis>: se ci spostiamo in verticale o in orizzontale in un pannello qualsiasi, gli altri vengono aggiornati per mostrare le sezioni corrispondenti dei rispettivi file.</para>
 
@@ -155,7 +155,7 @@
 
       <para id="x_357">Per ogni porzione conflittuale del file, possiamo scegliere di risolvere il conflitto usando una qualche combinazione di testo dalla versione base, dalla nostra, o dalla loro. Possiamo anche modificare manualmente il file risultante in ogni momento, nel caso avessimo bisogno di effettuare ulteriori cambiamenti.</para>
 
-      <para id="x_358">Esistono <emphasis>molti</emphasis> strumenti per gestire l'unione di file, davvero troppi per elencarli qui. Si differenziano a seconda della piattaforma per cui sono disponibili e delle loro particolari forze e debolezze. La maggior parte è calibrata per unire file contenenti testo semplice, mentre alcuni sono orientati a particolari formati di file (generalmente XML).</para>
+      <para id="x_358">Esistono <emphasis>molti</emphasis> strumenti per gestire l&rsquo;unione di file, davvero troppi per elencarli qui. Si differenziano a seconda della piattaforma per cui sono disponibili e delle loro particolari forze e debolezze. La maggior parte è calibrata per unire file contenenti testo semplice, mentre alcuni sono orientati a particolari formati di file (generalmente XML).</para>
     </sect2>
 
     <sect2>
@@ -169,7 +169,7 @@
 
       &interaction.tour-merge-conflict.cousin;
 
-      <para id="x_35b">E ora aggiungiamo un altro clone, per simulare qualcun altro che effettui un cambiamento al file. (Questo suggerisce l'idea che non è affatto inusuale ritrovarsi a unire tra loro i propri repository contenenti attività isolate, risolvendo i conflitti incontrati nel corso di questo processo.)</para>
+      <para id="x_35b">E ora aggiungiamo un altro clone, per simulare qualcun altro che effettui un cambiamento al file. (Questo suggerisce l&rsquo;idea che non è affatto inusuale ritrovarsi a unire tra loro i propri repository contenenti attività isolate, risolvendo i conflitti incontrati nel corso di questo processo.)</para>
 
       &interaction.tour-merge-conflict.son;
 
@@ -177,20 +177,20 @@
 
       &interaction.tour-merge-conflict.pull;
 
-      <para id="x_35d">In questo esempio, imposterò la variabile d'ambiente <envar>HGMERGE</envar> per dire a Mercurial di usare il comando non interattivo <command>merge</command>. Questo comando è incluso in molti sistemi di tipo Unix. (Se state seguendo questo esempio sul vostro computer, non preoccupatevi di impostare <envar>HGMERGE</envar>. Vi verrà presentata un'applicazione grafica da utilizzare per unire i file, che è un'alternativa di gran lunga preferibile.)</para>
+      <para id="x_35d">In questo esempio, imposterò la variabile d&rsquo;ambiente <envar>HGMERGE</envar> per dire a Mercurial di usare il comando non interattivo <command>merge</command>. Questo comando è incluso in molti sistemi di tipo Unix. (Se state seguendo questo esempio sul vostro computer, non preoccupatevi di impostare <envar>HGMERGE</envar>. Vi verrà presentata un&rsquo;applicazione grafica da utilizzare per unire i file, che è un&rsquo;alternativa di gran lunga preferibile.)</para>
 
       &interaction.tour-merge-conflict.merge;
 
-      <para id="x_35f">Dato che <command>merge</command> non riesce a risolvere il conflitto tra i cambiamenti, inserisce alcuni <emphasis>marcatori di unione</emphasis> all'interno del file che esibisce i conflitti, per indicare quali righe sono in conflitto e se quelle righe provengono dalla nostra versione del file o dalla loro.</para>
+      <para id="x_35f">Dato che <command>merge</command> non riesce a risolvere il conflitto tra i cambiamenti, inserisce alcuni <emphasis>marcatori di unione</emphasis> all&rsquo;interno del file che esibisce i conflitti, per indicare quali righe sono in conflitto e se quelle righe provengono dalla nostra versione del file o dalla loro.</para>
 
-      <para id="x_360">Dal modo in cui <command>merge</command> termina, Mercurial riconosce che non è stato in grado di operare con successo, quindi ci dice quali comandi abbiamo bisogno di eseguire se vogliamo rifare l'operazione di unione. Questo potrebbe essere utile se, per esempio, stessimo lavorando con un'applicazione grafica per la gestione delle unioni e la chiudessimo perché siamo confusi o realizziamo di aver commesso un errore.</para>
+      <para id="x_360">Dal modo in cui <command>merge</command> termina, Mercurial riconosce che non è stato in grado di operare con successo, quindi ci dice quali comandi abbiamo bisogno di eseguire se vogliamo rifare l&rsquo;operazione di unione. Questo potrebbe essere utile se, per esempio, stessimo lavorando con un&rsquo;applicazione grafica per la gestione delle unioni e la chiudessimo perché siamo confusi o realizziamo di aver commesso un errore.</para>
 
-      <para id="x_361">Nel caso in cui l'unione automatica o manuale fallisca, nulla ci impedisce di <quote>correggere</quote> i file interessati per conto nostro, per poi inserire i risultati della nostra unione nel repository:</para>
+      <para id="x_361">Nel caso in cui l&rsquo;unione automatica o manuale fallisca, nulla ci impedisce di <quote>correggere</quote> i file interessati per conto nostro, per poi inserire i risultati della nostra unione nel repository:</para>
       
       &interaction.tour-merge-conflict.commit;
 
       <note>
-	<title>Dov'è il comando <command>hg resolve</command>?</title>
+	<title>Dov&rsquo;è il comando <command>hg resolve</command>?</title>
 
 	<para id="x_724">Il comando <command>hg resolve</command> è stato introdotto nella verisone 1.1 di Mercurial rilasciata nel dicembre 2008. Se state usando una versione più vecchia (eseguite <command>hg version</command> per controllare) questo comando non sarà presente. Nel caso la vostra versione di Mercurial sia precedente alla 1.1, vi consiglio vivamente di installare una versione più recente prima di affrontare unioni complicate.</para>
       </note>
@@ -204,31 +204,31 @@
     <programlisting>hg pull -u
 hg merge
 hg commit -m 'Incorporati i cambiamenti remoti'</programlisting>
-    <para id="x_363">Nel caso dell'inserimento finale, avete anche bisogno di includere un messaggio di commit, che sarà quasi sempre composto da testo <quote>standard</quote> non particolarmente interessante.</para>
+    <para id="x_363">Nel caso dell&rsquo;inserimento finale, avete anche bisogno di includere un messaggio di commit, che sarà quasi sempre composto da testo <quote>standard</quote> non particolarmente interessante.</para>
 
-    <para id="x_364">Se fosse possibile, sarebbe comodo ridurre il numero di passi necessari. In effetti, Mercurial viene distribuito con un'estensione chiamata <literal role="hg-ext">fetch</literal> pensata proprio per questo scopo.</para>
+    <para id="x_364">Se fosse possibile, sarebbe comodo ridurre il numero di passi necessari. In effetti, Mercurial viene distribuito con un&rsquo;estensione chiamata <literal role="hg-ext">fetch</literal> pensata proprio per questo scopo.</para>
 
     <para id="x_365">Mercurial fornisce un meccanismo flessibile per consentire ad altre persone di estendere le sue funzionalità, preservando le dimensioni ridotte e la manutenibilità del proprio nucleo. Alcune estensioni aggiungono nuovi comandi che potete usare dalla riga di comando, mentre altre lavorano <quote>dietro le quinte</quote>, per esempio accrescendo la funzionalità della modalità server predefinita di Mercurial.</para>
 
-    <para id="x_366">L'estensione <literal role="hg-ext">fetch</literal> aggiunge un nuovo comando chiamato, naturalmente, <command role="hg-cmd">hg fetch</command>. Questa estensione agisce come una combinazione di <command role="hg-cmd">hg pull -u</command>, <command role="hg-cmd">hg merge</command> e <command role="hg-cmd">hg commit</command>. Comincia propagando verso il repository corrente i cambiamenti estratti da un altro repository. Se si accorge che i cambiamenti hanno aggiunto una nuova testa al repository, aggiorna la directory di lavoro alla nuova testa, poi avvia il processo di unione e infine, se l'unione ha successo, ne inserisce il risultato nel repository con un messaggio di commit generato automaticamente. Se non sono state aggiunte nuove teste, il comando si limita ad aggiornare la directory di lavoro alla nuova revisione di punta.</para>
+    <para id="x_366">L&rsquo;estensione <literal role="hg-ext">fetch</literal> aggiunge un nuovo comando chiamato, naturalmente, <command role="hg-cmd">hg fetch</command>. Questa estensione agisce come una combinazione di <command role="hg-cmd">hg pull -u</command>, <command role="hg-cmd">hg merge</command> e <command role="hg-cmd">hg commit</command>. Comincia propagando verso il repository corrente i cambiamenti estratti da un altro repository. Se si accorge che i cambiamenti hanno aggiunto una nuova testa al repository, aggiorna la directory di lavoro alla nuova testa, poi avvia il processo di unione e infine, se l&rsquo;unione ha successo, ne inserisce il risultato nel repository con un messaggio di commit generato automaticamente. Se non sono state aggiunte nuove teste, il comando si limita ad aggiornare la directory di lavoro alla nuova revisione di punta.</para>
 
-    <para id="x_367">Abilitare l'estensione <literal role="hg-ext">fetch</literal> è facile. Aprite il file <filename role="special">.hgrc</filename> che si trova nella vostra directory personale e andate alla sezione <literal role="rc-extensions">extensions</literal> (oppure createla se non esiste già). Poi aggiungete una riga che contenga semplicemente <quote><literal>fetch=</literal></quote>.</para>
+    <para id="x_367">Abilitare l&rsquo;estensione <literal role="hg-ext">fetch</literal> è facile. Aprite il file <filename role="special">.hgrc</filename> che si trova nella vostra directory personale e andate alla sezione <literal role="rc-extensions">extensions</literal> (oppure createla se non esiste già). Poi aggiungete una riga che contenga semplicemente <quote><literal>fetch=</literal></quote>.</para>
 
     <programlisting>[extensions]
 fetch =</programlisting>
 
-    <para id="x_368">(Normalmente, la parte a destra del simbolo <quote><literal>=</literal></quote> indicherebbe dove trovare l'estensione, ma dato che l'estensione <literal role="hg-ext">fetch</literal> è compresa nella distribuzione standard, Mercurial sa già dove andarla a cercare.)</para>
+    <para id="x_368">(Normalmente, la parte a destra del simbolo <quote><literal>=</literal></quote> indicherebbe dove trovare l&rsquo;estensione, ma dato che l&rsquo;estensione <literal role="hg-ext">fetch</literal> è compresa nella distribuzione standard, Mercurial sa già dove andarla a cercare.)</para>
   </sect1>
 
   <sect1>
     <title>Rinominare, copiare e unire</title>
 
-    <para id="x_729">Durante la vita di un progetto, vorremo spesso cambiare la disposizione dei suoi file e delle sue directory. Queste modifiche possono essere tanto semplici quanto rinominare un singolo file, o tanto complesse quanto ristrutturare l'intera gerarchia dei file nell'ambito del progetto.</para>
+    <para id="x_729">Durante la vita di un progetto, vorremo spesso cambiare la disposizione dei suoi file e delle sue directory. Queste modifiche possono essere tanto semplici quanto rinominare un singolo file, o tanto complesse quanto ristrutturare l&rsquo;intera gerarchia dei file nell&rsquo;ambito del progetto.</para>
 
     <para id="x_72a">Mercurial supporta questi tipi di cambiamenti in maniera fluida, a patto che gli diciamo quello che stiamo facendo. Se vogliamo rinominare un file, dovremmo usare il comando <command>hg rename</command><footnote>
 	<para id="x_72b">Se siete utenti Unix, sarete felici di sapere che il comando <command>hg rename</command> si può abbreviare in <command>hg mv</command>.</para>
-    </footnote> per cambiare il nome del file, in modo che Mercurial possa comportarsi in maniera appropriata nel caso più tardi effettuassimo un'unione.</para>
+    </footnote> per cambiare il nome del file, in modo che Mercurial possa comportarsi in maniera appropriata nel caso più tardi effettuassimo un&rsquo;unione.</para>
 
-    <para id="x_72c">Tratteremo l'uso di questi comandi in maniera più estesa nella <xref linkend="chap:daily.copy"/>.</para>
+    <para id="x_72c">Tratteremo l&rsquo;uso di questi comandi in maniera più estesa nella <xref linkend="chap:daily.copy"/>.</para>
   </sect1>
 </chapter>
