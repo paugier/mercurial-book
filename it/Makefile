@@ -1,9 +1,10 @@
 include Makefile.vars
 
-# Makefile.vars include the following system-dependent variables:
+# Makefile.vars includes the following system-dependent variables:
 #
 # dtd-url = the location of the DocBook 4.5 DTD on your filesystem
 # system-xsl-dir = the location of DocBook XSLT on your filesystem
+# dynamic-link-command = the command to link the DocBook XSLT to our styles 
 # python = the location of Python 3.x on your filesystem
 
 xml-src-files := \
@@ -14,50 +15,51 @@ xml-src-files := \
 
 xsltproc-opts := --nonet --xinclude
 xmllint-opts := --noout --nonet --valid --path '$(dtd-url)'
-    
-obj-web := html
+
+root-web := html
+support-web := $(root-web)/support
+obj-web := $(root-web)/read
 figs-web-folder := $(obj-web)/figs
 script-web := $(obj-web)/javascript
 web-global := ../web
 web-local := web
 
-html: $(obj-web)/index.html $(web-local)/index-read.html.in
+html: $(obj-web)/index.html $(web-local)/index-read.html.in figs
 
-#$(obj-web)/index.html: ../stylesheets/system-xsl .validated-00book.xml #../web/index-read.html.in
-$(obj-web)/index.html: .validated-00book.xml
+$(obj-web)/index.html: ../stylesheets/system-xsl .validated-00book.xml
 	xsltproc $(xsltproc-opts) -o $(obj-web)/x ../stylesheets/it/web.xsl 00book.xml
-#	xsltproc $(xsltproc-opts) -o $(obj-web)/x ../stylesheets/chunk-stylesheet.xsl 00book.xml
-	cp $(web-global)/styles.css $(obj-web)
+	mkdir -p $(support-web)
+	cp -f $(web-global)/icons/*.png $(support-web)
+	cp $(web-global)/styles.css $(support-web)
+	sed -i -e "s|figs/||g" $(support-web)/styles.css
 	mkdir -p $(figs-web-folder)
-	cp -f $(web-global)/icons/*.png $(figs-web-folder)
-	cp -f examples/figs/*.png $(figs-web-folder)
 	mkdir -p $(script-web)
 	cp -f $(web-local)/*.js $(script-web)
-	sed -i -e "s|/support/||g" $(obj-web)/*.html
-#	python ../web/texpand.py ../web/index-read.html.in html/read/index.html
-#	for i in $(obj-web-read)/*.html; do \
-#	  gzip -9 -c $$i > $$i.gz; \
-#	done
 
-#../stylesheets/system-xsl: $(system-xsl-dir)
-#	ln -s $< $@
+../stylesheets/system-xsl: $(system-xsl-dir)
+	$(dynamic-link-command)
 
 $(web-local)/index-read.html.in: $(web-local)/genindex.py $(xml-src-files)
 	cp $(web-local)/index-template.html $(obj-web)/index.html
-	sed -i -e "s|{% block bodycontent %}{% endblock %}|$(shell cat $(web-local)/index-read.html.in)|g" ${obj-web}/index.html
+	sed -i -e "s|{% block bodycontent %}{% endblock %}|$(shell cat $(web-local)/index-read.html.in)|g" $(obj-web)/index.html
+	sed -i -e "s|/support/|../support/|g" $(obj-web)/*.html
+	cp $(web-local)/index-template.html $(root-web)/index.html
+	sed -i "s|{% block bodycontent %}{% endblock %}|$(shell cat $(web-local)/index-home.html.in)|g" $(root-web)/index.html
+	sed -i -e "s|/support/|support/|g" $(root-web)/index.html
 
 $(web-local)/genindex.py: $(xml-src-files)
 	cd $(web-local) && $(python) genindex.py
 
 valid: .validated-00book.xml
 
-.validated-00book.xml: $(xml-src-files) #examples/.run
+.validated-00book.xml: $(xml-src-files)
 	xmllint $(xmllint-opts) $<
 	touch $@
 
 clean:
 	rm -f $(web-local)/index-read.html.in
-	rm -rf $(obj-web)
+	rm -f .validated-00book.xml
+	rm -rf $(root-web)
 
 image-folder := figs
 # graphs, figures, screenshots
@@ -69,24 +71,22 @@ image-svg := $(filter %.svg, $(image-files))
 # screenshots
 image-png := $(filter %.png, $(image-files))
 
-# this must already exists
-figs-folder := examples/figs
 figs-web := \
-	$(image-dot:$(image-folder)/%.dot=$(figs-folder)/%.png) \
-	$(image-svg:$(image-folder)/%.svg=$(figs-folder)/%.png) \
-	$(image-png:$(image-folder)/%.png=$(figs-folder)/%.png)
+	$(image-dot:$(image-folder)/%.dot=$(figs-web-folder)/%.png) \
+	$(image-svg:$(image-folder)/%.svg=$(figs-web-folder)/%.png) \
+	$(image-png:$(image-folder)/%.png=$(figs-web-folder)/%.png)
 
 figs: $(figs-web)
 
-$(figs-folder)/%.png: $(image-folder)/%.svg
+$(figs-web-folder)/%.png: $(image-folder)/%.svg
 	inkscape -D -d 120 -e $@ $<
 
-$(figs-folder)/%.png: $(figs-folder)/%.svg
+$(figs-web-folder)/%.png: $(figs-web-folder)/%.svg
 	inkscape -D -e $@ $<
 	rm $<
 
-$(figs-folder)/%.png: $(image-folder)/%.png
+$(figs-web-folder)/%.png: $(image-folder)/%.png
 	cp $< $@
 
-$(figs-folder)/%.svg: $(image-folder)/%.dot
+$(figs-web-folder)/%.svg: $(image-folder)/%.dot
 	dot -Tsvg -o $@ $<
