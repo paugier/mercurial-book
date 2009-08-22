@@ -69,6 +69,7 @@ image-svg := $(filter %.svg, $(image-files))
 # screenshots
 image-png := $(filter %.png, $(image-files))
 
+# this must already exists
 figs-folder := examples/figs
 figs-web := \
 	$(image-dot:$(image-folder)/%.dot=$(figs-folder)/%.png) \
@@ -77,12 +78,11 @@ figs-web := \
 
 figs: $(figs-web)
 
-#$(figs-folder)/%.png: $(image-folder)/%.png $(image-folder)/%.svg
 $(figs-folder)/%.png: $(image-folder)/%.svg
 	inkscape -D -d 120 -e $@ $<
 
 $(figs-folder)/%.png: $(figs-folder)/%.svg
-	inkscape -D -d 120 -e $@ $<
+	inkscape -D -e $@ $<
 	rm $<
 
 $(figs-folder)/%.png: $(image-folder)/%.png
