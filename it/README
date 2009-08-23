@@ -1,0 +1,89 @@
+This is the Italian translation of "Mercurial: The Definitive Guide". The
+original book has been written by Bryan O'Sullivan and published by O'Reilly
+Media in 2009. The book has been translated into Italian by Giulio Piancastelli
+and currently is available in electronic form only.
+
+This book is written in DocBook and uses a variety of tools to produce a
+bunch of HTML pages to be published on a web site. Transformations towards a
+single HTML page or a PDF document are also possible, but are currently not
+directly supported.
+
+The tools needed to build the book are:
+
+ * DocBook XML DTD, version 4.5 (untested with a different version)
+ * DocBook XSL stylesheets, version >1.75.2 (see later)
+ * libxml2-utils, containing xmllint (used to validate the XML chapters against
+   the DocBook DTD) and xmlproc (used to transform XML to HTML)
+ * Graphviz, to transform DOT files (textual representations of graphs, yay)
+   into SVG images
+ * Inkscape, to transform SVG images into PNG images
+ * Python 3 (ah, yes, I'm sorry, see later), to generate a proper TOC
+
+(Apparently, if you want also to generate a PDF document out of the DocBook
+sources, the suggested tools are Java, Saxon, and FOP. You're still on your
+own here.)
+
+Once you have your tools properly installed, just type
+
+  $ make html
+
+and you should be set. First, the book is validated; then, XML is transformed
+into HTML; using the Mercurial repository, a Python 3 script generates a proper
+table of contents for the book; finally, images are transformed, and voilà, you
+have your own multi-page HTML version of the book. No other moving parts here.
+
+Now, let me briefly explain the two esoteric requirements about DocBook XSL and
+Python 3. First, the XSL stylesheets. As of today (23th August, 2009) the
+latest release of the DocBook XSL stylesheets is 1.75.2. So why I ask you to
+grab a release that doesn't even exist yet? Because the latest development
+snapshot includes a patch that allows an Italian writer to use complex
+prepositions in front of xrefs to sections. Without that patch, you will end up
+with text like "come abbiamo visto nella <a href=...>la sezione ...</a>", which
+is frankly unreadable. And you do want to read your newly generated version of
+the book, don't you? So, grab a DocBook XSL stylesheet development snapshot
+while waiting for 1.75.3 to be released, and have a go with it.
+
+Well, and what about Python 3? I'm sorry. I like it, I just happen to be a fan,
+so I'm using it everywhere I can, including this book. You can use it, too.
+The only Python script in the build system is it/web/genindex.py; anyway, it
+should not be that difficult to edit in order to let it run on Python 2, if you
+can't or don't want to use Python 3. Actually, my genindex.py is the result of
+converting Bryan's genindex.py to Python 3... but you can't use that script
+directly, because it contains some HTML text that I translated into Italian,
+and is not capable to make the References appear into the main TOC.
+
+WINDOWS USERS BEWARE!
+
+If you are building the book on a Windows system, good luck. I have written
+the entire translation on a Windows 2000 box (uh, yes, it's 2009 and they still
+exist) so I know how much the process can hurt. Thus, some words of advice
+follow.
+
+First, the silent assumption of the build script is that you are on a Linux (or
+probably just Unix-like) system. The build script is a Makefile, and uses
+typical *nix tools such as cat and sed. On Windows, you really need to have
+Cygwin installed. Look at the Makefile to know exactly which commands are used.
+
+Then, XSL transformations work on the basis of a symlink. ln -s. Yes. I know.
+How the fuck are you supposed to do that on Windows? (Well, at least Windows
+2000 and XP... I heard that newer versions should finally have that kind of
+feature built-in.) Two words: junction points. Oh, and an acronym: NTFS.
+Junction points are the equivalent of *nix symbolic links for directories
+under Windows, but they only work on NTFS. If you have a FAT32 file system,
+I believe you are screwed.
+
+More informations on junction points are available here:
+
+  http://technet.microsoft.com/en-us/sysinternals/bb896768.aspx
+
+Finally, Inkscape on the Windows command line has some limitations. You might
+be forced to pass absolute pathnames to images, use the program from its
+installation directory, or perform other esoteric contortions in order to have
+it run properly.
+
+PLEASE SEND FEEDBACK. I'm willing to update build informations and do (or just
+merge) some changes to the Makefile in order to improve the build process or
+expand it (e.g. to generate also a PDF output). I can be reached by email:
+
+  Giulio Piancastelli <giulio.piancastelli@gmail.com>
+
