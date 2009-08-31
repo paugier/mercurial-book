@@ -2,59 +2,61 @@
 
 <appendix id="chap:srcinstall">
   <?dbhtml filename="installing-mercurial-from-source.html"?>
-  <title>Installing Mercurial from source</title>
+  <title>Installer Mercurial à partir des sources</title>
 
   <sect1 id="sec:srcinstall:unixlike">
-    <title>On a Unix-like system</title>
+    <title>Pour un système Unix ou similaire</title>
 
-    <para id="x_5e0">If you are using a Unix-like system that has a sufficiently
-      recent version of Python (2.3 or newer) available, it is easy to
-      install Mercurial from source.</para>
+    <para id="x_5e0">Si vous utilisez un système Unix ou similaire, pour lequel
+      une version récente de Python (2.3 ou plus) est disponible, l'installation
+      de Mercurial à partir des sources est simple.</para>
     <orderedlist>
-      <listitem><para id="x_5e1">Download a recent source tarball from <ulink
+      <listitem><para id="x_5e1">Téléchargez un paquet récent depuis <ulink
 	    url="http://www.selenic.com/mercurial/download">http://www.selenic.com/mercurial/download</ulink>.</para>
       </listitem>
-      <listitem><para id="x_5e2">Unpack the tarball:</para>
+      <listitem><para id="x_5e2">Extrayez le paquet : </para>
 	<programlisting>gzip -dc mercurial-MYVERSION.tar.gz | tar xf -</programlisting>
       </listitem>
-      <listitem><para id="x_5e3">Go into the source directory and run the
-	  installer script.  This will build Mercurial and install it
-	  in your home directory.</para>
+      <listitem><para id="x_5e3">Allez dans le directory où les sources ont
+    été extraites et executez le script d'installation. Ce dernier compilera
+    Mercurial et l'installera dans votre répertoire utilisateur.</para>
 	<programlisting>cd mercurial-MYVERSION
 python setup.py install --force --home=$HOME</programlisting>
       </listitem>
     </orderedlist>
-    <para id="x_5e4">Once the install finishes, Mercurial will be in the
-      <literal>bin</literal> subdirectory of your home directory.
-      Don't forget to make sure that this directory is present in your
-      shell's search path.</para>
+    <para id="x_5e4">Lorsque l'installation est terminée, Mercurial se
+      trouvera dans le répertoire  <literal>bin</literal> de votre répertoire
+      utilisateur.
+      N'oubliez pas de vérifier que ce répertoire se trouve dans le
+      chemin de recherche de votre shell.</para>
 
-    <para id="x_5e5">You will probably need to set the <envar>PYTHONPATH</envar>
-      environment variable so that the Mercurial executable can find
-      the rest of the Mercurial packages.  For example, on my laptop,
-      I have set it to <literal>/home/bos/lib/python</literal>.  The
-      exact path that you will need to use depends on how Python was
-      built for your system, but should be easy to figure out.  If
-      you're uncertain, look through the output of the installer
-      script above, and see where the contents of the
-      <literal>mercurial</literal> directory were installed to.</para>
+    <para id="x_5e5">Vous devrez vraisemblablement définir la variable
+      d'environnement <envar>PYTHONPATH</envar> de manière à ce que
+      l'executable Mercurial puisse trouver le reste des paquets logiciels.
+      Par exemple, sur mon ordinateur portable, je dois le définir ainsi:
+      <literal>/home/bos/lib/python</literal>. Le chemin exact à utiliser
+      dépendra de la manière dont Python aura été construit pour votre 
+      système. Il ne devrait pas être difficile de le trouver. En cas de
+      doute, lisez le texte généré lors de l'installation ci-dessus, et
+      recherchez l'emplacement où le contenu du répertoire
+      <literal>mercurial</literal> a été installé.</para>
 
   </sect1>
   <sect1>
-    <title>On Windows</title>
+    <title>Pour Windows</title>
 
-    <para id="x_5e6">Building and installing Mercurial on Windows requires a
-      variety of tools, a fair amount of technical knowledge, and
-      considerable patience.  I very much <emphasis>do not
-	recommend</emphasis> this route if you are a <quote>casual
-	user</quote>.  Unless you intend to hack on Mercurial, I
-      strongly suggest that you use a binary package instead.</para>
+    <para id="x_5e6">Construire et installer Mercurial sous Windows nécessite
+      des outils logiciels divers, une certaine connaissance technique et une
+      grosse dose de patience. Je vous <emphasis>déconseille fortement</emphasis> 
+      de tenter ce chemin si vous êtes un <quote>simple utilisateur</quote>.
+      A moins que vous n'ayez l'intention de hacker Mercurial, je vous
+      suggère d'avoir recours à un paquet d'installation de la version binaire.</para>
 
-    <para id="x_5e7">If you are intent on building Mercurial from source on
-      Windows, follow the <quote>hard way</quote> directions on the
-      Mercurial wiki at <ulink
+    <para id="x_5e7">Si vous avez vraiment l'intention de construire
+      Mercurial à partir des sources sous Windows, suivez les indications pour 
+      ce <quote>dur chemin</quote> sur le wiki de Mercurial : <ulink
 	url="http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall">http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall</ulink>, 
-      and expect the process to involve a lot of fiddly work.</para>
+      et attendez vous à une démarche impliquant un travail épineux.</para>
 
   </sect1>
 </appendix>
