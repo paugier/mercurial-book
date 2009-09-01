@@ -43,14 +43,14 @@ for c in chapters:
             else:
                 num = str(ch) + '. '
                 ch += 1
-            if title.find('&') >= 0:
+            if '&' in title:
                 title = title.replace('&', '\&')
             ab += 1
             date = os.popen('hg log -l1 --template "{date|isodate}" ' + c).read().split(None, 1)[0]
             args = {
                 'ab': "ab"[ab % 2],
                 'date': date,
-                'chapid': chapid,
+                # 'chapid': chapid,
                 'num': num,
                 'filename': filename,
                 'title': title,
