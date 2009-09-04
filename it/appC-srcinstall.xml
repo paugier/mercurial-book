@@ -1,0 +1,33 @@
+<appendix id="chap:srcinstall">
+  <?dbhtml filename="installare-mercurial-dai-sorgenti.html"?>
+  <title>Installare Mercurial dai sorgenti</title>
+
+  <sect1 id="sec:srcinstall:unixlike">
+    <title>Sistemi di tipo Unix</title>
+
+    <para id="x_5e0">Se state usando un sistema di tipo Unix che include una versione sufficientemente recente di Python (2.3 o superiore), installare Mercurial dai sorgenti è facile.</para>
+    <orderedlist>
+      <listitem><para id="x_5e1">Scaricate un archivio dei sorgenti recente da <ulink url="http://www.selenic.com/mercurial/download">http://www.selenic.com/mercurial/download</ulink>.</para>
+      </listitem>
+      <listitem><para id="x_5e2">Estraete i contenuti dell&rsquo;archivio:</para>
+	<programlisting>gzip -dc mercurial-VERSIONE.tar.gz | tar xf -</programlisting>
+      </listitem>
+      <listitem><para id="x_5e3">Posizionatevi nella directory dei sorgenti ed eseguite lo script di installazione che assemblerà Mercurial e lo installerà nella vostra directory personale.</para>
+	<programlisting>cd mercurial-VERSIONE
+python setup.py install --force --home=$HOME</programlisting>
+      </listitem>
+    </orderedlist>
+    <para id="x_5e4">Una volta che l&rsquo;installazione è terminata, Mercurial si troverà nella sottodirectory <literal>bin</literal> della vostra directory personale. Non dimenticate di assicurarvi che questa directory sia presente nel percorso di ricerca della vostra shell.</para>
+
+    <para id="x_5e5">Probabilmente avrete bisogno di impostare la variabile d&rsquo;ambiente <envar>PYTHONPATH</envar> in modo che l&rsquo;eseguibile di Mercurial possa trovare il resto dei pacchetti di Mercurial. Per esempio, sul mio portatile, ho impostato il valore di quella variabile a <literal>/home/bos/lib/python</literal>. Il percorso esatto dipende da come Python è stato installato sul vostro sistema, ma dovrebbe essere facile da scoprire. Se non siete sicuri, date un&rsquo;occhiata alle informazioni precedentemente stampate dallo script di installazione e cercate il luogo in cui i contenuti della directory <literal>mercurial</literal> sono stati installati.</para>
+
+  </sect1>
+  <sect1>
+    <title>Windows</title>
+
+    <para id="x_5e6">Assemblare e installare Mercurial sotto Windows richiede una varietà di strumenti, una certa quantità di conoscenze tecniche e una considerevole dose di pazienza. Vi suggerisco vivamente di <emphasis>non</emphasis> seguire questa strada se siete un <quote>utente occasionale</quote>. A meno che non intendiate lavorare su Mercurial, vi raccomando invece di usare un pacchetto di installazione eseguibile.</para>
+
+    <para id="x_5e7">Se avete intenzione di assemblare Mercurial dai sorgenti su Windows, seguite le direttive <quote>pratiche</quote> sul wiki di Mercurial all&rsquo;indirizzo <ulink url="http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall">http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall</ulink> e aspettatevi che il processo comporti lo svolgimento di numerose operazioni complicate.</para>
+
+  </sect1>
+</appendix>

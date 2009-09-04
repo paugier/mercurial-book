@@ -1,0 +1,15 @@
+<!-- BEGIN bisect.search.mytest -->
+<screen><prompt>$</prompt> <userinput>miotest() {</userinput>
+<prompt>$</prompt> <userinput>  if grep -q 'ho un gub' *</userinput>
+<prompt>></prompt> <userinput>  then</userinput>
+<prompt>></prompt> <userinput>    contrassegno=bad</userinput>
+<prompt>></prompt> <userinput>    risultato=guasta</userinput>
+<prompt>></prompt> <userinput>  else</userinput>
+<prompt>></prompt> <userinput>    contrassegno=good</userinput>
+<prompt>></prompt> <userinput>    risultato=funzionante</userinput>
+<prompt>></prompt> <userinput>  fi</userinput>
+<prompt>></prompt> <userinput>  echo questa revisione è $risultato</userinput>
+<prompt>></prompt> <userinput>  hg bisect --$contrassegno</userinput>
+<prompt>></prompt> <userinput>}</userinput>
+</screen>
+<!-- END bisect.search.mytest -->

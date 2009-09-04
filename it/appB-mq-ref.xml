@@ -1,0 +1,278 @@
+<appendix id="chap:mqref">
+  <?dbhtml filename="guida-di-riferimento-di-mercurial-queues.html"?>
+  <title>Guida di riferimento a Mercurial Queues</title>
+
+  <sect1 id="sec:mqref:cmdref">
+    <title>Guida di riferimento ai comandi MQ</title>
+
+    <para id="x_5e8">Per un&rsquo;introduzione ai comandi forniti da MQ, usate il comando <command role="hg-cmd">hg help mq</command>.</para>
+
+    <sect2>
+      <title><command role="hg-ext-mq">qapplied</command>&emdash;stampa le patch applicate</title>
+
+      <para id="x_5e9">Il comando <command role="hg-ext-mq">qapplied</command> stampa la pila corrente delle patch applicate. Le patch vengono stampate in ordine dalla più vecchia alla più recente, così l&rsquo;ultima patch nella lista è quella <quote>in cima</quote> alla pila.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qcommit</command>&emdash;registra i cambiamenti nel repository della coda</title>
+
+      <para id="x_5ea">Il comando <command role="hg-ext-mq">qcommit</command> registra qualsiasi cambiamento in sospeso nel repository <filename role="special" class="directory">.hg/patches</filename>. Questo comando funziona solo se la directory <filename role="special" class="directory">.hg/patches</filename> è un repository, cioè se avete creato la directory usando <command role="hg-cmd">hg qinit <option role="hg-ext-mq-cmd-qinit-opt">-c</option></command> o avete invocato <command role="hg-cmd">hg init</command> nella directory dopo aver eseguito <command role="hg-ext-mq">qinit</command>.</para>
+
+      <para id="x_5eb">Questo comando è un&rsquo;abbreviazione di <command role="hg-cmd">hg commit --cwd .hg/patches</command>.</para>
+    </sect2>
+    <sect2>
+	<title><command role="hg-ext-mq">qdelete</command>&emdash;elimina una patch dal file <filename role="special">series</filename></title>
+
+      <para id="x_5ec">Il comando <command role="hg-ext-mq">qdelete</command> rimuove la voce relativa a una patch dal file <filename role="special">series</filename> nella directory <filename role="special" class="directory">.hg/patches</filename>. Non estrae la patch se la patch è già applicata. Per default, non cancella il file della patch, perciò dovrete usare l&rsquo;opzione <option role="hg-ext-mq-cmd-qdel-opt">-f</option> se volete fare questo.</para>
+
+      <para id="x_5ed">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_5ee"><option role="hg-ext-mq-cmd-qdel-opt">-f</option>: cancella il file della patch.</para>
+	</listitem>
+      </itemizedlist>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qdiff</command>&emdash;stampa un diff dell&rsquo;ultima patch applicata</title>
+
+      <para id="x_5ef">Il comando <command role="hg-ext-mq">qdiff</command> stampa un diff dell&rsquo;ultima patch applicata. &Egrave; equivalente al comando <command role="hg-cmd">hg diff -r-2:-1</command>.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qfinish</command>&emdash;sposta le patch applicate nella cronologia del repository</title>
+
+      <para id="x_72d">Il comando <command>hg qfinish</command> converte le patch applicate specificate in modifiche permanenti, spostandole fuori dal controllo di MQ in modo che siano trattate come normale cronologia del repository.</para>
+    </sect2>
+
+    <sect2>
+      <title><command role="hg-ext-mq">qfold</command>&emdash;unisce (<quote>include</quote>) diverse patch in una</title>
+
+      <para id="x_5f0">Il comando <command role="hg-ext-mq">qfold</command> unisce più patch all&rsquo;ultima patch applicata, in modo che l&rsquo;ultima patch applicata rappresenti l&rsquo;unione di tutti i cambiamenti delle patch in questione.</para>
+
+      <para id="x_5f1">Le patch da includere non devono essere applicate, altrimenti <command role="hg-ext-mq">qfold</command> terminerà segnalando un errore. L&rsquo;ordine in cui le patch vengono incluse è significativo: <command role="hg-cmd">hg qfold a b</command> significa <quote>applica la patch più recente, seguita da <literal>a</literal>, seguita da <literal>b</literal></quote>.</para>
+
+      <para id="x_5f2">I commenti delle patch incluse vengono aggiunti alla fine dei commenti della patch di destinazione, separando ogni blocco di commenti con tre caratteri di asterisco (<quote><literal>*</literal></quote>). Usate l&rsquo;opzione <option role="hg-ext-mq-cmd-qfold-opt">-e</option> per modificare il messaggio di commit della patch/changeset combinata dopo che l&rsquo;inclusione è stata completata.</para>
+
+      <para id="x_5f3">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_5f4"><option role="hg-ext-mq-cmd-qfold-opt">-e</option>: modifica il messaggio di commit e la descrizione di patch per la nuova patch combinata.</para>
+	</listitem>
+	<listitem><para id="x_5f5"><option role="hg-ext-mq-cmd-qfold-opt">-l</option>: usa il testo contenuto nel file dato come nuovo messaggio di commit e descrizione di patch per la patch combinata.</para>
+	</listitem>
+	<listitem><para id="x_5f6"><option role="hg-ext-mq-cmd-qfold-opt">-m</option>: usa il testo dato come nuovo messaggio di commit e descrizione di patch per la patch combinata.</para>
+	</listitem>
+      </itemizedlist>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qheader</command>&emdash;mostra l&rsquo;intestazione/descrizione di una patch</title>
+
+      <para id="x_5f7">Il comando <command role="hg-ext-mq">qheader</command> stampa l&rsquo;intestazione, o descrizione, di una patch. Per default, stampa l&rsquo;intestazione dell&rsquo;ultima patch applicata. Dato un argomento, stampa l&rsquo;intestazione della patch indicata.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qimport</command>&emdash;importa una patch di terze parti nella coda</title>
+
+      <para id="x_5f8">Il comando <command role="hg-ext-mq">qimport</command> aggiunge una voce per una patch esterna al file <filename role="special">series</filename> e copia la patch nella directory <filename role="special" class="directory">.hg/patches</filename>. Aggiunge la voce immediatamente dopo l&rsquo;ultima patch applicata, ma non inserisce la patch.</para>
+
+      <para id="x_5f9">Se la directory <filename role="special" class="directory">.hg/patches</filename> è un repository, <command role="hg-ext-mq">qimport</command> usa <command role="hg-cmd">hg add</command> per aggiungere automaticamente la patch importata.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qinit</command>&emdash;prepara un repository per lavorare con MQ</title>
+
+      <para id="x_5fa">Il comando <command role="hg-ext-mq">qinit</command> prepara un repository per lavorare con MQ. Crea una directory chiamata <filename role="special" class="directory">.hg/patches</filename>.</para>
+
+      <para id="x_5fb">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_5fc"><option role="hg-ext-mq-cmd-qinit-opt">-c</option>: crea <filename role="special" class="directory">.hg/patches</filename> sotto forma di repository. Crea anche un file <filename role="special">.hgignore</filename> che ignorerà il file <filename role="special">status</filename>.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_5fd">Quando la directory <filename role="special" class="directory">.hg/patches</filename> è un repository, i comandi <command role="hg-ext-mq">qimport</command> e <command role="hg-ext-mq">qnew</command> useranno automaticamente <command role="hg-cmd">hg add</command> per aggiungere nuove patch.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qnew</command>&emdash;crea una nuova patch</title>
+
+      <para id="x_5fe">Il comando <command role="hg-ext-mq">qnew</command> crea una nuova patch. Prende come argomento obbligatorio il nome da usare per il file di patch. La nuova patch viene creata vuota per default, viene aggiunta al file <filename role="special">series</filename> dopo l&rsquo;ultima patch applicata e viene immediatamente inserita sopra quella patch.</para>
+
+      <para id="x_5ff">Se <command role="hg-ext-mq">qnew</command> trova qualche file modificato nella directory di lavoro, si rifiuterà di creare una nuova patch a meno che non usiate l&rsquo;opzione <option role="hg-ext-mq-cmd-qnew-opt">-f</option> (vedete più avanti). Questo comportamento vi permette di aggiornare l&rsquo;ultima patch applicata tramite <command role="hg-ext-mq">qrefresh</command> prima di applicare una nuova patch.</para>
+
+      <para id="x_600">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_601"><option role="hg-ext-mq-cmd-qnew-opt">-f</option>: crea una nuova patch se il contenuto della directory di lavoro è stato modificato. Ogni cambiamento in sospeso viene aggiunto alla patch appena creata, pertanto al termine dell&rsquo;esecuzione del comando la directory di lavoro non risulterà più modificata.</para>
+	</listitem>
+	<listitem><para id="x_602"><option role="hg-ext-mq-cmd-qnew-opt">-m</option>: usa il testo dato come messaggio di commit. Il testo verrà memorizzato all&rsquo;inizio del file di patch, prima dei dati di patch.</para>
+	</listitem>
+      </itemizedlist>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qnext</command>&emdash;stampa il nome della patch successiva</title>
+
+      <para id="x_603">Il comando <command role="hg-ext-mq">qnext</command> stampa il nome della patch nel file <filename role="special">series</filename> che segue la patch applicata più recentemente. Questa patch diventerà l&rsquo;ultima patch applicata se invocate <command role="hg-ext-mq">qpush</command>.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qpop</command>&emdash;estrae le patch dalla pila</title>
+
+      <para id="x_604">Il comando <command role="hg-ext-mq">qpop</command> rimuove patch applicate dalla cima della pila delle patch applicate. Per default, rimuove solo una patch.</para>
+
+      <para id="x_605">Questo comando rimuove dal repository i changeset che rappresentano le patch estratte e aggiorna la directory di lavoro per annullare gli effetti delle patch.</para>
+
+      <para id="x_606">Questo comando accetta un argomento opzionale che viene usato per indicare il nome o l&rsquo;indice numerico della patch da estrarre. Se viene passato un nome, il comando continuerà a estrarre patch fino a quando la patch nominata sarà in cima alla pila delle patch applicate. Se viene passato un numero, <command role="hg-ext-mq">qpop</command> tratterà il numero come un indice d&rsquo;accesso alle voci presenti nel file della serie, partendo da zero (le righe vuote e le righe contenenti solo commenti non vengono contate). Il comando continuerà a estrarre patch fino a quando la patch identificata dall&rsquo;indice dato sarà in cima alla pila delle patch applicate.</para>
+
+      <para id="x_607">Il comando <command role="hg-ext-mq">qpop</command> non legge e non modifica né le patch né il file <filename role="special">series</filename>. Perciò, potete tranquillamente usare <command role="hg-ext-mq">qpop</command> su una patch che avete rimosso dal file <filename role="special">series</filename>, oppure su una patch che avete rinominato o completamente cancellato. Negli ultimi due casi, usate il nome che la patch aveva quando l&rsquo;avete applicata.</para>
+
+      <para id="x_608">Per default, il comando <command role="hg-ext-mq">qpop</command> non estrarrà alcuna patch se la directory di lavoro è stata modificata. Potete cambiare questo comportamento usando l&rsquo;opzione <option role="hg-ext-mq-cmd-qpop-opt">-f</option>, che annulla tutte le modifiche nella directory di lavoro.</para>
+
+      <para id="x_609">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_60a"><option role="hg-ext-mq-cmd-qpop-opt">-a</option>: estrae tutte le patch applicate, riportando il repository allo stato in cui era prima che applicaste qualunque patch.</para>
+	</listitem>
+	<listitem><para id="x_60b"><option role="hg-ext-mq-cmd-qpop-opt">-f</option>: annulla forzatamente qualsiasi modifica alla directory di lavoro al momento dell&rsquo;estrazione.</para>
+	</listitem>
+	<listitem><para id="x_60c"><option role="hg-ext-mq-cmd-qpop-opt">-n</option>: estrae una patch dalla coda nominata.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_60d">Il comando <command role="hg-ext-mq">qpop</command> rimuove una riga alla fine del file <filename role="special">status</filename> per ogni patch che ha estratto.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qprev</command>&emdash;stampa il nome della patch precedente</title>
+
+      <para id="x_60e">Il comando <command role="hg-ext-mq">qprev</command> stampa il nome della patch nel file <filename role="special">series</filename> che precede la patch applicata più recentemente. Questa patch diventerà l&rsquo;ultima patch applicata se invocate <command role="hg-ext-mq">qpop</command>.</para>
+
+    </sect2>
+    <sect2 id="sec:mqref:cmd:qpush">
+      <title><command role="hg-ext-mq">qpush</command>&emdash;inserisce le patch in cima alla pila</title>
+
+      <para id="x_60f">Il comando <command role="hg-ext-mq">qpush</command> aggiunge le patch in cima alla pila delle patch applicate. Per default, aggiunge solo una patch.</para>
+
+      <para id="x_610">Questo comando crea un nuovo changeset per rappresentare ogni patch applicata e aggiorna la directory di lavoro per applicare gli effetti delle patch.</para>
+
+      <para id="x_611">I dati predefiniti usati per creare un changeset sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_612">La data e il fuso orario del commit sono la data e il fuso orario corrente. Dato che questi dati vengono usati per computare l&rsquo;identità di un changeset, questo significa che se invocate <command role="hg-ext-mq">qpop</command> su una patch e poi invocate <command role="hg-ext-mq">qpush</command> sulla stessa patch, il changeset che inserite avrà un&rsquo;identità diversa dal changeset che avete estratto.</para>
+	</listitem>
+	<listitem><para id="x_613">L&rsquo;autore è quello predefinito usato dal comando <command role="hg-cmd">hg commit</command>.</para>
+	</listitem>
+	<listitem><para id="x_614">Il messaggio di commit è il testo proveniente dal file di patch che precede la prima intestazione del diff. Se questo testo non è presente, viene usato un messaggio di commit predefinito che identifica il nome della patch.</para>
+	</listitem>
+      </itemizedlist>
+      <para id="x_615">Se una patch contiene un&rsquo;intestazione di patch Mercurial, i dati nell&rsquo;intestazione di patch sostituiscono quelli predefiniti.</para>
+
+      <para id="x_616">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_617"><option role="hg-ext-mq-cmd-qpush-opt">-a</option>: inserisce tutte le patch non applicate contenute nel file <filename role="special">series</filename> fino a quando non ne rimane nessuna da inserire.</para>
+	</listitem>
+	<listitem><para id="x_618"><option role="hg-ext-mq-cmd-qpush-opt">-l</option>: aggiunge il nome della patch alla fine del messaggio di commit.</para>
+	</listitem>
+	<listitem><para id="x_619"><option role="hg-ext-mq-cmd-qpush-opt">-m</option>: se l&rsquo;applicazione di una patch fallisce, usa la voce relativa alla patch contenuta in un&rsquo;altra coda salvata per computare i parametri di un&rsquo;unione a tre vie, effettuando poi l&rsquo;unione a tre vie attraverso il normale meccanismo di unione di Mercurial. Usa il risultato dell&rsquo;unione come nuovo contenuto della patch.</para>
+	</listitem>
+	<listitem><para id="x_61a"><option role="hg-ext-mq-cmd-qpush-opt">-n</option>: usa la coda nominata se effettua un&rsquo;unione durante l&rsquo;inserimento.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_61b">Il comando <command role="hg-ext-mq">qpush</command> legge, ma non modifica, il file <filename role="special">series</filename>. Aggiunge una riga alla fine del file <filename role="special">status</filename> per ogni patch inserita.</para>
+
+    </sect2>
+    <sect2>
+      <title><command
+	  role="hg-ext-mq">qrefresh</command>&emdash;aggiorna l&rsquo;ultima patch applicata</title>
+
+      <para id="x_61c">Il comando <command role="hg-ext-mq">qrefresh</command> aggiorna l&rsquo;ultima patch applicata. Modifica la patch, rimuove il vecchio changeset che rappresentava la patch e crea un nuovo changeset per rappresentare la patch modificata.</para>
+
+      <para id="x_61d">Il comando <command role="hg-ext-mq">qrefresh</command> si occupa delle seguenti modifiche.</para>
+      <itemizedlist>
+	<listitem><para id="x_61e">I cambiamenti al messaggio di commit, cioè al testo che precede la prima intestazione di diff nel file di patch, vengono riflessi nel nuovo changeset che rappresenta la patch.</para>
+	</listitem>
+	<listitem><para id="x_61f">Le modifiche ai file registrati nella directory di lavoro vengono aggiunte alla patch.</para>
+	</listitem>
+	<listitem><para id="x_620">Per quanto riguarda le modifiche ai file registrati apportate tramite <command role="hg-cmd">hg add</command>, <command role="hg-cmd">hg copy</command>, <command role="hg-cmd">hg remove</command>, o <command role="hg-cmd">hg rename</command>, i file aggiunti e i file destinazione di copie e cambiamenti di nome vengono aggiunti alla patch, mentre i file rimossi e i file sorgente dei cambiamenti di nome vengono rimossi.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_621">Anche se <command role="hg-ext-mq">qrefresh</command> non trova alcun cambiamento, ricrea comunque il changeset che rappresenta la patch. Questo produce una differenza tra l&rsquo;identità del nuovo changeset e quella del precedente changeset che identificava la patch.</para>
+
+      <para id="x_622">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_623"><option role="hg-ext-mq-cmd-qrefresh-opt">-e</option>: modifica il messaggio di commit e la descrizione della patch, usando l&rsquo;editor di testo preferito.</para>
+	</listitem>
+	<listitem><para id="x_624"><option role="hg-ext-mq-cmd-qrefresh-opt">-m</option>: modifica il messaggio di commit e la descrizione della patch, usando il testo dato.</para>
+	</listitem>
+	<listitem><para id="x_625"><option role="hg-ext-mq-cmd-qrefresh-opt">-l</option>: modifica il messaggio di commit e la descrizione della patch, usando il testo contenuto nel file dato.</para>
+	</listitem>
+      </itemizedlist>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qrename</command>&emdash;rinomina una patch</title>
+
+      <para id="x_626">Il comando <command role="hg-ext-mq">qrename</command> rinomina una patch e modifica la voce relativa alla patch nel file <filename role="special">series</filename>.</para>
+
+      <para id="x_627">Con un singolo argomento, <command role="hg-ext-mq">qrename</command> rinomina l&rsquo;ultima patch applicata. Con due argomenti, cambia il nome del primo argomento al secondo argomento.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qseries</command>&emdash;stampa l&rsquo;intera serie di patch</title>
+
+      <para id="x_62a">Il comando <command role="hg-ext-mq">qseries</command> stampa l&rsquo;intera serie di patch contenuta nel file <filename role="special">series</filename>. Stampa solo i nomi delle patch, saltando le righe vuote e i commenti. Stampa le patch in ordine dalla prima patch da applicare all&rsquo;ultima.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-ext-mq">qtop</command>&emdash;stampa il nome della patch corrente</title>
+
+      <para id="x_62b">Il comando <command role="hg-ext-mq">qtop</command> stampa il nome della patch attualmente in cima alla pila delle patch applicate.</para>
+
+    </sect2>
+    <sect2>
+      <title><command
+	  role="hg-ext-mq">qunapplied</command>&emdash;stampa le patch non ancora applicate</title>
+
+      <para id="x_62c">Il comando <command role="hg-ext-mq">qunapplied</command> stampa i nomi delle patch non ancora applicate contenute nel file <filename role="special">series</filename>, nell&rsquo;ordine in cui le patch verrebbero inserite.</para>
+
+    </sect2>
+    <sect2>
+      <title><command role="hg-cmd">hg strip</command>&emdash;rimuove una revisione e i suoi discendenti</title>
+
+      <para id="x_62d">Il comando <command role="hg-cmd">hg strip</command> rimuove una revisione e tutti i suoi discendenti dal repository. Annulla gli effetti delle revisioni rimosse dal repository e aggiorna la directory di lavoro al primo genitore della revisione rimossa.</para>
+
+      <para id="x_62e">Il comando <command role="hg-cmd">hg strip</command> salva una copia di backup dei changeset rimossi in un bundle, in modo che possano essere riapplicati se sono stati rimossi per errore.</para>
+
+      <para id="x_62f">Opzioni:</para>
+      <itemizedlist>
+	<listitem><para id="x_630"><option role="hg-opt-strip">-b</option>: salva i changeset non correlati che sono mescolati ai changeset eliminati nel bundle di backup.</para>
+	</listitem>
+	<listitem><para id="x_631"><option role="hg-opt-strip">-f</option>: se un ramo ha più teste, rimuove tutte le teste.</para>
+	</listitem>
+	<listitem><para id="x_632"><option role="hg-opt-strip">-n</option>: evita di salvare il bundle di backup.</para>
+	</listitem></itemizedlist>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Guida di riferimento ai file di MQ</title>
+
+    <sect2>
+      <title>Il file <filename role="special">series</filename></title>
+
+      <para id="x_633">Il file <filename role="special">series</filename> contiene una lista dei nomi di tutte le patch che MQ può applicare. Viene rappresentato come una lista di nomi, con un nome salvato per riga. Lo spazio bianco all&rsquo;inizio e alla fine di ogni riga viene ignorato.</para>
+
+      <para id="x_634">Le righe possono contenere commenti. Un commento comincia con il carattere <quote><literal>#</literal></quote> e si estende fino alla fine della riga. Le righe vuote e le righe che contengono solo commenti vengono ignorate.</para>
+
+      <para id="x_635">Avrete spesso bisogno di modificare il file <filename role="special">series</filename> a mano, da cui il supporto per i commenti e le righe vuote appena descritto. Per esempio, potete commentare temporaneamente una patch in modo che <command role="hg-ext-mq">qpush</command> la salti quando applica le patch. Potete anche cambiare l&rsquo;ordine in cui le patch vengono applicate riordinando le loro voci nel file <filename role="special">series</filename>.</para>
+
+      <para id="x_636">Viene anche supportata la possibilità di mettere il file <filename role="special">series</filename> sotto controllo di revisione. &Egrave; una buona idea mettere sotto controllo di revisione anche tutte le patch a cui il file si riferisce. Se create una directory di patch usando l&rsquo;opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option> del comando <command role="hg-ext-mq">qinit</command>, questo verrà fatto per voi automaticamente.</para>
+
+    </sect2>
+    <sect2>
+      <title>Il file <filename role="special">status</filename></title>
+
+      <para id="x_637">Il flie <filename role="special">status</filename> contiene i nomi e gli hash di changeset per tutte le patch che MQ ha attualmente applicato. A differenza del file <filename role="special">series</filename>, questo file non è destinato a essere modificato. Non dovreste mettere questo file sotto controllo di revisione, né modificarlo in alcun modo. Viene usato da MQ per mantenere traccia di informazioni strettamente private.</para>
+
+    </sect2>
+  </sect1>
+</appendix>

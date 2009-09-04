@@ -1,0 +1,16 @@
+<!-- BEGIN hook.simple.pretxncommit -->
+<screen><prompt>$</prompt> <userinput>cat controlla_bug_id</userinput>
+#!/bin/sh
+# controlla che un messaggio di commit contenga un identificatore numerico di bug
+hg log -r $1 --template {desc} | grep -q "\&lt;bug *[0-9]"
+<prompt>$</prompt> <userinput>echo 'pretxncommit.bug_id_richiesto = ./controlla_bug_id $HG_NODE' &gt;&gt; .hg/hgrc</userinput>
+<prompt>$</prompt> <userinput>echo a &gt;&gt; a</userinput>
+<prompt>$</prompt> <userinput>hg commit -m "Non ho menzionato alcun identificatore di bug."</userinput>
+transazione abortita!
+ripristino completato
+fallimento: l'hook pretxncommit.bug_id_richiesto è terminato con codice di stato 1
+<prompt>$</prompt> <userinput>hg commit -m "Vi rimando al bug 666."</userinput>
+inserito f753cb1e1e77ea944429e1a84d8728e96b41446e
+data di inserimento: Fri Jun  5 15:50:29 GMT 2009
+</screen>
+<!-- END hook.simple.pretxncommit -->

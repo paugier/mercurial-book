@@ -1,0 +1,574 @@
+<chapter id="chap:undo">
+  <?dbhtml filename="trovare-e-correggere-gli-errori.html"?>
+  <title>Trovare e correggere gli errori</title>
+
+  <para id="x_d2">Sbagliare potrebbe essere umano, ma per gestire davvero bene le conseguenze degli errori ci vuole un sistema di controllo di revisione di prima qualità. In questo capitolo, discuteremo alcune tecniche che potete usare quando scoprite che un problema si è insinuato nel vostro progetto. Mercurial è dotato di alcune funzioni particolarmente efficaci che vi aiuteranno a isolare le cause dei problemi e a trattarle in maniera appropriata.</para>
+
+  <sect1>
+    <title>Cancellare la cronologia locale</title>
+
+    <sect2>
+      <title>L&rsquo;inserimento accidentale</title>
+
+      <para id="x_d3">In maniera occasionale ma persistente mi capita di digitare più velocemente di quanto riesca a pensare, cosa che talvolta provoca come conseguenza l&rsquo;inserimento di un changeset incompleto o completamente sbagliato. Nel mio caso, il classico tipo di changeset incompleto è quello in cui ho creato un nuovo file sorgente ma ho dimenticato di usare <command role="hg-cmd">hg add</command> per aggiungerlo al repository. Un changeset <quote>completamente sbagliato</quote> non è così comune, ma non è meno fastidioso.</para>
+
+    </sect2>
+    <sect2 id="sec:undo:rollback">
+      <title>Abortire una transazione</title>
+
+      <para id="x_d4">Nella <xref linkend="sec:concepts:txn"/>, ho menzionato che Mercurial tratta ogni modifica del repository come una <emphasis>transazione</emphasis>. Ogni volta che inserite un changeset o estraete i cambiamenti da un altro repository, Mercurial ricorda cosa avete fatto. Potete annullare, o <emphasis>abortire</emphasis>, esattamente una di queste azioni usando il comando <command role="hg-cmd">hg rollback</command>. (Leggete la <xref linkend="sec:undo:rollback-after-push"/> per un importante avvertimento su come usare questo comando.)</para>
+
+      <para id="x_d5">Ecco un errore che mi ritrovo spesso a commettere: inserire un changeset in cui ho creato un nuovo file dimenticandomi di aggiungerlo tramite <command role="hg-cmd">hg add</command>.</para>
+
+      &interaction.rollback.commit;
+
+      <para id="x_d6">Un&rsquo;occhiata al risultato di <command role="hg-cmd">hg status</command> dopo l&rsquo;inserimento conferma immediatamente l&rsquo;errore.</para>
+
+      &interaction.rollback.status;
+
+      <para id="x_d7">Il commit ha catturato le modifiche al file <filename>a</filename>, ma non il nuovo file <filename>b</filename>. &Egrave; molto probabile che qualcosa in <filename>a</filename> si riferisca a <filename>b</filename>, ma se trasmettessi questo changeset a un repository condiviso, i collaboratori che estrarranno i miei cambiamenti non troverebbero <filename>b</filename> nei loro repository. Di conseguenza, diventerei oggetto di una certa indignazione.</para>
+
+      <para id="x_d8">Tuttavia, la fortuna è dalla mia parte&emdash;mi sono accorto dell&rsquo;errore prima di trasmettere il changeset. Ora uso il comando <command role="hg-cmd">hg rollback</command> e Mercurial farà sparire quell&rsquo;ultimo changeset.</para>
+
+      &interaction.rollback.rollback;
+
+      <para id="x_d9">Notate che il changeset non è più presente nella cronologia del repository e che la directory di lavoro pensa ancora che il file <filename>a</filename> sia stato modificato. Il commit e la sua cancellazione hanno lasciato la directory di lavoro esattamente nello stato in cui si trovava prima dell&rsquo;inserimento: il changeset è stato completamente rimosso. Ora posso tranquillamente usare <command role="hg-cmd">hg add</command> per aggiungere il file <filename>b</filename> e rieseguire il commit.</para>
+
+      &interaction.rollback.add;
+
+    </sect2>
+    <sect2>
+      <title>L&rsquo;estrazione sbagliata</title>
+
+      <para id="x_da">&Egrave; pratica comune usare Mercurial mantenendo in repository differenti i rami di sviluppo separati di un progetto. Il vostro gruppo di sviluppo potrebbe avere un repository condiviso per la release <quote>0.9</quote> del vostro progetto e un altro, contenente cambiamenti differenti, per la release <quote>1.0</quote>.</para>
+
+      <para id="x_db">In questa situazione, potete immaginare che pasticcio accadrebbe se aveste un repository <quote>0.9</quote> locale e vi propagaste accidentalmente i cambiamenti dal repository <quote>1.0</quote> condiviso. Nel caso peggiore, potreste non fare abbastanza attenzione e trasmettere quei cambiamenti nell&rsquo;albero <quote>0.9</quote> condiviso, disorientando tutti gli altri sviluppatori (ma non preoccupatevi, ritorneremo a questo orribile scenario più avanti). Tuttavia, è più probabile che notiate immediatamente l&rsquo;errore, perché Mercurial vi mostrerà l&rsquo;URL da cui sta estraendo i cambiamenti, o perché vedrete Mercurial propagare un numero sospettosamente alto di cambiamenti nel repository.</para>
+
+      <para id="x_dc">Il comando <command role="hg-cmd">hg rollback</command> cancellerà scrupolosamente tutti i changeset che avete appena estratto. Mercurial raggruppa tutti i cambiamenti provenienti da un&rsquo;invocazione di <command role="hg-cmd">hg pull</command> in una singola transazione, quindi un&rsquo;unica invocazione di <command role="hg-cmd">hg rollback</command> è tutto quello che vi serve per annullare questo errore.</para>
+
+    </sect2>
+    <sect2 id="sec:undo:rollback-after-push">
+      <title>Abortire una transazione è inutile se avete già trasmesso le modifiche</title>
+
+      <para id="x_dd">Il valore di <command role="hg-cmd">hg rollback</command> scende a zero una volta che avete trasmesso le vostre modifiche a un altro repository. Abortire un cambiamento lo fa scomparire interamente, ma <emphasis>solo</emphasis> nel repository in cui invocate <command role="hg-cmd">hg rollback</command>. Dato che una cancellazione elimina parte della cronologia, non è possibile che la scomparsa di un cambiamento si propaghi tra i repository.</para>
+
+      <para id="x_de">Se avete trasmesso un cambiamento a un altro repository&emdash;in particolare se è un repository condiviso&emdash;le modifiche sono essenzialmente <quote>scappate dal recinto</quote> e dovrete rimediare all&rsquo;errore in un altro modo. Se trasmettete un changeset da qualche parte, lo abortite e poi estraete i cambiamenti dal repository verso cui avete effettuato la trasmissione, il changeset di cui credevate di esservi sbarazzati riapparirà semplicemente nel vostro repository.</para>
+
+      <para id="x_df">Se siete assolutamente sicuri che il cambiamento che volete abortire è quello più recente contenuto nel repository a cui lo avete trasmesso <emphasis>e</emphasis> sapete che nessun altro può averlo estratto da quel repository, potete ritirare il changeset anche là, ma non dovreste aspettarvi che questo funzioni in maniera affidabile. Presto o tardi un cambiamento finirà in un repository su cui non avete un controllo diretto (o vi siete dimenticati di averlo) e vi si ritorcerà contro.</para>
+
+    </sect2>
+    <sect2>
+      <title>Potete abortire una sola transazione</title>
+
+      <para id="x_e0">Mercurial memorizza esattamente una transazione nel suo registro delle transazioni: quella più recente avvenuta nel repository. Questo significa che potete abortire solo una transazione. Se vi aspettate di poter abortire una transazione e poi quella che la precede, questo non è il comportamento che otterrete.</para>
+
+      &interaction.rollback.twice;
+
+      <para id="x_e1">Una volta che avete abortito una transazione in un repository, non potete effettuare un&rsquo;altra volta questa operazione in quel repository fino a quando non avete eseguito un nuovo inserimento o una nuova estrazione.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Rimediare alle modifiche sbagliate</title>
+
+    <para id="x_e2">Se fate un cambiamento a un file e poi decidete che in realtà non volevate affatto modificare il file, ma non avete ancora inserito i vostri cambiamenti nel repository, il comando che vi serve è <command role="hg-cmd">hg revert</command>. Questo comando esamina il changeset genitore della directory di lavoro e ripristina il contenuto del file allo stato in cui era in quel changeset. (Questo è un modo prolisso per dire che, nel caso normale, annulla le vostre modifiche.)</para>
+
+    <para id="x_e3">Vediamo come funziona il comando <command role="hg-cmd">hg revert</command>, ancora con un altro piccolo esempio. Cominceremo modificando un file che Mercurial ha già registrato.</para>
+
+    &interaction.daily.revert.modify;
+
+    <para id="x_e4">Se non vogliamo quella modifica, possiamo semplicemente usare <command role="hg-cmd">hg revert</command> sul file.</para>
+
+    &interaction.daily.revert.unmodify;
+
+    <para id="x_e5">Il comando <command role="hg-cmd">hg revert</command> ci fornisce un ulteriore grado di protezione salvando il nostro file modificato con un&rsquo;estensione <filename>.orig</filename>.</para>
+
+    &interaction.daily.revert.status;
+
+    <tip>
+      <title>Fate attenzione ai file <filename>.orig</filename></title>
+
+      <para id="x_6b8">&Egrave; estremamente improbabile che stiate usando Mercurial per gestire file con estensione <filename>.orig</filename> o persino che siate interessati al contenuto di quei file. Nel caso, comunque, è utile ricordare che <command role="hg-cmd">hg revert</command> sovrascriverà incondizionatamente un file con estensione <filename>.orig</filename> esistente. Per esempio, se avete già un file <filename>foo.orig</filename> quando ritornate alla versione precedente del file <filename>foo</filename>, il contenuto di <filename>foo.orig</filename> verrà cestinato.</para>
+    </tip>
+
+    <para id="x_e6">Ecco un riepilogo dei casi che il comando <command role="hg-cmd">hg revert</command> è in grado di gestire. Li descriveremo in dettaglio nella prossima sezione.</para>
+    <itemizedlist>
+      <listitem><para id="x_e7">Se modificate un file, il comando lo ripristinerà al suo stato non modificato.</para>
+      </listitem>
+      <listitem><para id="x_e8">Se usate <command role="hg-cmd">hg add</command> su un file, <command role="hg-cmd">hg revert</command> annullerà lo stato di <quote>aggiunto</quote> del file ma lascerà intatti i contenuti del file.</para>
+      </listitem>
+      <listitem><para id="x_e9">Se cancellate un file senza dirlo a Mercurial, il comando ripristinerà i contenuti del file.</para>
+      </listitem>
+      <listitem><para id="x_ea">Se usate il comando <command role="hg-cmd">hg remove</command> per cancellare un file, <command role="hg-cmd">hg revert</command> annullerà lo stato di <quote>rimosso</quote> del file e ne ripristinerà i contenuti.</para>
+      </listitem></itemizedlist>
+
+    <sect2 id="sec:undo:mgmt">
+      <title>Errori nella gestione dei file</title>
+
+      <para id="x_eb">Il comando <command role="hg-cmd">hg revert</command> non è utile solo per i file modificati, ma vi permette di invertire i risultati di tutti i comandi Mercurial di gestione dei file come <command role="hg-cmd">hg add</command>, <command role="hg-cmd">hg remove</command>, e così via.</para>
+
+      <para id="x_ec">Se usate <command role="hg-cmd">hg add</command> su un file, poi decidete che in effetti non volete che Mercurial ne tenga traccia, potete usare <command role="hg-cmd">hg revert</command> per annullare l&rsquo;operazione di aggiunta. Non preoccupatevi, Mercurial non modificherà il file in alcun modo, ma si limiterà a eliminare il <quote>contrassegno</quote> per quel file.</para>
+
+      &interaction.daily.revert.add;
+
+      <para id="x_ed">Similmente, se chiedete a Mercurial di rimuovere un file tramite <command role="hg-cmd">hg remove</command>, potete usare <command role="hg-cmd">hg revert</command> per ripristinarne i contenuti allo stato in cui erano nel genitore della directory di lavoro.</para>
+      
+      &interaction.daily.revert.remove;
+      
+      <para id="x_ef">Questo funziona altrettanto bene con un file che avete cancellato a mano senza dirlo a Mercurial (ricordatevi che, nella terminologia di Mercurial, questo file viene detto <quote>mancante</quote>).</para>
+
+      &interaction.daily.revert.missing;
+
+      <para id="x_ee">Se invertite l&rsquo;azione del comando <command role="hg-cmd">hg copy</command>, il file copiato rimane nella vostra directory di lavoro senza che Mercurial ne tenga traccia. Dato che l&rsquo;operazione di copia non ha effetti sul file originale, Mercurial non agisce in alcun modo su quel file.</para>
+
+      &interaction.daily.revert.copy;
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Gestire i cambiamenti inseriti</title>
+
+    <para id="x_f5">Considerate il caso in cui avete inserito un cambiamento <emphasis>a</emphasis> e subito dopo un altro cambiamento <emphasis>b</emphasis> basato sul precedente, poi realizzate che il cambiamento <emphasis>a</emphasis> era sbagliato. Mercurial vi consente di <quote>ritirare</quote> sia un intero changeset automaticamente, sia certi <quote>mattoni da costruzione</quote> che vi permettono di invertire a mano parte di un changeset.</para>
+
+    <para id="x_f6">Prima di leggere questa sezione, c&rsquo;è una cosa che dovete tenere a mente: il comando <command role="hg-cmd">hg backout</command> annulla gli effetti di un cambiamento effettuando un&rsquo;<emphasis>aggiunta</emphasis> alla cronologia del vostro repository invece di modificarla o di eliminarne una parte. &Egrave; lo strumento giusto da usare se state correggendo un bug, ma non se state cercando di annullare qualche cambiamento che potrebbe avere conseguenze catastrofiche. Per trattare con questi ultimi, leggete la <xref linkend="sec:undo:aaaiiieee"/>.</para>
+
+    <sect2>
+      <title>Ritirare un changeset</title>
+
+      <para id="x_f7">Il comando <command role="hg-cmd">hg backout</command> vi consente di <quote>annullare</quote> gli effetti di un intero changeset in modo automatico. Dato che la cronologia di Mercurial è immutabile, questo comando <emphasis>non</emphasis> si sbarazza del changeset che volete annullare, ma crea un nuovo changeset che <emphasis>inverte</emphasis> l&rsquo;effetto del changeset da annullare.</para>
+
+      <para id="x_f8">Le operazioni del comando <command role="hg-cmd">hg backout</command> sono un po&rsquo; intricate, quindi le illustreremo con alcuni esempi. Per prima cosa, creiamo un repository con alcuni semplici cambiamenti.</para>
+
+      &interaction.backout.init;
+
+      <para id="x_f9">Il comando <command role="hg-cmd">hg backout</command> prende come argomento un singolo identificatore di changeset che indica il changeset da annullare. Normalmente, <command role="hg-cmd">hg backout</command> vi presenterà un editor di testo per farvi scrivere un messaggio di commit, in modo che possiate registrare il motivo per cui state ritirando il cambiamento. In questo esempio, forniremo un messaggio di commit sulla riga di comando usando l&rsquo;opzione <option role="hg-opt-backout">-m</option>.</para>
+
+    </sect2>
+    <sect2>
+      <title>Ritirare il changeset di punta </title>
+
+      <para id="x_fa">Cominceremo ritirando l&rsquo;ultimo changeset che abbiamo inserito.</para>
+
+      &interaction.backout.simple;
+
+      <para id="x_fb">Potete vedere che la seconda riga di <filename>miofile</filename> non è più presente. Un&rsquo;occhiata all&rsquo;elenco generato da <command role="hg-cmd">hg log</command> ci dà un&rsquo;idea di quello che il comando <command role="hg-cmd">hg backout</command> ha fatto.</para>
+      
+      &interaction.backout.simple.log;
+      
+      <para id="x_fc">Notate che il nuovo changeset creato da <command role="hg-cmd">hg backout</command> è un figlio del changeset che abbiamo ritirato. Questo è più facile da vedere nella <xref linkend="fig:undo:backout"/>, che mostra una rappresentazione grafica della cronologia dei cambiamenti. Come potete vedere, la cronologia è gradevolmente lineare.</para>
+
+      <figure id="fig:undo:backout">
+	<title>Ritirare un cambiamento tramite il comando <command role="hg-cmd">hg backout</command></title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/undo-simple.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+    </sect2>
+    <sect2>
+      <title>Ritirare un changeset diverso dalla punta</title>
+
+      <para id="x_fd">Se volete ritirare un cambiamento diverso dall&rsquo;ultimo che avete inserito, passate l&rsquo;opzione <option role="hg-opt-backout">--merge</option> al comando <command role="hg-cmd">hg backout</command>.</para>
+
+      &interaction.backout.non-tip.clone;
+
+      <para id="x_fe">Questo rende il ritiro di qualsiasi changeset una <quote>singola</quote> operazione che di solito è semplice e veloce.</para>
+
+      &interaction.backout.non-tip.backout;
+
+      <para id="x_ff">Se date un&rsquo;occhiata al contenuto di <filename>miofile</filename> dopo che l&rsquo;operazione di ritiro si è conclusa, vedrete che il primo e il terzo cambiamento sono presenti, ma non il secondo.</para>
+
+      &interaction.backout.non-tip.cat;
+
+      <para id="x_100">Come illustrato nella rappresentazione grafica della cronologia nella <xref linkend="fig:undo:backout-non-tip"/>, Mercurial inserisce ancora un cambiamento in questo tipo di situazione (il nodo rettangolare è quello che Mercurial inserisce automaticamente) ma il grafo delle revisioni ora è diverso. Prima di cominciare il processo di ritiro, Mercurial mantiene in memoria l&rsquo;identità del genitore corrente della directory di lavoro. Poi ritira il changeset indicato e inserisce quel genitore come un changeset. Infine, incorpora il genitore precedente della directory di lavoro, ma notate che <emphasis>non esegue il commit</emphasis> dei risultati dell&rsquo;unione. Il repository ora contiene due teste e la directory di lavoro contiene i risultati di un&rsquo;unione.</para>
+
+      <figure id="fig:undo:backout-non-tip">
+	<title>Ritiro automatico di un changeset diverso dalla punta tramite il comando <command role="hg-cmd">hg backout</command></title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/undo-non-tip.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_103">Il risultato è che siete tornati <quote>indietro a dove eravate</quote>, ma con una parte aggiuntiva di cronologia che annulla gli effetti del changeset che volevate ritirare.</para>
+
+      <para id="x_6b9">Potreste chiedervi perché Mercurial non effettua il commit dei risultati dell&rsquo;unione che ha eseguito. Il motivo è che Mercurial si comporta in maniera conservativa: di solito un&rsquo;unione ha maggiori probabilità di contenere errori rispetto all&rsquo;annullamento degli effetti del changeset di punta, quindi il vostro lavoro si troverà più al sicuro se prima ispezionate (e verificate!) i risultati dell&rsquo;unione e solo <emphasis>poi</emphasis> li inserite nel repository.</para>
+
+      <sect3>
+	<title>Usate sempre l&rsquo;opzione <option role="hg-opt-backout">--merge</option></title>
+
+	<para id="x_104">In effetti, dato che l&rsquo;opzione <option role="hg-opt-backout">--merge</option> farà la <quote>cosa giusta</quote> a prescindere dal fatto che il changeset sia quello di punta o meno (cioè non cercherà di eseguire un&rsquo;unione se state ritirando la punta, dato che non ce n&rsquo;è bisogno), dovreste usare <emphasis>sempre</emphasis> questa opzione quando invocate il comando <command role="hg-cmd">hg backout</command>.</para>
+
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>Controllare meglio il processo di ritiro</title>
+
+      <para id="x_105">Sebbene vi abbia raccomandato di usare sempre l&rsquo;opzione <option role="hg-opt-backout">--merge</option> quando ritirate un cambiamento, il comando <command role="hg-cmd">hg backout</command> vi permette di decidere come incorporare un changeset ritirato. Avrete raramente bisogno di controllare il processo di ritiro a mano, ma potrebbe essere utile capire quello che il comando <command role="hg-cmd">hg backout</command> fa per voi automaticamente. Per illustrare queste operazioni, cloniamo il nostro primo repository, ma omettiamo il cambiamento ritirato che contiene.</para>
+
+      &interaction.backout.manual.clone;
+
+      <para id="x_106">Come nel nostro esempio precedente, inseriremo un terzo changeset, poi ritireremo il suo genitore e vedremo cosa succede.</para>
+
+      &interaction.backout.manual.backout;
+
+      <para id="x_107">Il nostro nuovo changeset è ancora un discendente del changeset che abbiamo ritirato e quindi è una nuova testa, <emphasis>non</emphasis> un discendente di quello che era il changeset di punta. Il comando <command role="hg-cmd">hg backout</command> è stato piuttosto esplicito nel farcelo notare.</para>
+
+      &interaction.backout.manual.log;
+
+      <para id="x_108">Ancora una volta, è facile vedere quello che è successo osservando il grafo della cronologia delle revisioni nella <xref linkend="fig:undo:backout-manual"/>. Questo grafo chiarifica che quando usiamo <command role="hg-cmd">hg backout</command> per ritirare un cambiamento diverso dalla punta, Mercurial aggiunge una nuova testa al repository (il cambiamento inserito ha la forma di un rettangolo).</para>
+
+      <figure id="fig:undo:backout-manual">
+	<title>Ritirare un cambiamento tramite il comando <command role="hg-cmd">hg backout</command></title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/undo-manual.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_10a">Dopo che il comando <command role="hg-cmd">hg backout</command> ha terminato, lascia il nuovo changeset <quote>ritirato</quote> come genitore della directory di lavoro.</para>
+
+      &interaction.backout.manual.parents;
+
+      <para id="x_10b">Ora abbiamo due insiemi isolati di cambiamenti.</para>
+
+      &interaction.backout.manual.heads;
+
+      <!--
+      <para id="x_10c">Pensiamo a quello che ora ci aspettiamo di vedere come contenuto di <filename>miofile</filename>. Il primo cambiamento dovrebbe essere presente, perché non lo abbiamo mai ritirato. Il secondo cambiamento non dovrebbe esserci, dato che quello è il cambiamento che abbiamo ritirato. Visto che il grafo della cronologia mostra il terzo cambiamento come una testa separata, <emphasis>non</emphasis> ci aspettiamo di vedere il terzo cambiamento nel contenuto di <filename>miofile</filename>.</para>
+      -->
+      <para id="x_10c">Come mostrato dal grafo della cronologia, il ritiro del secondo cambiamento è stato introdotto come una testa separata, perciò il contenuto della nostra directory di lavoro non è cambiato rispetto al changeset che ha apportato il terzo cambiamento. Questa situazione viene confermata dal contenuto di <filename>miofile</filename>, che presenta tutte e tre le modifiche effettuate.</para>
+
+      &interaction.backout.manual.cat;
+
+      <!--
+      <para id="x_10d">Per riottenere il terzo cambiamento nel file, eseguiamo semplicemente una normale unione tra le nostre due teste.</para>
+      -->
+      <para id="x_10d">Per ottenere solamente il primo e il terzo cambiamento nel file, ci basta eseguire una normale unione tra le nostre due teste.</para>
+
+      &interaction.backout.manual.merge;
+
+      <para id="x_10e">Successivamente, la cronologia del nostro repository può essere rappresentata graficamente come nella <xref linkend="fig:undo:backout-manual-merge"/>.</para>
+
+      <figure id="fig:undo:backout-manual-merge">
+	<title>Incorporare manualmente un cambiamento ritirato</title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/undo-manual-merge.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+    </sect2>
+    <sect2>
+      <title>Perché <command role="hg-cmd">hg backout</command> funziona in questo modo</title>
+
+      <para id="x_110">Ecco una breve descrizione del funzionamento del comando <command role="hg-cmd">hg backout</command>.</para>
+      <orderedlist>
+	<listitem><para id="x_111">Si assicura che la directory di lavoro sia <quote>pulita</quote>, cioè che l&rsquo;elenco generato da <command role="hg-cmd">hg status</command> sia vuoto.</para>
+	</listitem>
+	<listitem><para id="x_112">Memorizza il genitore corrente della directory di lavoro. Chiamiamo <literal>orig</literal> questo changeset.</para>
+	</listitem>
+	<listitem><para id="x_113">Esegue l&rsquo;equivalente di un&rsquo;invocazione di <command role="hg-cmd">hg update</command> per sincronizzare la directory di lavoro con il changeset che volete ritirare. Chiamiamo <literal>backout</literal> questo changeset.</para>
+	</listitem>
+	<listitem><para id="x_114">Trova il genitore di quel changeset. Chiamiamo <literal>parent</literal> questo changeset.</para>
+	</listitem>
+	<listitem><para id="x_115">Per ogni file su cui il changeset <literal>backout</literal> ha avuto effetto, esegue l&rsquo;equivalente del comando <command role="hg-cmd">hg revert -r parent</command> sul file per ripristinare il contenuto che aveva prima che quel changeset venisse inserito.</para>
+	</listitem>
+	<listitem><para id="x_116">Esegue il commit del risultato come un nuovo changeset che ha <literal>backout</literal> come genitore.</para>
+	</listitem>
+	<listitem><para id="x_117">Se specificate l&rsquo;opzione <option role="hg-opt-backout">--merge</option> sulla riga di comando, esegue un&rsquo;unione con <literal>orig</literal> ma non inserisce i risultati dell&rsquo;unione nel repository.</para>
+	</listitem></orderedlist>
+
+      <para id="x_118">In alternativa, sarebbe possibile implementare <command role="hg-cmd">hg backout</command> utilizzando <command role="hg-cmd">hg export</command> per esportare il changeset da ritirare sotto forma di diff e poi impiegando l&rsquo;opzione <option role="cmd-opt-patch">--reverse</option> del comando <command>patch</command> per invertire l&rsquo;effetto del cambiamento senza gingillarsi con la directory di lavoro. Questo procedimento sembra molto più semplice, ma non funzionerebbe affatto altrettanto bene.</para>
+
+      <para id="x_119">Il comando <command role="hg-cmd">hg backout</command> esegue un aggiornamento, un inserimento, un&rsquo;unione e un altro inserimento per dare al meccanismo di unione la possibilità di fare il miglior lavoro possibile nel gestire tutte le modifiche avvenute <emphasis>tra</emphasis> il cambiamento che state ritirando e la revisione di punta corrente.</para>
+
+      <para id="x_11a">Se state ritirando un cambiamento che si trova 100 revisioni indietro nella cronologia del vostro progetto, le probabilità che il comando <command>patch</command> sia in grado di applicare un diff invertito in maniera pulita non sono molto alte, perché i cambiamenti intercorsi avranno probabilmente <quote>rovinato il contesto</quote> utilizzato da <command>patch</command> per determinare se può applicare una patch (se questo vi sembra incomprensibile, leggete la <xref linkend="sec:mq:patch"/> per una discussione sul comando <command>patch</command>). In più, il meccanismo di unione di Mercurial riesce a gestire i cambiamenti di nome e di permessi per file e directory e le modifiche ai file binari, mentre <command>patch</command> non è in grado di farlo.</para>
+
+    </sect2>
+  </sect1>
+  <sect1 id="sec:undo:aaaiiieee">
+    <title>Modifiche che non avrebbero mai dovuto essere fatte</title>
+
+    <para id="x_11b">Quasi sempre, il comando <command role="hg-cmd">hg backout</command> è esattamente quello che vi serve se volete annullare gli effetti di un cambiamento. Il comando lascia una registrazione permanente di quello che avete fatto, sia quando avete inserito il changeset originale che quando avete successivamente rimesso in ordine.</para>
+
+    <para id="x_11c">In rare occasioni, comunque, potreste scoprire di aver inserito un cambiamento che non dovrebbe essere presente nel repository proprio per niente. Per esempio, sarebbe molto inusuale, e di solito considerato un errore, inserire in un repository i file oggetto di un progetto software insieme ai suoi file sorgente. I file oggetto non hanno praticamente alcun valore intrinseco e sono <emphasis>grandi</emphasis>, quindi aumentano la dimensione del repository e il tempo necessario a clonarlo o a estrarne i cambiamenti.</para>
+
+    <para id="x_11d">Prima di illustrare le opzioni a vostra disposizione se eseguite il commit di un cambiamento <quote>da sacchetto di carta marrone</quote> (quel tipo di modifiche talmente infelici che vorreste nascondere la testa in un sacchetto di carta marrone), lasciatemi discutere alcuni approcci che probabilmente non funzioneranno.</para>
+
+    <para id="x_11e">Dato che Mercurial tratta la cronologia in maniera cumulativa&emdash;ogni cambiamento si basa su tutti i cambiamenti che lo precedono&emdash;in genere non è possibile far semplicemente sparire i cambiamenti disastrosi. L&rsquo;unica eccezione capita quando avete appena inserito una modifica che non è ancora stata propagata verso qualche altro repository. In questo caso, potete tranquillamente usare il comando <command role="hg-cmd">hg rollback</command>, come descritto nella <xref linkend="sec:undo:rollback"/>.</para>
+
+    <para id="x_11f">Dopo che avete trasmesso un cambiamento sbagliato a un altro repository, <emphasis>potreste</emphasis> ancora usare <command role="hg-cmd">hg rollback</command> per far scomparire la vostra copia locale del cambiamento, ma questa azione non avrà le conseguenze che volete. Il cambiamento sarà ancora presente nel repository remoto, quindi riapparirà nel vostro repository locale la prossima volta che effettuerete un&rsquo;estrazione.</para>
+
+    <para id="x_120">Se vi trovate in una situazione come questa e sapete quali sono i repository verso cui si è propagato il vostro cambiamento sbagliato, potete <emphasis>provare</emphasis> a sbarazzarvi del cambiamento in <emphasis>ognuno</emphasis> di quei repository. Questa, naturalmente, non è una soluzione soddisfacente: se tralasciate anche un singolo repository quando state ripulendo, il cambiamento sarà ancora <quote>là fuori</quote> e potrebbe propagarsi ulteriormente.</para>
+
+    <para id="x_121">Se avete inserito uno o più cambiamenti <emphasis>dopo</emphasis> il cambiamento che vorreste veder sparire, le vostre opzioni si riducono ulteriormente. Mercurial non offre alcun modo per <quote>fare un buco</quote> nella cronologia lasciando gli altri changeset intatti.</para>
+
+    <sect2>
+      <title>Ritirare un&rsquo;unione</title>
+
+      <para id="x_6ba">Dato che le unioni sono spesso complicate, si sono sentiti casi di unioni gravemente rovinate, ma i cui risultati sono stati erroneamente inseriti in un repository. Mercurial fornisce un&rsquo;importante protezione contro le unioni sbagliate rifiutandosi di eseguire il commit di file irrisolti, ma l&rsquo;ingenuità umana garantisce che sia ancora possibile mettere sottosopra un&rsquo;unione e registrarne i risultati.</para>
+
+      <para id="x_6bb">Di solito, il modo migliore per affrontare la registrazione di un&rsquo;unione sbagliata è semplicemente quello di provare a riparare il danno a mano. Un completo disastro che non possa venire corretto a mano dovrebbe essere molto raro, ma il comando <command role="hg-cmd">hg backout</command> può aiutare a rendere la pulizia più semplice attraverso l&rsquo;opzione <option role="hg-opt-backout">--parent</option>, che vi consente di specificare a quale genitore tornare quando state ritirando un&rsquo;unione.</para>
+
+      <figure id="fig:undo:bad-merge-1">
+	<title>Un&rsquo;unione sbagliata</title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/bad-merge-1.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_6bc">Supponete di avere un grafo delle revisioni simile a quello della <xref linkend="fig:undo:bad-merge-1"/>. Ci piacerebbe <emphasis>rifare</emphasis> l&rsquo;unione tra le revisioni 2 e 3.</para>
+
+      <para id="x_6bd">Potremmo eseguire questa operazione nel modo seguente.</para>
+
+      <orderedlist>
+	<listitem>
+	  <para id="x_6be">Invocare <command role="hg-cmd">hg backout --rev=4 --parent=2</command>. Questo dice al comando <command role="hg-cmd">hg backout</command> di ritirare la revisione 4, che è l&rsquo;unione sbagliata, e di scegliere il genitore 2, uno dei genitori dell&rsquo;unione, al momento di decidere quale revisione preferire. L&rsquo;effetto del comando può essere visto nella <xref linkend="fig:undo:bad-merge-2"/>.</para>
+	  <figure id="fig:undo:bad-merge-2">
+	    <title>Ritirare l&rsquo;unione favorendo un genitore</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-2.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+
+	<listitem>
+	  <para id="x_6bf">Invocare <command role="hg-cmd">hg backout --rev=4 --parent=3</command>. Questo dice al comando <command role="hg-cmd">hg backout</command> di ritirare ancora la revisione 4, ma questa volta scegliendo il genitore 3, l&rsquo;altro genitore dell&rsquo;unione. Il risultato è visibile nella <xref linkend="fig:undo:bad-merge-3"/>, in cui il repository ora contiene tre teste.</para>
+	  <figure id="fig:undo:bad-merge-3">
+	    <title>Ritirare l&rsquo;unione favorendo l&rsquo;altro genitore</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-3.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+
+	<listitem>
+	  <para id="x_6c0">Rifare l&rsquo;unione sbagliata unendo le due teste generate dai ritiri, riducendo quindi a due il numero di teste nel repository, come si può vedere nella <xref linkend="fig:undo:bad-merge-4"/>.</para>
+	  <figure id="fig:undo:bad-merge-4">
+	    <title>Unire i risultati dei ritiri</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-4.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+
+	<listitem>
+	  <para id="x_6c1">Eseguire un&rsquo;unione con il commit che è stato eseguito dopo l&rsquo;unione sbagliata, come mostrato nella <xref linkend="fig:undo:bad-merge-5"/>.</para>
+	  <figure id="fig:undo:bad-merge-5">
+	    <title>Unire i risultati dei ritiri</title>
+	    <mediaobject>
+	      <imageobject><imagedata fileref="figs/bad-merge-5.png"/></imageobject>
+	      <textobject><phrase>XXX add text</phrase></textobject>
+	    </mediaobject>
+	  </figure>
+	</listitem>
+      </orderedlist>
+    </sect2>
+
+    <sect2>
+      <title>Proteggervi dai cambiamenti che vi sono <quote>sfuggiti</quote></title>
+
+      <para id="x_123">Se avete inserito alcuni cambiamenti nel vostro repository locale e li avete propagati da qualche altra parte, questo non è necessariamente un disastro. Potete proteggervi prevenendo la comparsa di alcuni tipi di changeset sbagliati. Questo è particolarmente facile se di solito il vostro gruppo di lavoro estrae i cambiamenti da un repository centrale.</para>
+
+      <para id="x_124">Configurando alcuni hook su quel repository per convalidare i changeset in entrata (si veda il <xref linkend="chap:hook"/>), potete automaticamente evitare che alcuni tipi di changeset sbagliati compaiano nel repository centrale. Con una tale configurazione, alcuni tipi di changeset sbagliati tenderanno naturalmente a <quote>estinguersi</quote> perché non possono propagarsi verso il repository centrale. Ancora meglio, questo accade senza alcun bisogno di un intervento esplicito.</para>
+
+      <para id="x_125">Per esempio, un hook sui cambiamenti in entrata programmato per verificare che un changeset si possa effettivamente compilare è in grado di prevenire involontari <quote>guasti</quote> al processo di assemblaggio.</para>
+    </sect2>
+
+    <sect2>
+      <title>Cosa fare con i cambiamenti sensibili che sfuggono</title>
+
+      <para id="x_6c2">Persino un progetto gestito con attenzione può subire eventi sfortunati come il commit di un file che contiene password importanti e la sua incontrollata propagazione.</para>
+
+      <para id="x_6c3">Se qualcosa del genere dovesse accadervi e le informazioni che vengono accidentalmente propagate fossero davvero sensibili, il vostro primo passo dovrebbe essere quello di mitigare l&rsquo;effetto della perdita senza cercare di controllare la perdita stessa. Se non siete sicuri al 100% di sapere esattamente chi può aver visto i cambiamenti, dovreste immediatamente cambiare le password, cancellare le carte di credito, o trovare qualche altro modo per assicurarvi che le informazioni trapelate non siano più utili. In altre parole, assumete che il cambiamento si sia propagato in lungo e in largo e che non ci sia più niente che potete fare.</para>
+
+      <para id="x_6c4">Potreste sperare che ci sia qualche meccanismo da usare per scoprire chi ha visto un cambiamento o per cancellare il cambiamento permanentemente e ovunque, ma ci sono buone ragioni per cui queste operazioni non sono possibili.</para>
+
+      <para id="x_6c5">Mercurial non fornisce una traccia registrata di chi ha estratto i cambiamenti da un repository, perché di solito questa informazione è impossibile da raccogliere o è facile da falsificare. In un ambiente multi-utente o di rete, dovreste quindi dubitare fortemente di voi stessi se pensate di aver identificato ogni luogo in cui un cambiamento sensibile si è propagato. Non dimenticate che le persone possono spedire allegati via email, salvare i propri dati su altri computer tramite il software di backup, trasportare i repository su chiavi USB e trovare altri modi completamente innocenti di confondere i vostri tentativi di rintracciare ogni copia di un cambiamento problematico.</para>
+
+      <para id="x_6c6">In più, Mercurial non vi fornisce un modo per far completamente sparire un changeset dalla cronologia perché non c&rsquo;è alcun modo di imporre la sua sparizione, dato che qualcuno potrebbe facilmente modificare la propria copia di Mercurial per ignorare quelle direttive. E poi, se anche Mercurial fornisse questa funzione, qualcuno che semplicemente non abbia estratto il changeset che <quote>fa sparire questo file</quote> non ne godrebbe gli effetti, né lo farebbero i programmi di indicizzazione web che visitano un repository al momento sbagliato, i backup del disco, o altri meccanismi. In effetti, nessun sistema distribuito di controllo di revisione può far sparire dati in maniera affidabile. Dare l&rsquo;illusione di un controllo di questo tipo potrebbe facilmente conferirvi un falso senso di sicurezza, peggiorando le cose rispetto a non darvela affatto.</para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="sec:undo:bisect">
+    <title>Trovare la causa di un bug</title>
+
+    <para id="x_126">Essere in grado di ritirare un changeset che ha introdotto un bug va benissimo, ma richiede che sappiate quale changeset va ritirato. Mercurial offre un inestimabile comando, chiamato <command role="hg-cmd">hg bisect</command>, che vi aiuta ad automatizzare questo processo e a completarlo in maniera molto efficiente.</para>
+
+    <para id="x_127">L&rsquo;idea alla base del comando <command role="hg-cmd">hg bisect</command> è che un changeset abbia introdotto una modifica di comportamento che potete identificare con un semplice test binario di successo o fallimento. Non sapete quale porzione di codice ha introdotto il cambiamento, ma sapete come verificare la presenza del bug. Il comando <command role="hg-cmd">hg bisect</command> usa il vostro test per dirigere la propria ricerca del changeset che ha introdotto il codice che ha causato il bug.</para>
+
+    <para id="x_128">Ecco alcuni scenari di esempio per aiutarvi a capire come potreste applicare questo comando.</para>
+    <itemizedlist>
+      <listitem><para id="x_129">La versione più recente del vostro software ha un bug che non ricordate fosse presente alcune settimane prima, ma non sapete quando il bug è stato introdotto. Qui, il vostro test binario controlla la presenza di quel bug.</para>
+      </listitem>
+      <listitem><para id="x_12a">Avete corretto un bug in tutta fretta e ora è il momento di chiudere la relativa voce nel database dei bug del vostro gruppo. Il database dei bug richiede un identificatore di changeset quando chiudete una voce, ma non ricordate in quale changeset avete corretto il bug. Ancora una volta, il vostro test binario controlla la presenza del bug.</para>
+      </listitem>
+      <listitem><para id="x_12b">Il vostro software funziona correttamente, ma è più lento del 15% rispetto all&rsquo;ultima volta che avete compiuto questa misurazione. Volete sapere quale changeset ha introdotto il calo di prestazioni. In questo caso, il vostro test binario misura le prestazioni del vostro software per vedere se è <quote>veloce</quote> o <quote>lento</quote>.</para>
+      </listitem>
+      <listitem><para id="x_12c">La dimensione dei componenti del progetto che rilasciate è esplosa di recente e sospettate che qualcosa sia cambiato nel modo in cui assemblate il progetto.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_12d">Da questi esempi, dovrebbe essere chiaro che il comando <command role="hg-cmd">hg bisect</command> non è utile solo per trovare le cause dei bug. Potete usarlo per trovare qualsiasi <quote>proprietà emergente</quote> di un repository (qualsiasi cosa che non potete trovare con una semplice ricerca di testo sui file contenuti nell&rsquo;albero) per la quale sia possibile scrivere un test binario.</para>
+
+    <para id="x_12e">Ora introdurremo un po&rsquo; di terminologia, giusto per chiarire quali sono le parti del processo di ricerca di cui siete responsabili voi e quali sono quelle di cui è responsabile Mercurial. Un <emphasis>test</emphasis> è qualcosa che <emphasis>voi</emphasis> eseguite quando <command role="hg-cmd">hg bisect</command> sceglie un changeset. Una <emphasis>sonda</emphasis> è ciò che <command role="hg-cmd">hg bisect</command> esegue per dirvi se una revisione è buona. Infine, useremo la parola <quote>bisezione</quote> per intendere la <quote>ricerca tramite il comando <command role="hg-cmd">hg bisect</command></quote>.</para>
+
+    <para id="x_12f">Un modo semplice per automatizzare il processo di ricerca sarebbe quello di collaudare semplicemente tutti i changeset. Tuttavia, questo approccio è scarsamente scalabile. Se ci volessero dieci minuti per collaudare un singolo changeset e il vostro repository contenesse 10.000 changeset, l&rsquo;approccio completo impiegherebbe una media di 35 <emphasis>giorni</emphasis> per trovare il changeset che ha introdotto un bug. Anche se sapeste che il bug è stato introdotto in uno degli ultimi 500 changeset e limitaste la ricerca a quelli, dovrebbero trascorrere più di 40 ore per trovare il changeset che ha introdotto il vostro bug.</para>
+
+    <para id="x_130">Il comando <command role="hg-cmd">hg bisect</command> invece usa la propria conoscenza della <quote>forma</quote> della cronologia delle revisioni del vostro progetto per effettuare una ricerca in tempo proporzionale al <emphasis>logaritmo</emphasis> del numero dei changeset da controllare (il tipo di ricerca che esegue viene chiamata ricerca dicotomica). Con questo approccio, la ricerca attraverso 10.000 changeset impiegherà meno di 3 ore, anche a 10 minuti per test (la ricerca richiederà circa 14 test). Limitate la vostra ricerca agli ultimi cento changeset e il tempo impiegato sarà solo circa un&rsquo;ora (approssimativamente sette test).</para>
+
+    <para id="x_131">Il comando <command role="hg-cmd">hg bisect</command> è consapevole della natura <quote>ramificata</quote> della cronologia delle revisioni di un progetto Mercurial, quindi non ha problemi a trattare con rami, unioni, o molteplici teste in un repository. Opera in maniera così efficiente perché è in grado di potare interi rami di cronologia con una singola sonda.</para>
+
+    <sect2>
+      <title>Usare il comando <command role="hg-cmd">hg bisect</command></title>
+
+      <para id="x_132">Ecco un esempio di <command role="hg-cmd">hg bisect</command> in azione.</para>
+
+      <note>
+	<para id="x_133">Fino alla versione 0.9.5 di Mercurial compresa, <command role="hg-cmd">hg bisect</command> non era uno dei comandi principali, ma veniva distribuito con Mercurial sotto forma di estensione. Questa sezione descrive il comando predefinito, non la vecchia estensione.</para>
+      </note>
+
+      <para id="x_134">Ora creiamo un nuovo repository in modo che possiate provare il comando <command role="hg-cmd">hg bisect</command> in isolamento.</para>
+
+      &interaction.bisect.init;
+
+      <para id="x_135">Simuleremo un progetto con un bug in modo molto semplice: creiamo cambiamenti elementari in un ciclo e designamo uno specifico cambiamento che conterrà il <quote>bug</quote>. Questo ciclo crea 35 changeset, ognuno dei quali aggiunge un singolo file al repository. Rappresenteremo il nostro <quote>bug</quote> con un file che contiene il testo <quote>ho un gub</quote>.</para>
+
+      &interaction.bisect.commits;
+
+      <para id="x_136">La prossima cosa che vorremmo fare è capire come usare il comando <command role="hg-cmd">hg bisect</command>. Possiamo usare il normale meccanismo di aiuto predefinito di Mercurial per fare questo.</para>
+
+      &interaction.bisect.help;
+
+      <para id="x_137">Il comando <command role="hg-cmd">hg bisect</command> lavora in più passi. Ogni passo procede nella maniera seguente.</para>
+      <orderedlist>
+	<listitem><para id="x_138">Eseguite il vostro test binario.</para>
+	  <itemizedlist>
+	    <listitem><para id="x_139">Se il test ha avuto successo, informate <command role="hg-cmd">hg bisect</command> invocando il comando <command role="hg-cmd">hg bisect --good</command>.</para>
+	    </listitem>
+	    <listitem><para id="x_13a">Se il test è fallito, invocate il comando <command role="hg-cmd">hg bisect --bad</command>.</para>
+        </listitem>
+      </itemizedlist>
+	</listitem>
+	<listitem><para id="x_13b">Il comando usa le vostre informazioni per decidere quale changeset collaudare successivamente.</para>
+	</listitem>
+	<listitem><para id="x_13c">Il comando aggiorna la directory di lavoro a quel changeset e il processo ricomincia da capo.</para>
+	</listitem></orderedlist>
+      <para id="x_13d">Il processo termina quando <command role="hg-cmd">hg bisect</command> identifica un unico cambiamento che indica il punto in cui il vostro test passa dallo stato di <quote>successo</quote> a quello di <quote>fallimento</quote>.</para>
+
+      <para id="x_13e">Per cominciare la ricerca, dobbiamo eseguire il comando <command role="hg-cmd">hg bisect --reset</command>.</para>
+
+      &interaction.bisect.search.init;
+
+      <para id="x_13f">Nel nostro caso, il test binario che usiamo è semplice: controlliamo il repository per vedere se qualche file contiene la stringa <quote>ho un gub</quote>. Se è così, questo changeset contiene il cambiamento che ha <quote>causato il bug</quote>. Per convenzione, un changeset che ha la proprietà che stiamo cercando è <quote>guasto</quote>, mentre uno che non ce l&rsquo;ha è <quote>funzionante</quote>.</para>
+
+      <para id="x_140">Quasi sempre, la revisione su cui la directory di lavoro è sincronizzata (di solito, la punta) esibisce già il problema introdotto dal cambiamento malfunzionante, quindi la indicheremo come <quote>guasta</quote>.</para>
+
+      &interaction.bisect.search.bad-init;
+
+      <para id="x_141">Il nostro compito successivo consiste nel nominare un changeset che sappiamo <emphasis>non</emphasis> contenere il bug, in modo che il comando <command role="hg-cmd">hg bisect</command> possa <quote>circoscrivere</quote> la ricerca tra il primo changeset funzionante e il primo changeset guasto. Nel nostro caso, sappiamo che la revisione 10 non conteneva il bug. (Spiegherò meglio come scegliere il primo changeset <quote>funzionante</quote> più avanti.)</para>
+
+      &interaction.bisect.search.good-init;
+
+      <para id="x_142">Notate che questo comando ha stampato alcune informazioni.</para>
+      <itemizedlist>
+	<listitem><para id="x_143">Ci ha detto quanti changeset deve considerare prima di poter identificare quello che ha introdotto il bug e quanti test saranno richiesti dal processo.</para>
+	</listitem>
+	<listitem><para id="x_144">Ha aggiornato la directory di lavoro al prossimo changeset da collaudare e ci ha detto quale changeset sta collaudando.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_145">Ora eseguiamo il nostro test nella directory di lavoro, usando il comando <command>grep</command> per vedere se il nostro file <quote>guasto</quote> è presente. Se c&rsquo;è, questa revisione è guasta, altrimenti è funzionante.</para>
+      
+      &interaction.bisect.search.step1;
+
+      <para id="x_146">Questo test sembra un perfetto candidato per l&rsquo;automazione, quindi trasformiamolo in una funzione di shell.</para>
+      
+      &interaction.bisect.search.mytest;
+
+      <para id="x_147">Ora possiamo eseguire un intero passo di collaudo con il singolo comando <literal>miotest</literal>.</para>
+
+      &interaction.bisect.search.step2;
+
+      <para id="x_148">Ancora qualche altra invocazione del comando che abbiamo preparato per il passo di collaudo e abbiamo finito.</para>
+
+      &interaction.bisect.search.rest;
+
+      <para id="x_149">Anche se avevamo 40 changeset attraverso cui cercare, il comando <command role="hg-cmd">hg bisect</command> ci ha permesso di trovare il changeset che ha introdotto il nostro <quote>bug</quote> usando solo cinque test. Dato che il numero di test effettuati dal comando <command role="hg-cmd">hg bisect</command> cresce con il logaritmo del numero dei changeset da analizzare, il vantaggio che ha rispetto a una ricerca che usa la strategia della <quote>forza bruta</quote> aumenta con ogni changeset che aggiungete.</para>
+
+    </sect2>
+    <sect2>
+      <title>Riordinare dopo la vostra ricerca</title>
+
+      <para id="x_14a">Quando avete finito di usare il comando <command role="hg-cmd">hg bisect</command> in un repository, potete invocare il comando <command role="hg-cmd">hg bisect --reset</command> in modo da scartare le informazioni che venivano usate per guidare la vostra ricerca. Il comando non usa molto spazio, quindi non è un problema se vi dimenticate di effettuare questa invocazione. Tuttavia, <command role="hg-cmd">hg bisect</command> non vi permetterà di cominciare una nuova ricerca in quel repository fino a quando non avrete eseguito <command role="hg-cmd">hg bisect --reset</command>.</para>
+
+      &interaction.bisect.search.reset;
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Suggerimenti per trovare efficacemente i bug</title>
+
+    <sect2>
+      <title>Fornite informazioni consistenti</title>
+
+      <para id="x_14b">Il comando <command role="hg-cmd">hg bisect</command> vi richiede di indicare correttamente il risultato di ogni test che eseguite. Se gli dite che un test è fallito quando in realtà ha avuto successo, il comando <emphasis>potrebbe</emphasis> essere in grado di scoprire l&rsquo;inconsistenza. Se riesce a identificare un&rsquo;inconsistenza nei vostri resoconti, vi dirà che un particolare changeset è sia funzionante che guasto. Tuttavia, non è in grado di farlo perfettamente ed è ugualmente probabile che vi restituisca il changeset sbagliato come causa del bug.</para>
+
+    </sect2>
+    <sect2>
+      <title>Automatizzate il più possibile</title>
+
+      <para id="x_14c">Quando ho cominciato a usare il comando <command role="hg-cmd">hg bisect</command>, ho provato a eseguire alcune volte i miei test a mano sulla riga di comando. Questo non è l&rsquo;approccio adatto, almeno per me. Dopo alcune prove, mi sono accorto che stavo facendo abbastanza errori da dover ricominciare le mie ricerche diverse volte prima di riuscire a ottenere i risultati corretti.</para>
+
+      <para id="x_14d">I miei problemi iniziali nel guidare a mano il comando <command role="hg-cmd">hg bisect</command> si sono verificati anche con ricerche semplici su repository di piccole dimensioni, ma se il problema che state cercando è più sottile, o se il numero di test che <command role="hg-cmd">hg bisect</command> deve eseguire aumenta, la probabilità che un errore umano rovini la ricerca è molto più alta. Una volta che ho cominciato ad automatizzare i miei test, ho ottenuto risultati molto migliori.</para>
+
+      <para id="x_14e">La chiave del collaudo automatizzato è duplice:</para>
+      <itemizedlist>
+	<listitem><para id="x_14f">verificate sempre lo stesso sintomo, e</para>
+	</listitem>
+	<listitem><para id="x_150">fornite sempre informazioni consistenti al comando <command role="hg-cmd">hg bisect</command>.</para>
+	</listitem></itemizedlist>
+      <para id="x_151">Nel mio esempio precedente, il comando <command>grep</command> verifica il sintomo e l&rsquo;istruzione <literal>if</literal> usa il risultato di questo controllo per assicurarsi di fornire la stessa informazione al comando <command role="hg-cmd">hg bisect</command>. La funzione <literal>miotest</literal> ci permette di riprodurre insieme queste due operazioni, in modo che ogni test sia uniforme e consistente.</para>
+
+    </sect2>
+    <sect2>
+      <title>Controllate i vostri risultati</title>
+
+      <para id="x_152">Dato che il risultato di una ricerca con <command role="hg-cmd">hg bisect</command> è solo tanto buono quanto le informazioni che passate al comando, non prendete il changeset che vi indica come la verità assoluta. Un modo semplice di effettuare un riscontro sul risultato è quello di eseguire manualmente il vostro test su ognuno dei changeset seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_153">Il changeset che il comando riporta come la prima revisione guasta. Il vostro test dovrebbe verificare che la revisione sia effettivamente guasta.</para>
+	</listitem>
+	<listitem><para id="x_154">Il genitore di quel changeset (entrambi i genitori, se è un&rsquo;unione). Il vostro test dovrebbe verificare che quel changeset sia funzionante.</para>
+	</listitem>
+	<listitem><para id="x_155">Un figlio di quel changeset. Il vostro test dovrebbe verificare che quel changeset sia guasto.</para>
+	</listitem></itemizedlist>
+
+    </sect2>
+    <sect2>
+      <title>Fate attenzione alle interferenze tra i bug</title>
+
+      <para id="x_156">&Egrave; possibile che la vostra ricerca di un bug venga rovinata dalla presenza di un altro bug. Per esempio, diciamo che il vostro software si blocca alla revisione 100 e funziona correttamente alla revisione 50. Senza che voi lo sappiate, qualcun altro ha introdotto un diverso bug bloccante alla revisione 60 e lo ha corretto alla revisione 80. Questo potrebbe distorcere i vostri risultati in vari modi.</para>
+
+      <para id="x_157">&Egrave; possibile che questo altro bug <quote>mascheri</quote> completamente il vostro, cioè che sia comparso prima che il vostro bug abbia avuto la possibilità di manifestarsi. Se non potete evitare quell&rsquo;altro bug (per esempio, impedisce al vostro progetto di venire assemblato) e quindi non potete dire se il vostro bug è presente in un particolare changeset, il comando <command role="hg-cmd">hg bisect</command> non è in grado di aiutarvi direttamente. Invece, invocando <command role="hg-cmd">hg bisect --skip</command> potete indicare un changeset come non collaudato.</para>
+
+      <para id="x_158">Potrebbe esserci un problema differente se il vostro test per la presenza di un bug non è abbastanza specifico. Se controllate che <quote>il mio programma si blocca</quote>, allora sia il vostro bug bloccante che il bug bloccante non correlato che lo maschera sembreranno la stessa cosa e fuorvieranno <command role="hg-cmd">hg bisect</command>.</para>
+
+      <para id="x_159">Un&rsquo;altra situazione utile per sfruttare <command role="hg-cmd">hg bisect --skip</command> è quella in cui non potete collaudare una revisione perché il vostro progetto era guasto e quindi in uno stato non collaudabile in quella revisione, magari perché qualcuno aveva introdotto un cambiamento che impediva al progetto di venire assemblato.</para>
+
+    </sect2>
+    <sect2>
+      <title>Circoscrivete la vostra ricerca in maniera approssimativa</title>
+
+      <para id="x_15a">Scegliere il primo changeset <quote>funzionante</quote> e il primo changeset <quote>guasto</quote> che rappresenteranno i punti estremi della vostra ricerca è spesso facile, ma merita comunque una breve discussione. Dal punto di vista di <command role="hg-cmd">hg bisect</command>, il changeset <quote>più recente</quote> è convenzionalmente <quote>guasto</quote> e il changeset <quote>più vecchio</quote> è <quote>funzionante</quote>.</para>
+
+      <para id="x_15b">Se avete problemi a ricordare dove trovare un changeset <quote>funzionante</quote> da fornire al comando <command role="hg-cmd">hg bisect</command>, non potreste fare di meglio che collaudare changeset a caso. Ricordatevi di eliminare i contendenti che non possono esibire il bug (magari perché la funzione con il bug non era ancora presente) e quelli in cui un altro problema nasconde il bug (come ho discusso in precedenza).</para>
+
+      <para id="x_15c">Anche se i vostri tentativi si concludono <quote>in anticipo</quote> di migliaia di changeset o di mesi di cronologia, aggiungerete solo una manciata di test al numero totale che <command role="hg-cmd">hg bisect</command> deve eseguire, grazie al suo comportamento logaritmico.</para>
+
+    </sect2>
+  </sect1>
+</chapter>

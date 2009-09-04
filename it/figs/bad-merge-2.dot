@@ -1,0 +1,18 @@
+digraph bad_merge_2 {
+	ancestor [label="1: progenitore",color=grey,fontcolor=grey];
+	left [label="2: mia modifica",color=grey,fontcolor=grey];
+	right [label="3: vostra modifica",color=grey,fontcolor=grey];
+	bad [label="4: unione sbagliata",color=grey,fontcolor=grey];
+	new [label="5: nuova modifica",color=grey,fontcolor=grey];
+
+	bak_left [label="6: ritiro n°1 della\nunione sbagliata",shape=box];
+
+	ancestor -> left [color=grey];
+	ancestor -> right [color=grey];
+	left -> bad [color=grey];
+	right -> bad [color=grey];
+	bad -> new [color=grey];
+
+	bad -> bak_left;
+	left -> bak_left [style=dotted,label="--parent=2"];
+}

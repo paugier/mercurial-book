@@ -1,0 +1,552 @@
+<chapter id="chap:mq">
+  <?dbhtml filename="gestire-il-cambiamento-con-mercurial-queues.html"?>
+  <title>Gestire il cambiamento con Mercurial Queues</title>
+
+  <sect1 id="sec:mq:patch-mgmt">
+    <title>Il problema della gestione delle patch</title>
+
+    <para id="x_3ac">Ecco uno scenario comune: avete bisogno di installare un pacchetto software dai sorgenti, ma trovate un bug che dovete correggere nei sorgenti prima di poter cominciare a usare il pacchetto. Fate le vostre modifiche, vi dimenticate del pacchetto per un po&rsquo; e alcuni mesi dopo avete bisogno di aggiornare il pacchetto a una nuova versione. Se la versione più nuova del pacchetto contiene ancora il bug, dovete estrarre la vostra correzione dal vecchio albero dei sorgenti e applicarla alla nuova versione. Questa è un&rsquo;attività seccante durante la quale è facile commettere errori.</para>
+
+    <para id="x_3ad">Questo è un semplice caso del problema di <quote>gestione delle patch</quote>. Avete un albero di sorgenti <quote>a monte</quote> che non potete cambiare, avete bisogno di fare alcune modifiche locali all&rsquo;albero a monte e vi piacerebbe essere in grado di mantenere separate quelle modifiche, in modo da poterle applicare a nuove versioni dei sorgenti a monte.</para>
+
+    <para id="x_3ae">Il problema di gestione delle patch si presenta in molte situazioni. Probabilmente la più visibile è quella in cui un utente di un progetto software open source fornisce la correzione di un bug o una nuova funzione sotto forma di patch ai manutentori del progetto.</para>
+
+    <para id="x_3af">Chi distribuisce sistemi operativi che includono software open source ha spesso bisogno di effettuare modifiche ai pacchetti distribuiti in modo da assemblarli correttamente nel proprio ambiente.</para>
+
+    <para id="x_3b0">Quando dovete mantenere solo alcune modifiche, potete facilmente gestire una singola patch usando i programmi standard <command>diff</command> e <command>patch</command> (si veda la <xref linkend="sec:mq:patch"/> per una discussione di questi strumenti). Una volta che il numero di modifiche cresce, comincia ad avere senso l&rsquo;idea di mantenere le patch come <quote>frammenti di lavoro</quote> distinti in modo che, per esempio, una singola patch contenga solo una correzione di bug (la patch potrebbe modificare diversi file, ma sta facendo <quote>solo una cosa</quote>) e un certo numero di queste patch sia destinato a bug differenti che dovete correggere e a modifiche locali di cui avete bisogno. In questa situazione, se proponete una patch per la correzione di un bug ai manutentori del pacchetto a monte e questi includono la vostra correzione in una release successiva, potete semplicemente scartare quella singola patch quando state aggiornando il pacchetto a una nuova release.</para>
+
+    <para id="x_3b1">Mantenere una singola patch per un albero a monte è un&rsquo;attività un po&rsquo; noiosa e soggetta a errori, ma non è difficile. Tuttavia, la complessità del problema cresce rapidamente man mano che il numero di patch che dovete mantenere aumenta. Con più di un piccolo numero di patch in mano, il compito di capire quali sono quelle che dovete applicare e di mantenerle passa da sgradevole a opprimente.</para>
+
+    <para id="x_3b2">Fortunatamente, Mercurial include una potente estensione, chiamata Mercurial Queues (letteralmente, Code di Mercurial) o semplicemente <quote>MQ</quote>, che semplifica notevolmente il problema di gestione delle patch.</para>
+
+  </sect1>
+  <sect1 id="sec:mq:history">
+    <title>La preistoria di Mercurial Queues</title>
+
+    <para id="x_3b3">Verso la fine degli anni &rsquo;90, diversi sviluppatori del kernel di Linux cominciarono a mantenere alcune <quote>serie di patch</quote> che modificavano il comportamento del kernel. Alcune di queste serie si concentravano sulla stabilità, alcune sull&rsquo;inclusione di funzioni e altre erano più sperimentali.</para>
+
+    <para id="x_3b4">La dimensione di queste serie di patch crebbe rapidamente. Nel 2002, Andrew Morton pubblicò alcuni script di shell che aveva usato per automatizzare la gestione delle proprie code di patch. Andrew era riuscito a usare questi script per gestire centinaia (talvolta migliaia) di patch per il kernel di Linux.</para>
+
+    <sect2 id="sec:mq:quilt">
+      <title>Una <quote>coperta a scacchi</quote></title>
+
+      <para id="x_3b5">All&rsquo;inizio del 2003, Andreas Gruenbacher e Martin Quinson presero in prestito l&rsquo;approccio degli script di Andrew e pubblicarono uno strumento chiamato <quote>patchwork quilt</quote> (letteralmente, coperta a scacchi) <citation><xref linkend="bib:quilt"/></citation>, o semplicemente <quote>quilt</quote> (si veda <citation><xref linkend="bib:gru05"/></citation> per un articolo che lo descrive). Dato che quilt sostanzialmente automatizzava la gestione delle patch, guadagnò rapidamente un grande seguito tra gli sviluppatori di software open source.</para>
+
+      <para id="x_3b6">Quilt gestisce una <emphasis>pila di patch</emphasis> per un albero di directory. Per cominciare a usarlo, dite a quilt di gestire un albero di directory e quali file volete che gestisca, in modo che memorizzi i nomi e il contenuto di quei file. Per correggere un bug, create una nuova patch (usando un singolo comando), modificate i file che dovete correggere, poi <quote>aggiornate</quote> la patch.</para>
+
+      <para id="x_3b7">L&rsquo;operazione di aggiornamento induce quilt a esaminare l&rsquo;albero di directory completando la patch con tutte le modifiche che avete fatto. Sulla base di questa prima patch, potete creare un&rsquo;altra patch che terrà traccia dei cambiamenti richiesti per modificare l&rsquo;albero da <quote>albero con una patch applicata</quote> ad <quote>albero con due patch applicate</quote>.</para>
+
+      <para id="x_3b8">Potete <emphasis>scegliere</emphasis> quali sono le patch da applicare all&rsquo;albero. Se <quote>estraete</quote> una patch, i cambiamenti effettuati da quella patch spariranno dall&rsquo;albero di directory. Quilt si ricorda quali patch avete estratto, comunque, così potete <quote>inserire</quote> nuovamente una patch estratta e l&rsquo;albero di directory verrà ripristinato per contenere le modifiche di quella patch. La cosa più importante è che potete eseguire il comando di <quote>aggiornamento</quote> in ogni momento e la patch applicata più recentemente verrà aggiornata. Questo significa che, in ogni momento, potete modificare sia l&rsquo;insieme delle patch da applicare sia l&rsquo;insieme dei cambiamenti effettuati da quelle patch.</para>
+
+      <para id="x_3b9">Quilt non ha nulla a che fare con gli strumenti di controllo di revisione, così funziona altrettanto bene con un gruppo di file estratti da un archivio compresso che con una copia di lavoro di Subversion.</para>
+    </sect2>
+
+    <sect2 id="sec:mq:quilt-mq">
+      <title>Da patchwork quilt a Mercurial Queues</title>
+
+      <para id="x_3ba">A metà del 2005, Chris Mason prese le funzioni di quilt e implementò un&rsquo;estensione chiamata Mercurial Queues, che aggiungeva a Mercurial un comportamento simile a quello di quilt.</para>
+
+      <para id="x_3bb">La differenza chiave tra quilt e MQ è che quilt non è progettato per interagire con alcun sistema di controllo di revisione, mentre MQ è <emphasis>integrata</emphasis> in Mercurial. Ogni patch che inserite è rappresentata sotto forma di changeset Mercurial. Se estraete una patch, il changeset relativo sparisce.</para>
+
+      <para id="x_3bc">Dato che quilt non si preoccupa degli strumenti di controllo di revisione, rimane un software tremendamente utile da conoscere per impiegarlo nelle situazioni in cui non potete usare Mercurial e MQ.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>L&rsquo;enorme vantaggio di MQ</title>
+
+    <para id="x_3bd">Non posso esagerare il valore dell&rsquo;unificazione tra patch e controllo di revisione offerta da MQ.</para>
+
+    <para id="x_3be">Una delle ragioni principali per cui le patch sono ancora continuamente usate nel mondo del software libero e open source&emdash;nonostante la disponibilità di strumenti di controllo di revisione sempre più sofisticati&emdash;è l&rsquo;<emphasis>agilità</emphasis> che offrono.</para>
+
+    <para id="x_3bf">I tradizionali strumenti di controllo di revisione effettuano una registrazione permanente di ogni vostra azione. Da un lato questo ha un grande valore, ma dall&rsquo;altro è anche piuttosto soffocante. Se volete effettuare un esperimento stravagante, dovete stare molto attenti a come procedete, o rischiate di lasciare tracce inutili&emdash;o peggio, ingannevoli e destabilizzanti&emdash;dei vostri passi falsi e dei vostri errori nella registrazione permanente delle revisioni.</para>
+
+    <para id="x_3c0">Al contrario, il matrimonio tra controllo di revisione distribuito e patch realizzato da MQ rende molto più facile isolare il vostro lavoro. Le vostre patch si basano sulla normale cronologia delle revisioni e potete farle sparire e comparire a piacere. Se non vi piace una patch, potete scartarla. Se una patch non è esattamente come volete che sia, vi basta correggerla&emdash;tutte le volte che ne avete bisogno, fino a quando non l&rsquo;avete ritoccata facendole assumere la forma che desiderate.</para>
+
+    <para id="x_3c1">Per esempio, l&rsquo;integrazione delle patch con il controllo di revisione facilita <emphasis>enormemente</emphasis> la comprensione delle patch e delle interazioni con il codice su cui si basano, nonché la correzione dei loro effetti. Dato che ogni patch applicata è associata a un changeset, potete invocare <command role="hg-cmd">hg log</command> con un nome di file per vedere quali changeset e quali patch hanno avuto effetto sul file. Potete usare il comando <command role="hg-cmd">hg bisect</command> per condurre una ricerca binaria attraverso tutti i changeset e le patch applicate in modo da scoprire dov&rsquo;è stato introdotto o corretto un bug. Potete usare il comando <command role="hg-cmd">hg annotate</command> per vedere quali changeset o patch hanno modificato una particolare riga di un file sorgente. E così via.</para>
+  </sect1>
+
+  <sect1 id="sec:mq:patch">
+    <title>Capire le patch</title>
+
+    <para id="x_3c2">Dato che MQ non nasconde la sua natura orientata alle patch, vi potrà essere d&rsquo;aiuto capire cosa sono le patch e conoscere un po&rsquo; gli strumenti che lavorano con esse.</para>
+
+    <para id="x_3c3">Il tradizionale comando Unix <command>diff</command> confronta due file e stampa una lista di differenze tra loro. Il comando <command>patch</command> interpreta queste differenze come <emphasis>modifiche</emphasis> da effettuare a un file. Date un&rsquo;occhiata qui di seguito per vedere un semplice esempio di questi comandi in azione.</para>
+
+    &interaction.mq.dodiff.diff;
+
+    <para id="x_3c4">Il tipo di file generato da <command>diff</command> (e che <command>patch</command> prende in ingresso) viene chiamato una <quote>patch</quote> (letteralmente, pezza) o un <quote>diff</quote>. Non c&rsquo;è alcuna differenza tra una patch e un diff, ma noi useremo il termine <quote>patch</quote>, dato che è quello più comunemente usato.</para>
+
+    <para id="x_3c5">Un file di patch può cominciare con testo arbitrario che il comando <command>patch</command> ignora, ma che MQ usa come messaggio di commit quando crea i changeset. Per trovare l&rsquo;inizio del contenuto della patch, il comando <command>patch</command> cerca la prima riga che comincia con la stringa <quote><literal>diff -</literal></quote>.</para>
+
+    <para id="x_3c6">MQ lavora con i diff <emphasis>unificati</emphasis> (<command>patch</command> può accettare molti altri formati di diff, ma MQ no). Un diff unificato contiene due tipi di intestazione. L&rsquo;<emphasis>intestazione di file</emphasis> descrive il file che viene modificato e contiene il nome del file da modificare. Quando <command>patch</command> vede una nuova intestazione di file, cerca il file con quel nome per cominciare a modificarlo.</para>
+
+    <para id="x_3c7">L&rsquo;intestazione di file è seguita da una serie di <emphasis>blocchi</emphasis>. Ogni blocco comincia con un&rsquo;intestazione che identifica l&rsquo;intervallo di numeri di riga del file che il blocco dovrebbe modificare. Dopo l&rsquo;intestazione, un blocco comincia e finisce con alcune (di solito tre) righe di testo proveniente dal file originale che vengono chiamate il <emphasis>contesto</emphasis> del blocco. Se c&rsquo;è solo una quantità ridotta di contesto tra blocchi successivi, <command>diff</command> non stampa una nuova intestazione, ma si limita a unire insieme i blocchi inserendo alcune righe di contesto tra le modifiche.</para>
+
+    <para id="x_3c8">Ogni riga di contesto comincia con un carattere di spazio. Nell&rsquo;ambito di un blocco, una riga che comincia con <quote><literal>-</literal></quote> significa <quote>rimuovi questa riga</quote>, mentre una riga che comincia con <quote><literal>+</literal></quote> significa <quote>inserisci questa riga</quote>. Per esempio, una riga modificata viene rappresentata da una cancellazione e da un inserimento.</para>
+
+    <para id="x_3c9">Ritorneremo su alcuni degli aspetti più sottili delle patch più avanti (nella <xref linkend="sec:mq:adv-patch"/>), ma ora dovreste avere abbastanza informazioni per usare MQ.</para>
+  </sect1>
+
+  <sect1 id="sec:mq:start">
+    <title>Cominciare a usare Mercurial Queues</title>
+
+    <para id="x_3ca">Dato che MQ è implementata come un&rsquo;estensione, dovete esplicitamente abilitarla prima di poterla usare. (Non avete bisogno di scaricare nulla, perché MQ è inclusa con la distribuzione standard di Mercurial.) Per abilitare MQ, modificate il vostro file <filename role="home">~/.hgrc</filename> aggiungendo le seguenti righe.</para>
+
+    <programlisting>[extensions]
+hgext.mq =</programlisting>
+
+    <para id="x_3cb">Una volta che avete abilitato l&rsquo;estensione, vi verranno messi a disposizione alcuni nuovi comandi. Per verificare che l&rsquo;estensione funzioni, potete usare <command role="hg-cmd">hg help</command> per vedere se il comando <command role="hg-ext-mq">qinit</command> viene elencato come disponibile.</para>
+
+    &interaction.mq.qinit-help.help;
+
+    <para id="x_3cc">MQ può essere usata con <emphasis>qualsiasi</emphasis> repository Mercurial e i suoi comandi operano solo all&rsquo;interno di quel repository. Per cominciare, preparate semplicemente il repository usando il comando <command role="hg-ext-mq">qinit</command>.</para>
+
+    &interaction.mq.tutorial.qinit;
+
+    <para id="x_3cd">Questo comando crea una directory vuota chiamata <filename role="special" class="directory">.hg/patches</filename>, dove MQ terrà i propri metadati. Come accade con molti comandi Mercurial, il comando <command role="hg-ext-mq">qinit</command> non stamperà nulla nel caso termini con successo.</para>
+
+    <sect2>
+      <title>Creare una nuova patch</title>
+
+      <para id="x_3ce">Per cominciare a lavorare su una nuova patch, usate il comando <command role="hg-ext-mq">qnew</command>. Questo comando prende come argomento il nome della patch da creare.</para>
+
+      <para id="x_3cf">MQ userà questo nome per memorizzare un file nella directory <filename role="special" class="directory">.hg/patches</filename>, come potete vedere qui sotto.</para>
+
+      &interaction.mq.tutorial.qnew;
+
+      <para id="x_3d0">La directory <filename role="special" class="directory">.hg/patches</filename> contiene anche altri due nuovi file, <filename role="special">series</filename> e <filename role="special">status</filename>.  Il file <filename role="special">series</filename> elenca tutte le patch per questo repository di cui MQ è a conoscenza, con una patch per ogni riga. Mercurial usa il file <filename role="special">status</filename> per tenere traccia internamente di tutte le patch che MQ ha <emphasis>applicato</emphasis> a questo repository.</para>
+
+      <note>
+	<para id="x_3d1">A volte potreste voler modificare il file <filename role="special">series</filename> a mano, per esempio per cambiare la sequenza in cui sono applicate alcune patch. Tuttavia, modificare manualmente il file <filename role="special">status</filename> è quasi sempre una cattiva idea, dato che così facendo si rischia facilmente di disorientare MQ.</para>
+      </note>
+
+      <para id="x_3d2">Una volta che avete creato la vostra nuova patch, potete modificare i file nella directory di lavoro come fareste di solito. Tutti i normali comandi Mercurial, come <command role="hg-cmd">hg diff</command> e <command role="hg-cmd">hg annotate</command>, funzionano allo stesso modo in cui funzionavano prima.</para>
+    </sect2>
+
+    <sect2>
+      <title>Aggiornare una patch</title>
+
+      <para id="x_3d3">Quando raggiungete un punto in cui volete salvare il vostro lavoro, usate il comando <command role="hg-ext-mq">qrefresh</command> per aggiornare la patch su cui state lavorando.</para>
+
+      &interaction.mq.tutorial.qrefresh;
+
+      <para id="x_3d4">Questo comando include nella vostra patch i cambiamenti che avete fatto nella directory di lavoro e aggiorna il changeset corrispondente alla patch in modo che contenga quei cambiamenti.</para>
+
+      <para id="x_3d5">Potete invocare <command role="hg-ext-mq">qrefresh</command> tutte le volte che volete, quindi questo comando rappresenta un buon modo per <quote>controllare</quote> il vostro lavoro. Aggiornate la vostra patch al momento opportuno, tentate un esperimento e se l&rsquo;esperimento non funziona usate <command role="hg-cmd">hg revert</command> per ripristinare le vostre modifiche all&rsquo;ultimo aggiornamento che avete compiuto.</para>
+
+      &interaction.mq.tutorial.qrefresh2;
+    </sect2>
+
+    <sect2>
+      <title>Impilare e registrare le patch</title>
+
+      <para id="x_3d6">Una volta che avete finito di lavorare su una patch, o avete bisogno di lavorare su un&rsquo;altra patch, potete usare di nuovo il comando <command role="hg-ext-mq">qnew</command> per creare una nuova patch. Mercurial applicherà questa patch a partire dalla vostra patch esistente.</para>
+
+      &interaction.mq.tutorial.qnew2;
+
+      <para id="x_3d7">Notate che la patch contiene le modifiche della nostra patch precedente come parte del proprio contesto (potete vederlo più chiaramente nel risultato di <command role="hg-cmd">hg annotate</command>).</para>
+
+      <para id="x_3d8">Finora, con l&rsquo;eccezione di <command role="hg-ext-mq">qnew</command> e <command role="hg-ext-mq">qrefresh</command>, siamo stati attenti a usare solo gli ordinari comandi Mercurial. Tuttavia, MQ fornisce molti comandi che sono più facili da usare quando state pensando in termini di patch, come illustrato di seguito.</para>
+
+      &interaction.mq.tutorial.qseries;
+
+      <itemizedlist>
+	<listitem><para id="x_3d9">Il comando <command role="hg-ext-mq">qseries</command> elenca tutte le patch per questo repository di cui MQ è a conoscenza, dalla più vecchia alla più recente (più recentemente <emphasis>creata</emphasis>).</para>
+	</listitem>
+	<listitem><para id="x_3da">Il comando <command role="hg-ext-mq">qapplied</command> elenca tutte le patch che MQ ha <emphasis>applicato</emphasis> a questo repository, sempre dalla più vecchia alla più recente (più recentemente applicata).</para>
+	</listitem></itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Manipolare la pila delle patch</title>
+
+      <para id="x_3db">La discussione precedente implica che ci deve essere una differenza tra patch <quote>note</quote> e patch <quote>applicate</quote>, e in effetti c&rsquo;è. MQ può gestire una patch senza che sia applicata al repository.</para>
+
+      <para id="x_3dc">Una patch <emphasis>applicata</emphasis> ha un corrispondente changeset nel repository e gli effetti della patch e del changeset sono visibili nella directory di lavoro. Potete annullare l&rsquo;applicazione di una patch usando il comando <command role="hg-ext-mq">qpop</command>. La patch estratta è ancora <emphasis>nota</emphasis>, cioè gestita da MQ, ma non ha più un corrispondente changeset nel repository, e la directory di lavoro non contiene più le modifiche apportate dalla patch. La <xref linkend="fig:mq:stack"/> illustra la differenza tra patch applicate e registrate.</para>
+
+      <figure id="fig:mq:stack">
+	<title>Patch applicate e non applicate nella pila delle patch di MQ</title>
+	<mediaobject>
+	  <imageobject><imagedata fileref="figs/mq-stack.png"/></imageobject>
+	  <textobject><phrase>XXX add text</phrase></textobject>
+	</mediaobject>
+      </figure>
+
+      <para id="x_3de">Potete riapplicare una patch non applicata o estratta usando il comando <command role="hg-ext-mq">qpush</command>. Questo comando crea un nuovo changeset da far corrispondere alla patch, e le modifiche della patch compaiono nuovamente nella directory di lavoro. Di seguito, vengono mostrati esempi di <command role="hg-ext-mq">qpop</command> e <command role="hg-ext-mq">qpush</command> in azione.</para>
+
+      &interaction.mq.tutorial.qpop;
+
+      <para id="x_3df">Notate che, dopo aver estratto una patch o due patch, il risultato di <command role="hg-ext-mq">qseries</command> è rimasto lo stesso, mentre quello di <command role="hg-ext-mq">qapplied</command> è cambiato.</para>
+
+    </sect2>
+
+    <sect2>
+      <title>Inserire ed estrarre molte patch</title>
+
+      <para id="x_3e0">Sebbene i comandi <command role="hg-ext-mq">qpush</command> e <command role="hg-ext-mq">qpop</command> operino in maniera predefinita su una singola patch alla volta, potete inserire ed estrarre molte patch in un unico passaggio. L&rsquo;opzione <option role="hg-ext-mq-cmd-qpush-opt">-a</option> di <command role="hg-ext-mq">qpush</command> lo induce a inserire tutte le patch non applicate, mentre l&rsquo;opzione <option role="hg-ext-mq-cmd-qpop-opt">-a</option> di <command role="hg-ext-mq">qpop</command> lo induce a estrarre tutte le patch applicate. (Per ulteriori modi di inserire ed estrarre molte patch, si veda la <xref linkend="sec:mq:perf"/> più avanti.)</para>
+
+      &interaction.mq.tutorial.qpush-a;
+    </sect2>
+
+    <sect2>
+      <title>I controlli di sicurezza e come scavalcarli</title>
+
+      <para id="x_3e1">Diversi comandi MQ esaminano la directory di lavoro prima di fare qualunque cosa e falliscono se trovano una qualsiasi modifica. Si comportano in questo modo per assicurarsi di non farvi perdere i cambiamenti che avete fatto ma che non avete ancora incorporato in una patch. L&rsquo;esempio seguente illustra questo caso: il comando <command role="hg-ext-mq">qnew</command> eviterà di creare una nuova patch se ci sono cambiamenti in sospeso, causati in questo caso dall&rsquo;invocazione di <command role="hg-cmd">hg add</command> su <filename>file3</filename>.</para>
+
+      &interaction.mq.tutorial.add;
+
+      <para id="x_3e2">Tutti i comandi che esaminano la directory di lavoro accettano un&rsquo;opzione <quote>so cosa sto facendo</quote> che si chiama sempre <option>-f</option>. L&rsquo;esatto significato di <option>-f</option> dipende dal comando. Per esempio, <command role="hg-cmd">hg qnew -f</command> incorporerà i cambiamenti in sospeso nella nuova patch creata, ma <command role="hg-cmd">hg qpop -f</command> annullerà le modifiche a qualsiasi file coinvolto dalla patch che sta estraendo. Assicuratevi di leggere la documentazione per l&rsquo;opzione <option>-f</option> di un comando prima di usarla!</para>
+    </sect2>
+
+    <sect2>
+      <title>Lavorare su diverse patch alla volta</title>
+
+      <para id="x_3e3">Il comando <command role="hg-ext-mq">qrefresh</command> aggiorna sempre la patch applicata <emphasis>più recentemente</emphasis>. Questo significa che potete sospendere il lavoro su una patch (aggiornandola), operare estrazioni o inserimenti in modo che l&rsquo;ultima patch applicata sia differente e lavorare su <emphasis>questa</emphasis> patch per un po&rsquo;.</para>
+
+      <para id="x_3e4">Ecco un esempio che illustra come potete sfruttare questa possibilità. Diciamo che state sviluppando una nuova funzione sotto forma di due patch. La prima è una modifica al nucleo del vostro software e la seconda&emdash;basata sulla prima&emdash;modifica l&rsquo;interfaccia utente per usare il codice che avete appena aggiunto al nucleo. Se notate un bug nel nucleo mentre state lavorando sulla patch per l&rsquo;interfaccia utente, per correggerlo vi basta usare <command role="hg-ext-mq">qrefresh</command>, in modo da salvare le modifiche in corso alla vostra patch di interfaccia, e poi usare <command role="hg-ext-mq">qpop</command> per poter operare sulla patch del nucleo. Correggete il bug nel nucleo, aggiornate la patch del nucleo con <command role="hg-ext-mq">qrefresh</command> e inserite la patch di interfaccia tramite <command role="hg-ext-mq">qpush</command> per continuare a lavorare dal punto dove avevate lasciato.</para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="sec:mq:adv-patch">
+    <title>Ulteriori informazioni sulle patch</title>
+
+    <para id="x_3e5">MQ usa il comando GNU <command>patch</command> per applicare le patch, quindi vi sarà d&rsquo;aiuto conoscere qualche altro aspetto di dettaglio sul funzionamento di <command>patch</command> e sulle patch stesse.</para>
+
+    <sect2>
+      <title>Il numero di cancellazioni</title>
+
+      <para id="x_3e6">Se osservate le intestazioni di file in una patch, noterete che i percorsi dei nomi di solito hanno un componente aggiuntivo iniziale che non è presente nel percorso reale. Questo è uno strascico del modo in cui le persone erano abituate a generare le patch (questo modo viene ancora impiegato, ma piuttosto raramente ora che sono disponibili strumenti di controllo di revisione più moderni).</para>
+
+      <para id="x_3e7">Alice avrebbe estratto un archivio, modificato i file e poi deciso di voler creare una patch. Quindi avrebbe rinominato la directory di lavoro, estratto nuovamente l&rsquo;archivio (da qui nasce il bisogno di modificare il nome) e usato le opzioni <option role="cmd-opt-diff">-r</option> e <option role="cmd-opt-diff">-N</option> del comando <command>diff</command> per generare ricorsivamente una patch tra la directory non modificata e quella modificata. Come risultato, il nome della directory non modificata si sarebbe trovato all&rsquo;inizio del percorso sulla parte sinistra di ogni intestazione di file e il nome della directory modificata si sarebbe trovato all&rsquo;inizio del percorso sulla parte destra.</para>
+
+      <para id="x_3e8">Dato che chi riceveva una patch dalle Alice della rete probabilmente non avrebbe avuto le due copie, modificata e non, della directory con esattamente gli stessi nomi, il comando <command>patch</command> è stato dotato di un&rsquo;opzione <option role="cmd-opt-patch">-p</option> che indica il numero di elementi iniziali da eliminare dal percorso al momento di applicare una patch. Questo numero viene chiamato il <emphasis>numero di cancellazioni</emphasis>.</para>
+
+      <para id="x_3e9">Un&rsquo;opzione <quote><literal>-p1</literal></quote> significa <quote>usa un numero di cancellazioni pari a uno</quote>. Se <command>patch</command> vede un nome di file <filename>foo/bar/baz</filename> in un&rsquo;intestazione di file, eliminerà <filename>foo</filename> e proverà ad applicare la patch al file <filename>bar/baz</filename>. Strettamente parlando, il numero di cancellazioni si riferisce al numero di <emphasis>separatori di percorso</emphasis> (e dei relativi elementi) da eliminare. Un numero di cancellazioni pari a uno trasformerà <filename>foo/bar</filename> in <filename>bar</filename>, ma <filename>/foo/bar</filename> (notate lo slash iniziale) in <filename>foo/bar</filename>.</para>
+
+      <para id="x_3ea">Il numero di cancellazioni <quote>standard</quote> per le patch è pari a uno, in quanto quasi tutte le patch contengono un elemento iniziale da eliminare nel percorso. Il comando <command role="hg-cmd">hg diff</command> di Mercurial genera nomi di percorso in questa forma e sia il comando <command role="hg-cmd">hg import</command> che MQ si aspettano patch con un numero di cancellazioni pari a uno.</para>
+
+      <para id="x_3eb">Se qualcuno vi invia una patch che volete aggiungere alla vostra coda delle patch e la patch necessita di un numero di cancellazioni diverso da uno, non potete usare semplicemente <command role="hg-ext-mq">qimport</command> con la patch, perché <command role="hg-ext-mq">qimport</command> non è ancora dotato di un&rsquo;opzione <literal>-p</literal> (si veda il <ulink role="hg-bug" url="http://www.selenic.com/mercurial/bts/issue311">problema 311</ulink> per i dettagli). L&rsquo;alternativa migliore che avete è quella di creare una vostra patch con <command role="hg-ext-mq">qnew</command> e poi usare il comando <command>patch -pN</command> per applicare la patch che avete ricevuto, seguito da <command role="hg-cmd">hg addremove</command> per registrare qualsiasi file aggiunto o rimosso dalla patch, seguito da <command role="hg-ext-mq">hg qrefresh</command>. Questa complessità potrebbe diventare inutile una volta che il <ulink role="hg-bug" url="http://www.selenic.com/mercurial/bts/issue311">problema 311</ulink> verrà risolto.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Strategie per applicare una patch</title>
+
+      <para id="x_3ec">Quando <command>patch</command> applica un blocco, prova a impiegare una serie di strategie successive sempre meno accurate per portare a termine l&rsquo;operazione. Questo impiego di tecniche alternative rende spesso possibile prendere una patch che è stata generata a partire da una vecchia versione di un file e applicarla alla nuova versione di quel file.</para>
+
+      <para id="x_3ed">Come prima cosa, <command>patch</command> cerca una corrispondenza esatta, dove i numeri di riga, il contesto e il testo da modificare devono applicarsi perfettamente. Se non riesce a trovare una corrispondenza esatta, cerca una corrispondenza esatta per il contesto, senza onorare le informazioni sulla numerazione delle righe. Se questa strategia ha successo, il comando stampa una riga dicendo che il blocco è stato applicato, ma con un certo <emphasis>scostamento</emphasis> rispetto al numero di riga originale.</para>
+
+      <para id="x_3ee">Se la corrispondenza con il solo contesto fallisce, <command>patch</command> rimuove la prima e l&rsquo;ultima riga del contesto e tenta una corrispondenza con la sola versione <emphasis>ridotta</emphasis> del contesto. Se il blocco con il contesto ridotto ha successo, stampa un messaggio dicendo di aver applicato il blocco con un <emphasis>fattore di incertezza</emphasis> (il numero dopo il fattore di incertezza indica quante righe del contesto sono state escluse da <command>patch</command> prima che la patch si potesse applicare).</para>
+
+      <para id="x_3ef">Quando nessuna di queste tecniche funziona, <command>patch</command> stampa un messaggio dicendo che il blocco in questione è stato rifiutato. Il comando salva i blocchi rifiutati (anche chiamati semplicemente <quote>rifiuti</quote>) in un file con lo stesso nome e un&rsquo;estensione <filename role="special">.rej</filename> aggiuntiva. Le copie non modificate del file vengono salvate con un&rsquo;estensione <filename role="special">.orig</filename>, mentre la copia del file senza alcuna estensione conterrà le modifiche fatte dai blocchi che sono stati <emphasis>effettivamente</emphasis> applicati. Se avete una patch che modifica il file <filename>foo</filename> con sei blocchi, ma uno di essi non si riesce ad applicare, otterrete una copia <filename>foo.orig</filename> non modificata del file originale, un file <filename>foo.rej</filename> contenente un blocco e il file <filename>foo</filename> contenente le modifiche effettuate dai cinque blocchi applicati con successo.</para>
+    </sect2>
+
+    <sect2>
+      <title>Alcune stranezze nella rappresentazione delle patch</title>
+
+      <para id="x_3f0">Ci sono alcune cose utili da sapere sul modo in cui <command>patch</command> lavora con i file.</para>
+      <itemizedlist>
+	<listitem><para id="x_3f1">Questo dovrebbe già essere ovvio, ma <command>patch</command> non è in grado di gestire i file binari.</para>
+	</listitem>
+	<listitem><para id="x_3f2">Il comando non si cura neanche del bit di esecuzione, bensì crea i nuovi file come leggibili, ma non eseguibili.</para>
+	</listitem>
+	<listitem><para id="x_3f3"><command>patch</command> tratta la rimozione di un file come un diff tra il file da rimuovere e un file vuoto. Quindi la vostra idea di <quote>cancellare un file</quote> viene rappresentata in una patch come <quote>ogni riga di questo file è stata cancellata</quote>.</para>
+	</listitem>
+	<listitem><para id="x_3f4">Tratta l&rsquo;aggiunta di un file come un diff tra un file vuoto e il file da aggiungere. Quindi la vostra idea di <quote>aggiungere un file</quote> viene rappresentata in una patch come <quote>ogni riga di questo file è stata aggiunta</quote>.</para>
+	</listitem>
+	<listitem><para id="x_3f5">Tratta un file rinominato come la rimozione del file con il vecchio nome e l&rsquo;aggiunta del file con il nuovo nome. Questo significa che i file rinominati occupano molto spazio in una patch. (Notate anche che Mercurial attualmente non cerca di inferire se i file in una patch sono stati rinominati o copiati.)</para>
+	</listitem>
+	<listitem><para id="x_3f6"><command>patch</command> non è in grado di rappresentare i file vuoti, quindi non potete usare una patch per rappresentare la nozione di <quote>aggiungere questo file vuoto all&rsquo;albero</quote>.</para>
+	</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Fate attenzione all&rsquo;incertezza</title>
+
+      <para id="x_3f7">Anche se l&rsquo;applicazione di un blocco con un certo scostamento o con un certo fattore di incertezza avrà spesso un successo completo, queste tecniche inesatte lasciano naturalmente aperta la possibilità di rovinare il file modificato. Il caso più comune è tipicamente quello in cui la patch viene applicata due volte o in una posizione sbagliata nel file. Se <command>patch</command> o <command role="hg-ext-mq">qpush</command> dovessero mai menzionare lo scostamento o il fattore di incertezza, dovreste assicurarvi che i file siano stati modificati in maniera corretta.</para>
+
+      <para id="x_3f8">Spesso è una buona idea aggiornare una patch che è stata applicata con uno scostamento o un fattore di incertezza, perché l&rsquo;aggiornamento della patch genera nuove informazioni di contesto che permetteranno di applicarla in maniera precisa. Dico <quote>spesso</quote>, non <quote>sempre</quote>, perché qualche volta l&rsquo;aggiornamento di una patch ne renderà impossibile l&rsquo;applicazione su una revisione differente dei file coinvolti. In alcuni casi, come quando state mantenendo una patch che deve essere applicabile a molteplici versioni di un albero di sorgenti, è considerato accettabile avere una patch che si applica con qualche incertezza, purché abbiate verificato i risultati del processo di applicazione in casi come questi.</para>
+    </sect2>
+
+    <sect2>
+      <title>Gestire il rifiuto</title>
+
+      <para id="x_3f9">Se <command role="hg-ext-mq">qpush</command> non riesce ad applicare una patch, stamperà un messaggio di errore e terminerà. Se ha lasciato alcuni file <filename role="special">.rej</filename>, normalmente è meglio correggere i blocchi rifiutati prima di inserire altre patch o fare qualsiasi ulteriore modifica.</para>
+
+      <para id="x_3fa">Se <emphasis>di solito</emphasis> la vostra patch si applicava in maniera pulita e ora non lo fa più perché avete modificato il codice sottostante su cui si basavano le vostre patch, Mercurial Queues può aiutarvi: leggete la <xref linkend="sec:mq:merge"/> per i dettagli.</para>
+
+      <para id="x_3fb">Sfortunatamente, non esiste alcuna tecnica particolare per gestire i blocchi rifiutati. Molto spesso, dovrete esaminare il file <filename role="special">.rej</filename> e modificare il file di destinazione, applicando a mano i blocchi rifiutati.</para>
+
+      <para id="x_3fd">Un programmatore del kernel di Linux, Chris Mason (l&rsquo;autore di Mercurial Queues), ha realizzato uno strumento chiamato <command>mpatch</command> <citation><xref linkend="bib:mpatch"/></citation>, che adotta un metodo semplice per automatizzare l&rsquo;applicazione dei blocchi rifiutati da <command>patch</command>. Il comando <command>mpatch</command> può aiutarvi nel caso il blocco sia stato rifiutato per quattro tipiche ragioni:</para>
+
+      <itemizedlist>
+	<listitem><para id="x_3fe">il contesto in mezzo a un blocco è cambiato;</para>
+	</listitem>
+	<listitem><para id="x_3ff">all&rsquo;inizio o alla fine del blocco manca una certa quantità di contesto;</para>
+	</listitem>
+	<listitem><para id="x_400">un blocco più ampio potrebbe applicarsi meglio&emdash;interamente o in parte&emdash;se fosse suddiviso in blocchi più piccoli;</para>
+	</listitem>
+	<listitem><para id="x_401">un blocco rimuove righe con un contesto leggermente differente rispetto a quello attualmente presente nel file.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_402">Se usate il comando <command>mpatch</command>, dovreste stare doppiamente attenti quando controllate i risultati al termine dell&rsquo;esecuzione. In effetti, <command>mpatch</command> impone questo metodo di doppio controllo sul risultato dello strumento, avviando automaticamente un programma di gestione delle unioni quando ha concluso il proprio lavoro, in modo che possiate verificare i risultati e risolvere qualsiasi conflitto rimanente.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Ulteriori informazioni sulla gestione delle patch</title>
+
+    <para id="x_6db">Man mano che acquisite familiarità con MQ, comincerete a voler eseguire altri tipi di operazioni di gestione delle patch.</para>
+
+    <sect2>
+      <title>Cancellare le patch indesiderate</title>
+
+      <para id="x_6dc">Se volete sbarazzarvi di una patch, usate il comando <command role="hg-ext-mq">hg qdelete</command> per cancellare il file contenente la patch e rimuovere la sua voce dalla serie di patch. Se provate a cancellare una patch che è ancora applicata, <command role="hg-ext-mq">hg qdelete</command> si rifiuterà di operare.</para>
+
+      &interaction.ch11-qdelete.go;
+    </sect2>
+
+    <sect2>
+      <title>Convertire in e da revisioni permanenti</title>
+
+      <para id="x_6dd">Una volta che avete finito di lavorare con una patch e volete trasformarla in un changeset permanente, usate il comando <command role="hg-ext-mq">hg qfinish</command>. Passate una revisione al comando per identificare la patch che volete trasformare in un normale changeset; questa patch deve essere già stata applicata.</para>
+
+      &interaction.ch11-qdelete.convert;
+
+      <para id="x_6e0">Il comando <command role="hg-ext-mq">hg qfinish</command> accetta un&rsquo;opzione <option>--all</option> o <option>-a</option> per trasformare tutte le patch applicate in normali changeset.</para>
+
+      <para id="x_6de">&Egrave; anche possibile trasformare un changeset esistente in una patch, passando l&rsquo;opzione <option>-r</option> al comando <command role="hg-ext-mq">hg qimport</command>.</para>
+
+      &interaction.ch11-qdelete.import;
+
+      <para id="x_6df">Notate che ha senso convertire un changeset in una patch solo se non avete propagato quel changeset in altri repository. L&rsquo;identificatore del changeset importato cambierà ogni volta che aggiornate la patch, cosa che indurrà Mercurial a trattarlo come se non fosse correlato al changeset originale che avete trasmesso da qualche altra parte.</para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="sec:mq:perf">
+    <title>Ottenere le prestazioni migliori da MQ</title>
+
+    <para id="x_403">MQ è molto efficiente nel gestire un grande numero di patch. Ho effettuato alcuni esperimenti sulle prestazioni a metà del 2006 per una presentazione che ho tenuto alla conferenza EuroPython 2006 (su macchine più moderne, dovreste aspettarvi risultati migliori di quelli che vedrete nel seguito). Come dati campione ho usato la serie di patch 2.6.17-mm1 per il kernel di Linux, contenente 1.738 patch. Ho applicato queste patch a un repository del kernel di Linux contenente tutte le 27.472 revisioni intercorse tra Linux 2.6.12-rc2 e Linux 2.6.17.</para>
+
+    <para id="x_404">Sul mio vecchio e lento portatile, sono riuscito a eseguire <command role="hg-cmd">hg qpush -a</command> per tutte le 1.738 patch in 3.5 minuti e a eseguire <command role="hg-cmd">hg qpop -a</command> per tutte le patch in 30 secondi. (Su portatili più recenti, il tempo per estrarre tutte le patch è sceso a due minuti.) Ho potuto aggiornare una delle patch più grandi (che ha effettuato 22.779 righe di cambiamenti a 287 file) eseguendo <command role="hg-ext-mq">qrefresh</command> in 6.6 secondi.</para>
+
+    <para id="x_405">Chiaramente, MQ è particolarmente adatto per lavorare su alberi di grandi dimensioni, ma ci sono alcuni trucchi che potete usare per ottenere prestazioni ancora migliori.</para>
+
+    <para id="x_406">Prima di tutto, provate a <quote>raggruppare</quote> insieme le operazioni. Quando eseguite <command role="hg-ext-mq">qpush</command> o <command role="hg-ext-mq">qpop</command>, questi comandi esaminano la directory di lavoro una volta per assicurarsi che non abbiate effettuato alcuna modifica dimenticandovi poi di invocare <command role="hg-ext-mq">qrefresh</command>. Su alberi di piccole dimensioni, il tempo impiegato da questa disamina è insignificante. Tuttavia, su un albero di medie dimensioni (contenente decine di migliaia di file), questa operazione può impiegare anche più di un secondo.</para>
+
+    <para id="x_407">I comandi <command role="hg-ext-mq">qpush</command> e <command role="hg-ext-mq">qpop</command> vi permettono di estrarre e inserire più patch alla volta. Come prima cosa, identificate la <quote>patch di destinazione</quote> che volete raggiungere. Quando usate <command role="hg-ext-mq">qpush</command> specificando una destinazione, il comando inserirà patch finché quella patch non si troverà in cima alla pila delle patch applicate. Quando usate <command role="hg-ext-mq">qpop</command> con una destinazione, MQ estrarrà patch finché la patch di destinazione non si troverà in cima a quella pila.</para>
+
+    <para id="x_408">Potete indicare una patch di destinazione usando il nome della patch oppure un numero. Se usate un identificatore numerico, il conteggio delle patch parte da zero: questo significa che la prima patch corrisponde a zero, la seconda a uno, e così via.</para>
+  </sect1>
+
+  <sect1 id="sec:mq:merge">
+    <title>Aggiornare le vostre patch quando il codice sottostante cambia</title>
+
+    <para id="x_409">Capita spesso di mantenere una pila di patch su un repository sottostante che non modificate direttamente. Se state lavorando sui cambiamenti a codice di terze parti, o su una funzione che impiegate più tempo a sviluppare rispetto alla velocità di cambiamento del codice su cui si basa, avrete spesso bisogno di sincronizzarvi con il codice sottostante e di correggere ogni blocco delle vostre patch che non è più applicabile. Questa operazione si chiama <emphasis>rifondare</emphasis> la vostra serie di patch.</para>
+
+    <para id="x_40a">Il modo più semplice per eseguire questa operazione è quello di usare <command role="hg-cmd">hg qpop -a</command> per estrarre le vostre patch, poi invocare <command role="hg-cmd">hg pull</command> per propagare i cambiamenti nel repository sottostante e infine eseguire <command role="hg-cmd">hg qpush -a</command> per inserire nuovamente le vostre patch. MQ interromperà l&rsquo;inserimento ogni volta che incontra una patch che non riesce ad applicare a causa di qualche conflitto, dandovi la possibilità di risolvere i conflitti, aggiornare la patch interessata tramite <command role="hg-ext-mq">qrefresh</command> e continuare a inserire fino a quando non avrete corretto l&rsquo;intera pila.</para>
+
+    <para id="x_40b">Questo approccio è semplice e funziona bene se non vi aspettate che le modifiche al codice sottostante influenzino l&rsquo;applicabilità delle vostre patch. Tuttavia, se la vostra pila di patch coinvolge codice che viene modificato in maniera frequente o invasiva nel repository sottostante, correggere a mano i blocchi rifiutati diventa velocemente una seccatura.</para>
+
+    <para id="x_40c">&Egrave; possibile automatizzare parzialmente il processo di rifondazione. Se le vostre patch si applicano in maniera pulita su una qualche revisione del repository sottostante, MQ può usare questa informazione per aiutarvi a risolvere i conflitti tra le vostre patch e una revisione differente.</para>
+
+    <para id="x_40d">Il processo è leggermente complicato.</para>
+    <orderedlist>
+      <listitem><para id="x_40e">Come prima cosa, invocate <command role="hg-cmd">hg qpush -a</command> per inserire tutte le vostre patch sulla revisione su cui sapete che si applicano in maniera pulita.</para>
+      </listitem>
+      <listitem><para id="x_40f">Salvate una copia di backup della vostra directory delle patch usando <command role="hg-cmd">hg qsave -e -c</command>. Questo comando salva le patch in una directory chiamata <filename role="special" class="directory">.hg/patches.N</filename>, dove <literal>N</literal> è un piccolo intero, e stampa il nome della directory in cui sono state salvate le patch. Il comando inserisce anche un <quote>changeset di salvataggio</quote> dopo quelli corrispondenti alle vostre patch applicate, per registrare internamente gli stati dei file <filename role="special">series</filename> e <filename role="special">status</filename>.</para>
+      </listitem>
+      <listitem><para id="x_410">Invocate <command role="hg-cmd">hg pull</command> per propagare i nuovi cambiamenti nel repository sottostante. (Non usate <command role="hg-cmd">hg pull -u</command>, perché l&rsquo;aggiornamento dovrà essere fatto in maniera particolare, come vedrete nel prossimo punto.)</para>
+      </listitem>
+      <listitem><para id="x_411">Aggiornate la directory di lavoro alla nuova revisione di punta, usando <command role="hg-cmd">hg update -C</command> per sovrascrivere le modifiche apportate dalle patch che avete inserito.</para>
+      </listitem>
+      <listitem><para id="x_412">Unite tutte le patch usando <command>hg qpush -m -a</command>. L&rsquo;opzione <option role="hg-ext-mq-cmd-qpush-opt">-m</option> di <command role="hg-ext-mq">qpush</command> dice a MQ di effettuare un&rsquo;unione a tre vie se l&rsquo;applicazione di una patch fallisce.</para>
+      </listitem></orderedlist>
+
+    <para id="x_413">Durante l&rsquo;esecuzione di <command role="hg-cmd">hg qpush -m</command>, ogni patch nel file <filename role="special">series</filename> viene applicata normalmente. Se una patch viene applicata con un fattore di incertezza o viene rifiutata, MQ esamina la coda che avete salvato tramite <command role="hg-ext-mq">qsave</command> ed effettua un&rsquo;unione a tre vie con il changeset che corrisponde alla patch. Questa operazione sfrutta il normale meccanismo di unione di Mercurial, quindi potrebbe aprire uno strumento grafico di unione in modo da aiutarvi a risolvere i problemi.</para>
+
+    <para id="x_414">Quando avete finito di risolvere gli effetti di una patch, MQ aggiornerà la vostra patch sulla base dei risultati dell&rsquo;unione.</para>
+
+    <para id="x_415">Alla fine di questo processo, il vostro repository conterrà una testa aggiuntiva proveniente dalla vecchia coda delle patch e la directory <filename role="special" class="directory">.hg/patches.N</filename> conterrà una copia della vecchia coda delle patch. Potete rimuovere la testa aggiuntiva usando <command role="hg-cmd">hg qpop -a -n patches.N</command> o <command role="hg-cmd">hg strip</command>. Potete cancellare <filename role="special" class="directory">.hg/patches.N</filename> una volta che siete sicuri di non averne più bisogno come backup.</para>
+  </sect1>
+
+  <sect1>
+    <title>Identificare le patch</title>
+
+    <para id="x_416">I comandi MQ che lavorano con le patch vi permettono di fare riferimento a una patch usando il suo nome o un numero. Il riferimento per nome funziona in modo abbastanza ovvio: passate il nome <filename>foo.patch</filename> a <command role="hg-ext-mq">qpush</command>, per esempio, e il comando inserirà patch fino a quando <filename>foo.patch</filename> non verrà applicata.</para>
+
+    <para id="x_417">Potete abbreviare il riferimento a una patch usando sia un nome che una differenza numerica: <literal>foo.patch-2</literal> significa <quote>due patch prima di <literal>foo.patch</literal></quote>, mentre <literal>bar.patch+4</literal> significa <quote>quattro patch dopo <literal>bar.patch</literal></quote>.</para>
+
+    <para id="x_418">Il riferimento per indice non è molto diverso. La prima patch visualizzata da <command role="hg-ext-mq">qseries</command> è la patch numero zero (sì, è uno di quei sistemi di conteggio che partono da zero), la seconda è la patch numero uno, e così via.</para>
+
+    <para id="x_419">MQ rende anche più facile lavorare con le patch usando i normali comandi Mercurial. Tutti i comandi che accettano un identificatore di changeset accettano anche il nome di una patch applicata. MQ aggiunge un&rsquo;etichetta omonima per ogni patch applicata alle etichette normalmente presenti nel repository. In più, le etichette speciali <literal role="tag">qbase</literal> e <literal role="tag">qtip</literal> identificano rispettivamente la prima e l&rsquo;ultima patch applicata.</para>
+
+    <para id="x_41a">Queste aggiunte alla funzione di etichettatura di Mercurial facilitano ulteriormente l&rsquo;uso delle patch.</para>
+    <itemizedlist>
+      <listitem><para id="x_41b">Volete bombardare di patch una mailing list con l&rsquo;ultima serie dei vostri cambiamenti?</para>
+	<programlisting>hg email qbase:qtip</programlisting>
+	<para id="x_41c">(Non sapete cosa sia un <quote>bombardamento di patch</quote>? Leggete la <xref linkend="sec:hgext:patchbomb"/>.)</para>
+      </listitem>
+      <listitem><para id="x_41d">Avete bisogno di vedere tutte le patch che da <literal>foo.patch</literal> in poi hanno coinvolto i file contenuti in una sottodirectory del vostro albero?</para>
+	<programlisting>hg log -r foo.patch:qtip sottodirectory</programlisting>
+      </listitem>
+    </itemizedlist>
+
+    <para id="x_41e">Dato che MQ rende disponibili i nomi delle patch alle altre parti di Mercurial tramite il meccanismo interno delle etichette, non avete bisogno di digitare l&rsquo;intero nome di una patch quando volete identificarla per nome.</para>
+
+    <para id="x_41f">Un&rsquo;altra piacevole conseguenza del rappresentare i nomi di patch come etichette è che il comando <command role="hg-cmd">hg log</command> mostrerà normalmente il nome di una patch come un&rsquo;etichetta nel proprio elenco, rendendo facile distinguere visivamente le patch applicate dalle <quote>normali</quote> revisioni sottostanti. L&rsquo;esempio seguente mostra alcuni comandi Mercurial in azione con le patch applicate.</para>
+
+    &interaction.mq.id.output;
+  </sect1>
+
+  <sect1>
+    <title>Informazioni utili</title>
+
+    <para id="x_420">Ci sono alcuni aspetti dell&rsquo;uso di MQ che non trovano posto in sezioni dedicate, ma che è bene conoscere. Li presento qui, in un unico posto.</para>
+
+    <itemizedlist>
+      <listitem><para id="x_421">Normalmente, quando estraete una patch tramite <command role="hg-ext-mq">qpop</command> e poi la reinserite tramite <command role="hg-ext-mq">qpush</command>, il changeset che rappresenta la patch dopo l&rsquo;estrazione/inserimento avrà una <emphasis>diversa identità</emphasis> rispetto al changeset che rappresentava l&rsquo;hash in precedenza. Leggete la <xref linkend="sec:mqref:cmd:qpush"/> per sapere perché.</para>
+      </listitem>
+      <listitem><para id="x_422">Non è una buona idea usare <command role="hg-cmd">hg merge</command> per unire i cambiamenti provenienti da un altro ramo con un changeset corrispondente a una patch, almeno se volete mantenere la <quote>natura di patch</quote> di quel changeset e dei changeset che si trovano sotto a quello nella pila delle patch. Se provate a farlo, sembrerà avere successo, ma l&rsquo;effetto sarà quello di disorientare MQ.</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1 id="sec:mq:repo">
+    <title>Gestire le patch in un repository</title>
+
+    <para id="x_423">Dato che la directory <filename role="special" class="directory">.hg/patches</filename> di MQ risiede fuori dalla directory di lavoro di un repository Mercurial, il repository Mercurial <quote>sottostante</quote> non sa nulla della gestione o della presenza delle patch.</para>
+
+    <para id="x_424">Questo presenta l&rsquo;interessante possibilità di gestire i contenuti della directory delle patch come un repository Mercurial indipendente. Questo può essere un modo utile per lavorare. Per esempio, potete lavorare su una patch per un po&rsquo;, aggiornarla tramite <command role="hg-ext-mq">qrefresh</command>, poi usare <command role="hg-cmd">hg commit</command> per registrare lo stato corrente della patch. Questo vi permette di <quote>ritornare</quote> a quella versione della patch più tardi.</para>
+
+    <para id="x_425">Potete quindi condividere differenti versioni della stessa pila di patch tra molteplici repository sottostanti. Uso questa tecnica quando sto sviluppando una funzione del kernel di Linux. Ho una copia intatta dei miei sorgenti del kernel per ogni diversa architettura di CPU e un repository clonato su ognuna di queste architetture che contiene le patch su cui sto lavorando. Quando voglio collaudare una modifica su un&rsquo;architettura differente, trasmetto le mie patch correnti al repository associato con il kernel di quell&rsquo;architettura, estraggo e inserisco tutte le mie patch, infine assemblo e collaudo quel kernel.</para>
+
+    <para id="x_426">Gestire le patch in un repository consente a più sviluppatori di lavorare sulla stessa serie di patch senza scontrarsi tra loro e basandosi su sorgenti sottostanti che potrebbero o non potrebbero essere sotto il loro controllo.</para>
+
+    <sect2>
+      <title>Il supporto di MQ per i repository di patch</title>
+
+      <para id="x_427">MQ vi aiuta a lavorare con la directory <filename role="special" class="directory">.hg/patches</filename> in qualità di repository. Quando preparate un repository per lavorare con le patch usando <command role="hg-ext-mq">qinit</command>, potete passare l&rsquo;opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option> per creare la directory <filename role="special" class="directory">.hg/patches</filename> sotto forma di repository Mercurial.</para>
+
+      <note>
+	<para id="x_428">Se dimenticate di usare l&rsquo;opzione <option role="hg-ext-mq-cmd-qinit-opt">-c</option>, potete semplicemente posizionarvi nella directory <filename role="special" class="directory">.hg/patches</filename> in qualsiasi momento e invocare <command role="hg-cmd">hg init</command>. Non dimenticate, però, di aggiungere una voce per il file <filename role="special">status</filename> al file <filename role="special">.hgignore</filename> (<command role="hg-cmd">hg qinit -c</command> lo fa automaticamente per voi), perché il file <filename role="special">status</filename> non andrebbe <emphasis>davvero</emphasis> amministrato.</para>
+      </note>
+
+      <para id="x_42a">Per convenienza, se MQ nota che la directory <filename class="directory">.hg/patches</filename> è un repository, userà automaticamente <command role="hg-cmd">hg add</command> per aggiungere ogni patch che create e importate.</para>
+
+      <para id="x_42b">MQ fornisce il comando abbreviato <command role="hg-ext-mq">qcommit</command> che esegue <command role="hg-cmd">hg commit</command> nella directory <filename role="special" class="directory">.hg/patches</filename>, per risparmiarvi noiose digitazioni.</para>
+
+      <para id="x_42c">Infine, sui sistemi Unix, potete definire l&rsquo;alias <command>mq</command> come comando di convenienza per gestire la directory delle patch. Per esempio, sui sistemi Linux che usano la shell <command>bash</command>, potete aggiungere la riga seguente al vostro file <filename role="home">~/.bashrc</filename>.</para>
+
+      <programlisting>alias mq=`hg -R $(hg root)/.hg/patches'</programlisting>
+
+      <para id="x_42d">Potete poi invocare comandi della forma <command>mq pull</command> dal repository principale.</para>
+    </sect2>
+
+    <sect2>
+      <title>Alcune cose a cui fare attenzione</title>
+
+      <para id="x_42e">Il supporto di MQ per lavorare con un repository pieno di patch è limitato in alcuni aspetti di dettaglio.</para>
+
+      <para id="x_42f">MQ non può automaticamente scoprire quali modifiche avete fatto alla directory delle patch. Se usate <command role="hg-cmd">hg pull</command>, apportate cambiamenti a mano, o invocate <command role="hg-cmd">hg update</command> per aggiornare le modifiche alle patch o al file <filename role="special">series</filename>, dovrete usare <command role="hg-cmd">hg qpop -a</command> e poi <command role="hg-cmd">hg qpush -a</command> nel repository sottostante per fare in modo che quelle modifiche compaiano anche là. Se dimenticate di fare questo, potreste confondere le idee a MQ in merito a quali patch sono state effettivamente applicate.</para>
+
+    </sect2>
+  </sect1>
+  <sect1 id="sec:mq:tools">
+    <title>Strumenti di terze parti che lavorano con le patch</title>
+
+    <para id="x_430">Una volta che avete lavorato con le patch per un po&rsquo;, vi troverete desiderosi di utilizzare strumenti che vi aiutino a capire e manipolare le patch di cui vi state occupando.</para>
+
+    <para id="x_431">Il comando <command>diffstat</command> <citation><xref linkend="bib:diffstat"/></citation> genera un istogramma delle modifiche effettuate a ogni file in una patch. Fornisce un buon modo per <quote>farsi un&rsquo;idea</quote> di una patch&emdash;quali file coinvolge e quante modifiche introduce a ogni file e nell&rsquo;insieme. (Trovo che sia una buona idea usare regolarmente l&rsquo;opzione <option role="cmd-opt-diffstat">-p</option> di <command>diffstat</command>, poiché altrimenti il comando proverà a manipolare i prefissi dei nomi di file in un modo che almeno io trovo inevitabilmente confuso.)</para>
+
+    &interaction.mq.tools.tools;
+
+    <para id="x_432">Il pacchetto <literal role="package">patchutils</literal> <citation><xref linkend="bib:patchutils"/></citation> è inestimabile. Fornisce un insieme di piccole utilità che seguono la <quote>filosofia Unix</quote>: ognuna effettua una singola operazione utile su una patch. Il comando di <literal role="package">patchutils</literal> che uso di più è <command>filterdiff</command>, che estrae sottoinsiemi di un file di patch. Per esempio, data una patch che modifica centinaia di file attraverso dozzine di directory, una singola invocazione di <command>filterdiff</command> può generare una patch più piccola che coinvolge solo i file il cui nome corrisponde a un particolare pattern di tipo glob. Leggete la <xref linkend="mq-collab:tips:interdiff"/> per un altro esempio.</para>
+
+  </sect1>
+  <sect1>
+    <title>Strategie valide per lavorare con le patch</title>
+
+    <para id="x_433">Sia che stiate lavorando su una serie di patch da sottoporre a un progetto software libero od open source, oppure su una serie che intendete trattare come una sequenza di normali changeset una volta che avete finito, potete usare alcune semplici tecniche per mantenere bene organizzato il vostro lavoro.</para>
+
+    <para id="x_434">Date nomi descrittivi alle vostre patch. Un buon nome per una patch potrebbe essere <filename>riorganizza-allocazione-dispositivi.patch</filename>, perché vi suggerirà immediatamente qual è lo scopo della patch. I nomi lunghi non dovrebbero essere un problema: non digiterete i nomi spesso, ma <emphasis>invocherete</emphasis> comandi come <command role="hg-ext-mq">qapplied</command> e <command role="hg-ext-mq">qtop</command> più e più volte. Una buona denominazione diventa particolarmente importante quando state lavorando con un certo numero di patch, o se vi state destreggiando tra un certo numero di attività differenti e le vostre patch ottengono solo una frazione della vostra attenzione.</para>
+
+    <para id="x_435">Siate consapevoli della patch su cui state lavorando. Usate frequentemente il comando <command role="hg-ext-mq">qtop</command> e date un&rsquo;occhiata al testo delle vostre patch&emdash;per esempio, usando <command role="hg-cmd">hg tip -p</command>&emdash;per assicurarvi di sapere dove vi trovate. Mi è capitato molte volte di modificare e aggiornare una patch diversa da quella che intendevo, ed è spesso complicato trasferire le modifiche nella patch giusta dopo averle inserite in quella sbagliata.</para>
+
+    <para id="x_436">Per questo motivo, vale davvero la pena di investire un po&rsquo; di tempo per imparare a usare alcuni degli strumenti di terze parti che ho descritto nella <xref linkend="sec:mq:tools"/>, in particolare <command>diffstat</command> e <command>filterdiff</command>. Il primo vi darà velocemente un&rsquo;idea di quali sono le modifiche effettuate dalla vostra patch, mentre il secondo vi renderà più facile selezionare blocchi particolari di una patch e inserirli in un&rsquo;altra.</para>
+
+  </sect1>
+  <sect1>
+    <title>Il ricettario di MQ</title>
+
+    <sect2>
+      <title>Gestire patch <quote>elementari</quote></title>
+
+      <para id="x_437">Dato che il costo di aggiungere file in un nuovo repository Mercurial è così basso, ha molto senso gestire le patch in questo modo anche se volete semplicemente fare alcune modifiche a un archivo di sorgenti che avete scaricato.</para>
+
+      <para id="x_438">Cominciate con lo scaricare l&rsquo;archivio dei sorgenti, estraendone i contenuti e trasformandoli in un repository Mercurial.</para>
+
+      &interaction.mq.tarball.download;
+
+      <para id="x_439">Continuate creando una pila di patch e facendo le vostre modifiche.</para>
+
+      &interaction.mq.tarball.qinit;
+
+      <para id="x_43a">Diciamo che trascorrono alcune settimane o mesi e gli autori di quel pacchetto rilasciano una nuova versione. Prima di tutto, propagate i loro cambiamenti nel repository.</para>
+
+      &interaction.mq.tarball.newsource;
+
+      <para id="x_43b">La coppia di comandi che comincia con <command role="hg-cmd">hg locate</command> appena invocata cancella tutti i file dalla directory di lavoro, in modo che l&rsquo;opzione <option role="hg-opt-commit">--addremove</option> di <command role="hg-cmd">hg commit</command> possa effettivamente dirvi quali file sono stati davvero rimossi nella nuova versione dei sorgenti.</para>
+
+      <para id="x_43c">Infine, potete applicare le vostre patch al nuovo albero.</para>
+
+      &interaction.mq.tarball.repush;
+    </sect2>
+
+    <sect2 id="sec:mq:combine">
+      <title>Combinare intere patch</title>
+
+      <para id="x_43d">MQ vi fornisce il comando <command role="hg-ext-mq">qfold</command> per consentirvi di combinare intere patch tra loro. Questo comando <quote>include</quote> le patch che nominate, nell&rsquo;ordine in cui le nominate, nell&rsquo;ultima patch applicata e concatena le loro descrizioni aggiungendole alla fine della descrizione di questa patch. Se le patch che includete sono applicate, devono essere estratte prima di poterle includere.</para>
+
+      <para id="x_43e">L&rsquo;ordine in cui includete le patch è importante. Se la vostra ultima patch applicata è <literal>foo</literal> e voi utilizzate <command role="hg-ext-mq">qfold</command> per includervi <literal>bar</literal> e <literal>quux</literal>, otterrete una patch che opererà come se aveste applicato prima <literal>foo</literal>, poi <literal>bar</literal>, seguita da <literal>quux</literal>.</para>
+    </sect2>
+
+    <sect2>
+      <title>Unire parte di una patch a un&rsquo;altra</title>
+
+      <para id="x_43f">Unire <emphasis>parte</emphasis> di una patch a un&rsquo;altra patch è più difficile che combinare intere patch tra loro.</para>
+
+      <para id="x_440">Se volete spostare alcune modifiche su interi file, potete usare le opzioni <option role="cmd-opt-filterdiff">-i</option> e <option role="cmd-opt-filterdiff">-x</option> di <command>filterdiff</command> per scegliere le modifiche che desiderate ricavare da una patch, aggiungendo il risultato del comando in coda alla patch a cui unire i cambiamenti. Di solito non avrete bisogno di modificare la patch da cui prelevate le modifiche da unire. Piuttosto, MQ rifiuterà alcune parti della patch quando invocate <command role="hg-ext-mq">qpush</command> su di essa (a causa dei blocchi che avete spostato nell&rsquo;altra patch) e voi potrete semplicemente aggiornare la patch tramite <command role="hg-ext-mq">qrefresh</command> per scartare i blocchi duplicati.</para>
+
+      <para id="x_441">Se avete una patch con più blocchi che modificano un file e volete spostare solo alcuni di questi blocchi, il lavoro diventa più complicato, ma potete comunque automatizzarlo parzialmente. Usate <command>lsdiff -nvv</command> per stampare alcuni metadati sulla patch.</para>
+
+      &interaction.mq.tools.lsdiff;
+
+      <para id="x_442">Questo comando stampa tre tipi diversi di numeri:</para>
+      <itemizedlist>
+	<listitem><para id="x_443">(nella prima colonna) un <emphasis>numero di file</emphasis> per identificare ogni file modificato dalla patch;</para>
+	</listitem>
+	<listitem><para id="x_444">(sulla riga seguente, indentato) il numero di riga del file modificato dove comincia il blocco;</para>
+	</listitem>
+	<listitem><para id="x_445">(sulla stessa riga) un <emphasis>numero di blocco</emphasis> per identificare quel blocco.</para>
+	</listitem>
+      </itemizedlist>
+
+      <para id="x_446">Dovrete leggere e ispezionare visivamente la patch per identificare i numeri di file e di blocco che volete, ma poi potrete passarli alle opzioni <option role="cmd-opt-filterdiff">--files</option> e <option role="cmd-opt-filterdiff">--hunks</option> di <command>filterdiff</command> per selezionare esattamente quel file e il blocco che volete estrarre.</para>
+
+      <para id="x_447">Una volta che avete questo blocco, potete aggiungerlo in coda alla vostra patch di destinazione e continuare con il resto della <xref linkend="sec:mq:combine"/>.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Differenze tra quilt e MQ</title>
+
+    <para id="x_448">Se avete già familiarità con quilt, MQ fornisce un insieme di comandi simile. Ci sono alcune differenze nel modo in cui questi comandi lavorano.</para>
+
+    <para id="x_449">Avrete già notato che la maggior parte dei comandi di quilt hanno una controparte MQ che comincia semplicemente con una <quote><literal>q</literal></quote>. Le eccezioni sono i comandi <literal>add</literal> e <literal>remove</literal> di quilt, le cui controparti sono i normali comandi Mercurial <command role="hg-cmd">hg add</command> e <command role="hg-cmd">hg remove</command>. Non c&rsquo;è alcun comando MQ equivalente al comando quilt <literal>edit</literal>.</para>
+
+  </sect1>
+</chapter>
