@@ -292,52 +292,55 @@ rename from/some/path to/some/other/place
         quelle partie de son espace de nommage est en fait une branche, il
         traite la plupart des commandes comme des requêtes à exécuter sur le
         répertoire où vous vous situez, et ses sous répertoires. Par exemple,
-        si vous exécuter <command>svn log</command>, vous verrez l'historique 
-        de la partie de l'arboresence où vous vous situez, et non la
+        si vous exécutez <command>svn log</command>, vous verrez l'historique 
+        de la partie de l'arboresence où vous vous situez, et non de la
         hiérarchie entière.</para>
 
 	<para id="x_6fc">Les commandes de Mercurial ont un comportement
-        différents, appliquant toutes commandes à l'ensemble de l'arboresence
+        différent : toutes les commandes s'appliquent à l'ensemble de l'arboresence
         du dépôt. Exécutez la commande <command>hg log</command> et elle vous
-        donnera l'historique de l'ensemble de l'arboresence, quelque soit le
-        répertoire de cette dernière où vous vous situez à ce moment là. Si
-        vous souhaitez l'historique d'une répertoire ou seulement d'un
-        fichier, ajouter simplement le nom de celui-ci à la commande
-        <command>hg log src</command>.</para>
+        donnera l'historique de l'ensemble de l'arboresence, quel que soit le
+        sous-répertoire où vous vous situez. Si
+        vous souhaitez obtenir l'historique d'un répertoire ou seulement d'un
+        fichier, ajouter simplement le nom de celui-ci à la commande, par
+        exemple <command>hg log src</command>.</para>
 
 	<para id="x_6fd">De ma propre expérience, cette différence dans leur
-        comportement par défaut est probablement ce qui risque de vous
-        surprendre si vous basculez régulièrement d'un outil à l'autre.</para>
+        comportement par défaut est le plus probablement ce qui risque de vous
+        surprendre si vous passez régulièrement d'un outil à l'autre.</para>
       </sect3>
 
       <sect3>
 	<title>Opération multi utilisateur et sécurité</title>
 
 	<para id="x_6fe">Avec Subversion, il est normal (bien que légèrement
-        désapprouvée) que différentes personnes collaborent sur une seule
+        désapprouvé) que différentes personnes collaborent sur une seule
         branche. Si Alice et Bob travaillent ensemble, et Alice ajoute ses
         modications à leur branche partagée, Bob doit alors mettre à jour
-        la vue de la banche de son client avant d'ajouter lui même ses 
-        modifications. Puisqu'il n'a, à ce moment, aucun enregistrement
-        permanent des modifications qu'il a fait, il peut corrompre ou perdre
-        des modifications pendant et après sa mise à jour.</para>
+        sa vue de la branche avant de pouvoir appliquer un commit.
+        Puisqu'il n'a, à ce moment, pas effectué de commit
+        des modifications qu'il a faites, il se peut qu'il ne corrompe 
+        ou ne perde
+        ses modifications pendant ou après la mise à jour.</para>
 
 	<para id="x_6ff">Mercurial encourage, à l'inverse, un modèle 
-        "commit-puis-merge". Bob ajoute ses modifications de manière locale 
-        avant de récupérer les modifications d'Alice, ou d'envoyer les siennes 
-        au serveur qu'ils partagent. Si Alice envoye ses modifications avant
-        que Alice n'envoye les siennes, il ne pourra envoyer ses
-        modifications avant d'avoir récupérer les siennes. Si il fait une
-        erreur lors de la fusion, il peut toujours à sa version d'origine,
-        telle qu'elle a été enregistré.</para>
+        "commit-puis-merge". Avant de récupérer des modifications depuis le 
+        serveur, ou avant d'y envoyer les siennes, Bob enregistre ses 
+        modifications de manière locale en appliquant un commit. C'est à dire
+        que si Alice avait envoyé ses modifications sur le serveur avant
+        que Bob n'envoie les siennes, ce dernier ne pourra le faire
+        qu'après avoir récupéré et fusionné celles d'Alice avec les siennes. 
+        Si Bob fait alors une
+        erreur lors de la fusion, il pourra toujours restaurer sa version, pour
+        laquelle il avait appliqué le commit.</para>
           
 	<para id="x_700">Il est important de souligner qu'il s'agit de la
-        manière habituelle de travailler avec ses outils. Subversion propose
-        une manière plus sûr de travailler-dans-votre-propre-branche, mais il
-        est assez complexe pour que, en pratique, il ne soit jamais utiliser.
-        Mercurial propose un mode, un peu moyen sûr, mais permettant de
+        manière habituelle de travailler avec ces outils. Subversion propose
+        une manière plus sûre de "travailler-dans-votre-propre-branche", mais elle
+        est assez complexe pour que, en pratique, elle ne soit que rarement utilisé.
+        Mercurial propose de son côté un mode un peu moins sûr, permettant de
         récupérer des modifications par dessus des modifications non
-        commitées, mais c'est considéré comme assez inhabituel.</para> 
+        commitées, qui reste toutefois très peu répandu.</para> 
       </sect3>
 
       <sect3>
@@ -345,28 +348,29 @@ rename from/some/path to/some/other/place
 
 	<para id="x_701">Une commande Subversion <command>svn
         commit</command> publie immédiatement les modifications sur le
-        serveur, où ils peuvent être vu par n'importe qui doté du privilège
+        serveur, où elles peuvent être vu par n'importe qui doté d'un privilège
         de lecture.</para>
 
-	<para id="x_702">Avec Mercurial, les modifications sont toujours
-        enregistrées localement, et doivent être par la suite transférer par
+	<para id="x_702">Avec Mercurial, les modifications sont toujours d'abord
+        enregistrées localement, et doivent être par la suite transférés par
         la commande <command>hg push</command>.</para>
 
-	<para id="x_703">Chaque approche à ses avantages et ses désavantages.
-        Le modèle Subversion implique que les modifications sont publiées, et
-        donc disponible immédiatement. D'un autre coté, il implique aussi
-        qu'un utilisateur doit avoir le droit d'écriture dans le dépôt pour
-        permettre l'utiliser normalement, et ce privilège n'est pas concédé 
-        facilement par les projets Open Source.</para>
+	<para id="x_703">Chaque approche à ses avantages et ses inconvénients.
+        Le modèle Subversion implique que les modifications soient publiées, et
+        donc disponibles immédiatement. D'un autre coté, cela implique aussi
+        que, pour pouvoir utiliser le logiciel normalement, un utilisateur doit 
+        avoir les droits d'écriture dans le dépôt, et ce privilège n'est pas concédé 
+        facilement par la plupart des projets Open Source.</para>
 
 	<para id="x_704">L'approche de Mercurial permet à quiquonque de faire
         un clone du dépôt et d'y ajouter ses modifications sans jamais avoir
         besoin de la permission de quiquonque, et l'on peut même publier ses
-        modifications et continuer à participer comme on le désir. La
-        distinction entre les commits et le transfert de ces derniers ouvre
-        la possibilité néanmoins que quelqu'un oublie pendant une longue
-        période de transférer ses modifications, ce qui dans certains cas
-        rares, peut piéger ses collaborateurs.</para>
+        modifications et continuer à participer comme on le désire. Toutefois, la
+        distinction entre les commits et le transfert de ces derniers présente
+        le risque que quelqu'un applique ses modifications par un commit local
+        sur son portable et parte se promener pendant quelques jours en ayant
+        oublié de les transférer, ce qui peut, dans certains rares cas,
+        bloquer temporairement ses collaborateurs.</para>
       </sect3>
     </sect2>
 
@@ -414,7 +418,7 @@ rename from/some/path to/some/other/place
 	      <entry><command>hg commit</command>; <command>hg
 		  push</command></entry>
 	      <entry><command>hg push</command> publie les modifications
-              après leur enregistrement.</entry>
+              après un commit.</entry>
 	    </row>
 	    <row>
 	      <entry><command>svn copy</command></entry>
@@ -456,12 +460,12 @@ rename from/some/path to/some/other/place
 	    <row>
 	      <entry><command>svn info</command></entry>
 	      <entry><command>hg parents</command></entry>
-	      <entry>Affiche quelle révision est extraite</entry>
+	      <entry>Affiche la version sur la base de laquelle on travaille</entry>
 	    </row>
 	    <row>
 	      <entry><command>svn info</command></entry>
 	      <entry><command>hg showconfig
-		  paths.parent</command></entry>
+		  paths.default</command></entry>
 	      <entry>Affiche de quelle URL est extrait ce dépôt</entry>
 	    </row>
 	    <row>
@@ -519,15 +523,14 @@ rename from/some/path to/some/other/place
   <sect1>
     <title>Conseils utiles pour les débutants</title>
 
-    <para id="x_705">Avec la plupart des gestionnaire de révisions, afficher
+    <para id="x_705">Avec la plupart des gestionnaire de versions, afficher
     un diff associé à une révision peut être assez douloureux. Par exemple,
     avec Subversion, pour voir ce qui a été modifiée dans la révision 104654,
     vous devez saisir <command>svn diff -r104653:104654</command>. Mercurial
     élimine le besoin de saisir l'identifiant d'une révision deux fois dans
     ce cas classique. Pour un simple diff, <command>hg
-    export<command></command>
-    104654</command> suffit. Pour l'entrée du journal suivi du diff,
-    <command>hg log -r104654</command>. </para>
+    export 104654</command> suffit. Pour obtenir une entrée du journal suivie d'un diff,
+    <command>hg log -r104654 -p</command>.</para>
 
     <para id="x_706">Quand vous exécutez la commande <command>hg status</command>
     sans aucun arguments, elle affiche l'état de l'ensemble de l'arboresence,
@@ -538,7 +541,7 @@ rename from/some/path to/some/other/place
     status</command>, elle va afficher les chemins relatif depuis votre
     répertoire courant à la place. Ainsi, pour avoir un état sur l'ensemble
     de l'arboresence à l'aide  de <command>hg status</command>, avec des
-    chemins relatifs à votre répertoire courant, et non le raçine du dépôt,
+    chemins relatifs à votre répertoire courant, et non le racine du dépôt,
     ajoutez la sortie de <command>hg root</command> à la commande
     <command>hg status</command>. Vous pouvez le faire aisément sur un
     système Unix ainsi :</para>
