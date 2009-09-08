@@ -14,7 +14,7 @@ un fichier, vous le sauvegardez sous un nouveau nom contenant un numéro,
 à chaque fois plus grand que celui de la version précédente.</para>
 
     <para id="x_6e">Ce genre de gestion de version manuelle est cependant facilement sujette
-à des erreurs, ainsi, depuis longtemps, des logiciels existent pour
+aux erreurs, ainsi, depuis longtemps, des logiciels existent pour
 résoudre cette problématique. Les premiers outils de gestion de sources
 étaient destinés à aider un seul utilisateur, à automatiser la gestion
 des versions d'un seul fichier. Dans les dernières décades, cette cible
@@ -26,15 +26,15 @@ centaines de milliers de fichiers.</para>
 
     <para id="x_6f">L'arrivée de la gestion de révision distribuée est
     relativement récente, et, pour le moment, ce nouveau domaine a grandi
-    grâce à la volonté des gens d'explorer ces territoires encores inconnues.
+    grâce à la volonté des gens d'explorer ces territoires encore inconnus.
     </para>
 
     <para id="x_70">J'écris un livre sur la gestion de révision distribuée
     parce que je pense qu'il s'agit d'un sujet important qui mérite un guide
     du terrain. J'ai choisi d'écrire un livre sur Mercurial car il est
     l'outil le plus facile pour découvrir ce nouveau domaine, tout en étant
-    un outil efficase qui répond aux demandes d'environement réel et
-    difficile, là où d'autres outils de révisions s'effondre.</para>
+    un outil efficace qui répond aux demandes d'environnements réels et
+    difficiles, là où d'autres outils de gestions de versions s'effondrent.</para>
 
     <sect2>
       <title>Pourquoi utiliser un gestionnaire de source ?</title>
@@ -44,10 +44,10 @@ utiliser un outil automatisant la gestion de version pour votre projet.</para>
 
       <itemizedlist>
 	<listitem><para id="x_72">L'outil se chargera de suivre l'évolution de votre projet, sans
-que vous n'ayez à le faire. Pour chaque modification, vous aurez à votre
+que vous ayez à le faire. Pour chaque modification, vous aurez à votre
 disposition un journal indiquant <emphasis>qui</emphasis> a fait quoi, <emphasis>pourquoi</emphasis>
-ils l'ont fait, <emphasis>quand</emphasis> ils l'ont fait, et <emphasis>ce</emphasis> qu'ils ont
-modifiés.</para>
+il l'a fait, <emphasis>quand</emphasis> il l'a fait, et
+<emphasis>ce</emphasis> qu'il a modifié.</para>
 </listitem>
 <listitem><para id="x_73">Quand vous travaillez avec d'autres personnes, les logiciels de
 gestion de source facilitent le travail collaboratif. Par exemple, quand
@@ -62,42 +62,48 @@ moment le problème est apparu (voir la section <xref linkend="sec:undo:bisect"/
 de détails).</para>
 </listitem>
 <listitem><para id="x_75">L'outil vous permettra aussi de travailler sur plusieurs versions différentes
-de votre projet et à gérer l'écart entre chacune.</para>
+de votre projet et de gérer l'écart entre chacune.</para>
 </listitem></itemizedlist>
-<para id="x_76">La plupart de ces raisons ont autant d'importances &emdash;du moins en théorie&emdash; que
-vous travailliez sur un projet pour vous, ou avec une centaine d'autres
-personnes.
+<para id="x_76">La plupart de ces raisons ont autant d'importances &emdash;du
+  moins en théorie&emdash; que vous travailliez sur un projet pour vous, ou
+  avec une centaine d'autres personnes.
 </para>
 
-<para id="x_77">Une question fondamentale à propos des outils de gestion de source, qu'il s'agisse
-du projet d'une personne ou d'une grande équipe, est quels sont ses
-<emphasis>avantages</emphasis> par rapport à ses <emphasis>coûts</emphasis>. Un outil qui est difficile à
-utiliser ou à comprendre exigera un lourd effort d'adaptation.
+<para id="x_77">Une question fondamentale à propos des outils de gestion de
+  source, qu'il s'agisse du projet d'une personne ou d'une grande équipe, est
+  quels sont ses <emphasis>avantages</emphasis> par rapport à ses
+  <emphasis>coûts</emphasis>. Un outil qui est difficile à utiliser ou à
+  comprendre exigera un lourd effort d'adaptation.
 </para>
 
-<para id="x_78">)Un projet de cinq milles personnes s'effondrera très certainement de lui même
-sans aucun processus et outil de gestion de source. Dans ce cas, le coût
-d'utilisation d'un logiciel de gestion de source est dérisoire puisque
-<emphasis>sans</emphasis>, l'échec est presque garanti.
+<para id="x_78">)Un projet de cinq milles personnes s'effondrera très
+  certainement de lui même sans aucun processus et outil de gestion de
+  source. Dans ce cas, le coût d'utilisation d'un logiciel de gestion de
+  source est dérisoire puisque <emphasis>sans</emphasis>, l'échec est presque
+  garanti.
 </para>
 
-<para id="x_79">D'un autre coté, un <quote>rapide hack</quote> d'une personne peut sembler un contexte
-bien pauvre pour utiliser un outil de gestion de source, car, bien évidement
-le coût d'utilisation dépasse le coût total du projet. N'est ce pas ?
+<para id="x_79">D'un autre coté, un <quote>rapide hack</quote> d'une personne
+  peut sembler un contexte bien pauvre pour utiliser un outil de gestion de
+  source, car, bien évidement le coût d'utilisation dépasse le coût total du
+  projet. N'est ce pas ?
 </para>
 
-      <para id="x_7a">Mercurial supporte ces <emphasis>deux</emphasis> échelles de travail. Vous pouvez apprendre
-les bases en quelques minutes seulement, et, grâce à sa performance, vous pouvez
-l'utiliser avec facilité sur le plus petit des projets. Cette simplicité
-signifie que vous n'avez pas de concept obscurs ou de séquence de commandes
-défiant l'imagination, sans aucune corrélation avec <emphasis>ce que vous
-êtes entrain de faire</emphasis>. En même temps, ces mêmes performances et sa
-nature <quote>peer-to-peer</quote> vous permettent d'augmenter, sans difficulté, son
-utilisation à de très grands projets.
+      <para id="x_7a">Mercurial supporte ces <emphasis>deux</emphasis>
+        échelles de travail. Vous pouvez apprendre les bases en quelques
+        minutes seulement, et, grâce à sa performance, vous pouvez l'utiliser
+        avec facilité sur le plus petit des projets. Cette simplicité
+        signifie que vous n'avez pas de concept obscurs ou de séquence de
+        commandes défiant l'imagination, sans aucune corrélation avec
+        <emphasis>ce que vous êtes entrain de faire</emphasis>. En même
+        temps, ces mêmes performances et sa nature
+        <quote>peer-to-peer</quote> vous permettent d'adapter, sans
+        difficulté, son utilisation à de très grands projets.
 </para>
 
-      <para id="x_7b">Aucun outil de gestion de source ne peut sauver un projet mal mené, mais un
-bon outil peut rendre beaucoup plus fluide votre travail.
+      <para id="x_7b">Aucun outil de gestion de source ne peut sauver un
+        projet mal mené, mais un bon outil peut rendre beaucoup plus fluide
+        votre travail.
 </para>
 
     </sect2>
@@ -105,19 +111,21 @@ bon outil peut rendre beaucoup plus fluide votre travail.
     <sect2>
       <title>Les multiples noms de la gestion de source</title>
 
-      <para id="x_7c">La gestion de source<!--
-      TODO:<footnote><J'ai utilisé systématiquement le terme
-<quote>gestion de source</quote> à travers tout l'ouvrage. Ce n'est pas forcement la
-meilleure traduction, et ceci peut rendre la lecture un peu lourde, mais je
-pense que le document y gagne en clarté et en précision. --> est un domaine
-divers, tellement qu'il n'existe pas une seul nom ou acronyme pour le désigner.
-Voilà quelqu'uns des noms ou
-acronymes que vous rencontrerez le plus souvent <!-- TODO:<footnote> J'ai conservé la
-liste des noms en anglais pour des raisons de commodité (ils sont plus
-<quote>googelable</quote>). En outre, j'ai opté  pour conserver l'ensemble des opérations de
-Mercurial (\textit{commit},\textit{push}, \textit{pull},...) en anglais, là
-aussi pour faciliter la lecture d'autres documents en anglais, ainsi que
-l'utilisation de Mercurial. -->
+      <para id="x_7c">La gestion de source
+        <!-- TODO:<footnote><J'ai utilisé systématiquement le terme
+            <quote>gestion de source</quote> à travers tout l'ouvrage. Ce
+            n'est pas forcement la meilleure traduction, et ceci peut rendre
+            la lecture un peu lourde, mais je pense que le document y gagne
+            en clarté et en précision. -->
+        est un domaine tellement large qu'il n'existe pas qu'un seul nom ou
+        acronyme pour le désigner. Voici quelques noms ou acronymes que vous
+        rencontrerez le plus souvent.
+        <!-- TODO:<footnote> J'ai conservé la liste des noms en anglais pour
+          des raisons de commodité (ils sont plus <quote>googelable</quote>).
+          En outre, j'ai opté  pour conserver l'ensemble des opérations de
+          Mercurial (\textit{commit},\textit{push}, \textit{pull},...) en
+          anglais, là aussi pour faciliter la lecture d'autres documents en
+          anglais, ainsi que l'utilisation de Mercurial. -->
 </para>
 
 <para>:
@@ -125,58 +133,60 @@ l'utilisation de Mercurial. -->
 
       <itemizedlist>
 	<listitem><para id="x_7d">Revision control (RCS)</para></listitem>
-	<listitem><para id="x_7e">Software configuration management (SCM), or
+	<listitem><para id="x_7e">Software configuration management (SCM), ou
 	    configuration management</para></listitem>
 	<listitem><para id="x_7f">Source code management</para></listitem>
-	<listitem><para id="x_80">Source code control, or source
-	    control</para></listitem>
-	<listitem><para id="x_81">Version control
-	    (VCS)</para></listitem></itemizedlist>
+	<listitem><para id="x_80">Source code control, ou source control</para></listitem>
+	<listitem><para id="x_81">Version control (VCS)</para></listitem></itemizedlist>
 
- <para id="x_82">Certaines personnes prétendent que ces termes ont en fait des sens
-différents mais en pratique ils se recouvrent tellement qu'il n'y a pas
-réellement de manière pertinente de les distinguer.
-</para>
+ <para id="x_82">Certaines personnes prétendent que ces termes ont en fait
+   des sens différents mais en pratique ils se recouvrent tellement qu'il n'y
+   a pas réellement de manière pertinente de les distinguer. </para>
 
     </sect2>
   </sect1>
 
   <sect1>
 
-<title>About the examples in this book</title>
+<title>A propos des exemples dans ce livre</title>
 
-    <para id="x_84">This book takes an unusual approach to code samples.  Every
-      example is <quote>live</quote>&emdash;each one is actually the result
-      of a shell script that executes the Mercurial commands you see.
-      Every time an image of the book is built from its sources, all
-      the example scripts are automatically run, and their current
-      results compared against their expected results.</para>
+    <para id="x_84">Ce livre prend une approche non usuel pour les exemples
+      de code. Tous les exemples sont en <quote>live</quote> &emdash; Chacun
+      est actuellement le résultat d'un script shell qui exécute les
+      commandes Mercurial que vous voyez. A chaque fois qu'une image du livre
+      est construite à partir des sources, tous les scripts d'exemple sont
+      lancés automatiquement, et leurs résultats effectifs sont comparés aux
+      résultats attendus.</para>
 
-    <para id="x_85">The advantage of this approach is that the examples are
-      always accurate; they describe <emphasis>exactly</emphasis> the
-      behavior of the version of Mercurial that's mentioned at the
-      front of the book.  If I update the version of Mercurial that
-      I'm documenting, and the output of some command changes, the
-      build fails.</para>
+    <para id="x_85">L'avantage de dette approche est que les exemples sont
+      toujours précis ; ils décrivent <emphasis>exactement</emphasis> la
+      conduite de la version de Mercurial qui est mentionnée en entête du
+      livre. Si je met à jour la version de Mercurial que je suis en train de
+      documenter, et que la sortie de certaines commandes change, la
+      construction du livre échoue.</para>
 
-    <para id="x_86">There is a small disadvantage to this approach, which is
-      that the dates and times you'll see in examples tend to be
-      <quote>squashed</quote> together in a way that they wouldn't be
-      if the same commands were being typed by a human.  Where a human
-      can issue no more than one command every few seconds, with any
-      resulting timestamps correspondingly spread out, my automated
-      example scripts run many commands in one second.</para>
+    <para id="x_86">
+      Il existe un petit désavantage à cette approche qui est que les dates et
+      heures que vous verrez dans les exemples tendent à être
+      <quote>écrasés</quote> ensemble, dans le sens où elles ne sont pas
+      celles qu'elles auraient été si un humain avait tapé les commandes. En
+      effet, humain ne peut pas taper plus d'une commande toutes les quelques
+      secondes, avec le temps qui s'écoule, mes scripts d'exemples exécutent
+      plusieurs commandes en une seconde.
+    </para>
 
-    <para id="x_87">As an instance of this, several consecutive commits in an
-      example can show up as having occurred during the same second.
-      You can see this occur in the <literal
-	role="hg-ext">bisect</literal> example in <xref
-	linkend="sec:undo:bisect"/>, for instance.</para>
+    <para id="x_87">Une circonstance de ceci est que plusieurs commits
+      consécutifs dans un exemple peuvent apparaître comme ayant eu lieu
+      durant la même seconde.
+      Vous pouvez observer le phénomène dans l'exemple <literal
+        role="hg-ext">bisect</literal> dans <xref linkend="sec:undo:bisect"/>
+    </para>
 
-    <para id="x_88">So when you're reading examples, don't place too much weight
-      on the dates or times you see in the output of commands.  But
-      <emphasis>do</emphasis> be confident that the behavior you're
-      seeing is consistent and reproducible.</para>
+    <para id="x_88">Donc, lorsque vous lisez ces exemples, ne prêtez pas trop
+      d'importance aux dates et heures que vous voyez dans la sortie des
+      commandes. Cependant, <emphasis>soyez</emphasis> confiants que le
+      comportement que vous voyez est consistent et reproductible 
+    </para>
 
   </sect1>
 
@@ -185,604 +195,657 @@ réellement de manière pertinente de les distinguer.
   <sect1>
     <title>Tendances de la gestion de source</title>
 
-    <para id="x_89">Il y a eu une tendance évidente dans le développement et l'utilisation d'outils
-de gestion de source depuis les quatre dernières décades, au fur et à mesure
-que les utilisateurs se sont habitués à leur outils et se sont sentis contraints
-par leurs limitations.
-</para>
+    <para id="x_89">Il y a eu une tendance évidente dans le développement et
+      l'utilisation d'outils de gestion de source depuis les quatre dernières
+      décades, au fur et à mesure que les utilisateurs se sont habitués à
+      leur outils et se sont sentis contraints par leurs limitations.
+    </para>
 
-    <para id="x_8a">La première génération commença simplement par gérer un fichier unique sur un
-ordinateur individuel. Cependant, même si ces outils présentaient une grande
-avancée par rapport à la gestion manuelle des versions, leur modèle de
-verrouillage et leur utilisation limitée à un seul ordinateur rendaient leur
-utilisation possible uniquement dans une très petite équipe.
-</para>
+    <para id="x_8a">La première génération commença simplement par gérer un
+      fichier unique sur un ordinateur individuel. Cependant, même si ces
+      outils présentaient une grande avancée par rapport à la gestion
+      manuelle des versions, leur modèle de verrouillage et leur utilisation
+      limitée à un seul ordinateur rendaient leur utilisation possible
+      uniquement dans une très petite équipe.
+    </para>
 
-    <para id="x_8b">La seconde génération a assoupli ces contraintes en adoptant une architecture
-réseau et centralisée, permettant de gérer plusieurs projets entiers en même
-temps. Alors que les projets grandirent en taille, ils rencontrèrent de nouveaux
-problèmes. Avec les clients discutant régulièrement avec le serveurs, la montée
-en charge devint un réel problème sur les gros projets. Une connexion réseau
-peu fiable pouvait complètement empêcher les utilisateurs distants de dialoguer
-avec le serveur. Alors que les projets <emphasis remap="it">Open Source</emphasis> commencèrent à
-mettre en place des accès en lecture seule disponible anonymement, les
-utilisateurs sans les privilèges de <quote>commit</quote> réalisèrent qu'ils ne pouvaient
-pas utiliser les outils pour collaborer naturellement avec le projet, comme ils
-ne pouvaient pas non plus enregistrer leurs modifications.
-</para>
+    <para id="x_8b">La seconde génération a assoupli ces contraintes en
+      adoptant une architecture réseau et centralisée, permettant de gérer
+      plusieurs projets entiers en même temps. Alors que les projets
+      grandirent en taille, ils rencontrèrent de nouveaux problèmes. Avec les
+      clients discutant régulièrement avec le serveurs, la montée en charge
+      devint un réel problème sur les gros projets. Une connexion réseau peu
+      fiable pouvait complètement empêcher les utilisateurs distants de
+      dialoguer avec le serveur. Alors que les projets <emphasis
+        remap="it">Open Source</emphasis> commencèrent à mettre en place des
+      accès en lecture seule disponible anonymement, les utilisateurs sans
+      les privilèges de <quote>commit</quote> réalisèrent qu'ils ne pouvaient
+      pas utiliser les outils pour collaborer naturellement avec le projet,
+      comme ils ne pouvaient pas non plus enregistrer leurs modifications.
+    </para>
 
-    <para id="x_8c">La génération actuelle des outils de gestion de source est <quote>peer-to-peer</quote> par
-nature. Tout ces systèmes ont abandonné la dépendance à un serveur central, et
-ont permis à leur utilisateur de distribuer les données de leur gestion de
-source à qui en a besoin. La collaboration à travers Internet a transformé la
-contrainte technologique en une simple question de choix et de consencus. Les
-outils modernes peuvent maintenant fonctionner en mode déconnecté sans limite et
-de manière autonome, la connexion au réseau n'étant nécessaire que pour
-synchroniser les modifications avec les autres dépôts.
-</para>
-
+    <para id="x_8c">La génération actuelle des outils de gestion de source
+      est <quote>peer-to-peer</quote> par nature. Tous ces systèmes ont
+      abandonné la dépendance à un serveur central, et ont permis à leur
+      utilisateur de distribuer les données de leur gestion de source à qui
+      en a besoin. La collaboration à travers Internet a transformé la
+      contrainte technologique en une simple question de choix et de
+      consensus. Les outils modernes peuvent maintenant fonctionner en mode
+      déconnecté sans limite et de manière autonome, la connexion au réseau
+      n'étant nécessaire que pour synchroniser les modifications avec les
+      autres dépôts.
+    </para>
   </sect1>
+    
   <sect1>
     <title>Quelques avantages des gestionnaires de source distribués</title>
+      
+    <para id="x_8d">Même si les gestionnaire de source distribués sont depuis
+      plusieurs années assez robustes et aussi utilisables que leurs
+      prédécesseurs, les utilisateurs d'autres outils n'y ont pas encore été
+      sensibilisés. Les gestionnaires de source distribués se distinguent
+      particulièrement de leurs équivalents centralisés de nombreuses
+      manières.
+    </para>
 
-<para id="x_8d">Même si les gestionnaire de source distribués sont depuis plusieurs années
-assez robustes et aussi utilisables que leurs prédécesseurs, les utilisateurs
-d'autres outils n'y ont pas encore été sensibilisés. Les gestionnaires
-de source distribués se distinguent particulièrement de leurs équivalents
-centralisés de nombreuses manières.
-</para>
+    <para id="x_8e">Pour un développeur individuel, ils restent beaucoup plus
+      rapides que les outils centralisés. Cela pour une raison simple : un
+      outil centralisé doit toujours dialoguer à travers le réseau pour la
+      plupart des opérations, car presque toutes les métadonnées sont
+      stockées sur la seule copie du serveur central. Un outil distribué
+      stocke toute ses métadonnées localement. À tâche égale, effectuer un
+      échange avec le réseau ajoute un délai aux outils centralisés. Ne
+      sous-estimez pas la valeur d'un outil rapide : vous allez passer
+      beaucoup de temps à interagir avec un logiciel de gestion de source.
+    </para>
 
-    <para id="x_8e">Pour un développeur individuel, ils restent beaucoup plus rapides que les
-outils centralisés. Cela pour une raison simple : un outil centralisé doit
-toujours dialoguer à travers le réseau pour la plupart des opérations, car
-presque toutes les métadonnées sont stockées sur la seule copie du serveur
-central. Un outil distribué stocke toute ses métadonnées localement. À tâche
-égale, effectuer un échange avec le réseau ajoute un délai aux outils
-centralisés. Ne sous-estimez pas la valeur d'un outil rapide : vous allez
-passer beaucoup de temps à interagir avec un logiciel de gestion de source.
-</para>
+    <para id="x_8f">Les outils distribués sont complètement indépendants des
+      aléas de votre serveur, d'autant plus qu'ils répliquent les métadonnées
+      à beaucoup d'endroits. Si votre serveur central prend feu, vous avez
+      intérêt à ce que les médias de sauvegardes soient fiables, et que votre
+      dernier <quote>backup</quote> soit récent et fonctionne sans problème.
+      Avec un outil distribué, vous avez autant de <quote>backup</quote> que
+      de contributeurs.
+    </para>
 
-    <para id="x_8f">Les outils distribués sont complètement indépendants des aléas de votre serveur,
-d'autant plus qu'ils répliquent les métadonnées à beaucoup d'endroits. Si
-votre serveur central prend feu, vous avez intérêt à ce que les médias de
-sauvegardes soient fiables, et que votre dernier <quote>backup</quote> soit récent et
-fonctionne sans problème. Avec un outil distribué, vous avez autant de
-<quote>backup</quote> que de contributeurs.
-</para>
-
-    <para id="x_90">En outre, la fiabilité de votre réseau affectera beaucoup moins les
-outils distribués. Vous ne pouvez même pas utiliser un outil centralisé
-sans connexion réseau, à l'exception de quelques commandes, très limitées.
-Avec un outil distribué, si votre connexion réseau tombe pendant que vous
-travaillez, vous pouvez ne même pas vous en rendre compte. La seule chose
-que vous ne serez pas capable de faire sera de communiquer avec des dépôts
-distants, opération somme toute assez rare en comparaison aux opérations
-locales. Si vous avez une équipe de collaborateurs très dispersée ceci peut
-être significatif.
-</para>
-
+    <para id="x_90">En outre, la fiabilité de votre réseau affectera beaucoup
+      moins les outils distribués. Vous ne pouvez même pas utiliser un outil
+      centralisé sans connexion réseau, à l'exception de quelques commandes,
+      très limitées. Avec un outil distribué, si votre connexion réseau tombe
+      pendant que vous travaillez, vous pouvez ne même pas vous en rendre
+      compte. La seule chose que vous ne serez pas capable de faire sera de
+      communiquer avec des dépôts distants, opération somme toute assez rare
+      en comparaison aux opérations locales. Si vous avez une équipe de
+      collaborateurs très dispersée ceci peut être significatif.
+    </para>
 
     <sect2>
       <title>Avantages pour les projets Open Source</title>
 
-      <para id="x_91">Si vous prenez goût à un projet <emphasis remap="it">Open Source</emphasis> et que vous
-décidez de commencer à toucher à son code, et que le projet utilise
-un gestionnaire de source distribué, vous êtes immédiatement un "pair"
-avec les personnes formant le <quote>cœur</quote> du projet. Si ils publient
-leurs dépôts, vous pouvez immédiatement copier leurs historiques de
-projet, faire des modifications, enregistrer votre travail en utilisant
-les même outils qu'eux. Par comparaison, avec un outil centralisé, vous
-devez utiliser un logiciel en mode <quote>lecture seule</quote> à moins que
-quelqu'un ne vous donne les privilèges de <quote>commit</quote> sur le serveur
-central. Avant ça, vous ne serez pas capable d'enregistrer vos
-modifications, et vos propres modifications risqueront de se
-corrompre chaque fois que vous essayerez de mettre à jour à votre
-espace de travail avec le serveur central.
-</para>
+      <para id="x_91">Si vous prenez goût à un projet <emphasis
+          remap="it">Open Source</emphasis> et que vous décidez de commencer
+        à toucher à son code, et que le projet utilise un gestionnaire de
+        source distribué, vous êtes immédiatement un "pair" avec les
+        personnes formant le <quote>cœur</quote> du projet. S'ils publient
+        leurs dépôts, vous pouvez immédiatement copier leurs historiques de
+        projet, faire des modifications, enregistrer votre travail en
+        utilisant les mêmes outils qu'eux. Par comparaison avec un outil
+        centralisé, vous devez utiliser un logiciel en mode <quote>lecture
+          seule</quote> à moins que quelqu'un ne vous donne les privilèges de
+        <quote>commit</quote> sur le serveur central. Avant ça, vous ne serez
+        pas capable d'enregistrer vos modifications, et vos propres
+        modifications risqueront de se corrompre chaque fois que vous
+        essayerez de mettre à jour à votre espace de travail avec le serveur
+        central.
+      </para>
 
-      <sect3>
-	<title>Le non-problème du "fork"</title>
+    <sect3>
+      <title>Le non-problème du "fork"</title>
+      
+      <para id="x_92">Il a été souvent suggéré que les gestionnaires de
+        source distribués posent un risque pour les projets <emphasis
+          remap="it">Open Source</emphasis> car ils facilitent grandement la
+        création de <quote>fork</quote>.
+        <!--footnote{NdT:Création d'une <ulink url="version alternative du
+          logiciel">version alternative du
+          logiciel</ulink>{http://fr.wikipedia.org/wiki/Fork#Embranchement_d.27un_projet_informatique}
+        -->
+        Un <quote>fork</quote> apparait quand il y des divergences d'opinion
+        ou d'attitude au sein d'un groupe de développeurs qui aboutissent à
+        la décision de ne plus travailler ensemble. Chaque parti s'empare
+        d'une copie plus ou moins complète du code source du projet et
+        continue dans sa propre direction.
+      </para>
 
-	<para id="x_92">Il a été souvent suggéré que les gestionnaires de source distribués
-posent un risque pour les projets <emphasis remap="it">Open Source</emphasis> car ils
-facilitent grandement la création de <quote>fork</quote>.<!-- footnote{NdT:Création
-d'une
-<ulink url="version alternative du logiciel">version alternative du
-logiciel</ulink>{http://fr.wikipedia.org/wiki/Fork#Embranchement_d.27un_projet_informatique}
--->
-Un <quote>fork</quote> apparait quand il y des divergences d'opinion ou d'attitude
-au sein d'un groupe de développeurs qui aboutissent à la décision de ne
-plus travailler ensemble. Chaque parti s'empare d'une copie plus ou moins
-complète du code source du projet et continue dans sa propre direction.
-</para>
 
-	<para id="x_93">Parfois ces différents partis décident de se réconcilier. Avec un
-serveur central, l'aspect <emphasis>technique</emphasis> de cette réconciliation
-est un processus douloureux, et essentiellement manuel. Vous devez
-décider quelle modification est <quote>la gagnante</quote>, et replacer, par un
-moyen ou un autre, les modifications de l'autre équipe dans l'arborescence
-du projet. Ceci implique généralement la perte d'une partie de l'historique
-d'un des partis, ou même des deux.
-</para>
+      <para id="x_93">Parfois ces différents partis décident de se
+        réconcilier. Avec un serveur central, l'aspect
+        <emphasis>technique</emphasis> de cette réconciliation est un
+        processus douloureux, et essentiellement manuel. Vous devez décider
+        quelle modification est <quote>la gagnante</quote>, et replacer, par
+        un moyen ou un autre, les modifications de l'autre équipe dans
+        l'arborescence du projet. Ceci implique généralement la perte d'une
+        partie de l'historique d'un des partis, ou même des deux.
+      </para>
+    
+      <para id="x_94">Ce que les outils distribués permettent à ce sujet est
+        probablement la <emphasis>meilleure</emphasis> façon de développer un
+        projet. Chaque modification que vous effectuez est potentiellement un
+        <quote>fork</quote>. La grande force de cette approche est que les
+        gestionnaires de source distribués doivent être vraiment très
+        efficaces pour <emphasis>fusionner (merge)</emphasis>
+        <!-- TODO footnote{NdT:j'ai choisi de traduire ici <emphasis
+          remap="it">merging</emphasis> par <quote>fusionner</quote> pour des
+        raisons de clarté} -->
+        des <quote>forks</quote>, car les <quote>forks</quote>, dans ce
+        contexte, arrivent tout le temps.
+      </para>
+      
+      <para id="x_95">Si chaque altération que n'importe qui effectue, à tout
+        moment, est vue comme un <quote>fork</quote> à fusionner, alors ce
+        que le monde de l'<emphasis remap="it">Open Source</emphasis> voit
+        comme un <quote>fork</quote> devient <emphasis>uniquement</emphasis>
+        une problématique sociale. En fait, les outils de gestions de source
+        distribués <emphasis>réduisent</emphasis> les chances de
+        <quote>fork</quote> :
+      </para>
+        
+      <itemizedlist>
+        <listitem>
+        <para>Ils éliminent la distinction sociale qu'imposent les outils
+          centralisés entre les membres du projets (ceux qui ont accès au
+          <quote>commit</quote>) et ceux de l'extérieur (ce qui ne l'ont
+          pas).
+        </para>
+        <para>Ils rendent plus facile la réconciliation après un
+          <quote>fork</quote> social, car tout ce qu'elle implique est une
+          simple fusion.
+        </para>
+        </listitem>
+      </itemizedlist>
 
-	<para id="x_94">Ce que les outils distribués permettent à ce sujet est probablement
-la <emphasis>meilleure</emphasis> façon de développer un projet. Chaque modification
-que vous effectuez est potentiellement un <quote>fork</quote>. La grande force de
-cette approche est que les gestionnaires de source distribués doivent être
-vraiment très efficaces pour <emphasis>fusionner</emphasis><!-- TODO footnote{NdT:j'ai choisi de
-traduire ici <emphasis remap="it">merging</emphasis> par <quote>fusionner</quote> pour des raisons 
-de clarté} --> des <quote>forks</quote>, car les <quote>forks</quote>, dans ce contexte, arrivent 
-tout le temps.</para>
+      <para id="x_98">Certaines personnes font de la résistance envers les
+        gestionnaires de source distribués parce qu'ils veulent garder un
+        contrôle ferme sur leur projet, et ils pensent que les outils
+        centralisés leur fournissent ce contrôle. Néanmoins, si c'est votre
+        cas, sachez que si vous publiez votre dépôt CVS ou Subversion de
+        manière publique, il existe une quantité d'outils disponibles pour
+        récupérer entièrement votre projet et son historique (quoique
+        lentement) et le récréer ailleurs, sans votre contrôle. En fait,
+        votre contrôle sur votre projet est illusoire, vous ne faites
+        qu'interdire à vos collaborateurs de travailler de manière fluide, en
+        disposant d'un miroir ou d'un <quote>fork</quote> de votre
+        historique.
+      </para>
 
-	<para id="x_95">Si chaque altération que n'importe qui effectue, à tout moment, est vue
-comme un <quote>fork</quote> à fusionner, alors ce que le monde de
-l'<emphasis remap="it">Open Source</emphasis>
-Source} voit comme un <quote>fork</quote> devient <emphasis>uniquement</emphasis> une problématique
-sociale. En fait, les outils de gestions de source distribués <emphasis>réduisent</emphasis>
-les chances de <quote>fork</quote>:
-</para>
-<itemizedlist>
-    <listitem>
-        <para>Ils éliminent la distinction sociale qu'imposent les outils centralisés
-        entre les membres du projets (ceux qui ont accès au <quote>commit</quote>) et ceux de
-        l'extérieur (ce qui ne l'ont pas).</para>
-        <para>rendent plus facile la réconciliation après un <quote>fork</quote> social, car tout ce 
-         qu'elle implique est une simple fusion.</para>
-    </listitem>
-</itemizedlist>
-
-	<para id="x_98">Certaines personnes font de la résistance envers les gestionnaires de source
-distribués parce qu'ils veulent garder un contrôle ferme sur leur projet, et
-ils pensent que les outils centralisés leur fournissent ce contrôle. Néanmoins,
-si c'est votre cas, sachez que si vous publiez votre dépôt CVS ou Subversion
-de manière publique, il existe une quantité d'outils disponibles pour récupérer
-entièrement votre projet et son historique (quoique lentement) et le récréer
-ailleurs, sans votre contrôle. En fait, votre contrôle sur votre projet est
-illusoire, vous ne faites qu'interdire à vos collaborateurs de travailler
-de manière fluide, en disposant d'un miroir ou d'un <quote>fork</quote> de votre
-historique.
-%%%TODO: Fussy, those last sentences are not really well translated:
-%%%no problem for me (wilk)
-%However, if you're of this belief, and you publish your CVS or Subversion
-%repositories publically, there are plenty of tools available that can pull
-%out your entire project's history (albeit slowly) and recreate it somewhere
-%that you don't control.  So while your control in this case is illusory, you are
-%forgoing the ability to fluidly collaborate with whatever people feel
-%compelled to mirror and fork your history.
-</para>
-
-      </sect3>
+    </sect3>
     </sect2>
     <sect2>
       <title>Avantages pour les projets commerciaux</title>
 
-      <para id="x_99">Beaucoup de projets commerciaux sont réalisés par des équipes éparpillées
-à travers le globe. Les contributeurs qui sont loin du serveur central
-devront subir des commandes lentes et même parfois peu fiables. Les
-solutions propriétaires de gestion de source tentent de palier ce problème
-avec des réplications de sites distants qui sont à la fois coûteuses à mettre
-en place et lourdes à administrer. Un système distribué ne souffre pas
-de ce genre de problèmes. En outre, il est très aisé de mettre en place
-plusieurs serveurs de références, disons un par site, de manière à ce qu'il
-n'y ait pas de communication redondante entre les dépôts, sur une connexion
-longue distance souvent onéreuse.
-</para>
+      <para id="x_99">Beaucoup de projets commerciaux sont réalisés par des
+        équipes éparpillées à travers le globe. Les contributeurs qui sont
+        loin du serveur central devront subir des commandes lentes et même
+        parfois peu fiables. Les solutions propriétaires de gestion de source
+        tentent de palier ce problème avec des réplications de sites distants
+        qui sont à la fois coûteuses à mettre en place et lourdes à
+        administrer. Un système distribué ne souffre pas de ce genre de
+        problèmes. En outre, il est très aisé de mettre en place plusieurs
+        serveurs de références, disons un par site, de manière à ce qu'il n'y
+        ait pas de communication redondante entre les dépôts, sur une
+        connexion longue distance souvent onéreuse.
+      </para>
 
-      <para id="x_9a">Les systèmes de gestion de source supportent généralement assez mal la
-montée en charge. Ce n'est pas rare pour un gestionnaire de source centralisé
-pourtant onéreux de s'effondrer sous la charge combinée d'une douzaine
-d'utilisateurs concurrents seulement. Une fois encore, la réponse à cette problématique
-est généralement encore la mise en place d'un ensemble complexe de serveurs
-synchronisés par un mécanisme de réplication. Dans le cas d'un gestionnaire
-de source distribué, la charge du serveur central &emdash; si vous avez un&emdash; est
-plusieurs fois inférieure (car toutes les données sont déjà répliquées ailleurs),
-un simple serveur, pas très cher, peut gérer les besoins d'une plus grande
-équipe, et la réplication pour balancer la charge devient le
-travail d'un simple script.
-</para>
+      <para id="x_9a">Les systèmes de gestion de source supportent
+        généralement assez mal la monté en charge. Il n'est pas rare pour un
+        gestionnaire de source centralisé pourtant onéreux de s'effondrer
+        sous la charge combinée d'une douzaine d'utilisateurs concurrents
+        seulement. Une fois encore, la réponse à cette problématique est
+        généralement encore la mise en place d'un ensemble complexe de
+        serveurs synchronisés par un mécanisme de réplication. Dans le cas
+        d'un gestionnaire de source distribué, la charge du serveur central
+        &emdash; si vous avez un&emdash; est plusieurs fois inférieure (car
+        toutes les données sont déjà répliquées ailleurs), un simple serveur,
+        pas très cher, peut gérer les besoins d'une plus grande équipe, et la
+        réplication pour balancer la charge devient le travail d'un simple
+        script.
+      </para>
 
-      <para id="x_9b">Si vous avez des employés sur le terrain, en train de chercher à résoudre un souci sur
-le site d'un client, ils bénéficieront aussi d'un gestionnaire de source
-distribué. Cet outil leur permettra de générer des versions personnalisées,
-d'essayer différentes solutions, en les isolant aisément les unes des autres,
-et de rechercher efficacement à travers l'historique des sources, la cause
-des bugs ou des régressions, tout ceci sans avoir besoin de la moindre
-connexion au réseau de votre compagnie.
-</para>
+      <para id="x_9b">Si vous avez des employés sur le terrain, en train de
+        chercher à résoudre un souci sur le site d'un client, ils
+        bénéficieront aussi d'un gestionnaire de source distribué. Cet outil
+        leur permettra de générer des versions personnalisées, d'essayer
+        différentes solutions, en les isolant aisément les unes des autres,
+        et de rechercher efficacement à travers l'historique des sources, la
+        cause des bugs ou des régressions, tout ceci sans avoir besoin de la
+        moindre connexion au réseau de votre compagnie.
+      </para>
 
     </sect2>
-  </sect1>
-  <sect1>
-    <title>Pourquoi choisir Mercurial?</title>
+    </sect1>
+    <sect1>
+      <title>Pourquoi choisir Mercurial?</title>
 
-    <para id="x_9c">Mercurial a plusieurs caractéristiques qui en font un choix particulièrement
-pertinent pour la gestion de source:
-</para>
+      <para id="x_9c">Mercurial a plusieurs caractéristiques qui en font un
+        choix particulièrement pertinent pour la gestion de source :
+      </para>
     <itemizedlist>
-      <listitem><para id="x_9d">It is easy to learn and use.</para></listitem>
-      <listitem><para id="x_9e">It is lightweight.</para></listitem>
-      <listitem><para id="x_9f">It scales excellently.</para></listitem>
-      <listitem><para id="x_a0">It is easy to
-	  customise.</para></listitem></itemizedlist>
+      <listitem><para id="x_9d">Il est simple à apprendre et à utiliser.</para></listitem>
+      <listitem><para id="x_9e">Il est léger.</para></listitem>
+      <listitem><para id="x_9f">Il s'adapte très bien à la charge.</para></listitem>
+      <listitem><para id="x_a0">Il se personnalise facilement.</para></listitem>
+    </itemizedlist>
 
-    <para id="x_a1">Si vous êtes déjà familier d'un outil de gestion de source, vous serez
-capable de l'utiliser en moins de 5 minutes. Sinon, ça ne sera pas beaucoup
-plus long.
-Les commandes utilisées par Mercurial, comme ses fonctionnalités, sont
-généralement uniformes et cohérentes, et vous pouvez donc ainsi garder en tête
-simplement quelques règles générales, plutôt qu'un lot complexe d'exceptions.
-</para>
+    <para id="x_a1">Si vous êtes déjà familier d'un outil de gestion de
+      source, vous serez capable de l'utiliser en moins de 5 minutes. Sinon,
+      ça ne sera pas beaucoup plus long. Les commandes utilisées par
+      Mercurial, comme ses fonctionnalités, sont généralement uniformes et
+      cohérentes, et vous pouvez ainsi garder en tête simplement quelques
+      règles générales, plutôt qu'un lot complexe d'exceptions.
+    </para>
 
-    <para id="x_a2">Sur un petit projet, vous pouvez commencer à travailler avec Mercurial en
-quelques instants. Ajouter des modifications ou des branches, transférer
-ces modifications (localement ou via le réseau), et les opérations
-d'historique ou de statut sont aussi très rapides. Mercurial reste hors de
-votre chemin grâce à sa simplicité d'utilisation et sa rapidité d'exécution.
-</para>
+    <para id="x_a2">Sur un petit projet, vous pouvez commencer à travailler
+      avec Mercurial en quelques instants. Ajouter des modifications ou des
+      branches, transférer ces modifications (localement ou via le réseau),
+      et les opérations d'historique ou de statut sont aussi très rapides.
+      Mercurial reste hors de votre chemin grâce à sa simplicité
+      d'utilisation et sa rapidité d'exécution.
+    </para>
 
-    <para id="x_a3">L'utilité de Mercurial ne se limite pas à de petits projets: il est
-aussi utilisé par des projets ayant des centaines ou même des milliers
-de contributeurs, avec plusieurs dizaines de milliers de fichiers, et des
-centaines de méga de code source.
-</para>
+    <para id="x_a3">L'utilité de Mercurial ne se limite pas à de petits
+      projets: il est aussi utilisé par des projets ayant des centaines ou
+      même des milliers de contributeurs, avec plusieurs dizaines de milliers
+      de fichiers, et des centaines de méga octets de code source.
+    </para>
 
-    <para id="x_a4">Si les fonctionnalités cœur de Mercurial ne sont pas suffisantes pour vous,
-il est très aisé d'en construire d'autres. Mercurial est adapté à l'utilisation
-de scripts, et son implémentation interne en Python, propre et claire,
-rend encore plus facile l'ajout de fonctionnalités sous forme d'extensions. Il
-en existe déjà un certain nombre de très populaires et très utiles,
-dont le périmètre va de la recherche de bugs à l'amélioration des performances.
-</para>
+    <para id="x_a4">Si les fonctionnalités au cœur de Mercurial ne sont pas
+      suffisantes pour vous, il est très aisé d'en construire d'autres.
+      Mercurial est adapté à l'utilisation de scripts, et son implémentation
+      interne en Python, propre et claire, rend encore plus facile l'ajout de
+      fonctionnalités sous forme d'extensions. Il en existe déjà un certain
+      nombre de très populaires et très utiles, dont le périmètre va de la
+      recherche de bugs à l'amélioration des performances.
+    </para>
 
   </sect1>
   <sect1>
     <title>Mercurial comparé aux autres outils</title>
 
-    <para id="x_a5">Avant que vous n'alliez plus loin, comprenez bien que cette section
-reflète mes propres expériences, et elle est donc (j'ose le dire)
-peu objective. Néanmoins, j'ai utilisé les outils de gestion de source
-listés ci dessous, dans la plupart des cas, pendant plusieurs années.
-%% TODO: Fussy translation.
-</para>
-
+    <para id="x_a5">Avant que vous n'alliez plus loin, comprenez bien que
+      cette section reflète mes propres expériences, et elle est donc (j'ose
+      le dire) peu objective. Néanmoins, j'ai utilisé les outils de gestion
+      de source listés ci dessous, dans la plupart des cas, pendant plusieurs
+      années.
+    </para>
 
     <sect2>
       <title>Subversion</title>
 
-      <para id="x_a6">Subversion est un des outils de gestion de source les plus populaire, il fût
-développé pour remplacer CVS. Il a une architecture client/server centralisée.
-</para>
+      <para id="x_a6">Subversion est un des outils de gestion de source les
+        plus populaire, il fût développé pour remplacer CVS. Il a une
+        architecture client/server centralisée.
+      </para>
 
-    <para id="x_a7">Subversion et Mercurial ont des noms de commandes très similaires pour
-les mêmes opérations, ainsi si vous êtes familier avec l'un, c'est facile
-d'apprendre l'autre. Ces deux outils sont portables sur les systèmes
-d'exploitation les plus populaires
-</para>
+      <para id="x_a7">Subversion et Mercurial ont des noms de commandes très
+        similaires pour les mêmes opérations, ainsi si vous êtes familier
+        avec l'un, c'est facile d'apprendre l'autre. Ces deux outils sont
+        portables sur les systèmes d'exploitation les plus populaires.
+      </para>
 
-      <para id="x_a8">Avant la version 1.5, Subversion n'offrait aucune forme de support pour les fusions. Lors
-de l'écriture de ce livre, ses capacités de fusion étaient nouvelles, et réputées pour être
-<ulink url="http://svnbook.red-bean.com/nightly/en/svn.branchmerge.advanced.html#svn.branchmerge.advanced.finalword">
-complexes et boguées</ulink>.
-</para>
+      <para id="x_a8">Avant la version 1.5, Subversion n'offrait aucune forme
+        de support pour les fusions. Lors de l'écriture de ce livre, ses
+        capacités de fusion étaient nouvelles, et réputées pour être <ulink
+          url="http://svnbook.red-bean.com/nightly/en/svn.branchmerge.advanced.html#svn.branchmerge.advanced.finalword">
+          complexes et buguées</ulink>.
+      </para>
 
-      <para id="x_a9">Mercurial dispose d'un avantage substantiel en terme de performance par rapport à
-Subversion sur la plupart des opérations que j'ai pu tester. J'ai mesuré
-une différence de performance allant de deux à six fois plus rapide avec
-le système de stockage de fichier local de Subversion 1.4.3
-(<emphasis>ra_local</emphasis>), qui est la méthode d'accès la plus rapide disponible. Dans
-un déploiement plus réaliste, impliquant un stockage réseau, Subversion
-serait encore plus désavantagé. Parce que la plupart des commandes Subversion
-doivent communiquer avec le serveur et que Subversion n'a pas de mécanisme
-de réplication, la capacité du serveur et la bande passante sont devenues des
-goulots d'étranglement pour les projets de taille moyenne ou grande.
-</para>
+      <para id="x_a9">Mercurial dispose d'un avantage substantiel en terme de
+        performance par rapport à Subversion sur la plupart des opérations
+        que j'ai pu tester. J'ai mesuré une différence de performance allant
+        de deux à six fois plus rapide avec le système de stockage de fichier
+        local de Subversion 1.4.3 (<emphasis>ra_local</emphasis>), qui est la
+        méthode d'accès la plus rapide disponible. Dans un déploiement plus
+        réaliste, impliquant un stockage réseau, Subversion serait encore
+        plus désavantagé. Parce que la plupart des commandes Subversion
+        doivent communiquer avec le serveur et que Subversion n'a pas de
+        mécanisme de réplication, la capacité du serveur et la bande passante
+        sont devenues des goulots d'étranglement pour les projets de taille
+        moyenne ou grande.
+      </para>
 
-      <para id="x_aa">En outre, Subversion implique une surcharge substantielle dans le stockage local
-de certaines données, pour éviter des transactions avec le serveur, pour
-certaines opérations communes, telles que la recherche des fichiers modifiés
-(<literal>status</literal>) et l'affichage des modifications par rapport à la révision
-courante (<literal>diff</literal>). En conséquence, un répertoire de travail Subversion
-a souvent la même taille, ou est plus grand, qu'un dépôt Mercurial et son
-espace de travail, et ceci bien que le dépôt Mercurial contienne l'intégralité
-de l'historique.
-</para>
+      <para id="x_aa">En outre, Subversion implique une surcharge
+        substantielle dans le stockage local de certaines données, pour
+        éviter des transactions avec le serveur, pour certaines opérations
+        communes, telles que la recherche des fichiers modifiés
+        (<literal>status</literal>) et l'affichage des modifications par
+        rapport à la révision courante (<literal>diff</literal>). En
+        conséquence, un répertoire de travail Subversion a souvent la même
+        taille, ou est plus grand, qu'un dépôt Mercurial et son espace de
+        travail, et ceci bien que le dépôt Mercurial contienne l'intégralité
+        de l'historique.
+      </para>
 
-      <para id="x_ab">Subversion est largement supporté par les outils tierces. Mercurial est
-actuellement encore en retrait de ce point de vue. L'écart se réduit, néanmoins,
-et en effet certains des outils graphiques sont maintenant supérieurs à leurs
-équivalents Subversion. Comme Mercurial, Subversion dispose d'un excellent
-manuel utilisateur.
-</para>
+      <para id="x_ab">Subversion est largement supporté par les outils
+        tierces. Mercurial est actuellement encore en retrait de ce point de
+        vue. L'écart se réduit néanmoins, en effet, certains des outils
+        graphiques sont maintenant supérieurs à leurs équivalents Subversion.
+        Comme Mercurial, Subversion dispose d'un excellent manuel
+        utilisateur.
+      </para>
 
-      <para id="x_ac">Parce que Subversion ne stocke pas l'historique chez ses clients, il est
-parfaitement adapté à la gestion de projets qui doivent suivre un ensemble
-de larges fichiers binaires et opaques. Si vous suivez une cinquantaine de
-versions d'un fichier incompressible de 10MB, l'occupation disque coté client
-d'un projet sous Subversion restera à peu près constante. A l'inverse,
-l'occupation disque du même projet sous n'importe lequel des gestionnaires
-de source distribués grandira rapidement, proportionnellement aux nombres
-de versions, car les différences entre chaque révisions seront très grandes.
-</para>
+      <para id="x_ac">Parce que Subversion ne stocke pas l'historique chez
+        ses clients, il est parfaitement adapté à la gestion de projets qui
+        doivent suivre un ensemble de larges fichiers binaires et opaques. Si
+        vous suivez une cinquantaine de versions d'un fichier incompressible
+        de 10MB, l'occupation disque coté client d'un projet sous Subversion
+        restera à peu près constante. A l'inverse, l'occupation disque du
+        même projet sous n'importe lequel des gestionnaires de source
+        distribués grandira rapidement, proportionnellement aux nombres de
+        versions, car les différences entre chaque révisions seront très
+        grandes.
+      </para>
 
-      <para id="x_ad">En outre, c'est souvent difficile ou, généralement, impossible de fusionner
-des différences dans un fichier binaire. La capacité de Subversion de
-verrouiller des fichiers, pour permettre à l'utilisateur d'être le seul
-à le mettre à jour (<quote>commit</quote>) temporairement, est un avantage significatif
-dans un projet doté de beaucoup de fichiers binaires.
-</para>
+      <para id="x_ad">En outre, c'est souvent difficile ou, généralement,
+        impossible de fusionner des différences dans un fichier binaire. La
+        capacité de Subversion de verrouiller des fichiers, pour permettre à
+        l'utilisateur d'être le seul à le mettre à jour
+        (<quote>commit</quote>) temporairement, est un avantage significatif
+        dans un projet doté de beaucoup de fichiers binaires.
+      </para>
 
-      <para id="x_ae">Mercurial peut importer l'historique depuis un dépôt Subversion. Il peut
-aussi exporter l'ensemble des révisions d'un projet vers un dépôt Subversion.
-Ceci rend très facile de <quote>prendre la température</quote> et d'utiliser Mercurial et Subversion
-en parallèle, avant de décider de migrer vers Mercurial. La conversion de
-l'historique est incrémentale, donc vous pouvez effectuer une conversion
-initiale, puis de petites additions par la suite pour ajouter les nouvelles
-modifications.
-</para>
+      <para id="x_ae">Mercurial peut importer l'historique depuis un dépôt
+        Subversion. Il peut aussi exporter l'ensemble des révisions d'un
+        projet vers un dépôt Subversion. Ceci rend très facile de
+        <quote>prendre la température</quote> et d'utiliser Mercurial et
+        Subversion en parallèle, avant de décider de migrer vers Mercurial.
+        La conversion de l'historique est incrémentale, donc vous pouvez
+        effectuer une conversion initiale, puis de petites additions par la
+        suite pour ajouter les nouvelle modifications.
+      </para>
 
 
     </sect2>
     <sect2>
       <title>Git</title>
 
-      <para id="x_af">Git est un outil de gestion de source distribué qui fût développé pour gérer
-le code source de noyau de Linux. Comme Mercurial, sa conception initiale a
-été inspirée par Monotone.
-</para>
+      <para id="x_af">Git est un outil de gestion de source distribué qui fût
+        développé pour gérer le code source de noyau de Linux. Comme
+        Mercurial, sa conception initiale a été inspirée par Monotone.
+      </para>
 
-      <para id="x_b0">Git dispose d'un ensemble conséquent de commandes, avec plus de 139 commandes
-individuelles pour la version 1.5.0. Il a aussi la réputation d'être difficile
-à apprendre. Comparé à Git, le point fort de Mercurial est clairement sa
-simplicité.
-</para>
+      <para id="x_b0">Git dispose d'un ensemble conséquent de commandes, avec
+        plus de 139 commandes individuelles pour la version 1.5.0. Il a aussi
+        la réputation d'être difficile à apprendre. Comparé à Git, le point
+        fort de Mercurial est clairement sa simplicité.
+      </para>
 
-      <para id="x_b1">En terme de performance, Git est extrêmement rapide. Dans la plupart des
-cas, il est plus rapide que Mercurial, tout du moins sur Linux, alors que
-Mercurial peut être plus performant sur d'autres opérations. Néanmoins, sur
-Windows, les performances et le niveau de support général fourni par Git,
-au moment de l'écriture de cet ouvrage, est bien derrière celui de Mercurial.
-</para>
+      <para id="x_b1">En terme de performance, Git est extrêmement rapide.
+        Dans la plupart des cas, il est plus rapide que Mercurial, tout du
+        moins sur Linux, alors que Mercurial peut être plus performant sur
+        d'autres opérations. Néanmoins, sur Windows, les performances et le
+        niveau de support général fourni par Git, au moment de l'écriture de
+        cet ouvrage, est bien derrière celui de Mercurial.
+      </para>
 
-      <para id="x_b2">Alors que le dépôt Mercurial ne demande aucune maintenance, un dépôt Git
-exige d'exécuter manuellement et régulièrement la commande <quote>repacks</quote> sur
-ces métadonnées. Sans ceci, les performances de git se dégradent et la
-consommation de l'espace disque augmente rapidement. Un serveur qui contient
-plusieurs dépôts Git qui ne sont pas régulièrement et fréquemment <quote>repacked</quote>
-deviendra un vrai problème lors des <quote>backups</quote> du disque, et il y eu des
-cas, où un <quote>backup</quote> journalier pouvait durer plus de 24 heures. Un dépôt
-fraichement <quote>repacked</quote> sera légèrement plus petit qu'un dépôt Mercurial,
-mais un dépôt non <quote>repacked</quote> est beaucoup plus grand.
-</para>
+      <para id="x_b2">Alors que le dépôt Mercurial ne demande aucune
+        maintenance, un dépôt Git exige d'exécuter manuellement et
+        régulièrement la commande <quote>repacks</quote> sur ses métadonnées.
+        Sans ceci, les performances de git se dégradent et la consommation de
+        l'espace disque augmente rapidement. Un serveur qui contient
+        plusieurs dépôts Git qui ne sont pas régulièrement et fréquemment
+        <quote>repacked</quote> deviendra un vrai problème lors des
+        <quote>backups</quote> du disque, et il y eu des cas, où un
+        <quote>backup</quote> journalier pouvait durer plus de 24 heures. Un
+        dépôt fraichement <quote>repacked</quote> sera légèrement plus petit
+        qu'un dépôt Mercurial, mais un dépôt non <quote>repacked</quote> est
+        beaucoup plus grand.
+      </para>
 
-      <para id="x_b3">Le cœur de Git est écrit en C. La plupart des commandes Git sont implémentées
-sous forme de scripts Shell ou Perl, et la qualité de ces scripts varie
-grandement. J'ai plusieurs fois constaté que certains de ces scripts étaient
-chargés en mémoire aveuglément et que la présence d'erreurs pouvait s'avérer
-fatal.
-</para>
+      <para id="x_b3">Le cœur de Git est écrit en C. La plupart des commandes
+        Git sont implémentées sous forme de scripts Shell ou Perl, et la
+        qualité de ces scripts varie grandement. J'ai plusieurs fois constaté
+        que certains de ces scripts étaient chargés en mémoire aveuglément et
+        que la présence d'erreurs pouvait s'avérer fatal.
+      </para>
 
-      <para id="x_b4">Mercurial peut importer l'historique d'un dépôt Git.
-</para>
-
-
+      <para id="x_b4">Mercurial peut importer l'historique d'un dépôt Git.</para>
 
     </sect2>
     <sect2>
       <title>CVS</title>
 
-      <para id="x_b5">CVS est probablement l'outil de gestion de source le plus utilisé aujourd'hui
-dans le monde. À cause de son manque de clarté interne, il n'est plus
-maintenu depuis plusieurs années.
-</para>
+      <para id="x_b5">CVS est probablement l'outil de gestion de source le
+        plus utilisé aujourd'hui dans le monde. À cause de son manque de
+        clarté interne, il n'est plus maintenu depuis plusieurs années.
+      </para>
 
-      <para id="x_b6">Il a une architecture client/serveur centralisée. Il ne regroupe pas les
-modifications de fichiers dans une opération de <quote>commit</quote> atomique, ce
-qui permet à ses utilisateurs de <quote>casser le <emphasis>build</emphasis></quote> assez
-facilement : une personne peut effectuer une opération de <quote>commit</quote>
-sans problème puis être bloquée par besoin de fusion, avec comme conséquence
-néfaste, que les autres utilisateurs ne récupèreront qu'une partie de ses
-modifications. Ce problème affecte aussi la manière de travailler avec
-l'historique du projet. Si vous voulez voir toutes les modifications d'une
-personne du projet, vous devrez injecter manuellement les descriptions et les
-<emphasis remap="it">timestamps</emphasis> des modifications de chacun des fichiers impliqués (si
-vous savez au moins quels sont ces fichiers).
-</para>
+      <para id="x_b6">Il a une architecture client/serveur centralisée. Il ne
+        regroupe pas les modifications de fichiers dans une opération de
+        <quote>commit</quote> atomique, ce qui permet à ses utilisateurs de
+        <quote>casser le <emphasis>build</emphasis></quote> assez facilement
+        : une personne peut effectuer une opération de <quote>commit</quote>
+        sans problème puis être bloquée par besoin de fusion, avec comme
+        conséquence néfaste, que les autres utilisateurs ne récupèreront
+        qu'une partie de ses modifications. Ce problème affecte aussi la
+        manière de travailler avec l'historique du projet. Si vous voulez
+        voir toutes les modifications d'une personne du projet, vous devrez
+        injecter manuellement les descriptions et les <emphasis
+          remap="it">timestamps</emphasis> des modifications de chacun des
+        fichiers impliqués (si vous savez au moins quels sont ces fichiers).
+      </para>
 
       <para id="x_b7">CVS a une notion étrange des <emphasis
-      remap="it">tags</emphasis> et des branches que je n'essayerai
-même pas de décrire ici. Il ne supporte pas bien les opérations de renommage d'un
-fichier ou d'un répertoire, ce qui facilite la corruption de son dépôt. Il n'a
-presque pas pour ainsi dire de contrôle de cohérence interne, il est donc
-pratiquement impossible de dire si un dépôt est corrompu ni à quel point. Je
-ne recommanderai pas CVS pour un projet existant ou nouveau.
-</para>
+          remap="it">tags</emphasis> et des branches que je n'essayerai même
+        pas de décrire ici. Il ne supporte pas bien les opérations de
+        renommage d'un fichier ou d'un répertoire, ce qui facilite la
+        corruption de son dépôt. Il n'a presque pas pour ainsi dire de
+        contrôle de cohérence interne, il est donc pratiquement impossible de
+        dire si un dépôt est corrompu ni à quel point. Je ne recommanderai
+        pas CVS pour un projet existant ou nouveau.
+      </para>
 
-      <para id="x_b8">Mercurial peut importer l'historique d'un projet CVS. Néanmoins, il y a
-quelques principes à respecter; ce qui est vrai aussi pour les autres
-outils d'import de projet CVS. À cause de l'absence de <quote>commit</quote> atomique
-et gestion de version de l'arborescence, il n'est pas possible de reconstruire
-de manière précise l'ensemble de l'historique. Un travail de <quote>devinette</quote>
-est donc nécessaire, et les fichiers renommés ne sont pas détectés. Parce
-qu'une bonne part de l'administration d'un dépôt CVS est effectuée manuellement,
-et est donc, sujette à erreur, il est courant que les imports CVS rencontrent
-de nombreux problèmes avec les dépôt corrompus (des <emphasis
-remap="it">timestamps</emphasis> de révision complètement buggés et des fichiers 
-verrouillés depuis des années sont deux des problèmes les moins intéressants dont 
-je me souvienne).
-</para>
+      <para id="x_b8">Mercurial peut importer l'historique d'un projet CVS.
+        Néanmoins, il y a quelques principes à respecter; ce qui est vrai
+        aussi pour les autres outils d'import de projet CVS. À cause de
+        l'absence de <quote>commit</quote> atomique et gestion de version de
+        l'arborescence, il n'est pas possible de reconstruire de manière
+        précise l'ensemble de l'historique. Un travail de
+        <quote>devinette</quote> est donc nécessaire, et les fichiers
+        renommés ne sont pas détectés. Parce qu'une bonne part de
+        l'administration d'un dépôt CVS est effectuée manuellement, et est
+        donc, sujette à erreur, il est courant que les imports CVS
+        rencontrent de nombreux problèmes avec les dépôt corrompus (des
+        <emphasis remap="it">timestamps</emphasis> de révision complètement
+        buggés et des fichiers verrouillés depuis des années sont deux des
+        problèmes les moins intéressants dont je me souvienne).
+      </para>
 
       <para id="x_b9">Mercurial peut importer l'historique depuis un dépôt CVS.
-</para>
+      </para>
 
 
     </sect2>
     <sect2>
       <title>Outils propriétaires</title>
 
-      <para id="x_ba">Perforce a une architecture client/serveur centralisée, sans aucun
-mécanisme de mise en cache de données coté client. Contrairement à la plupart
-des outils modernes de gestion de source, Perforce exige de ses
-utilisateurs d'exécuter une commande pour informer le serveur
-central de tout fichier qu'ils souhaitent modifier.
-</para>
+      <para id="x_ba">Perforce a une architecture client/serveur centralisée,
+        sans aucun mécanisme de mise en cache de données coté client.
+        Contrairement à la plupart des outils modernes de gestion de source,
+        Perforce exige de ses utilisateurs d'exécuter une commande pour
+        informer le serveur central de tout fichier qu'ils souhaitent
+        modifier.
+      </para>
 
-      <para id="x_bb">Les performances de Perforce sont plutôt bonnes pour des petites
-équipes, mais elles s'effondrent rapidement lorsque le nombre
-d'utilisateurs augmente au delà de la douzaine. Des installations
-de Perforce assez larges nécessitent le déploiement de proxies pour
-supporter la montée en charge associée.
-</para>
-
+      <para id="x_bb">Les performances de Perforce sont plutôt bonnes pour
+        des petites équipes, mais elles s'effondrent rapidement lorsque le
+        nombre d'utilisateurs augmente au delà de la douzaine. Des
+        installations de Perforce assez larges nécessitent le déploiement de
+        proxies pour supporter la montée en charge associée.
+      </para>
 
     </sect2>
     <sect2>
       <title>Choisir un outil de gestion de source</title>
 
-      <para id="x_bc">A l'exception de CVS, tous les outils listés ci-dessus ont des
-forces qui leur sont propres et qui correspondent à certaines
-formes de projet. Il n'y a pas un seul meilleur outil de gestion
-de source qui correspondrait le mieux à toutes les situations.
-</para>
+      <para id="x_bc">A l'exception de CVS, tous les outils listés ci-dessus
+        ont des forces qui leur sont propres et qui correspondent à certaines
+        formes de projet. Il n'y a pas un seul meilleur outil de gestion de
+        source qui correspondrait le mieux à toutes les situations.
+      </para>
 
-      <para id="x_bd">En guise exemple, Subversion est un très bon choix lorsqu'on travaille
-avec beaucoup de fichiers binaires, qui évoluent régulièrement, grâce
-à sa nature centralisée et sa capacité à verrouiller des fichiers.
-</para>
+      <para id="x_bd">En guise exemple, Subversion est un très bon choix
+        lorsqu'on travaille avec beaucoup de fichiers binaires, qui évoluent
+        régulièrement, grâce à sa nature centralisée et sa capacité à
+        verrouiller des fichiers.
+      </para>
 
-      <para id="x_be">Personnellement, je préfère Mercurial pour sa simplicité, ses
-performances et sa bonne capacité de fusion, et il m'a très bien rendu service
-de plusieurs années maintenant.
-</para>
-
+      <para id="x_be">Personnellement, je préfère Mercurial pour sa
+        simplicité, ses performances et sa bonne capacité de fusion, et il
+        m'a très bien rendu service de plusieurs années maintenant.
+      </para>
 
     </sect2>
   </sect1>
   <sect1>
     <title>Migrer depuis un outil à Mercurial</title>
 
-    <para id="x_bf">Mercurial est livré avec une extension nommée <literal role="hg-ext">convert</literal>, qui
-peut de manière incrémentale importer des révisions depuis différents
-autres outils de gestion de source. Par <quote>incrémental</quote>, j'entends que
-vous pouvez convertir l'historique entier du projet en une seule fois,
-puis relancer l'outil d'import plus tard pour obtenir les modifications
-effectuées depuis votre import initial.
-</para>
+    <para id="x_bf">Mercurial est livré avec une extension nommée <literal
+        role="hg-ext">convert</literal>, qui peut, de manière incrémentale
+      importer des révisions depuis différents autres outils de gestion de
+      source. Par <quote>incrémental</quote>, j'entends que vous pouvez
+      convertir l'historique entier du projet en une seule fois, puis
+      relancer l'outil d'import plus tard pour obtenir les modifications
+      effectuées depuis votre import initial.
+    </para>
 
-    <para id="x_c0">Les outils de gestion de source supportés par <literal role="hg-ext">convert</literal> sont :
-</para>
+    <para id="x_c0">Les outils de gestion de source supportés par <literal
+        role="hg-ext">convert</literal> sont :
+    </para>
     <itemizedlist>
       <listitem><para id="x_c1">Subversion</para></listitem>
       <listitem><para id="x_c2">CVS</para></listitem>
       <listitem><para id="x_c3">Git</para></listitem>
-      <listitem><para id="x_c4">Darcs</para></listitem></itemizedlist>
+      <listitem><para id="x_c4">Darcs</para></listitem>
+    </itemizedlist>
 
-    <para id="x_c5">En outre, <literal role="hg-ext">convert</literal> peut exporter les modifications depuis Mercurial
-vers Subversion. Ceci rend possible d'essayer Subversion en parallèle
-avant de choisir une solution définitive, sans aucun risque de perte de
-données.
-</para>
+    <para id="x_c5">En outre, <literal role="hg-ext">convert</literal> peut
+      exporter les modifications depuis Mercurial vers Subversion. Ceci rend
+      possible d'essayer Subversion en parallèle avant de choisir une
+      solution définitive, sans aucun risque de perte de données.
+    </para>
 
-    <para id="x_c6">La commande <command role="hg-ext-conver">convert</command> est très simple à utiliser. Simplement,
-indiquez le chemin ou l'URL du dépôt de source, en lui indiquant éventuellement
-le nom du chemin de destination, et la conversion se met en route. Après cet
-import initial, il suffit de relancer la commande encore une fois pour
-importer les modifications effectuées depuis.
-</para>
+    <para id="x_c6">La commande <command
+        role="hg-ext-conver">convert</command> est très simple à utiliser.
+      Simplement, indiquez le chemin ou l'URL du dépôt de source, en lui
+      indiquant éventuellement le nom du chemin de destination, et la
+      conversion se met en route. Après cet import initial, il suffit de
+      relancer la commande encore une fois pour importer les modifications
+      effectuées depuis.
+    </para>
   </sect1>
 
   <sect1>
     <title>Une courte histoire de la gestion de source</title>
 
     <para id="x_c7">Le plus célèbre des anciens outils de gestion de source
-    est <emphasis remap="it">SCCS</emphasis>
-(Source Code Control System)}, que Marc Rochkind conçu dans les laboratoires de
-recherche de Bell (<emphasis remap="it">Bell Labs</emphasis>), dans le début des années 70.
-<emphasis remap="it">SCCS</emphasis> ne fonctionnait que sur des fichiers individuels, et obligeait chaque
-personne travaillant sur le projet d'avoir un accès à un répertoire de
-travail commun, sur le même système. Seulement une seule personne pouvait
-modifier un fichier au même moment, ce fonctionnement était assuré par
-l'utilisation de verrou (<quote>lock</quote>). Il était courant que des personnes
-verrouillent des fichiers, et plus tard, oublient de le déverrouiller;
-empêchant n'importe qui d'autre de travailler sur ces fichiers sans l'aide de
-l'administrateur...
-</para>
+      est <emphasis remap="it">SCCS</emphasis> (Source Code Control System)},
+      que Marc Rochkind conçu dans les laboratoires de recherche de Bell
+      (<emphasis remap="it">Bell Labs</emphasis>), dans le début des années
+      70. <emphasis remap="it">SCCS</emphasis> ne fonctionnait que sur des
+      fichiers individuels, et obligeait chaque personne travaillant sur le
+      projet d'avoir un accès à un répertoire de travail commun, sur le même
+      système. Seulement une seule personne pouvait modifier un fichier au
+      même moment, ce fonctionnement était assuré par l'utilisation de verrou
+      (<quote>lock</quote>). Il était courant que des personnes verrouillent
+      des fichiers, et plus tard, oublient de le déverrouiller ; empêchant
+      n'importe qui d'autre de travailler sur ces fichiers sans l'aide de
+      l'administrateur...
+    </para>
 
     <para id="x_c8">Walter Tichy a développé une alternative libre à
-    <emphasis remap="it">SCCS</emphasis> au début des
-années 80, qu'il nomma <emphasis remap="it">RCS (Revision Control System)</emphasis>.  Comme
-<emphasis remap="it">SCCS</emphasis>, <emphasis remap="it">RCS</emphasis> demandait aux développeurs de travailler sur le même
-répertoire partagé, et de verrouiller les
-fichiers pour se prémunir de tout conflit issu de modifications concurrentes.
-</para>
+      <emphasis remap="it">SCCS</emphasis> au début des années 80, qu'il
+      nomma <emphasis remap="it">RCS (Revision Control System)</emphasis>.
+      Comme <emphasis remap="it">SCCS</emphasis>, <emphasis
+        remap="it">RCS</emphasis> demandait aux développeurs de travailler
+      sur le même répertoire partagé, et de verrouiller les fichiers pour se
+      prémunir de tout conflit issu de modifications concurrentes.
+    </para>
 
-    <para id="x_c9">Un peu plus tard dans les années 1980, Dick Grune utilisa <emphasis remap="it">RCS</emphasis> comme
-une brique de base pour un ensemble de scripts <emphasis
-remap="it">shell</emphasis> qu'il intitula
-cmt, avant de la renommer en <emphasis remap="it">CVS (Concurrent Versions System)</emphasis>.  La
-grande innovation de CVS était que les développeurs pouvaient travailler
-simultanément et indépendamment dans leur propre espace de travail. Ces espaces
-de travail privés assuraient que les développeurs ne se marchent pas
-mutuellement sur les pieds, comme c'était souvent le cas avec RCS et SCCS.
-Chaque développeur disposait donc de sa copie de tous les fichiers du projet,
-et ils pouvaient donc librement les modifier. Ils devaient néanmoins effectuer
-la <quote>fusion</quote> (<emphasis
-remap="it"><quote>merge</quote></emphasis>) de leurs fichiers, avant d'effectuer le
-<quote>commit</quote> de leur modifications sur le dépôt central.
-</para>
-
-<para>Brian Berliner reprit les scripts de Grune's et les réécrit en C, qu'il publia
-en 1989. Depuis, ce code a été modifié jusqu'à devenir la version moderne de
-CVS. CVS a acquis ainsi la capacité de fonctionner en réseau, transformant son
-architecture en client/serveur. L'architecture de CVS est centralisée, seul le
-serveur a une copie de l'historique du projet. L'espace de travail client ne
-contient qu'une copie de la dernière version du projet, et quelques métadonnées
-pour indiquer où le serveur se trouve. CVS a été un grand succès, aujourd'hui
-il est probablement l'outil de gestion de contrôle le plus utilisé au monde.
-</para>
-
-<para>Au début des années 1990, Sun Microsystmes développa un premier outil de
-gestion de source distribué, nommé TeamWare. Un espace de travail TeamWare
-contient une copie complète de l'historique du projet. TeamWare n'a pas de
-notion de dépôt central. (CVS utilisait RCS pour le stockage de l'historique,
-TeamWare utilisait SCCS).
-</para>
-
-<para>Alors que les années 1990 avançaient, les utilisateurs ont pris conscience d'un
-certain nombre de problèmes avec CVS. Il enregistrait simultanément des
-modifications sur différents fichiers individuellement, au lieu de les
-regrouper dans une seule opération cohérente et atomique. Il ne gère pas bien
-sa hiérarchie de fichier, il est donc assez aisé de créer le chaos en renommant
-les fichiers et les répertoires. Pire encore, son code source est difficile à
-lire et à maintenir, ce qui agrandit largement le <quote>niveau de souffrance</quote>
-associé à la réparation de ces problèmes d'architecture de manière prohibitive.
-</para>
-
-<para>En 2001, Jim Blandy et Karl Fogel, deux développeurs qui avaient travaillé sur
-CVS, initièrent un projet pour le remplacer par un outil qui aurait une
-meilleure architecture et un code plus propre. Le résultat, Subversion, ne
-quitte pas le modèle centralisé et client/server de CVS, mais ajoute les
-opérations de <quote>commit</quote> atomique sur de multiples fichiers, une meilleure
-gestion des espaces de noms, et d'autres fonctionnalités qui en font un
-meilleur outil que CVS. Depuis sa première publication, il est rapidement
-devenu très populaire.
-</para>
-
-<para>Plus ou moins simultanément, Graydon Hoare a commencé sur l'ambitieux
-système de gestion distribué Monotone. Bien que Monotone corrige plusieurs
-défauts de CVS's tout en offrant une architecture <quote>peer-to-peer</quote>, il va aussi
-plus loin que la plupart des outils de révision de manière assez innovante. Il
-utilise des <quote>hash</quote> cryptographiques comme identifiants, et il a une notion
-complète de <quote>confiance</quote> du code issu des différentes sources.
-</para>
-
-<para>Mercurial est né en 2005. Bien que très influencé par Monotone, Mercurial se
-concentre sur la facilité d'utilisation, les performances et la capacité à
-monter en charge pour de très gros projets.
-</para>
-
-</sect1>
-
-
+    <para id="x_c9">Un peu plus tard dans les années 1980, Dick Grune utilisa
+      <emphasis remap="it">RCS</emphasis> comme une brique de base pour un
+      ensemble de scripts <emphasis remap="it">shell</emphasis> qu'il
+      intitula cmt, avant de la renommer en <emphasis remap="it">CVS
+        (Concurrent Versions System)</emphasis>.  La grande innovation de CVS
+      était que les développeurs pouvaient travailler simultanément et
+      indépendamment dans leur propre espace de travail. Ces espaces de
+      travail privés assuraient que les développeurs ne se marchent pas
+      mutuellement sur les pieds, comme c'était souvent le cas avec RCS et
+      SCCS. Tous les développeurs disposaient donc de leur copie de tous les
+      fichiers du projet, et ils pouvaient donc librement les modifier. Ils
+      devaient néanmoins effectuer la <quote>fusion</quote> (<emphasis
+        remap="it"><quote>merge</quote></emphasis>) de leurs fichiers, avant
+      d'effectuer le <quote>commit</quote> de leurs modifications sur le dépôt
+      central.
+    </para>
+    
+    <para>Brian Berliner reprit les scripts de Grune's et les réécrit en C,
+      qu'il publia en 1989. Depuis, ce code a été modifié jusqu'à devenir la
+      version moderne de CVS. CVS a acquis ainsi la capacité de fonctionner
+      en réseau, transformant son architecture en client/serveur.
+      L'architecture de CVS est centralisée, seul le serveur a une copie de
+      l'historique du projet. L'espace de travail client ne contient qu'une
+      copie de la dernière version du projet, et quelques métadonnées pour
+      indiquer où le serveur se trouve. CVS a été un grand succès,
+      aujourd'hui il est probablement l'outil de gestion de contrôle le plus
+      utilisé au monde.
+    </para>
+    
+    <para>Au début des années 1990, Sun Microsystems développa un premier
+      outil de gestion de source distribué, nommé TeamWare. Un espace de
+      travail TeamWare contient une copie complète de l'historique du projet.
+      TeamWare n'a pas de notion de dépôt central. (CVS utilisait RCS pour le
+      stockage de l'historique, TeamWare utilisait SCCS).
+    </para>
+    
+    <para>Alors que les années 1990 avançaient, les utilisateurs ont pris
+      conscience d'un certain nombre de problèmes avec CVS. Il enregistrait
+      simultanément des modifications sur différents fichiers
+      individuellement, au lieu de les regrouper dans une seule opération
+      cohérente et atomique. Il ne gère pas bien sa hiérarchie de fichier, il
+      est donc assez aisé de créer le chaos en renommant les fichiers et les
+      répertoires. Pire encore, son code source est difficile à lire et à
+      maintenir, ce qui agrandit largement le <quote>niveau de
+        souffrance</quote> associé à la réparation de ces problèmes
+      d'architecture de manière prohibitive.
+    </para>
+    
+    <para>En 2001, Jim Blandy et Karl Fogel, deux développeurs qui avaient
+      travaillé sur CVS, initièrent un projet pour le remplacer par un outil
+      qui aurait une meilleure architecture et un code plus propre. Le
+      résultat, Subversion, ne quitte pas le modèle centralisé et
+      client/server de CVS, mais ajoute les opérations de
+      <quote>commit</quote> atomique sur de multiples fichiers, une meilleure
+      gestion des espaces de noms, et d'autres fonctionnalités qui en font un
+      meilleur outil que CVS. Depuis sa première publication, il est
+      rapidement devenu très populaire.
+    </para>
+    
+    <para>Plus ou moins simultanément, Graydon Hoare a commencé sur
+      l'ambitieux système de gestion distribué Monotone. Bien que Monotone
+      corrige plusieurs défauts de CVS tout en offrant une architecture
+      <quote>peer-to-peer</quote>, il va aussi plus loin que la plupart des
+      outils de révision de manière assez innovante. Il utilise des
+      <quote>hashs</quote> cryptographiques comme identifiants, et il a une
+      notion complète de <quote>confiance</quote> du code issu des
+      différentes sources.
+    </para>
+    
+    <para>Mercurial est né en 2005. Bien que très influencé par Monotone,
+      Mercurial se concentre sur la facilité d'utilisation, les performances
+      et la capacité à monter en charge pour de très gros projets.
+    </para>
+  
+  </sect1>
 
 </chapter>
 
