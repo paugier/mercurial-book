@@ -11,7 +11,7 @@
 
   <para id="x_6e2">Dans cette annexe, nous discuterons comment importer
   l'historique d'un projet dans Mercurial, et à quoi faire attention
-  si vous êtes habitué à un autre outil de gestion de révisions.
+  si vous êtes habitués à un autre outil de gestion de révisions.
    </para>
 
   <sect1>
@@ -70,7 +70,7 @@ convert =</programlisting>
     manière incrémentale. En d'autres mots, après une première exécution de
     la commande <command>hg convert</command>, les exécutions ultérieures
     importeront les révisions ultérieures à l'exécution précédente.
-    La conversion incrémentale ne réussiera que si
+    La conversion incrémentale ne réussira que si
     vous exécutez <command>hg convert</command> dans le même dépôt que vous
     aviez utilisé à l'origine, ceci parce que l'extension <literal>convert</literal> 
     sauvegarde un certain nombre de méta-données privées dans le fichier
@@ -93,7 +93,7 @@ convert =</programlisting>
       à la place l'URL <literal>http://python-nose.googlecode.com/svn</literal>,
       Mercurial va automatiquement détecter la  
       <literal>branche principale (trunk)</literal>, les <literal>étiquettes 
-      (tags)</literal>, et les <literal>branches</literal>  que les dépôt
+      (tags)</literal>, et les <literal>branches</literal>  que les dépôts
       Subversion utilisent généralement, et les importera chacun dans
       une branche Mercurial distincte.</para>
 
@@ -162,7 +162,7 @@ soc = Socrates &lt;socrates@phil.example.gr&gt;</programlisting>
       <para id="x_6f5">Pour indiquer le fichier d'association, on utilise
       l'option <option>--filemap</option> en lui fournissant un nom de
       fichier. Le fichier d'association contient des lignes de la forme
-      suivante:</para>
+      suivante :</para>
 
       <programlisting># Ceci est un commentaire.
 # Les lignes vides sont ignorées.
@@ -196,8 +196,8 @@ rename from/some/path to/some/other/place
 
       <para id="x_70b">Vous aurez souvent besoin de plusieurs essais
       avant d'arriver à la parfaite combinaison de fichier d'association de fichiers,
-      de fichier d'association de noms d'utilisateurs et des autres paramètres. Hors,
-      convertir un dépôt Mercurial via un protocol comme <literal>ssh</literal>
+      de fichier d'association de noms d'utilisateurs et des autres paramètres. Or,
+      convertir un dépôt Mercurial via un protocole comme <literal>ssh</literal>
       ou <literal>http</literal> peut être des milliers de fois plus long
       que ce dont le système d'exploitation est en fait capable de faire,
       à cause des latence réseau. Ceci peut rendre la conception de cette
@@ -212,7 +212,7 @@ rename from/some/path to/some/other/place
         Mercurial.</para>
       
       <para id="x_70d">Supposez que nous voulions convertir le dépôt 
-      Subversion du populaire projet Memcached en une arboresence Mercurial.
+      Subversion du populaire projet Memcached en une arborescence Mercurial.
       Tout d'abord, nous créons un dépôt Subversion local.</para>
 
       <screen><prompt>$</prompt> <userinput>svnadmin create memcached-mirror</userinput></screen>
@@ -244,7 +244,7 @@ rename from/some/path to/some/other/place
       Il suffit d'exécuter de nouveau <command>svnsync</command> pour
       récupérer les récentes modifications dans notre miroir, puis <command>hg 
       convert</command>
-      les importe dans notre arboresence Mercurial.</para>
+      les importe dans notre arborescence Mercurial.</para>
 
       <para id="x_713">Il y a deux avantages à utiliser un import à deux
       étages comme avec <command>svnsync</command>. Le premier
@@ -253,7 +253,7 @@ rename from/some/path to/some/other/place
       et donc transfère moins de données par le réseau. Le deuxième
       est que l'import depuis un dépôt Subversion local est si rapide que
       vous pouvez peaufiner et réitérer les paramètres de conversion de 
-      ce dernier sans souffrir de la qualité de la connection réseau.</para>
+      ce dernier sans souffrir de la qualité de la connexion réseau.</para>
     </sect2>
   </sect1>
 
@@ -275,7 +275,7 @@ rename from/some/path to/some/other/place
       l'historique d'un projet sur votre disque dur local, il n'a besoin
       d'effectuer des accès au réseau que lorsque vous voulez
       explicitement communiquer avec un autre dépôt. Subversion, par contre,
-      ne conserve que peu d'information localement, et le client
+      ne conserve que peu d'informations localement, et le client
       doit donc communiquer avec le serveur central pour la
       plupart des opérations communes.</para>
 
@@ -293,21 +293,21 @@ rename from/some/path to/some/other/place
         traite la plupart des commandes comme des requêtes à exécuter sur le
         répertoire où vous vous situez, et ses sous répertoires. Par exemple,
         si vous exécutez <command>svn log</command>, vous verrez l'historique 
-        de la partie de l'arboresence où vous vous situez, et non de la
+        de la partie de l'arborescence où vous vous situez, et non de la
         hiérarchie entière.</para>
 
 	<para id="x_6fc">Les commandes de Mercurial ont un comportement
-        différent : toutes les commandes s'appliquent à l'ensemble de l'arboresence
+        différent : toutes les commandes s'appliquent à l'ensemble de l'arborescence
         du dépôt. Exécutez la commande <command>hg log</command> et elle vous
-        donnera l'historique de l'ensemble de l'arboresence, quel que soit le
+        donnera l'historique de l'ensemble de l'arborescence, quel que soit le
         sous-répertoire où vous vous situez. Si
         vous souhaitez obtenir l'historique d'un répertoire ou seulement d'un
         fichier, ajouter simplement le nom de celui-ci à la commande, par
         exemple <command>hg log src</command>.</para>
 
 	<para id="x_6fd">De ma propre expérience, cette différence dans leur
-        comportement par défaut est le plus probablement ce qui risque de vous
-        surprendre si vous passez régulièrement d'un outil à l'autre.</para>
+        comportement par défaut est probablement ce qui risque de vous
+        surprendre le plus si vous passez régulièrement d'un outil à l'autre.</para>
       </sect3>
 
       <sect3>
@@ -316,7 +316,7 @@ rename from/some/path to/some/other/place
 	<para id="x_6fe">Avec Subversion, il est normal (bien que légèrement
         désapprouvé) que différentes personnes collaborent sur une seule
         branche. Si Alice et Bob travaillent ensemble, et Alice ajoute ses
-        modications à leur branche partagée, Bob doit alors mettre à jour
+        modifications à leur branche partagée, Bob doit alors mettre à jour
         sa vue de la branche avant de pouvoir appliquer un commit.
         Puisqu'il n'a, à ce moment, pas effectué de commit
         des modifications qu'il a faites, il se peut qu'il ne corrompe 
@@ -340,7 +340,7 @@ rename from/some/path to/some/other/place
         est assez complexe pour que, en pratique, elle ne soit que rarement utilisé.
         Mercurial propose de son côté un mode un peu moins sûr, permettant de
         récupérer des modifications par dessus des modifications non
-        commitées, qui reste toutefois très peu répandu.</para> 
+        committées, qui reste toutefois très peu répandu.</para> 
       </sect3>
 
       <sect3>
@@ -355,16 +355,16 @@ rename from/some/path to/some/other/place
         enregistrées localement, et doivent être par la suite transférés par
         la commande <command>hg push</command>.</para>
 
-	<para id="x_703">Chaque approche à ses avantages et ses inconvénients.
+	<para id="x_703">Chaque approche a ses avantages et ses inconvénients.
         Le modèle Subversion implique que les modifications soient publiées, et
         donc disponibles immédiatement. D'un autre coté, cela implique aussi
         que, pour pouvoir utiliser le logiciel normalement, un utilisateur doit 
         avoir les droits d'écriture dans le dépôt, et ce privilège n'est pas concédé 
         facilement par la plupart des projets Open Source.</para>
 
-	<para id="x_704">L'approche de Mercurial permet à quiquonque de faire
+	<para id="x_704">L'approche de Mercurial permet à quiconque de faire
         un clone du dépôt et d'y ajouter ses modifications sans jamais avoir
-        besoin de la permission de quiquonque, et l'on peut même publier ses
+        besoin de la permission de quiconque, et l'on peut même publier ses
         modifications et continuer à participer comme on le désire. Toutefois, la
         distinction entre les commits et le transfert de ces derniers présente
         le risque que quelqu'un applique ses modifications par un commit local
@@ -533,15 +533,15 @@ rename from/some/path to/some/other/place
     <command>hg log -r104654 -p</command>.</para>
 
     <para id="x_706">Quand vous exécutez la commande <command>hg status</command>
-    sans aucun arguments, elle affiche l'état de l'ensemble de l'arboresence,
-    avec des chemins relatifs partant de la raçine du dépôt. Ceci rend
+    sans aucun arguments, elle affiche l'état de l'ensemble de l'arborescence,
+    avec des chemins relatifs partant de la racine du dépôt. Ceci rend
     difficile de copier un nom de fichier depuis la sortie de la commande
     <command>hg status</command> dans une autre ligne de commande. Si vous
     fournissez un fichier ou un répertoire à la commande <command>hg
     status</command>, elle va afficher les chemins relatif depuis votre
     répertoire courant à la place. Ainsi, pour avoir un état sur l'ensemble
-    de l'arboresence à l'aide  de <command>hg status</command>, avec des
-    chemins relatifs à votre répertoire courant, et non le racine du dépôt,
+    de l'arborescence à l'aide  de <command>hg status</command>, avec des
+    chemins relatifs à votre répertoire courant, et non la racine du dépôt,
     ajoutez la sortie de <command>hg root</command> à la commande
     <command>hg status</command>. Vous pouvez le faire aisément sur un
     système Unix ainsi :</para>
