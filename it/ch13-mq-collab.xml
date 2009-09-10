@@ -1,0 +1,238 @@
+<chapter id="chap:mq-collab">
+  <?dbhtml filename="usi-avanzati-di-mercurial-queues.html"?>
+  <title>Usi avanzati di Mercurial Queues</title>
+
+  <para id="x_15d">Sebbene sia facile imparare gli usi più semplici di Mercurial Queues, sono un pizzico di disciplina e alcune delle funzioni meno usate di MQ  che rendono possibile lavorare in ambienti di sviluppo complicati.</para>
+
+  <para id="x_15e">In questo capitolo, userò come esempio una tecnica che ho impiegato per gestire lo sviluppo di un driver del kernel di Linux per un dispositivo Infiniband. Il driver in questione è grande (almeno per le dimensioni dei driver), poiché contiene 25.000 righe di codice distribuite su 35 file sorgente, e viene mantenuto da un piccolo gruppo di sviluppatori.</para>
+
+  <para id="x_15f">Sebbene la maggior parte del materiale in questo capitolo sia specifica per Linux, gli stessi principi si applicano nel caso in cui dobbiate fare parecchio lavoro su una qualsiasi base di codice di cui non siete i proprietari principali.</para>
+
+  <sect1>
+    <title>Il problema di gestire molti obiettivi</title>
+
+    <para id="x_160">Il kernel di Linux cambia rapidamente e non è mai stato stabile internamente, in quanto gli sviluppatori effettuano frequentemente modifiche drastiche tra una release e l&rsquo;altra. Questo significa che, di solito, una versione del driver che funziona bene con una particolare versione rilasciata del kernel non potrà nemmeno essere <emphasis>compilata</emphasis> correttamente su qualsiasi altra versione del kernel.</para>
+
+    <para id="x_161">Per mantenere un driver, dobbiamo considerare un certo numero di versioni di Linux differenti.</para>
+    <itemizedlist>
+      <listitem><para id="x_162">Un obiettivo è l&rsquo;albero di sviluppo principale del kernel di Linux. In questo caso, le attività di manutenzione del codice sono parzialmente condivise con altri sviluppatori della comunità del kernel, che effettuano modifiche <quote>estemporanee</quote> al driver man mano che sviluppano e rifiniscono i sottosistemi del kernel.</para>
+      </listitem>
+      <listitem><para id="x_163">Manteniamo anche un certo numero di <quote>backport</quote> (letteralmente, conversioni all&rsquo;indietro) verso vecchie versioni del kernel di Linux, per soddisfare le necessità di clienti che stanno utilizzando distribuzioni di Linux più vecchie che non incorporano i nostri driver. (Effettuare il <emphasis>backport</emphasis> del codice significa modificarlo per farlo funzionare in una versione del suo ambiente di destinazione più vecchia di quella per la quale era stato sviluppato.)</para>
+      </listitem>
+      <listitem><para id="x_164">Infine, rilasciamo il software seguendo una tabella di marcia che non è necessariamente allineata con quella usata da chi sviluppa il kernel e da chi distribuisce il sistema operativo, in modo da poter consegnare nuove funzioni ai clienti senza obbligarli ad aggiornare il loro kernel o la loro intera distribuzione.</para>
+      </listitem>
+    </itemizedlist>
+
+    <sect2>
+      <title>Approcci seducenti che non funzionano bene</title>
+
+      <para id="x_165">Ci sono due modi <quote>standard</quote> per mantenere un software che deve funzionare in molti ambienti diversi.</para>
+
+      <para id="x_166">Il primo è mantenere un certo numero di rami, ognuno dedicato a un singolo obiettivo. Il problema di questo approccio è che dovete mantenere una ferrea disciplina nel flusso dei cambiamenti tra i repository. Una nuova funzione o correzione di bug deve prendere vita in un repository <quote>intatto</quote>, poi passare a tutti i repository di backport. Le modifiche di backport dovrebbero propagarsi verso un numero di rami più limitato, in quanto l&rsquo;applicazione di una modifica di backport su un ramo a cui non appartiene probabilmente impedirà al driver di essere compilato.</para>
+
+      <para id="x_167">Il secondo è quello di mantenere un singolo albero di sorgenti pieno di istruzioni condizionali che attivano o disattivano parti di codice a seconda dell&rsquo;ambiente designato. Dato che queste istruzioni <quote>ifdef</quote> non sono permesse nell&rsquo;albero del kernel di Linux, è necessario seguire una procedura manuale o automatica per eliminarle e produrre un albero pulito. Una base di codice mantenuta in questo modo diventa rapidamente un caos di blocchi condizionali che sono difficili da capire e mantenere.</para>
+
+      <para id="x_168">Nessuno di questi approcci è particolarmente adatto a situazioni in cui non <quote>possedete</quote> la copia ufficiale di un albero di sorgenti. Nel caso di un driver Linux che viene distribuito insieme al kernel standard, l&rsquo;albero di Linus contiene la copia del codice che verrà universalmente considerata ufficiale. La versione a monte del <quote>mio</quote> driver può essere modificata da persone che non conosco, senza che io nemmeno lo scopra fino a quando i cambiamenti non appaiono nell&rsquo;albero di Linus.</para>
+
+      <para id="x_169">Questi approcci hanno la debolezza aggiuntiva di rendere difficile generare patch ben formate da presentare a monte.</para>
+
+      <para id="x_16a">In linea di principio, Mercurial Queues sembra un buon candidato per gestire uno scenario di sviluppo come quello qui delineato. Non solo questo è indubbiamente il caso, ma MQ contiene anche alcune funzioni aggiuntive che rendono il lavoro più piacevole.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Applicare patch in maniera condizionata con le guardie</title>
+
+    <para id="x_16b">Forse il miglior modo per non impazzire con così tanti ambienti obiettivo è quello di essere in grado di scegliere patch specifiche da applicare a una data situazione. MQ fornisce una funzione chiamata <quote>guardie</quote> (originata dal comando <literal>guards</literal> di quilt) che fa proprio questo. Per cominciare, creiamo un semplice repository per fare qualche esperimento.</para>
+
+    &interaction.mq.guards.init;
+
+    <para id="x_16c">Questo ci fornisce un piccolo repository contenente due patch che non hanno alcuna dipendenza reciproca, perché coinvolgono file differenti.</para>
+
+    <para id="x_16d">L&rsquo;idea alla base dell&rsquo;applicazione condizionale è la possibilità di <quote>etichettare</quote> una patch con una <emphasis>guardia</emphasis>, che è semplicemente una stringa di testo di vostra scelta, per poi dire a MQ di selezionare le guardie specifiche da usare al momento di applicare le patch. MQ applicherà, o salterà, una patch con guardia a seconda delle guardie che avete selezionato.</para>
+
+    <para id="x_16e">Una patch può avere un numero arbitrario di guardie, ognuna delle quali è <emphasis>positiva</emphasis> (<quote>applica questa patch se questa guardia è selezionata</quote>) o <emphasis>negativa</emphasis> (<quote>salta questa patch se questa guardia è selezionata</quote>). Una patch senza alcuna guardia viene sempre applicata.</para>
+
+  </sect1>
+  <sect1>
+    <title>Controllare le guardie su una patch</title>
+
+    <para id="x_16f">Il comando <command role="hg-ext-mq">qguard</command> vi permette di determinare quali guardie dovrebbero applicarsi a una patch, o di visualizzare le guardie già attive. Senza alcun argomento, il comando mostra le guardie della patch attualmente in cima alla pila.</para>
+
+    &interaction.mq.guards.qguard;
+
+    <para id="x_170">Per impostare una guardia positiva su una patch, fate precedere il nome della guardia da un <quote><literal>+</literal></quote>.</para>
+
+    &interaction.mq.guards.qguard.pos;
+
+    <para id="x_171">Per impostare una guardia negativa, fate precedere il nome della guardia da un <quote><literal>-</literal></quote>.</para>
+
+    &interaction.mq.guards.qguard.neg;
+
+    <para id="x_74a">Notate che in questo caso gli argomenti del comando <command>hg qguard</command> sono introdotti con il prefisso <literal>--</literal>, così Mercurial eviterà di interpretare il testo <literal>-quux</literal> come un&rsquo;opzione.</para>
+
+    <note>
+      <title>Impostare e modificare</title>
+
+      <para id="x_172">Il comando <command role="hg-ext-mq">qguard</command> <emphasis>imposta</emphasis> le guardie su una patch, ma non le <emphasis>modifica</emphasis>. Questo significa che se invocate <command role="hg-cmd">hg qguard +a +b</command> su una patch, quindi invocate <command role="hg-cmd">hg qguard +c</command> sulla stessa patch, l&rsquo;<emphasis>unica</emphasis> guardia che risulterà successivamente impostata sarà <literal>+c</literal>.</para>
+    </note>
+
+    <para id="x_173">Mercurial memorizza le guardie nel file <filename role="special">series</filename>, in una forma facile sia da capire che da modificare a mano. (In altre parole, non dovete usare il comando <command role="hg-ext-mq">qguard</command> se non volete, perché potete semplicemente modificare il file <filename role="special">series</filename>.)</para>
+
+    &interaction.mq.guards.series;
+
+  </sect1>
+  <sect1>
+    <title>Selezionare le guardie da usare</title>
+
+    <para id="x_174">Il comando <command role="hg-ext-mq">qselect</command> determina quali guardie sono attive in un dato momento. Il suo effetto è quello di determinare quali patch verranno applicate da MQ la prossima volta che invocherete <command role="hg-ext-mq">qpush</command>. Non ha alcun altro effetto, in particolare non agisce in alcun modo sulle patch che sono già applicate.</para>
+
+    <para id="x_175">Invocato senza argomenti, il comando <command role="hg-ext-mq">qselect</command> elenca le guardie attualmente attive, una per ogni riga. Gli argomenti vengono trattati come i nomi delle guardie da applicare.</para>
+
+    &interaction.mq.guards.qselect.foo;
+
+    <para id="x_176">Nel caso siate interessati, le guardie attualmente selezionate vengono memorizzate nel file <filename role="special">guards</filename>.</para>
+
+    &interaction.mq.guards.qselect.cat;
+
+    <para id="x_177">Possiamo vedere gli effetti delle guardie selezionate quando invochiamo <command role="hg-ext-mq">qpush</command>.</para>
+
+    &interaction.mq.guards.qselect.qpush;
+
+    <para id="x_178">Una guardia non può cominciare con un carattere <quote><literal>+</literal></quote> o un carattere <quote><literal>-</literal></quote>. Il nome di una guardia non deve contenere spazio bianco, ma la maggior parte degli altri caratteri sono accettabili. Se provate a usare una guardia con un nome non valido, MQ se ne lamenterà.</para>
+
+    &interaction.mq.guards.qselect.error;
+      
+    <para id="x_179">Cambiare le guardie selezionate cambia le patch che vengono applicate.</para>
+
+    &interaction.mq.guards.qselect.quux;
+
+    <para id="x_17a">Potete vedere nell&rsquo;esempio seguente che le guardie negative hanno la precedenza sulle guardie positive.</para>
+
+    &interaction.mq.guards.qselect.foobar;
+
+  </sect1>
+  <sect1>
+    <title>Le regole di MQ per applicare le patch</title>
+
+    <para id="x_17b">Le regole usate da MQ per decidere se applicare una patch sono le seguenti.</para>
+    <itemizedlist>
+      <listitem><para id="x_17c">Una patch che non ha guardie viene sempre applicata.</para>
+      </listitem>
+      <listitem><para id="x_17d">Se la patch ha una guardia negativa che corrisponde a una guardia attualmente selezionata, la patch viene saltata.</para>
+      </listitem>
+      <listitem><para id="x_17e">Se la patch ha una guardia positiva che corrisponde a una guardia attualmente selezionata, la patch viene applicata.</para>
+      </listitem>
+      <listitem><para id="x_17f">Se la patch ha guardie positive o negative, ma nessuna corrisponde a una guardia attualmente selezionata, la patch viene saltata.</para>
+      </listitem>
+    </itemizedlist>
+
+  </sect1>
+  <sect1>
+    <title>Ridimensionare l&rsquo;ambiente di lavoro</title>
+
+    <para id="x_180">Lavorando sul driver di dispositivo menzionato in precedenza, non applico le patch a un normale albero del kernel di Linux, ma uso un repository che contiene solo una fotografia dei file sorgente rilevanti per lo sviluppo del dispositivo Infiniband. Lavorare con questo repository è più facile, perché le sue dimensioni sono l&rsquo;1% delle dimensioni di un repository del kernel.</para>
+
+    <para id="x_181">Poi scelgo una versione <quote>di base</quote> sulla quale le patch vengono applicate. Questa è una fotografia dell&rsquo;albero del kernel di Linux scattata su una revisione di mia scelta. Quando scatto la fotografia, registro l&rsquo;identificatore di changeset proveniente dal repository del kernel nel messaggio di commit. Dato che la fotografia mantiene la <quote>forma</quote> e il contenuto delle parti rilevanti dell&rsquo;albero del kernel, posso applicare le mie patch sul mio repository ridotto o su un normale albero del kernel.</para>
+
+    <para id="x_182">Normalmente, l&rsquo;albero di base su cui applicare le patch dovrebbe essere una fotografia di un albero a monte molto recente. Questa è la condizione migliore per facilitare lo sviluppo di patch che possono essere presentate a monte con poche o addirittura nessuna modifica.</para>
+
+  </sect1>
+  <sect1>
+    <title>Suddividere il file <filename role="special">series</filename></title>
+
+    <para id="x_183">Categorizzo le patch nel file <filename role="special">series</filename> in un certo numero di gruppi logici. Ogni sezione di patch simili comincia con un blocco di commenti che descrive lo scopo delle patch che seguono.</para>
+
+    <para id="x_184">La sequenza dei gruppi di patch che mantengo è la seguente. L&rsquo;ordine di questi gruppi è importante per i motivi che verranno descritti dopo aver introdotto i gruppi.</para>
+    <itemizedlist>
+      <listitem><para id="x_185">Il gruppo delle patch <quote>accettate</quote>. Sono le patch che il gruppo di sviluppo ha proposto al manutentore del sottosistema Infiniband e che sono state accettate, ma che non sono presenti nella fotografia su cui si basa il repository ridotto. Queste sono patch <quote>a sola lettura</quote>, presenti unicamente allo scopo di trasformare l&rsquo;albero in uno stato simile a quello in cui si trova nel repository del manutentore a monte.</para>
+      </listitem>
+      <listitem><para id="x_186">Il gruppo delle patch da <quote>rielaborare</quote>. Sono le patch che ho proposto ma per le quali il manutentore a monte ha richiesto alcune modifiche prima di poterle accettare.</para>
+      </listitem>
+      <listitem><para id="x_187">Il gruppo delle patch <quote>in sospeso</quote>. Sono le patch che non ho ancora proposto al manutentore a monte, ma su cui dobbiamo finire di lavorare. Queste patch saranno <quote>a sola lettura</quote> per un po&rsquo;. Se il manutentore a monte le accetta al momento di proporle, le sposterò alla fine del gruppo <quote>accettate</quote>. Se ne richiede la modifica, le sposterò all&rsquo;inizio del gruppo da <quote>rielaborare</quote>.</para>
+      </listitem>
+      <listitem><para id="x_188">Il gruppo delle patch <quote>in corso</quote>. Sono le patch che vengono attivamente sviluppate e che non dovrebbero essere ancora presentate a nessuno.</para>
+      </listitem>
+      <listitem><para id="x_189">Il gruppo delle patch di <quote>backport</quote>. Sono le patch che riadattano l&rsquo;albero dei sorgenti a una vecchia versione dell&rsquo;albero del kernel.</para>
+      </listitem>
+      <listitem><para id="x_18a">Il gruppo delle patch da <quote>non rilasciare</quote>. Sono le patch che per qualche ragione non dovrebbero mai essere presentate a monte. Per esempio, una patch di questo tipo potrebbe modificare le stringhe di identificazione incluse nei driver per rendere più facile distinguere, nel testo del campo, una versione del driver presa dall&rsquo;albero da una versione consegnata a un rivenditore di distribuzioni.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para id="x_18b">Tornando alle ragioni per cui i gruppi di patch sono ordinati in questo modo, ci piacerebbe che le patch più in basso nella pila siano il più possibile stabili, in modo da non aver bisogno di rielaborare le patch più in alto a causa di modifiche al loro contesto. Mettere le patch che non verranno mai cambiate all&rsquo;inizio del file <filename role="special">series</filename> serve proprio a questo scopo.</para>
+
+    <para id="x_18c">Ci piacerebbe anche applicare le patch che sappiamo di aver bisogno di modificare su un albero di sorgenti che somiglia il più possibile all&rsquo;albero a monte. Questo è il motivo per cui teniamo le patch accettate in giro per un po&rsquo;.</para>
+
+    <para id="x_18d">Le patch di <quote>backport</quote> e da <quote>non rilasciare</quote> si trovano alla fine del file <filename role="special">series</filename>. Le patch di <quote>backport</quote> devono essere applicate su tutte le altre patch, e anche le patch da <quote>non rilasciare</quote> dovrebbero essere messe in un posto sicuro.</para>
+
+  </sect1>
+  <sect1>
+    <title>Mantenere le serie di patch</title>
+
+    <para id="x_18e">Nel mio lavoro, uso un certo numero di guardie per controllare quali patch devono essere applicate.</para>
+
+    <itemizedlist>
+      <listitem><para id="x_18f">Le patch <quote>accettate</quote> sono sorvegliate da <literal>accettate</literal>. Questa guardia è abilitata per la maggior parte del tempo. Quando sto applicando le patch su un albero dove sono già presenti, posso disabilitare questa guardia così le patch che la seguono verranno applicate in maniera pulita.</para>
+      </listitem>
+      <listitem><para id="x_190">Le patch che sono <quote>terminate</quote>, ma non sono ancora state proposte, non hanno guardie. Se sto applicando la pila delle patch a una copia dell&rsquo;albero a monte, non ho bisogno di abilitare alcuna guardia per ottenere un albero di sorgenti ragionevolmente sicuro.</para>
+      </listitem>
+      <listitem><para id="x_191">Le patch che hanno bisogno di essere rielaborate prima di venire nuovamente presentate sono sorvegliate da <literal>rielaborare</literal>.</para>
+      </listitem>
+      <listitem><para id="x_192">Per quelle patch che sono ancora in lavorazione, uso <literal>sviluppo</literal>.</para>
+      </listitem>
+      <listitem><para id="x_193">Una patch di backport potrebbe avere diverse guardie, una per ogni versione del kernel a cui si applica. Per esempio, una patch che effettua il backport di una parte del codice alla versione 2.6.9 del kernel avrà una guardia <literal>2.6.9</literal>.</para>
+      </listitem>
+    </itemizedlist>
+    <para id="x_194">Questa varietà di guardie mi concede una flessibilità considerevole nel determinare quale tipo di albero dei sorgenti creare. Nella maggior parte delle situazioni, la selezione delle guardie appropriate viene automatizzata durante il processo di assemblaggio, ma posso regolare manualmente le guardie da usare nelle circostanze meno comuni.</para>
+
+    <sect2>
+      <title>L&rsquo;arte di scrivere patch di backport</title>
+
+      <para id="x_195">Usando MQ, scrivere una patch di backport è un processo semplice. Tutto quello che una patch di questo tipo deve fare è modificare una parte di codice che usa una funzione del kernel non presente in una vecchia versione del kernel, in modo che il driver continui a funzionare correttamente con la vecchia versione.</para>
+
+      <para id="x_196">Un obiettivo utile da raggiungere nella scrittura di una buona patch di backport è far sembrare che il codice sia stato scritto per la vecchia versione del kernel che state considerando. Meno intrusiva è la patch, più facile sarà da capire e mantenere. Se state scrivendo una collezione di patch di backport per evitare l&rsquo;effetto <quote>caos</quote> causato da molte istruzioni <literal>#ifdef</literal> (contenenti blocchi di codice che vengono usati solo in maniera condizionata) nel vostro codice, evitate di introdurre <literal>#ifdef</literal> dipendenti dalle versioni del kernel nelle patch. Piuttosto, scrivete diverse patch, ognuna delle quali provoca cambiamenti incondizionati, e controllate la loro applicazione usando le guardie.</para>
+
+      <para id="x_197">Ci sono due ragioni per separare le patch di backport in un gruppo distinto dalle patch <quote>normali</quote> i cui effetti vengono modificati da quelle. Il primo è che mescolarle insieme rende più difficile usare uno strumento come l&rsquo;estensione <literal role="hg-ext">patchbomb</literal> per automatizzare il processo di spedizione delle patch a un manutentore a monte. Il secondo è che le patch di backport potrebbero perturbare il contesto in cui una successiva patch normale viene applicata, rendendo impossibile applicare la patch normale in maniera pulita <emphasis>senza</emphasis> che la patch di backport precedente sia già stata applicata.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Suggerimenti utili per sviluppare con MQ</title>
+
+    <sect2>
+      <title>Organizzare le patch in directory</title>
+
+      <para id="x_198">Se state lavorando su un progetto di dimensioni considerevoli con MQ, non è difficile accumulare un grande numero di patch. Per esempio, mi è capitato di avere un repository di patch contenente più di 250 patch.</para>
+
+      <para id="x_199">Se riuscite a raggruppare queste patch in categorie logiche separate, potete memorizzarle in directory differenti, in quanto MQ non ha problemi a usare nomi di patch che contengono separatori di percorso.</para>
+
+    </sect2>
+    <sect2 id="mq-collab:tips:interdiff">
+      <title>Visualizzare la cronologia di una patch</title>
+
+      <para id="x_19a">Se sviluppate un insieme di patch per un lungo periodo, è una buona idea mantenerle in un repository, come discusso nella <xref linkend="sec:mq:repo"/>. Se fate in questo modo, scoprirete velocemente che è impraticabile usare il comando <command role="hg-cmd">hg diff</command> per esaminare la cronologia dei cambiamenti di una patch. In parte, questo succede perché state osservando la derivata seconda del codice reale (un diff di un diff), ma anche perché MQ aggiunge rumore al processo modificando le marcature temporali e i nomi di directory quando aggiorna una patch.</para>
+
+      <para id="x_19b">Tuttavia, potete usare l&rsquo;estensione <literal role="hg-ext">extdiff</literal> inclusa in Mercurial per rendere leggibile il diff di due versioni di una patch. Per fare questo, avrete bisogno di un pacchetto di terze parti chiamato <literal role="package">patchutils</literal> <citation><xref linkend="bib:patchutils"/></citation>. Il pacchetto fornisce un comando chiamato <command>interdiff</command> che mostra le differenze tra due diff come un diff. Usato su due versioni dello stesso diff, genera un diff che rappresenta le differenze tra la prima e la seconda versione.</para>
+
+      <para id="x_19c">Potete abilitare l&rsquo;estensione <literal role="hg-ext">extdiff</literal> nel solito modo, aggiungendo una riga alla sezione <literal role="rc-extensions">extensions</literal> del vostro file <filename role="special">~/.hgrc</filename>.</para>
+      <programlisting>[extensions]
+extdiff =</programlisting>
+      <para id="x_19d">Il comando <command>interdiff</command> si aspetta che gli vengano passati i nomi di due file, ma l&rsquo;estensione <literal role="hg-ext">extdiff</literal> passa una coppia di directory al programma che invoca, ognuna delle quali può contenere un numero arbitrario di file. Quindi abbiamo bisogno di un piccolo programma che invochi <command>interdiff</command> su ogni coppia di file in quelle due directory. Questo programma è disponibile sotto il nome di <filename role="special">hg-interdiff</filename> nella directory <filename class="directory">contrib</filename> del repository di codice sorgente che accompagna questo libro.<footnote><para id="x_ffa">[NdT] Potete scaricare il programma <filename role="special">hg-interdiff</filename> dal <ulink role="hg-script" url="http://bitbucket.org/bos/hgbook/raw/tip/contrib/hg-interdiff">repository Mercurial del libro</ulink> ospitato su Bitbucket.</para></footnote></para>
+
+      <para id="x_19e">Dopo aver incluso il programma <filename role="special">hg-interdiff</filename> nel percorso di ricerca della vostra shell, potete eseguirlo come segue, dall&rsquo;interno di una directory di patch gestita da MQ:</para>
+      <programlisting>hg extdiff -p hg-interdiff -r A:B mio-cambiamento.patch</programlisting>
+      <para id="x_19f">Dato che vorrete usare questo comando prolisso molto spesso, potete fare in modo che <literal role="hg-ext">hgext</literal> lo renda disponibile come un normale comando Mercurial, modificando ancora una volta il vostro file <filename role="special">~/.hgrc</filename>.</para>
+      <programlisting>[extdiff]
+cmd.interdiff = hg-interdiff</programlisting>
+      <para id="x_1a0">Questa riga ordina a <literal role="hg-ext">hgext</literal> di rendere disponibile il comando <literal>interdiff</literal>, in modo che possiate ridurre l&rsquo;invocazione precedente di <command role="hg-ext-extdiff">extdiff</command> a qualcosa di un po&rsquo; più maneggevole.</para>
+      <programlisting>hg interdiff -r A:B mio-cambiamento.patch</programlisting>
+
+      <note>
+	<para id="x_1a1">Il comando <command>interdiff</command> funziona bene solo se i file sottostanti dai quali vengono generate le versioni di una patch rimangono gli stessi. Se create una patch, modificate i file sottostanti e poi rigenerate la patch, <command>interdiff</command> potrebbe non produrre alcun risultato utile.</para>
+      </note>
+
+      <para id="x_1a2">L&rsquo;utilità dell&rsquo;estensione <literal role="hg-ext">extdiff</literal> va oltre il semplice miglioramento della presentazione delle patch gestite da MQ. Per avere ulteriori informazioni, leggete la  <xref linkend="sec:hgext:extdiff"/>.</para>
+
+    </sect2>
+  </sect1>
+</chapter>

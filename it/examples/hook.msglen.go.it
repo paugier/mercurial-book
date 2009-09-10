@@ -1,0 +1,13 @@
+<!-- BEGIN hook.msglen.go -->
+<screen><prompt>$</prompt> <userinput>cat .hg/hgrc</userinput>
+[hooks]
+pretxncommit.lunghezza_messaggio = test `hg tip --template {desc} | wc -c` -ge 15
+<prompt>$</prompt> <userinput>echo a &gt; a</userinput>
+<prompt>$</prompt> <userinput>hg add a</userinput>
+<prompt>$</prompt> <userinput>hg commit -A -m "Troppo breve."</userinput>
+transazione abortita!
+ripristino completato
+fallimento: l'hook pretxncommit.lunghezza_messaggio è terminato con codice di stato 1
+<prompt>$</prompt> <userinput>hg commit -A -m "Abbastanza lungo."</userinput>
+</screen>
+<!-- END hook.msglen.go -->

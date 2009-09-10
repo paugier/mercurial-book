@@ -1,0 +1,40 @@
+<!-- BEGIN bisect.help -->
+<screen><prompt>$</prompt> <userinput>hg help bisect</userinput>
+hg bisect [-gbsr] [-c CMD] [REV]
+
+ricerca di changeset tramite suddivisioni
+
+    Questo comando vi aiuta a cercare changeset che introducono problemi.
+    Per usarlo, contrassegnate il changeset più recente che esibisce il
+    problema come guasto, poi contrassegnate l'ultimo changeset libero dal
+    problema come funzionante. La bisezione aggiornerà la vostra directory di
+    lavoro a una revisione di collaudo (a meno che l'opzione --noupdate sia
+    specificata). Una volta che avete effettuato i test, contrassegnate la
+    directory di lavoro come guasta o funzionante e bisect la aggiornerà a
+    un altro changeset candidato o vi comunicherà di aver trovato la revisione
+    guasta.
+
+    Come scorciatoia, potete anche usare l'argomento revisione per
+    contrassegnare una revisione come funzionante o guasta senza prima
+    controllarla.
+
+    Se fornite un comando, verrà usato per operare la bisezione in modo
+    automatico. Lo stato di uscita del comando verrà usato come indicatore per
+    contrassegnare una revisione come guasta o funzionante. Nel caso lo stato
+    di uscita sia 0 la revisione viene contrassegnata come funzionante; 125 -
+    viene saltata; 127 (comando non trovato) - la bisezione verrà bloccata;
+    qualsiasi altro stato maggiore di zero contrassegnerà la revisione come
+    guasta.
+
+opzioni:
+
+ -r --reset     inizializza lo stato della bisezione
+ -g --good      contrassegna un changeset come funzionante
+ -b --bad       contrassegna un changeset come guasto
+ -s --skip      salta il collaudo del changeset
+ -c --command   usa un comando per controllare lo stato del changeset
+ -U --noupdate  non aggiorna alla revisione da collaudare
+
+usate "hg -v help bisect" per vedere le opzioni globali
+</screen>
+<!-- END bisect.help -->

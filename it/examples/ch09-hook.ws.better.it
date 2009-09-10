@@ -1,0 +1,15 @@
+<!-- BEGIN ch09/hook.ws.better -->
+<screen><prompt>$</prompt> <userinput>cat .hg/hgrc</userinput>
+[hooks]
+pretxncommit.spazio_bianco = .hg/controllo_spazio_bianco.py
+<prompt>$</prompt> <userinput>echo 'a ' &gt;&gt; a</userinput>
+<prompt>$</prompt> <userinput>hg commit -A -m "Aggiunge una nuova riga con spazio bianco in coda."</userinput>
+a, riga 1: aggiunto spazio bianco in coda
+messaggio di commit salvato nel file .hg/commit.save
+transazione abortita!
+ripristino completato
+fallimento: l'hook pretxncommit.spazio_bianco è terminato con codice di stato 1
+<prompt>$</prompt> <userinput>sed -i 's, *$,,' a</userinput>
+<prompt>$</prompt> <userinput>hg commit -A -m "Rimosso spazio bianco in coda."</userinput>
+</screen>
+<!-- END ch09/hook.ws.better -->

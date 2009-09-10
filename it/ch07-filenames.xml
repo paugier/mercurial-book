@@ -1,0 +1,215 @@
+<chapter id="chap:names">
+  <?dbhtml filename="nomi-di-file-e-corrispondenze-di-pattern.html"?>
+  <title>Nomi di file e corrispondenze di pattern</title>
+
+  <para id="x_543">Mercurial fornisce meccanismi che vi permettono di lavorare con i nomi dei file in modo coerente ed espressivo.</para>
+
+  <sect1>
+    <title>Denominazione semplice dei file</title>
+
+    <para id="x_544">A livello di implementazione, Mercurial usa un unico meccanismo per gestire i nomi dei file. Tutti i comandi si comportano in maniera uniforme rispetto ai nomi dei file e lavorano nel modo seguente.</para>
+
+    <para id="x_545">Se indicate esplicitamente nomi di file esistenti sulla riga di comando, Mercurial lavora esattamente con quei file, come vi aspettereste.</para>
+
+    &interaction.filenames.files;
+
+    <para id="x_546">Quando fornite un nome di directory, Mercurial interpreterà questa azione come la volontà di <quote>operare su tutti i file in questa directory e nelle sue sottodirectory</quote>. Mercurial considera i file e le sottodirectory in una directory secondo l&rsquo;ordine alfabetico. Quando incontra una sottodirectory, attraverserà quella sottodirectory prima di continuare con la directory corrente.</para>
+
+    &interaction.filenames.dirs;
+  </sect1>
+
+  <sect1>
+    <title>Eseguire comandi senza nomi di file</title>
+
+    <para id="x_547">I comandi Mercurial che lavorano con i nomi di file assumono un utile comportamento predefinito quando li invocate senza passare alcun nome di file o pattern. Il comportamento che dovreste aspettarvi dipende dalla funzione del comando. Ecco alcune regole pratiche che potete usare per predire quello che un comando probabilmente farà se non gli date alcun nome con cui lavorare.</para>
+    <itemizedlist>
+      <listitem><para id="x_548">La maggior parte dei comandi opererà sull&rsquo;intera directory di lavoro. Per esempio, questo è quello che fa il comando <command role="hg-cmd">hg add</command>.</para>
+      </listitem>
+      <listitem><para id="x_549">Se gli effetti di un comando sono difficili o impossibili da invertire, sarete obbligati a fornirgli esplicitamente almeno un nome o un pattern (si veda più avanti). Questo vi protegge, per esempio, dalla cancellazione accidentale dei file causata da un&rsquo;esecuzione di <command role="hg-cmd">hg remove</command> senza argomenti.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_54a">Se questi comportamenti predefiniti non vi soddisfano, è facile aggirarli. Se normalmente un comando opera sull&rsquo;intera directory di lavoro, potete passargli il nome <quote><filename class="directory">.</filename></quote> per invocarlo solo sulla directory corrente e sulle sue sottodirectory.</para>
+
+    &interaction.filenames.wdir-subdir;
+
+    <para id="x_54b">Sulla stessa falsariga, alcuni comandi normalmente stampano nomi di file relativi alla radice del repository anche quando li invocate da una sottodirectory. Questi comandi stamperanno nomi di file relativi alla vostra sottodirectory se passate loro nomi espliciti. Qui di seguito eseguiremo <command role="hg-cmd">hg status</command> da una sottodirectory e lo faremo agire sull&rsquo;intera directory di lavoro pur stampando nomi di file relativi alla nostra sottodirectory, passandogli il risultato del comando <command role="hg-cmd">hg root</command>.</para>
+
+      &interaction.filenames.wdir-relname;
+  </sect1>
+
+  <sect1>
+    <title>Mercurial vi dice cosa sta succedendo</title>
+
+    <para id="x_54c">L&rsquo;esempio di <command role="hg-cmd">hg add</command> nella sezione precedente illustra qualcos&rsquo;altro che è utile sapere sui comandi Mercurial. Se un comando opera su un file che non avete nominato esplicitamente sulla riga di comando, di solito stamperà il nome del file in modo che non veniate sorpresi da quello che sta succedendo.</para>
+
+    <para id="x_54d">In questo caso, Mercurial segue il principio della <emphasis>minima sorpresa</emphasis>. Se avete fornito il nome esatto di un file sulla riga di comando, non ha senso ripetervelo. Se Mercurial sta agendo <emphasis>implicitamente</emphasis> su un file, per esempio perché non avete fornito alcun nome, o su una directory, o su un pattern (si veda più avanti), ritiene sia più sicuro farvi sapere su quali file sta lavorando.</para>
+
+    <para id="x_54e">Potete ridurre al silenzio i comandi che si comportano in questo modo usando l&rsquo;opzione <option role="hg-opt-global">-q</option>. Potete anche dire loro di stampare il nome di tutti i file, anche quelli che avete nominato esplicitamente, usando l&rsquo;opzione <option role="hg-opt-global">-v</option>.</para>
+  </sect1>
+
+  <sect1>
+    <title>Usare i pattern per identificare i file</title>
+
+    <para id="x_54f">Oltre a lavorare con i nomi di file e directory, Mercurial vi consente di usare i <emphasis>pattern</emphasis> per identificare i file. La gestione dei pattern da parte di Mercurial è espressiva.</para>
+
+    <para id="x_550">Su sistemi di tipo Unix (Linux, Mac OS X, etc.), di solito è la shell che si occupa di trovare le corrispondenze tra i pattern e i nomi dei file. Su questi sistemi, dovete esplicitamente dire a Mercurial che un nome è un pattern. Su Windows, la shell non si occupa di espandere i pattern, quindi Mercurial identificherà automaticamente i nomi che sono pattern e li espanderà per voi.</para>
+
+    <para id="x_551">Per fornire un pattern al posto di un nome ordinario sulla riga di comando, il meccanismo è semplice:</para>
+    <programlisting>sintassi:corpodelpattern</programlisting>
+    <para id="x_552">Quindi, un pattern viene identificato da una breve stringa di testo che indica il tipo del pattern, seguita dai due punti, seguiti dall&rsquo;effettivo pattern.</para>
+
+    <para id="x_553">Mercurial supporta due tipi di sintassi per i pattern. Quello usato più spesso è chiamato <literal>glob</literal>: è lo stesso tipo di pattern usato dalla shell Unix e dovrebbe essere familiare anche agli utenti del prompt dei comandi di Windows.</para>
+
+    <para id="x_554">Quando Mercurial effettua la corrispondenza automatica di un pattern su Windows, usa la sintassi <literal>glob</literal>. Quindi, potete omettere il prefisso <quote><literal>glob:</literal></quote> su Windows, ma se volete potete anche usarlo tranquillamente.</para>
+
+    <para id="x_555">La sintassi <literal>re</literal> è più potente perché vi permette di specificare i pattern usando le espressioni regolari, indicate a volte con il termine regexp.</para>
+
+    <para id="x_556">Notate che, negli esempi che seguono, farò molta attenzione a racchiudere tutti i miei pattern tra caratteri di apice, in modo che non vengano espansi dalla shell prima che Mercurial li veda.</para>
+
+    <sect2>
+      <title>I pattern <literal>glob</literal> sullo stile della shell</title>
+
+      <para id="x_557">Questa è un&rsquo;introduzione ai tipi di pattern che potete usare quando state cercando una corrispondenza con un pattern di tipo glob.</para>
+
+      <para id="x_558">Il carattere <quote><literal>*</literal></quote> corrisponde a qualsiasi stringa all&rsquo;interno di una singola directory.</para>
+
+      &interaction.filenames.glob.star;
+
+      <para id="x_559">Il pattern <quote><literal>**</literal></quote> corrisponde a qualsiasi stringa e attraversa i confini delle directory. Non è un simbolo di tipo glob standard su Unix, ma viene accettato da diverse shell Unix popolari ed è molto utile.</para>
+
+      &interaction.filenames.glob.starstar;
+
+      <para id="x_55a">Il pattern <quote><literal>?</literal></quote> corrisponde a qualsiasi carattere singolo.</para>
+
+      &interaction.filenames.glob.question;
+
+      <para id="x_55b">Il carattere <quote><literal>[</literal></quote> comincia una <emphasis>classe di caratteri</emphasis>. Questo pattern corrisponde a qualsiasi carattere compreso nella classe. La classe viene terminata da un carattere <quote><literal>]</literal></quote>. Una classe può contenere molteplici <emphasis>intervalli</emphasis> della forma <quote><literal>a-f</literal></quote>, che è una abbreviazione per <quote><literal>abcdef</literal></quote>.</para>
+
+      &interaction.filenames.glob.range;
+
+      <para id="x_55c">Se il primo carattere dopo <quote><literal>[</literal></quote> in una classe di caratteri è <quote><literal>!</literal></quote>, si ottiene l&rsquo;effetto di <emphasis>negare</emphasis> la classe, facendola corrispondere a qualsiasi carattere non compreso nella classe.</para>
+
+      <para id="x_55d">Un carattere <quote><literal>{</literal></quote> comincia un gruppo di sottopattern, che trova una corrispondenza se un qualsiasi sottopattern nel gruppo trova una corrispondenza. Il carattere <quote><literal>,</literal></quote> separa i sottopattern e il carattere <quote><literal>}</literal></quote> termina il gruppo.</para>
+
+      &interaction.filenames.glob.group;
+
+      <sect3>
+	<title>Fate attenzione!</title>
+
+	<para id="x_55e">Non dimenticate che, se volete trovare corrispondenze a un pattern in qualsiasi directory, non dovreste usare il simbolo <quote><literal>*</literal></quote>, dato che questo troverà corrispondenze solo in una directory, ma dovreste usare il simbolo <quote><literal>**</literal></quote>. Questo piccolo esempio illustra la differenza tra i due.</para>
+
+	  &interaction.filenames.glob.star-starstar;
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Corrispondenze di espressioni regolari con i pattern <literal>re</literal></title>
+
+      <para id="x_55f">Mercurial accetta la stessa sintassi per le espressioni regolari che viene usata dal linugaggio di programmazione Python (usa internamente il motore di regexp di Python). Questa sintassi è basata su quella del linguaggio Perl, che è il dialetto più popolare attualmente in uso (è anche utilizzato in Java, per esempio).</para>
+
+      <para id="x_560">Non discuterò alcun dettaglio del dialetto di regexp di Mercurial in questo libro, dato che le espressioni regolari non vengono usate molto spesso. Le regexp in stile Perl sono comunque già documentate in maniera esauriente su una moltitudine di siti web e in numerosi libri. Invece, qui mi concentrerò su alcune cose che dovreste sapere se vi trovate ad aver bisogno di usare le espressioni regolari con Mercurial.</para>
+
+      <para id="x_561">Un&rsquo;espressione regolare cerca una corrispondenza con un intero nome di file, relativo alla radice del repository. In altre parole, anche se siete già nella sottodirectory <filename class="directory">foo</filename>, se volete una corrispondenza con i file in questa directory il vostro pattern dovrà cominciare con <quote><literal>foo/</literal></quote>.</para>
+
+      <para id="x_562">Una cosa da notare, se avete familiarità con le regexp in stile Perl, è che le espressioni regolari di Mercurial sono <emphasis>vincolate</emphasis>, nel senso che un&rsquo;espressione regolare cerca una corrispondenza partendo sempre dall&rsquo;inizio di una stringa e non da altre posizioni all&rsquo;interno della stringa. Per cercare una corrispondenza in qualsiasi punto della stringa, il vostro pattern deve cominciare con <quote><literal>.*</literal></quote>.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Filtrare i file</title>
+
+    <para id="x_563">Mercurial non vi fornisce solo una varietà di modi per specificare i file, ma vi permette di vagliare ulteriormente quei file usando i <emphasis>filtri</emphasis>. I comandi che lavorano con i nomi dei file accettano due opzioni di filtraggio.</para>
+    <itemizedlist>
+      <listitem><para id="x_564">L&rsquo;opzione <option role="hg-opt-global">-I</option>, o <option role="hg-opt-global">--include</option>, vi permette di specificare un pattern a cui i nomi dei file devono corrispondere per poter essere elaborati.</para>
+      </listitem>
+      <listitem><para id="x_565">L&rsquo;opzione <option role="hg-opt-global">-X</option>, o <option role="hg-opt-global">--exclude</option>, vi fornisce un modo per <emphasis>evitare</emphasis> di elaborare i file che corrispondono a questo pattern.</para>
+      </listitem></itemizedlist>
+    <para id="x_566">Potete passare più opzioni <option role="hg-opt-global">-I</option> e <option role="hg-opt-global">-X</option> sulla riga di comando e alternarle come preferite. Mercurial interpreta i pattern che riceve usando la sintassi glob per default (ma potete usare le espressioni regolari se ne avete bisogno).</para>
+
+    <para id="x_567">Potete interpretare un filtro <option role="hg-opt-global">-I</option> come una richiesta di <quote>elaborare solo i file che corrispondono a questo filtro</quote>.</para>
+
+    &interaction.filenames.filter.include;
+
+    <para id="x_568">L&rsquo;interpretazione migliore del filtro <option role="hg-opt-global">-X</option> è quella di una richiesta di <quote>elaborare solo i file che non corrispondono a questo pattern</quote>.</para>
+
+    &interaction.filenames.filter.exclude;
+  </sect1>
+
+  <sect1>
+    <title>Ignorare permanentemente file e directory indesiderate</title>
+
+    <para id="x_569">Quando create un nuovo repository, è possibile che nel tempo cresca fino a contenere file che <emphasis>non</emphasis> dovrebbero essere gestiti da Mercurial, ma che non vorreste vedere elencati ogni volta che invocate <command>hg status</command>. Per esempio, i <quote>prodotti di assemblaggio</quote> sono file che vengono creati come parte dell&rsquo;assemblaggio di un progetto ma che non dovrebbero essere gestiti da un sistema di controllo di revisione. I prodotti di assemblaggio più comuni sono i file di elaborazione generati da strumenti software come i compilatori. Un altro esempio sono i file di bloccaggio, i file di lavoro temporanei e i file di backup che gli editor di testo disseminano per le directory e che non ha alcun senso gestire.</para>
+
+    <para id="x_6b4">Per fare in modo che Mercurial ignori permanentemente quei file, create un file chiamato <filename>.hgignore</filename> alla radice del vostro repository. <emphasis>Dovreste</emphasis> registrare questo file tramite <command>hg add</command> in modo che Mercurial ne tenga traccia insieme al resto dei contenuti del vostro repository, dato che anche i vostri collaboratori potrebbero trovarlo utile.</para>
+
+    <para id="x_6b5">Mercurial si aspetta che il file <filename>.hgignore</filename> contenga una lista di espressioni regolari, una per riga. Le righe vuote vengono saltate. La maggior parte delle persone preferisce descrivere i file che vuole ignorare utilizzando la sintassi <quote>glob</quote> che abbiamo descritto in precedenza, quindi un tipico file <filename>.hgignore</filename> comincerà con questa direttiva:</para>
+
+    <programlisting>syntax: glob</programlisting>
+
+    <para id="x_6b6">Questa riga dice a Mercurial di interpretare le righe che seguono come pattern di tipo glob, non espressioni regolari.</para>
+
+    <para id="x_6b7">Ecco un esempio di un tipico file <filename>.hgignore</filename>.</para>
+
+    <programlisting>syntax: glob
+# Questa riga è un commento e verrà saltata.
+# Anche le righe vuote vengono saltate.
+
+# File di backup lasciati dall'editor Emacs.
+*~
+
+# File di bloccaggio usati dall'editor Emacs.
+# Notate che il carattere "#" è preceduto da un backslash.
+# Questo evita che venga interpretato come l'inizio di un commento.
+.\#*
+
+# File temporanei usati dall'editor vim.
+.*.swp
+
+# Un file nascosto creato dal Finder di Mac OS X.
+.DS_Store
+</programlisting>
+  </sect1>
+
+  <sect1 id="sec:names:case">
+    <title>Sensibilità alle maiuscole</title>
+
+    <para id="x_56a">Se state lavorando in un ambiente di sviluppo misto che contiene sia sistemi Linux (o di tipo Unix) che Mac e Windows, dovreste tenere a mente che questi sistemi trattano le lettere maiuscole (<quote>N</quote> rispetto a <quote>n</quote>) nei nomi dei file in modi incompatibili tra loro. &Egrave; improbabile che questo abbia effetti su di voi ed è facile occuparsene quando succede, ma potrebbe sorprendervi se non lo sapete.</para>
+
+    <para id="x_56b">I sistemi operativi e i file system differiscono nel modo in cui gestiscono le <emphasis>maiuscole</emphasis> dei caratteri nei nomi di file e directory. Esistono tre modi comuni di gestire le maiuscole nei nomi.</para>
+    <itemizedlist>
+      <listitem><para id="x_56c">Completa insensibilità alle maiuscole. Le versioni maiuscole e minuscole di una lettera sono trattate come se fossero identiche, sia quando un file viene creato sia durante i successivi accessi. Questo è il funzionamento comune dei vecchi sistemi basati su DOS.</para>
+      </listitem>
+      <listitem><para id="x_56d">Conservazione delle maiuscole, ma insensibilità a esse. Quando un file o una directory vengono creati, le maiuscole nel loro nome vengono memorizzate e possono essere recuperate e visualizzate dal sistema operativo. Quando un file esistente viene cercato, le maiuscole nel suo nome vengono ignorate. Questa è la situazione standard su Windows e MacOS. I nomi <filename>foo</filename> e <filename>FoO</filename> identificano lo stesso file. Questo trattamento intercambiabile delle lettere maiuscole e minuscole è anche chiamato <emphasis>ripiegamento delle maiuscole</emphasis> (in inglese, case folding).</para>
+      </listitem>
+      <listitem><para id="x_56e">Sensibilità alle maiuscole. Le lettere maiuscole di un nome sono significative in ogni momento. I nomi <filename>foo</filename> e <filename>FoO</filename> identificano due file differenti. Questo è il modo in cui i sistemi Linux e Unix lavorano normalmente.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_56f">Su sistemi di tipo Unix è possibile avere uno qualsiasi o tutti e tre i modi di gestire le maiuscole in azione allo stesso tempo. Per esempio, se usate Linux per operare su una chiave USB formattata con un file system FAT32, il sistema operativo gestirà i nomi su quel file system in modo da conservare le maiuscole senza essere sensibile a esse.</para>
+
+    <sect2>
+      <title>Memorizzazione del repository sicura e portabile</title>
+
+      <para id="x_570">Il meccanismo di memorizzazione dei repository Mercurial è <emphasis>sicuro per le maiuscole</emphasis>. Traduce i nomi dei file in modo che possano essere memorizzati senza problemi sia su file system sensibili alle maiuscole sia su quelli insensibili alle maiuscole. Questo significa che, per esempio, potete usare i normali strumenti per la copia di file per trasferire un repository Mercurial su una chiave USB, e spostare la chiave e il repository avanti e indietro tra un Mac, un PC con Windows e una macchina Linux senza problemi.</para>
+
+    </sect2>
+    <sect2>
+      <title>Riconoscere i conflitti tra maiuscole e minuscole</title>
+
+      <para id="x_571">Quando opera sulla directory di lavoro, Mercurial segue la politica di denominazione del file system su cui la directory di lavoro si trova. Se il file system conserva le maiuscole ma è insensibile a esse, Mercurial tratterà i nomi che differiscono solo per le maiuscole come se fossero uguali.</para>
+
+      <para id="x_572">&Egrave; importante ricordare che questo approccio permette di eseguire su un file system sensibile alle maiuscole (tipicamente Linux o Unix) il commit di un changeset che creerà problemi per gli utenti di file system insensibili alle maiuscole (di solito Windows e MacOS). Se un utente Linux inserisce nel repository le modifiche a due file, uno chiamato <filename>miofile.c</filename> e l&rsquo;altro chiamato <filename>MioFile.c</filename>, questi file verranno memorizzati correttamente. E gli stessi file verranno correttamente rappresentati come due file separati nella directory di lavoro di altri utenti Linux.</para>
+
+      <para id="x_573">Se un utente Windows o Mac estrae questo changeset, inizialmente non avrà alcun problema, perché il meccanismo di memorizzazione di un repository Mercurial è sicuro per le maiuscole. Tuttavia, appena tenta di aggiornare la directory di lavoro a quel changeset tramite <command role="hg-cmd">hg update</command>, o di unire il proprio lavoro con quel changeset tramite <command role="hg-cmd">hg merge</command>, Mercurial individuerà il conflitto tra i due nomi di file che il file system tratterebbe come lo stesso nome e impedirà all&rsquo;aggiornamento o all&rsquo;unione di avvenire.</para>
+    </sect2>
+
+    <sect2>
+      <title>Correggere un conflitto tra maiuscole e minuscole</title>
+
+      <para id="x_574">Se state usando Windows o Mac in un ambiente misto dove alcuni dei vostri collaboratori usano Linux o Unix, e Mercurial riporta un conflitto di ripiegamento delle maiuscole quando provate a eseguire <command role="hg-cmd">hg update</command> o <command role="hg-cmd">hg merge</command>, la procedura per correggere il problema è semplice.</para>
+
+      <para id="x_575">Trovate la macchina Linux o Unix più vicina, clonatevi il repository problematico e usate il comando <command role="hg-cmd">hg rename</command> di Mercurial per cambiare i nomi di qualsiasi file o directory che crea complicazioni, in modo da non causare più alcun conflitto di ripiegamento delle maiuscole. Inserite queste modifiche nel repository, eseguite <command role="hg-cmd">hg pull</command> o <command role="hg-cmd">hg push</command> attraverso i vostri sistemi Windows o MacOS e usate <command role="hg-cmd">hg update</command> per aggiornare la directory di lavoro alla revisione che contiene i nomi senza conflitti.</para>
+
+      <para id="x_576">Il changeset con i nomi in conflitto rimarrà nella cronologia del vostro progetto e non sarete comunque in grado di usare <command role="hg-cmd">hg update</command> per aggiornare la directory di lavoro a quel changeset su un sistema Windows o MacOS, ma potrete continuare a sviluppare senza impedimenti.</para>
+    </sect2>
+  </sect1>
+</chapter>

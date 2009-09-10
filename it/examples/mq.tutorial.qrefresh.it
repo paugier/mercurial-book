@@ -1,0 +1,24 @@
+<!-- BEGIN mq.tutorial.qrefresh -->
+<screen><prompt>$</prompt> <userinput>echo 'riga 2' &gt;&gt; file1</userinput>
+<prompt>$</prompt> <userinput>hg diff</userinput>
+diff -r f32697f1a94e file1
+--- a/file1	Fri Jun 05 15:50:57 2009 +0000
++++ b/file1	Fri Jun 05 15:50:58 2009 +0000
+@@ -1,1 +1,2 @@
+ riga 1
++riga 2
+<prompt>$</prompt> <userinput>hg qrefresh</userinput>
+<prompt>$</prompt> <userinput>hg diff</userinput>
+<prompt>$</prompt> <userinput>hg tip --style=compact --patch</userinput>
+1[qtip,prima.patch,tip,qbase]   18f39bf02ad5   2009-06-05 15:50 +0000   bos
+  [mq]: prima.patch
+
+diff -r c6618fa9eed7 -r 18f39bf02ad5 file1
+--- a/file1	Fri Jun 05 15:50:56 2009 +0000
++++ b/file1	Fri Jun 05 15:50:59 2009 +0000
+@@ -1,1 +1,2 @@
+ riga 1
++riga 2
+
+</screen>
+<!-- END mq.tutorial.qrefresh -->

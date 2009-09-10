@@ -1,0 +1,65 @@
+<!-- BEGIN template.simple.manyfilters -->
+<screen><prompt>$</prompt> <userinput>hg log -r1 --template '{author}\n'</userinput>
+Bryan O'Sullivan &lt;bos@serpentine.com&gt;
+<prompt>$</prompt> <userinput>hg log -r1 --template '{author|domain}\n'</userinput>
+serpentine.com
+<prompt>$</prompt> <userinput>hg log -r1 --template '{author|email}\n'</userinput>
+bos@serpentine.com
+<prompt>$</prompt> <userinput>hg log -r1 --template '{author|obfuscate}\n' | cut -c-76</userinput>
+&amp;#66;&amp;#114;&amp;#121;&amp;#97;&amp;#110;&amp;#32;&amp;#79;&amp;#39;&amp;#83;&amp;#117;&amp;#108;&amp;#108;&amp;#105;&amp;#11
+<prompt>$</prompt> <userinput>hg log -r1 --template '{author|person}\n'</userinput>
+Bryan O'Sullivan
+<prompt>$</prompt> <userinput>hg log -r1 --template '{author|user}\n'</userinput>
+bos
+<prompt>$</prompt> <userinput>hg log -r1 --template 'sembra quasi giusta, ma in realtà è inutilizzabile: {date}\n'</userinput>
+sembra quasi giusta, ma in realtà è inutilizzabile: 1244217084.00
+<prompt>$</prompt> <userinput>hg log -r1 --template '{date|age}\n'</userinput>
+10 secondi
+<prompt>$</prompt> <userinput>hg log -r1 --template '{date|date}\n'</userinput>
+Fri Jun 05 15:51:24 2009 +0000
+<prompt>$</prompt> <userinput>hg log -r1 --template '{date|hgdate}\n'</userinput>
+1244217084 0
+<prompt>$</prompt> <userinput>hg log -r1 --template '{date|isodate}\n'</userinput>
+2009-06-05 15:51 +0000
+<prompt>$</prompt> <userinput>hg log -r1 --template '{date|rfc822date}\n'</userinput>
+Fri, 05 Jun 2009 15:51:24 +0000
+<prompt>$</prompt> <userinput>hg log -r1 --template '{date|shortdate}\n'</userinput>
+2009-06-05
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc}\n' | cut -c-76</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.
+
+In più, aggiunto un file con il nome indicativo (almeno spero che qualcuno
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|addbreaks}\n' | cut -c-76</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.&lt;br/&gt;
+&lt;br/&gt;
+In più, aggiunto un file con il nome indicativo (almeno spero che qualcuno
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|escape}\n' | cut -c-76</userinput>
+Aggiunta una riga alla fine del file &amp;lt;&amp;lt;hello&amp;gt;&amp;gt;.
+
+In più, aggiunto un file con il nome indicativo (almeno spero che qualcuno
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|fill68}\n'</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.
+
+In più, aggiunto un file con il nome indicativo (almeno spero che
+qualcuno possa considerarlo tale) di goodbye.
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|fill76}\n'</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.
+
+In più, aggiunto un file con il nome indicativo (almeno spero che qualcuno
+possa considerarlo tale) di goodbye.
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|firstline}\n'</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|strip}\n' | cut -c-76</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.
+
+In più, aggiunto un file con il nome indicativo (almeno spero che qualcuno
+<prompt>$</prompt> <userinput>hg log -r1 --template '{desc|tabindent}\n' | expand | cut -c-76</userinput>
+Aggiunta una riga alla fine del file &lt;&lt;hello&gt;&gt;.
+
+	In più, aggiunto un file con il nome indicativo (almeno spero che qu
+<prompt>$</prompt> <userinput>hg log -r1 --template '{node}\n'</userinput>
+fb5e3583537ab9d278f45d18bcb07262af1e7226
+<prompt>$</prompt> <userinput>hg log -r1 --template '{node|short}\n'</userinput>
+fb5e3583537a
+</screen>
+<!-- END template.simple.manyfilters -->

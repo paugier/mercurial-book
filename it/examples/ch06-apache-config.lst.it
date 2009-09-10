@@ -1,0 +1,13 @@
+<!-- BEGIN ch06/apache-config.lst -->
+<programlisting>&lt;Directory /home/*/public_html&gt;
+  AllowOverride FileInfo AuthConfig Limit
+  Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
+  &lt;Limit GET POST OPTIONS&gt;
+    Order allow,deny
+    Allow from all
+  &lt;/Limit&gt;
+  &lt;LimitExcept GET POST OPTIONS&gt;
+    Order deny,allow Deny from all
+  &lt;/LimitExcept&gt;
+&lt;/Directory&gt;</programlisting>
+<!-- END ch06/apache-config.lst -->
