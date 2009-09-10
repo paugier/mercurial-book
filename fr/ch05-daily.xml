@@ -2,14 +2,14 @@
 
 <chapter id="chap:daily">
   <?dbhtml filename="mercurial-in-daily-use.html"?>
-  <title>Mercurial in daily use</title>
+  <title>Mercurial pour une utilisation de tous les jours</title>
 
   <sect1>
-    <title>Telling Mercurial which files to track</title>
+    <title>Informer Mercurial des fichier à suivre</title>
 
-    <para id="x_1a3">Mercurial ne fonctionne pas avec les fichiers de votre
-      dépôt tant que vous ne lui avez pas dit de les gérer. La commande
-      <command role="hg-cmd">hg status</command> vous dira quels fichier sont
+    <para id="x_1a3">Mercurial ne suit pas les fichiers de votre dépôt tant
+      que vous ne lui avez pas dit de les gérer. La commande <command
+        role="hg-cmd">hg status</command> vous dira quels fichiers sont
       inconnus de Mercurial. Il utilise un
       <quote><literal>?</literal></quote> pour montrer ces fichiers.</para>
 
@@ -23,30 +23,30 @@
     &interaction.daily.files.add;
 
     <para id="x_1a5">Après avoir exécuté un <command role="hg-cmd">hg
-        commit</command>, les fichiers que vous avez ajouté avant le commit
-      ne seront plus listé dans la sortie de <command role="hg-cmd">hg
-        status</command>. La raison de ceci est que par défaut, <command
+        commit</command>, les fichiers que vous avez ajoutés avant le commit
+      ne seront plus listés dans la sortie de <command role="hg-cmd">hg
+        status</command>. La raison de ceci est que, par défaut, <command
         role="hg-cmd">hg status</command> ne vous montre que les fichiers
       <quote>intéressants</quote> &emdash;ceux que vous avez (par exemple)
-      modifiés, supprimés ou renommés. Si vous avez un dépôt qui contient un
-      millier de fichiers, vous ne voudrez certainement que rarement entendre
+      modifiés, supprimés ou renommés. Si vous aviez un dépôt qui contient un
+      millier de fichiers, vous ne voudriez certainement que rarement entendre
       parler des fichiers que Mercurial suit, mais qui n'ont pas changés.
       (Vous pouvez quand même avoir cette information, nous y reviendrons
       plus tard.)</para>
 
     <para id="x_1a6">Une fois que vous ajoutez un fichier, Mercurial ne fait
-      rien du tout avec celui-ci immédiatement. A lieu de ça, il va prendre
+      rien du tout avec celui-ci immédiatement. Au lieu de ça, il va prendre
       un "snapshot" de l'état du fichier la prochaine fois que vous
       exécuterez un commit. Il continuera ensuite à suivre les changements
-      que vous avez fait au fichier chaque fois que vous committerez, jusqu'à
-      ce que vous supprimiez le fichier.</para>
+      que vous avez fait au fichier chaque fois que vous committerez, et ce,
+      jusqu'à ce que vous supprimiez le fichier.</para>
 
     <sect2>
       <title>Nommage des fichiers explicite versus implicite</title>
 
       <para id="x_1a7">Un comportement utile que Mercurial possède est que si
         vous passez le nom d'un répertoire à une commande, toute commande
-        Mercurial la traitera comme <quote>Je veux opérer sur chaque fichier
+        Mercurial la traitera comme : <quote>Je veux opérer sur chaque fichier
           dans ce répertoire et ses sous-répertoires</quote>.</para>
 
       &interaction.daily.files.add-dir;
@@ -58,49 +58,49 @@
 
       <para id="x_1a9">Ce qu'il se passe est que dans le premier cas, nous
         avons nommé explicitement le fichier à ajouter sur la ligne de
-        commande. La supposition que Mercurial fait dans ces cas est que nous
-        savons ce que nous faisons, il n'affiche dont rien en sortie.</para>
+        commande. Ce que Mercurial suppose dans ce cas est que nous savons ce
+        que nous faisons, il n'affiche donc rien en sortie.</para>
 
       <para id="x_1aa">Cependant, lorsque nous avons
         <emphasis>implicitement</emphasis> donné les fichiers à l'aide du nom
-        d'un répertoire, Mercurial prend le l'initiative d'afficher le nom de
+        d'un répertoire, Mercurial prend l'initiative d'afficher le nom de
         chaque fichier avec lequel il fait quelque chose. Ceci clarifie ce
-        qu'il se passe, et réduit la probabilité d'une surprise silencieuse
-        et désagréable. Ce comportement est commun à la plupart des commandes
-        Mercurial.</para>
+        qu'il se passe et réduit la probabilité d'une mauvaise surprise
+        restée silencieuse. Ce comportement est commun à la plupart des
+        commandes Mercurial.</para>
     </sect2>
     <sect2>
       <title>Mercurial suit les fichiers, pas les répertoires</title>
 
       <para id="x_1ab">Mercurial ne suit pas les informations sur les
-        répertoire. En contrepartie, il suit le chemin vers un fichier. Avant
+        répertoires. En contrepartie, il suit le chemin vers un fichier. Avant
         de créer un fichier, il crée au préalable les répertoires manquants
         dans le chemin. Après avoir supprimé un fichier, il supprime chaque
         répertoire vide qui apparaît dans le chemin du fichier. Ceci apparaît
-        comme une distinction triviale, cependant, ceci a une conséquence
+        comme une distinction triviale, cependant, cela a une conséquence
         pratique mineure : il n'est pas possible de représenter un répertoire
         totalement vide dans Mercurial.</para>
 
       <para id="x_1ac">Les répertoires vides sont rarement utiles. Il existe
-        des solutions alternatives et non intrusives que vous pouvez utiliser
-        pour obtenir l'effet approprié. Les développeurs de Mercurial ont
-        ainsi pensé que la complexité requise pour gérer les répertoires
-        n'était pas aussi importante que le bénéfice que cette fonctionnalité
-        apporterait.</para>
+        cependant des solutions alternatives et non intrusives que vous
+        pouvez utiliser pour obtenir l'effet approprié. Les développeurs de
+        Mercurial ont ainsi pensé que la complexité requise pour gérer les
+        répertoires n'était pas aussi importante que le bénéfice que cette
+        fonctionnalité apporterait.</para>
 
       <para id="x_1ad">Si vous avez besoin d'un répertoire vide dans votre
         dépôt, il existe quelques façons d'y arriver. L'une d'elles est de
-        créer un répertoire et d'ensuite, faire un <command role="hg-cmd">hg
-          add</command> sur un fichier <quote>hidden</quote> file dans ce
-        répertoire. Sur les fichiers de type Unix, tout fichier dont le nom
+        créer un répertoire et ensuite, de faire un <command role="hg-cmd">hg
+          add</command> sur un fichier <quote>caché</quote> dans ce
+        répertoire. Sur les systèmes de type Unix, tout fichier dont le nom
         commence avec un point (<quote><literal>.</literal></quote>) est
         considéré comme caché par la plupart des commandes et outils
-        graphiques. Cette approche est illustré ci-après.</para>
+        graphiques. Cette approche est illustrée ci-après.</para>
       
       &interaction.daily.files.hidden;
 
       <para id="x_1ae">Une autre façon de s'attaquer au besoin d'un
-        répertoire vide est de simplement en créer un dans vos scripts
+        répertoire vide est de simplement d'en créer un dans vos scripts
         de construction avant qu'ils n'en aient le besoin.</para>
     </sect2>
   </sect1>
@@ -121,7 +121,7 @@
     <para id="x_1b0">Après avoir fait un <command role="hg-cmd">hg
         remove</command> sur un fichier, Mercurial ne suivra plus aucun
       changement sur ce fichier, même si vous recréez un fichier avec le même
-      nom dans le répertoire de travail. Si vous recréez un fichier avec le
+      nom dans votre répertoire de travail. Si vous recréez un fichier avec le
       même nom et que vous désirez que Mercurial suive ce dernier, faite
       simplement un <command role="hg-cmd">hg add</command> sur celui-ci.
       Mercurial saura alors que le nouveau fichier ne fait pas référence à
@@ -130,7 +130,7 @@
     <sect2>
       <title>Supprimer un fichier n'affecte pas son historique</title>
 
-      <para id="x_1b1">Il est important de comprendre que supprmer un fichier
+      <para id="x_1b1">Il est important de comprendre que supprimer un fichier
         n'a que deux effets.</para>
 
       <itemizedlist>
@@ -147,17 +147,17 @@
         fichier.</para>
 
       <para id="x_1b5">Si vous mettez à jour le répertoire de travail à un
-        changeset qui a été commité alors que le fichier que vous venez de
-        supprimer était encore suivi, ce fichier réaparaittra dans le
+        changeset qui a été committé alors que le fichier que vous venez de
+        supprimer était encore suivi, ce fichier réapparaîtra dans le
         répertoire de travail, avec le contenu qu'il avait lorsque vous aviez
-        commité ce changeset. Si vous mettez à jour (update) le répertoire de
-        travail à un changeset ultérieur, dans lequel le fichier a été
+        committé ce changeset. Si vous mettez à jour (update) le répertoire de
+        travail à un changeset ultérieur dans lequel le fichier a été
         supprimé, Mercurial supprimera une nouvelle fois le fichier du
         répertoire de travail.</para>
     </sect2>
 
     <sect2>
-      <title>Fichier manquants</title>
+      <title>Fichiers manquants</title>
 
       <para id="x_1b6">Mercurial considère qu'un fichier que vous avez
         supprimé sans utiliser<command role="hg-cmd">hg remove</command>
@@ -170,7 +170,7 @@
       &interaction.daily.files.missing;
 
       <para id="x_1b7">Si votre dépôt contient un fichier que <command
-          role="hg-cmd">hg status</command> repporte comme manquant, et que
+          role="hg-cmd">hg status</command> reporte comme manquant, et que
         vous voulez que ce fichier reste supprimé, vous pouvez exécuter
         <command role="hg-cmd">hg remove <option
             role="hg-opt-remove">--after</option></command> à tout moment
@@ -181,7 +181,7 @@
 
       <para id="x_1b8">D'un autre coté, si vous avez supprimé le fichier
         manquant par accident, donnez à la commande <command role="hg-cmd">hg
-          revert</command> le nom du fichier à retrouver. Il réaparaitra dans
+          revert</command> le nom du fichier à retrouver. Il réapparaitra dans
         sa forme non modifiée.</para>
 
       &interaction.daily.files.recover-missing;
@@ -193,7 +193,7 @@
       fichier ?</title>
 
       <para id="x_1b9">Vous pourriez vous demander pourquoi il est nécessaire
-        de dire exprécement à Mercurial que vous souhaitez supprimer un
+        de dire explicitement à Mercurial que vous souhaitez supprimer un
         fichier. Au début du développement de Mercurial, celui ci vous
         laissait pourtant supprimer un fichier sans soucis ; Mercurial vous
         aurait automatiquement informé de l'absence du fichier lorsque vous
@@ -203,7 +203,7 @@
     </sect2>
 
     <sect2>
-      <title>Racourcis utile&emdash;ajouter et supprimer des fichiers en une
+      <title>Raccourci utile&emdash;ajouter et supprimer des fichiers en une
       seule étape.</title>
 
       <para id="x_1ba">Mercurial offre une commande combinée, <command
@@ -230,15 +230,15 @@
       fichier. Lorsque vous copiez un fichier en utilisant cette commande,
       Mercurial crée un enregistrement du fait que ce nouveau fichier est une
       copie du fichier originel. Il traite ces fichiers copiés spécialement
-      lorsque vous faites une fusion (merge) de votre travail avec quelqu'un
+      lorsque vous fusionnez (merge) votre travail avec quelqu'un
       d'autre.</para>
 
     <sect2>
-      <title>Les résultat d'une copie durant une fusion (merge)</title>
+      <title>Les résultats d'une copie durant une fusion (merge)</title>
 
       <para id="x_1bd">Ce qu'il se passe durant une fusion (merge) est que
         les changements <quote>suivent</quote> une copie. Pour illustrer ce
-        que ça veut dire de la meilleure façon, créons un exemple. Nous
+        que cela veut dire de la meilleure façon, créons un exemple. Nous
         allons commencer avec le mini dépôt usuel qui contient un simple
         fichier.</para>
 
@@ -270,24 +270,24 @@
       &interaction.daily.copy.status-copy;
 
       <para id="x_1c2">Maintenant, de retour dans le dépôt que nous avons
-        cloné, et créons un changement en parallèle. Nous allons ajouter une
+        cloné, créons un changement en parallèle. Nous allons ajouter une
         ligne de contenu au fichier original qui a été créé.</para>
 
       &interaction.daily.copy.other;
 
-      <para id="x_1c3">Maintenant, nous avons un fichier
-        <filename>file</filename> modifié dans ce dépôt. Lorsque nous
-        récupérons (pull) les changements depuis le premier répertoire et
-        fusionnons (merge) les deux HEADS, Mercurial propagera les
-        changements que nous avons fait localement au fichier
-        <filename>file</filename> dans sa copie
+      <para id="x_1c3">Nous avons alors un fichier <filename>file</filename>
+        modifié dans ce dépôt. Lorsque nous récupérons (pull) les changements
+        depuis le premier répertoire et fusionnons (merge) les deux "heads",
+        Mercurial propagera les changements que nous avons faits localement
+        au fichier <filename>file</filename> dans sa copie
         <filename>new-file</filename>.</para>
 
       &interaction.daily.copy.merge;
     
     </sect2>
     <sect2 id="sec:daily:why-copy">
-      <title>Pourquoi les changements devraient suivre les copies ?</title>
+      <title>Pourquoi est-ce que les changements devraient suivre les copies
+        ?</title>
 
       <para id="x_1c4">Ce comportement&emdash;des changements d'un fichiers
         qui se propagent aux copies de ce fichier&emdash;peut sembler
@@ -306,17 +306,17 @@
           vu</emphasis> la copie.</para>
           
       <para id="x_1c7">La raison pour laquelle Mercurial fait ainsi est une
-        règle. Disons que je corrige un important bug dans un fichier source
-        et commit mes changements. Pendant ce temps, vous avez décidé de
+        règle. Imaginons que je corrige un important bug dans un fichier source
+        et que je commit mes changements. Pendant ce temps, vous avez décidé de
         faire un <command role="hg-cmd">hg copy</command> du fichier dans
-        votre dépôt, sans rien savoir au sujet du bug ou sans avoir rien vu à
-        propos de la correction, et vous avez commencé à "hacker" sur votre
-        copie du fichier.</para>
+        votre dépôt, sans rien savoir au sujet du bug ou à propos de la
+        correction. Vous avez alors commencé à "hacker" sur votre copie du
+        fichier.</para>
 
       <para id="x_1c8">Si vous aviez récupéré (pull) et fusionné (merge) mes
         changements, et que Mercurial <emphasis>n'avait pas</emphasis>
         propagé les changements à travers les copies, votre nouveau fichier
-        source contiendrait maintenant le bug, et à moins que vous sachiez
+        source contiendrait maintenant le bug, et à moins que vous ne sachiez
         qu'il faille propager la correction du bug à la main, le bug aurait
         <emphasis>subsisté</emphasis> dans votre copie du fichier.</para>
 
@@ -327,11 +327,11 @@
         propage les changements à travers les copies comme ceci.</para>
 
       <para id="x_1ca">Une fois que votre historique des changements a un
-        enregistrement concernant une copie et une fusion postérieure qui a
+        enregistrement concernant une copie et qu'une fusion postérieure a
         eu lieue, il n'y a d'habitude pas d'autre besoin de propager les
-        changements du fichier originel vers le fichier copié, et c'est
-        pourquoi Mercurial ne propage les changements à travers les copies
-        seulement à la première fusion, et pas d'avantage.</para>
+        changements du fichier originel vers le fichier copié. C'est pourquoi
+        Mercurial ne propage les changements à travers les copies qu'à la
+        première fusion, et pas d'avantage.</para>
     </sect2>
 
     <sect2>
@@ -346,8 +346,8 @@
         fichier. Utilisez ensuite <command role="hg-cmd">hg add</command>
         pour ajouter les nouveaux fichiers à la main. Cependant, avant d'en
         faire ainsi, relisez <xref linkend="sec:daily:why-copy"/>, et faites
-        un choix en tout état de cause que cette fonctionnalité n'est pas
-        appropriée à votre cas spécifique.</para>
+        un choix en connaissance de cause comme quoi cette fonctionnalité
+        n'est pas appropriée à votre cas spécifique.</para>
 
     </sect2>
     <sect2>
@@ -356,13 +356,14 @@
       <para id="x_1cc">Lorsque vous utilisez la commande <command
           role="hg-cmd">hg copy</command>, Mercurial crée une copie de chaque
         fichier source tel qu'il est actuellement dans le répertoire de
-        travail. Cela signifie que si vous faites des modifications à un
+        travail. Cela signifie que si vous effectuez des modifications sur un
         fichier, puis faites un <command role="hg-cmd">hg copy</command> sur
-        celui-ci sans avoir au préalable commité ces changements, la nouvelle
+        celui-ci sans avoir au préalable committé ces changements, la nouvelle
         copie contiendra aussi les modifications que vous avez fait jusqu'à
-        ce point.	modifications you have made up until that point.  (Je
-        trouve ce comportement quelque peu contre intuitif, c'est pourquoi
-        j'en fais mention ici.)</para>
+        ce point.	(Je trouve ce comportement quelque peu contre intuitif,
+        c'est pourquoi j'en fais mention ici.)</para>
+      <!-- Vérifier que je n'ai pas fait de contre sens en relisant la
+      version anglaise, ce que je comprend ici me paraît un peu bizarre -->
 
       <para id="x_1cd">La commande <command role="hg-cmd">hg copy</command>
         agit comme la commande Unix <command>cp</command> (vous pouvez
@@ -388,7 +389,7 @@
       &interaction.daily.copy.dir-src;
 
       <para id="x_1d0">Si la source et la destination sont tous deux des
-        répertoires, l'arborescence de la source est recrée dans le
+        répertoires, l'arborescence de la source est recréée dans le
         répertoire destination.</para>
     
       &interaction.daily.copy.dir-src-dest;
@@ -410,40 +411,40 @@
       fichier que d'en faire une copie. La raison pour laquelle j'ai discuté
       de la commande <command role="hg-cmd">hg copy</command> avant de parler
       de renommage des fichiers est que Mercurial traite les renommages
-      essenciellement comme une copie. Ainsi, savoir comment Mercurial traite
+      essentiellement comme une copie. Ainsi, savoir comment Mercurial traite
       les copies de fichiers vous informe sur ce que vous êtes en droit
       d'attendre lorsque vous renommez un fichier.</para>
 
     <para id="x_1d3">Lorsque vous utilisez la commande <command
-        role="hg-cmd">hg rename</command>, Mercurial crée uen copie de chaque
-      fichier source, les supprime et marque ces fichiers comme étant
+        role="hg-cmd">hg rename</command>, Mercurial crée une copie de tous
+      les fichiers sources, les supprime et marque ces fichiers comme étant
       supprimés.</para>
 
     &interaction.daily.rename.rename;
 
     <para id="x_1d4">La commande <command role="hg-cmd">hg status</command>
-      montre le nouveau fichier comme ajouté et le fichier origine comme
-      supprimé.</para>
+      montre les nouveaux fichiers comme ajoutés et les fichiers originaux
+      comme supprimés.</para>
 
     &interaction.daily.rename.status;
 
     <para id="x_1d5">A cause du <command role="hg-cmd">hg	copy</command>,
       nous devons utiliser l'option <option role="hg-opt-status">-C</option>
-      pour <command	role="hg-cmd">hg status</command> afin d'observer que le
-      fichier ajouté est bien suivi par Mercurial comme étant une copie de
-      l'original maintenant supprimé.</para>
+      pour la commande <command	role="hg-cmd">hg status</command> afin
+      d'observer que le fichier ajouté est bien suivi par Mercurial comme
+      étant une copie de l'original maintenant supprimé.</para>
 
     &interaction.daily.rename.status-copy;
 
     <para id="x_1d6">Comme avec <command role="hg-cmd">hg remove</command> et
       <command role="hg-cmd">hg copy</command>, vous pouvez informer
-      Mercurial à propos d'un renommage après coup en utilisant l'option
+      Mercurial au sujet d'un renommage après coup en utilisant l'option
       <option role="hg-opt-rename">--after</option>. Dans le plus grand
-      respet, le comportement de la commande <command role="hg-cmd">hg
+      respect, le comportement de la commande <command role="hg-cmd">hg
         rename</command>, et les options qu'il accepte sont similaires à la
       commande <command role="hg-cmd">hg copy</command>.</para>
 
-    <para id="x_686">Si vous êtes familié avec la ligne de commande Unix,
+    <para id="x_686">Si vous êtes familier avec la ligne de commande Unix,
       vous serez heureux d'apprendre que la commande <command
         role="hg-cmd">hg rename</command> peut être invoquée par <command
         role="hg-cmd">hg mv</command>.</para>
@@ -451,10 +452,9 @@
     <sect2>
       <title>Renommer les fichiers et fusionner (merge) les changements</title>
 
-      <para id="x_1d7">Puise que le rename de Mercurial est implanté comme un
-        "copy-and-remove", la même propagation des changements a lieue
-        lorsque vous fusionnez (merge) après un "rename" qu'après un
-        "copy".</para>
+      <para id="x_1d7">Puise que le "rename" de Mercurial est implanté comme un
+        "copy-and-remove", la même propagation des changements a lieue après
+        un "rename" qu'après un "copy" lorsque vous fusionnez (merge).</para>
 
       <para id="x_1d8">Si je modifie un fichier et que vous le renommez, si
         ensuite nous fusionnons nos changements respectifs, mes modifications
@@ -467,7 +467,7 @@
         est une fonctionnalité où vous hocheriez sûrement la tête en disant
         <quote>oui, cela pourrait être utile</quote>, il est clair que les
         voir suivre un renommage est définitivement important. Sans cette
-        aptitude, il serait simplement trop facile d'avoir des changements
+        aptitude, il serait vraiment trop facile d'avoir des changements
         qui deviennent orphelins lorsque des fichiers sont renommés.</para>
     </sect2>
 
@@ -475,7 +475,7 @@
       <title>Renommages divergeants et fusion (merge)</title>
 
       <para id="x_1da">Le cas de noms divergeants a lieu lorsque deux
-        développeurs commencent avec un fichier&emdash;apprelons le
+        développeurs commencent avec un fichier&emdash;appelons le
         <filename>foo</filename>&emdash;dans leurs dépôts respectifs.</para>
 
       &interaction.rename.divergent.clone;
@@ -525,7 +525,7 @@
 
       <para id="x_1e1">Mercurial possède un bug de longue date dans lequel il
         échoue à traiter une fusion (merge) où un coté a un fichier avec un
-        nom donné, alors que l'autre coté a un répertoire avec le même nom.
+        nom donné, alors que l'autre coté possède un répertoire avec le même nom.
         Ceci est documenté dans l'<ulink role="hg-bug"
           url="http://www.selenic.com/mercurial/bts/issue29">issue
           29</ulink>.</para>
@@ -539,24 +539,24 @@
     <title>Récupération d'erreurs</title>
 
     <para id="x_1e2">Mercurial possède certaines commandes utiles qui vont
-      vous aider à récupérer certaines erreurs communes.</para>
+      vous aider à récupérer de certaines erreurs communes.</para>
 
     <para id="x_1e3">La commande <command role="hg-cmd">hg revert</command>
-      vous permet d'annuler les changements que vous avez fait dans votre
+      vous permet d'annuler les changements que vous avez faits dans votre
       répertoire de travail. Par exemple, si vous faites un <command
         role="hg-cmd">hg add</command> sur un fichier par accident, exécutez
       juste <command role="hg-cmd">hg	revert</command> avec le nom du fichier
-      que vous avez ajouté et tandis que le fichier ne touché d'une
+      que vous avez ajouté et tandis que le fichier ne sera touché d'une
       quelconque manière, il ne sera plus suivi comme ajouté par Mercurial.
       Vous pouvez aussi utiliser la commande <command role="hg-cmd">hg
-        revert</command> pour vous débarasser de modifications erronés
+        revert</command> pour vous débarrasser de modifications erronés
       apportées à un fichier.</para>
 
     <para id="x_1e4">Il est utile de se souvenir que la commande <command
         role="hg-cmd">hg revert</command> est utile pour les modifications
-      qui n'ont pas encore été commitées. Une fois que vous avez committé un
+      qui n'ont pas encore été committées. Une fois que vous avez committé un
       changement, si vous décidez qu'il s'agissait d'une erreur, vous pouvez
-      toujours faire quelquechose à ce sujet, bien que vos options seront
+      toujours faire quelque chose à ce sujet, bien que vos options soient
       un peu plus limitées.</para>
 
     <para id="x_1e5">Pour plus d'informations au sujet de la commande
@@ -570,13 +570,13 @@
 
     <para id="x_687">Dans des projets compliqués ou conséquents, il n'est pas
       rare qu'une fusion (merge) de deux changesets finisse par une migraine.
-      Supposez qu'il y a un gros fichier source qui a été largement édité de
+      Supposez qu'il y ait un gros fichier source qui ait été largement édité de
       chaque coté de la fusion (merge) : ceci va inévitablement résulter en
-      conflits, dont certains peuvent prendre quelques essais pour s'en
+      conflits, dont certains peuvent prendre plusieurs essais pour s'en
       sortir.</para>
 
-    <para id="x_688">Développons en un cas simple pour voir comment traiter
-      avec. Nous allons commencer avec un dépôt contenant un fichier, et le
+    <para id="x_688">Développons en un cas simple pour voir comment le gérer.
+      Nous allons commencer avec un dépôt contenant un fichier, et le
       cloner deux fois.</para>
 
     &interaction.ch04-resolve.init;
@@ -587,7 +587,7 @@
     &interaction.ch04-resolve.left;
 
     <para id="x_68a">Dans un autre, nous allons modifier le fichier
-      différamment.</para>
+      différemment.</para>
 
     &interaction.ch04-resolve.right;
 
@@ -597,7 +597,7 @@
     &interaction.ch04-resolve.pull;
 
     <para id="x_68c">Nous nous attendons à ce que notre dépôt contienne deux
-      HEADS.</para>
+      "heads".</para>
 
     &interaction.ch04-resolve.heads;
 
@@ -605,24 +605,24 @@
         merge</command> à ce point, il nous renverra vers une interface
       utilisateur qui nous permettra de résoudre manuellement les éditions
       conflictuelles sur le fichier <filename>myfile.txt</filename>.
-      Cependant, pour simplifier les choses dans la présentation ici, nous
-      aimerions que la fusion (merge) échoue immédiatement plutôt. Voici une
+      Cependant, pour simplifier ici les choses dans la présentation, nous
+      aimerions plutôt que la fusion (merge) échoue immédiatement. Voici une
       façon de le faire.</para>
 
     &interaction.ch04-resolve.export;
 
-    <para id="x_68e">Nous avons dit à la machinerie de fusion de Mercurial
+    <para id="x_68e">Nous avons dit au processus de fusion de Mercurial
       d'exécuter la commande <command>false</command> (qui échoue
       immédiatement, à la demande) s'il détecte une fusion (merge) qu'il ne
       peut pas arranger automatiquement.</para>
 
     <para id="x_68f">Si nous appelons maintenant <command role="hg-cmd">hg
-        merge</command>, il devrait planter et reporter une erreur.</para>
+        merge</command>, il devrait échouer et reporter une erreur.</para>
 
     &interaction.ch04-resolve.merge;
 
     <para id="x_690">Même si nous ne remarquons pas qu'une fusion (merge) a
-      échoué, Mercurial nous empéchera de committer le résultat d'une fusion
+      échoué, Mercurial nous empêchera de committer le résultat d'une fusion
       ratée.</para>
 
     &interaction.ch04-resolve.cifail;
@@ -634,10 +634,10 @@
       sommaire.</para>
 
     <sect2>
-      <title>Etats de résolution des fichiers</title>
+      <title>États de résolution des fichiers</title>
       <!-- TODO Vérifier traduction : File resolution states -->
 
-      <para id="x_692">Lorsqu'une fusion intervient, la plupart des fichier
+      <para id="x_692">Lorsqu'une fusion intervient, la plupart des fichiers
         vont, la plupart du temps, rester sans modification. Pour chaque
         fichier sur lequel Mercurial doit faire quelque chose, il suit l'état
         de celui-ci.</para>
@@ -654,11 +654,11 @@
         </listitem>
       </itemizedlist>
 
-      <para id="x_695">Si Mercurial voit <emphasis>n'importe quel</emphasis>
-        fichier dans un état <quote>unresolved</quote> après une fusion
-        (merge), il considère que la fusion (merge) a échoué. Heureusement,
-        nous n'avons pas à recommencer la fusion (merge) à partir du
-        début.</para>
+      <para id="x_695">Si Mercurial voit un fichier
+        <emphasis>quelconque</emphasis> dans un état
+        <quote>unresolved</quote> après une fusion (merge), il considère que
+        la fusion (merge) a échoué. Heureusement, nous n'avons pas à
+        recommencer la procédure à partir du début.</para>
 
       <para id="x_696">L'option <option role="hg-opt-resolve">--list</option>
         ou <option role="hg-opt-resolve">-l</option> passée à <command
@@ -672,7 +672,7 @@
         <literal>R</literal>, alors qu'un fichier "unresolved" est marqué
         d'un <literal>U</literal>.  S'il existe un fichier listé avec un
         <literal>U</literal>, nous savons qu'essayer de committer le résultat
-        de la fusion (merge) échoura.</para>
+        de la fusion (merge) échouera.</para>
     </sect2>
 
     <sect2>
@@ -692,26 +692,28 @@
         en utilisant l'option <option role="hg-opt-resolve">--mark</option>,
         ou "unresolved" en utilisant l'option <option
           role="hg-opt-resolve">--unmark</option>. Ceci nous autorise à
-        nettoyer une fusion particulièrement compliqué à la main, et de
+        nettoyer une fusion particulièrement compliquée à la main, et de
         garder un suivi de nos progrès avec chaque fichier pendant que nous
         procédons.</para>
     </sect2>
   </sect1>
 
   <sect1>
-    <title>Des diffs plus utiles</title>
+    <title>Des "diffs" plus utiles</title>
 
     <para id="x_6c7">La sortie par défaut de la commande <command
-        role="hg-cmd">hg diff</command> est compatible rétrospectivement avec la commande régulière <command>diff</command>, mais ceci a quelques inconvénients.</para>
+        role="hg-cmd">hg diff</command> est compatible rétrospectivement avec
+      la commande régulière <command>diff</command>, mais ceci a quelques
+      inconvénients.</para>
 
     <para id="x_6c8">Considérez le cas où nous utilisons <command role="hg-cmd">hg
         rename</command> pour renommer un fichier.</para>
 
     &interaction.ch04-diff.rename.basic;
 
-    <para id="x_6c9">La sortie de <command role="hg-cmd">hg diff</command> ci
-      dessus cache le fait que nous avons simplement renommé un fichier. La
-      commande <command	role="hg-cmd">hg diff</command> accepte l'option
+    <para id="x_6c9">La sortie de <command role="hg-cmd">hg diff</command>
+      ci-dessus cache le fait que nous avons simplement renommé un fichier.
+      La commande <command role="hg-cmd">hg diff</command> accepte l'option
       <option>--git</option> ou <option>-g</option> pour utiliser un nouveau
       format de diff qui montre ces informations sous une forme plus
       expressive.</para>
@@ -737,17 +739,17 @@
   </sect1>
 
   <sect1>
-    <title>Quels fichiers gérer et lesquels éviter</title>
+    <title>Quels fichiers suivre et lesquels éviter</title>
 
     <para id="x_6cc">Les systèmes de gestion de révisions sont en général
       meilleurs pour gérer les fichiers textes qui sont écrits par les
       humains, comme le code source, où les fichiers ne changent pas
       énormément d'une révision à l'autre. Certains systèmes de gestion de
-      révisions centralisés peuvent aussi traiter très correctement les
-      fichiers binaires, comme les images bitmap.</para>
+      révisions centralisés peuvent aussi traiter très convenablement les
+      fichiers binaires, tels que les images bitmap.</para>
 
     <para id="x_6cd">Par exemple, une équipe de développement de jeux va
-      probablement gérer les deux : ses codes source et tous ses binaires
+      probablement gérer les deux types : ses codes source et tous ses binaires
       (ex. données géométriques, textures, schémas de cartes) dans un système
       de contrôle de révisions.</para>
     <!-- Vérifier la traduction de map layouts que j'ai traduit par schémas
@@ -755,21 +757,21 @@
 
     <para id="x_6ce">Puisqu'il est d'habitude impossible de fusionner (merge)
       deux modifications conflictuelles sur un fichier binaire, les systèmes
-      de version centralisé offre souvent un mécanisme de verrou (lock) qui
+      de version centralisés offrent souvent un mécanisme de verrou (lock) qui
       permet à un utilisateur de dire <quote>Je suis la seule personne qui
         peut éditer ce fichier</quote>.</para>
 
-    <para id="x_6cf">En comparaison d'un système centralisé, un système
+    <para id="x_6cf">En comparaison avec un système centralisé, un système
       décentralisé de gestion de révision change certains facteurs qui
       guident les décisions sur quels fichiers gérer et comment.</para>
 
-    <para id="x_6d0">Par exemple, un système distribé de gestion de révisions
-      ne peut pas, par sa nature, offrir un système de vérrous (lock) sur les
-      fichiers. Il n'y a donc pas de mécanisme inclu pour empécher deux
+    <para id="x_6d0">Par exemple, un système distribué de gestion de révisions
+      ne peut pas, par sa nature, offrir un système de véroux (lock) sur les
+      fichiers. Il n'y a donc pas de mécanisme inclus pour empêcher deux
       personnes de faire des modifications conflictuelles sur un fichier
       binaire. Si vous avez une équipe où plusieurs personnes peuvent souvent
       éditer un fichier binaire, cela ne serait pas une très bonne idée
-      d'utiliser Mercurial &emdash;ou tout autre système distribé de gestion
+      d'utiliser Mercurial &emdash;ou tout autre système distribué de gestion
       de révisions&emdash;pour gérer ces fichiers.</para>
 
     <para id="x_6d1">Lorsque vous sauvegardez les modifications sur un
@@ -779,12 +781,12 @@
       fichiers (en particulier les fichiers binaires) sont construits d'une
       façon que même un petit changement sur un contenu logique résulte sur
       un changement de la plupart des octets du fichier. Par exemple, les
-      fichiers compressés sont particulièrement suceptibles à ce
-      comportement. Si les différences entre deux versions successives d'un
-      fichier sont toujours très grandes, Mercurial ne sera pas capable de
-      sauvegarder l'historique des révisions sur le fichier très
-      efficacement. Ceci peut affecter aussi bien les besoins locaux pour
-      sauvegarder que le temps nécessaire à cloner le dépôt.</para>
+      fichiers compressés sont particulièrement sujets à ce comportement. Si
+      les différences entre deux versions successives d'un fichier sont
+      toujours très grandes, Mercurial ne sera pas capable de sauvegarder
+      l'historique des révisions sur le fichier très efficacement. Ceci peut
+      affecter aussi bien les besoins pour la sauvegarde locale que le temps
+      nécessaire à cloner le dépôt.</para>
 
     <para id="x_6d2">Pour avoir une idée de comment ceci pourrait vous
       affecter en pratique, supposez que nous voulions que Mercurial gère des
@@ -795,8 +797,8 @@
       fasse une taille de 2Mo. Puisque la plupart du fichier change à chaque
       fois que vous sauvegardez, Mercurial aura à sauvegarder tous les 2Mo du
       fichier à chaque commit, alors que de votre point de vue, il n'y a
-      seulement que peu de mots qui changent à chaque fois. Un seul fichier
-      souvent édité qui n'est pas bien connu des hypothèses que Mercurial
+      que peu de mots qui changent à chaque fois. Un seul fichier
+      souvent édité qui n'est pas bien traité par les hypothèses que Mercurial
       fait sur les sauvegardes peut facilement avoir un effet colossal sur la
       taille du dépôt.</para>
 
@@ -806,20 +808,20 @@
       utile de montrer que les différences sont faites à partir de votre
       vision des modifications.</para>
 
-    <para id="x_6d4">Il y a ainsi quelques recommendations claires sur les
+    <para id="x_6d4">Il y a ainsi quelques recommandations claires sur les
       types de fichiers spécifiques avec lesquels faire très
       attention.</para>
 
     <itemizedlist>
       <listitem><para id="x_6d5">Les fichier qui sont très gros et
-          imcompressibles, comme les images ISO de CD-ROM, sont, par
+          incompressibles, comme les images ISO de CD-ROM, sont, par
           construction très gros et les cloner à travers un réseau sera très
           long.</para></listitem>
-     <!-- Trouver une meilleure traduction pour : ISO CD-ROM images, will by
+     <!-- TODO : Trouver une meilleure traduction pour : ISO CD-ROM images, will by
      virtue of sheer size make clones over a network very slow. -->
       <listitem><para id="x_6d6">Les fichiers qui changent beaucoup d'une
           révision à l'autre peuvent être très chers à sauvegarder si vous
-          les éditez fréquement, de même que les conflits entre deux éditions
+          les éditez fréquemment, de même que les conflits entre deux éditions
           concurrentes peuvent être difficiles à résoudre.</para>
       </listitem>
     </itemizedlist>
@@ -831,7 +833,7 @@
     <para id="x_6d7">Puisque Mercurial maintient une copie complète de
       l'historique de chaque clone, toute personne qui utilise Mercurial pour
       collaborer à un projet peut potentiellement agir comme une source de
-      sauvegarde si une catastrophe avait lieue. Si un dépôt central devient
+      sauvegarde si une catastrophe survenait. Si un dépôt central devient
       indisponible, vous pouvez construire un remplaçant en clonant une copie
       du dépôt à partir d'un des contributeurs en récupérant (pull) tous les
       changements qui n'auraient pas été vus par les autres.</para>
@@ -840,24 +842,24 @@
       serveurs hors site de sauvegarde et des miroirs distants. Initiez une
       tâche périodique (ex. via la commande <command>cron</command>) sur un
       serveur distant pour récupérer (pull) les changements de votre dépôt
-      distant chaque heure. Ceci sera difficile seullement dans le cas
+      distant chaque heure. Ceci sera difficile seulement dans le cas
       improbable où le nombre des dépôts maîtres que vous maintenez change
       souvent, auquel cas vous aurez besoin de faire un peu de scripting pour
-      raffraichir la liste des dépôt à sauvegarder.</para>
+      rafraichir la liste des dépôt à sauvegarder.</para>
 
     <para id="x_6d9">Si vous exécutez des sauvegardes traditionnelles de
-      votre dépôt maître sur des bandes ou disques, et que vous voulez
-      sauvegarder un dépôt nommé <filename>myrepo</filename>, utilisez la
-      commande <command>hg clone -U myrepo myrepo.bak</command> pour créer un
-      clone de <filename>myrepo</filename> avant de commencer vos backups.
+      votre dépôt maître sur bande ou disque, et que vous voulez sauvegarder
+      un dépôt nommé <filename>myrepo</filename>, utilisez la commande
+      <command>hg clone -U myrepo myrepo.bak</command> pour créer un clone de
+      <filename>myrepo</filename> avant de commencer vos backups.
       L'option <option>-U</option> ne crée pas de répertoire de travail après
       que le clone soit accompli, puisque ceci serait superflu et ferait que
       la sauvegarde prenne plus de temps.</para>
 
     <para id="x_6da">Si vous voulez ensuite sauvegarder
       <filename>myrepo.bak</filename> au lieu de <filename>myrepo</filename>,
-      vous aurez la garantie d'avoir une image (snapshot) consistente de
-      votre dépôt sur lequel un développeur insomniac n'enverra (push) pas de
+      vous aurez la garantie d'avoir une image (snapshot) consistante de
+      votre dépôt sur lequel un développeur insomniaque n'enverra (push) pas de
       changements en milieu de sauvegarde.</para>
   </sect1>
 </chapter>
