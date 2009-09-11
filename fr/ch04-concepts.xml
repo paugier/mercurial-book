@@ -2,85 +2,78 @@
 
 <chapter id="chap:concepts">
   <?dbhtml filename="behind-the-scenes.html"?>
-  <title>Behind the scenes</title>
+  <title>Derrière le décor</title>
+  
+  <para id="x_2e8">À la différence de beaucoup d'outils de gestion de versions,
+    les concepts sur lesquels se base Mercurial sont assez simples pour
+    qu'il soit facile de comprendre comment le logiciel fonctionne.
+    Bien que leur connaissance ne soit pas nécéssaire, je trouve utile
+    d'avoir un <quote>modèle mental</quote> de ce qui se passe.</para>
 
-  <para id="x_2e8">Unlike many revision control systems, the concepts
-    upon which Mercurial is built are simple enough that it's easy to
-    understand how the software really works.  Knowing these details
-    certainly isn't necessary, so it is certainly safe to skip this
-    chapter.  However, I think you will get more out of the software
-    with a <quote>mental model</quote> of what's going on.</para>
+  <para id="x_2e9">En effet, cette compréhension m'apporte la confiance que
+    Mercurial a été développé avec soin pour être à la fois
+    <emphasis>sûr</emphasis> et <emphasis>efficace</emphasis>. De surcroît,
+    si il m'est facile de garder en tête ce que le logiciel fait lorsque
+    j'accompli des tâches de révision, j'aurai moins de risques d'être
+    surpris par son comportement.</para>
 
-  <para id="x_2e9">Being able to understand what's going on behind the
-    scenes gives me confidence that Mercurial has been carefully
-    designed to be both <emphasis>safe</emphasis> and
-    <emphasis>efficient</emphasis>.  And just as importantly, if it's
-    easy for me to retain a good idea of what the software is doing
-    when I perform a revision control task, I'm less likely to be
-    surprised by its behavior.</para>
-
-  <para id="x_2ea">In this chapter, we'll initially cover the core concepts
-    behind Mercurial's design, then continue to discuss some of the
-    interesting details of its implementation.</para>
+  <para id="x_2ea">Dans ce chapitre, nous décrirons tout d'abord les concepts
+    essentiels de l'architecture de Mercurial, pour ensuite discuter quelques
+    uns des détails intéressants de son implémentation.</para>
 
   <sect1>
-    <title>Mercurial's historical record</title>
-
+    <title>Conservation de l'historique sous Mercurial</title>
     <sect2>
-      <title>Tracking the history of a single file</title>
+      <title>Suivi de l'historique pour un seul fichier</title>
+      
+      <para id="x_2eb">Lorsque Mercurial effectue un suivi des modifications
+        faites à un fichier, il conserve l'historique pour ce fichier dans un
+        <emphasis>filelog</emphasis> sous forme de métadonnées. Chaque entrée
+        dans le filelog contient assez d'informations pour reconstituer une
+        révision du fichier correspondant. Les filelogs sont des fichiers
+        stockés dans le répertoire  <filename role="special"
+          class="directory">.hg/store/data</filename>. Un filelog contient
+        des informations de deux types: les données de révision, et un index
+        pour permettre à Mercurial une recherche efficace d'une révision
+        donnée.</para>
 
-      <para id="x_2eb">When Mercurial tracks modifications to a file, it stores
-	the history of that file in a metadata object called a
-	<emphasis>filelog</emphasis>.  Each entry in the filelog
-	contains enough information to reconstruct one revision of the
-	file that is being tracked.  Filelogs are stored as files in
-	the <filename role="special"
-	  class="directory">.hg/store/data</filename> directory.  A
-	filelog contains two kinds of information: revision data, and
-	an index to help Mercurial to find a revision
-	efficiently.</para>
-
-      <para id="x_2ec">A file that is large, or has a lot of history, has its
-	filelog stored in separate data
-	(<quote><literal>.d</literal></quote> suffix) and index
-	(<quote><literal>.i</literal></quote> suffix) files.  For
-	small files without much history, the revision data and index
-	are combined in a single <quote><literal>.i</literal></quote>
-	file.  The correspondence between a file in the working
-	directory and the filelog that tracks its history in the
-	repository is illustrated in <xref
-	  linkend="fig:concepts:filelog"/>.</para>
+      <para id="x_2ec">Lorsqu'un fichier devient trop gros ou a un long
+        historique, son filelog se voit stocker dans un fichier de données
+        (avec un suffixe <quote><literal>.d</literal></quote>) et un fichier
+        index (avec un suffixe<quote><literal>.i</literal></quote>)
+        distincts. La relation entre un fichier dans le répertoire de travail
+        et le  filelog couvrant le suivi de son historique dans le dépôt est
+        illustré à la figure <xref linkend="fig:concepts:filelog"/>.</para>
 
       <figure id="fig:concepts:filelog">
-	<title>Relationships between files in working directory and
-	  filelogs in repository</title>
-	<mediaobject>
-	  <imageobject><imagedata fileref="figs/filelog.png"/></imageobject>
-	  <textobject><phrase>XXX add text</phrase></textobject>
-	</mediaobject>
-      </figure>
+        <title>Relations entre les fichiers dans le répertoire de travail et
+        leurs filelogs dans le dépôt</title> 
+        <mediaobject> <imageobject><imagedata
+              fileref="figs/filelog.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject> </figure>
 
     </sect2>
     <sect2>
-      <title>Managing tracked files</title>
-
-      <para id="x_2ee">Mercurial uses a structure called a
-	<emphasis>manifest</emphasis> to collect together information
-	about the files that it tracks.  Each entry in the manifest
-	contains information about the files present in a single
-	changeset.  An entry records which files are present in the
-	changeset, the revision of each file, and a few other pieces
-	of file metadata.</para>
+      <title>Gestion des fichiers suivis</title>
+      
+      <para id="x_2ee">Mercurial a recours à une structure nommée
+        <emphasis>manifest</emphasis> pour rassembler les informations sur
+        les fichiers dont il gère le suivi. Chaque entrée dans ce manifest
+        contient des informations sur les fichiers présents dans une révision
+        donnée. Une entrée store la liste des fichiers faisant partie de la
+        révision, la version de chaque fichier, et quelques autres
+        métadonnées sur ces fichiers.</para>
 
     </sect2>
     <sect2>
       <title>Recording changeset information</title>
 
-      <para id="x_2ef">The <emphasis>changelog</emphasis> contains information
-	about each changeset.  Each revision records who committed a
-	change, the changeset comment, other pieces of
-	changeset-related information, and the revision of the
-	manifest to use.</para>
+      <para id="x_2ef">The <emphasis>changelog</emphasis> contains
+        information about each changeset.  Each revision records who
+        committed a change, the changeset comment, other pieces of
+        changeset-related information, and the revision of the manifest to
+        use.</para>
 
     </sect2>
     <sect2>
