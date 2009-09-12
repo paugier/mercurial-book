@@ -15,364 +15,433 @@
       travaille iavec un gestionnaire de source distribué.</para>
 
       <itemizedlist>
-        <listitem><para>Alice et Bob ont chacun une copie personnelle du dépôt d'un
-  projet sur lequel ils collaborent. Alice corrige un \textit{bug}
-  dans son dépôt, et Bob ajoute une nouvelle fonctionnalité dans le
-  sien. Ils veulent un dépôt partagé avec à la fois le correctif du
-  \textit{bug} et la nouvelle fonctionnalité.</para>
-</listitem>
-<listitem><para>Je travaille régulièrement sur plusieurs tâches différentes sur
-  un seul projet en même temps, chacun isolé dans son propre dépôt.
-  Travailler ainsi signifie que je dois régulièrement fusionner une
-  partie de mon code avec celui des autres.</para>
-</listitem></itemizedlist>
+        <listitem>
+          <para id="x_33a">Alice et Bob ont chacun une copie personnelle du dépôt d'un
+            projet sur lequel ils collaborent. Alice corrige un bug
+            dans son dépôt, et Bob ajoute une nouvelle fonctionnalité dans le
+            sien. Ils veulent un dépôt partagé avec à la fois le correctif du
+            bug et la nouvelle fonctionnalité.</para>
+       </listitem>
+       <listitem>
+         <para id="x_33b">Je travaille régulièrement sur plusieurs tâches différentes sur
+           un seul projet en même temps, chacun isolé dans son propre dépôt.
+           Travailler ainsi signifie que je dois régulièrement fusionner une
+           partie de mon code avec celui des autres.</para>
+       </listitem>
+     </itemizedlist>
 
-<para>Parce que la fusion est une opération si commune à réaliser,
-Mercurial la rend facile. Étudions ensemble le déroulement des opérations.
-Nous commencerons encore par faire un clone d'un autre dépôt (vous voyez
-que l'on fait ça tout le temps ?) puis nous ferons quelques modifications
-dessus.
-<!-- &interaction.tour.merge.clone; -->
-Nous devrions avoir maintenant deux copies de <filename>hello.c</filename> avec
-des contenus différents. Les historiques de ces deux dépôts ont aussi
-divergés, comme illustré dans la figure <xref linkend="fig:tour-merge:sep-repos"/>.</para>
+     <para id="x_33c">Parce que la fusion est une opération si commune à réaliser,
+       Mercurial la rend facile. Étudions ensemble le déroulement des
+       opérations. Nous commencerons encore par faire un clone d'un autre
+       dépôt (vous voyez que l'on fait ça tout le temps ?) puis nous ferons 
+       quelques modifications dessus.</para>
+       
+       &interaction.tour.merge.clone;
+       
+     <para id="x_33d">Nous devrions avoir maintenant deux copies de
+       <filename>hello.c</filename> avec des contenus différents. Les
+       historiques de ces deux dépôts ont aussi divergés, comme illustré dans
+       la figure <xref linkend="fig:tour-merge:sep-repos"/>.</para>
 
-<para><!-- &interaction.tour.merge.cat; --></para>
+      &interaction.tour.merge.cat1;
+     
+     <para id="x_722">Et ici est notre légèrement différente version du
+       dépôt.</para>
+     
+      &interaction.tour.merge.cat2;
+     
+     <figure id="fig:tour-merge:sep-repos">
+       <title>Historique divergent des dépôts <filename
+         class="directory">my-hello</filename> et <filename
+         class="directory">my-new-hello</filename>.</title>
+       <mediaobject>
+         <imageobject><imagedata fileref="figs/tour-merge-sep-repos.png"/></imageobject>
+         <textobject><phrase>XXX ajoute un test</phrase></textobject>
+       </mediaobject>
+     </figure>
 
-<informalfigure>
+     <para id="x_33f">Nous savons déjà que récupérer les modifications depuis
+       notre dépôt <filename class="directory">my-hello</filename> n'aura
+       aucun effet sur l'espace de travail.</para>
 
-<para>  <mediaobject><imageobject><imagedata fileref="tour-merge-sep-repos"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>
-  <caption><para>Historiques récent divergents des dépôts \dirname{my-hello</para></caption>
-  et <filename class="directory">my-new-hello</filename>}
-  \label{fig:tour-merge:sep-repos}</para>
-</informalfigure>
+      &interaction.tour.merge.pull;
 
-<para>Nous savons déjà que récupérer les modifications depuis notre dépôt
-<filename class="directory">my-hello</filename> n'aura aucun effet sur l'espace de travail.
-</para>
+     <para id="x_340">Néanmoins, la commande <command role="hg-cmd">hg
+       pull</command> nous indique quelque chose au sujet des 
+       <quote>heads</quote>.</para>
 
-<para><!-- &interaction.tour.merge.pull; -->
-</para>
+     <sect2>
+       <title>Les révisions 'heads'</title>
 
-<para>Néanmoins, la commande <command role="hg-cmd">hg pull</command> nous indique quelque chose au
-sujet des <quote>heads</quote>.
-</para>
+       <para id="x_341">Rappellez vous que Mercurial enregistre quelle révision
+         est le parent de chaque révision. Si une révision a un parent, nous
+         l'appelons un enfant(child) ou un descendant de ce parent. Une
+         "head" est une révision qui n'a donc pas d'enfant. La révision tip
+         est donc une "head", car c'est la révision la plus récente du dépôt
+         qui n'a pas d'enfant. Il y a des moments où un dépôt peut contenir
+         plusieurs "head".</para>
 
-<sect2>
-<title>\textit{Head changesets}</title>
+       <figure>
+         <title>Contenu du dépôt après une récupération ("pull") depuis le
+           dépôt <filename
+           class="directory">my-hello</filename> vers le dépôt <filename
+           class="directory">my-new-hello</filename></title>
+         <mediaobject>
+           <imageobject>
+             <imagedata fileref="tour-merge-pull"/>
+           </imageobject>
+           <textobject><phrase>XXX ajoute un texte</phrase></textobject>
+         </mediaobject>
+       </figure>
 
-<para>Une \textit{head}\footnote{NdT: Je garde \textit{head} que j'accorde
-au féminin comme la coutume orale l'a imposé.} est un \textit{changeset}
-sans descendants, ou enfants, comme on les désigne parfois. La révision
-\textit{tip} est une \textit{head}, car la dernière révision dans un dépôt
-n'a aucun enfant, mais il est important de noter qu'un dépôt peut contenir
-plus d'une \textit{head}.
-</para>
+       <para id="x_343">Dans la figure <xref linkend="fig:tour-merge:pull"/>,
+         vous pouvez constater l'effet d'un \textit{pull} depuis le dépôt
+         <filename class="directory">my-hello</filename> dans le dépôt
+         <filename class="directory">my-new-hello</filename>. L'historique qui
+         était déjà présent dans le dépôt <filename
+         class="directory">my-new-hello</filename> reste intact, mais une
+         nouvelle révision a été ajoutée. En vous reportant à la figure <xref
+         linkend="fig:tour-merge:sep-repos"/>, vous pouvez voir que le
+         <emphasis>ID de révision (changeset ID)</emphasis> reste le même dans
+         le nouveau dépôt, mais que le <emphasis>numéro de
+         révision</emphasis> reste le même. (Ceci est un parfait exemple de
+         pourquoi il n'est fiable d'utiliser les numéros de révision lorsque
+         l'on discute d'un \textit{changeset}.) Vous pouvez voir les "heads"
+         présentes dans le dépôt en utilisant la commande <command
+         role="hg-cmd">hg heads</command>.</para>
 
-<informalfigure>
+        &interaction.tour.merge.heads;
+      </sect2>
 
-<para>  <mediaobject><imageobject><imagedata fileref="tour-merge-pull"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>
-  \caption{Contenu d'un dépôt après avoir transféré le contenu du dépôt
-    <filename class="directory">my-hello</filename> dans le dépôt <filename class="directory">my-new-hello</filename>}
-  \label{fig:tour-merge:pull}
-</para>
-</informalfigure>
+      <sect2>
+        <title>Effectuer la fusion</title>
 
-<para>Dans la figure <xref linkend="fig:tour-merge:pull"/>, vous pouvez constater l'effet
-d'un \textit{pull} depuis le dépôt <filename class="directory">my-hello</filename> dans le dépôt
-<filename class="directory">my-new-hello</filename>. L'historique qui était déjà présent dans le dépôt
-<filename class="directory">my-new-hello</filename> reste intact, mais une nouvelle révision a été
-ajoutée. En vous reportant à la figure <xref linkend="fig:tour-merge:sep-repos"/>,
-vous pouvez voir que le \textit{<emphasis>changeset ID</emphasis>} reste le même dans
-le nouveau dépôt, mais que le <emphasis>numéro de révision</emphasis> reste le même.
-(Ceci est un parfait exemple de pourquoi il n'est fiable d'utiliser les
-numéros de révision lorsque l'on discute d'un \textit{changeset}.) Vous
-pouvez voir les \texit{heads} présentes dans le dépôt en utilisant la
-commande <command role="hg-cmd">hg heads</command>.
-<!-- &interaction.tour.merge.heads; -->
-</para>
+        <para id="x_344">Que se passe-t-il quand vous essayez d'utiliser la
+          commande <command role="hg-cmd">hg update</command> pour mettre à
+          jour votre espace de travail au nouveau "tip"</para>
+         
+         &interaction.tour.merge.update;
 
-</sect2>
-<sect2>
-<title>Effectuer la fusion</title>
+         
+        <para id="x_345">Mercurial nous prévient que la commande <command
+          role="hg-cmd">hg update</command> n'effectuera pas
+          la fusion, il ne veut pas mettre à jour l'espace de travail quand il
+          estime que nous pourrions avoir besoin d'une fusion, à moins de lui
+          forcer la main. À la place, il faut utiliser la commande <command
+          role="hg-cmd">hg merge</command> pour fusionner les deux
+          "heads".</para>
 
-<para>Que se passe-t-il quand vous essayez d'utiliser la commande <command role="hg-cmd">hg update</command>
-pour mettre à jour votre espace de travail au nouveau \textit{tip}.
-<!-- &interaction.tour.merge.update; -->
-Mercurial nous prévient que la commande <command role="hg-cmd">hg update</command> n'effectuera pas
-la fusion, il ne veut pas mettre à jour l'espace de travail quand il
-estime que nous pourrions avoir besoin d'une fusion, à moins de lui
-forcer la main. À la place, il faut utiliser la commande <command role="hg-cmd">hg merge</command>
-pour fusionner les deux \textit{heads}.
-<!-- &interaction.tour.merge.merge; -->
-</para>
+       <para id="x_723">Pour commencer une fusion (merge) entre deux "heads",
+       nous utilisons la commande <command role="hg-cmd">hg merge</command>.</para>
 
-<informalfigure>
+        &interaction.tour.merge.merge; 
+      
+       <para id="x_347">Nous résolvons les conflits dans le fichier
+         <filename>hello.c</filename>. Ceci met à jour le répertoire de travail
+         de sorte qu'il ne contienne les modifications ne provenance des
+         <emphasis>deux</emphasis> "heads", ce qui est indiqué par la
+         la sortie de la commande <command role="hg-cmd">hg
+         parents</command> et le contenu du fichier
+         <filename>hello.c</filename>.</para>
 
-<para>  <mediaobject><imageobject><imagedata fileref="tour-merge-merge"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>
-  \caption{Espace de travail et dépôt lors d'une fusion, et dans le
-    \textit{commit} qui suit.}
-  \label{fig:tour-merge:merge}
-</para>
-</informalfigure>
+        &interaction.tour.merge.parents;
+     </sect2>
 
-<para>Ceci met à jour l'espace de travail de manière à ce qu'il contienne
-les modifications des <emphasis>deux</emphasis> \textit{heads}, ce qui apparaît dans
-les sorties de la commande <command role="hg-cmd">hg parents</command> et le contenu de
-<filename>hello.c</filename>.
-<!-- &interaction.tour.merge.parents; -->
-</para>
+     <sect2>
+       <title>Effectuer l'ajout (commit) du résultat de la fusion</title>
 
-</sect2>
-<sect2>
-<title>Effectuer le \textit{commit} du résultat de la fusion</title>
+       <para id="x_348">Dès l'instant où vous avez effectué une fusion
+         (merge), <command role="hg-cmd">hg parents</command> vous
+         affichera deux parents, avant que vous n'exécutiez la commande
+         <command role="hg-cmd">hg commit</command> sur le résultat de la
+         fusion.</para>
 
-<para>Dès l'instant où vous avez effectué une fusion, <command role="hg-cmd">hg parents</command> vous
-affichera deux parents, avant que vous n'exécutiez la commande
-<command role="hg-cmd">hg commit</command> sur le résultat de la fusion.
-<!-- &interaction.tour.merge.commit; -->
-Nous avons maintenant un nouveau \textit{tip}, remarquer qu'il contient
-<emphasis>à la fois</emphasis> nos anciennes \textit{heads} et leurs parents. Ce sont
-les mêmes révisions que nous avions affichées avec la commande
-<command role="hg-cmd">hg parents</command>.
-</para>
+        &interaction.tour.merge.commit;
 
-<para><!-- &interaction.tour.merge.tip; -->
-Dans la figure <xref linkend="fig:tour-merge:merge"/>, vous pouvez voir une représentation
-de ce qui se passe dans l'espace de travail pendant la fusion, et comment ceci
-affecte le dépôt lors du \textit{commit}. Pendant la fusion, l'espace de travail,
-qui a deux \texit{changesets} comme parents, voit ces derniers devenir le parent
-%%% TODO: le parent ou "les parents" : plus logique mais si il reste seulement
-%%% un changeset, alors c'est effectivement un parent (le changeset est hermaphrodite)
-d'un nouveau \textit{changeset}.
-</para>
+      <para id="x_349">Nous avons maintenant un nouveau tip, remarquer qu'il
+        contient <emphasis>à la fois</emphasis> nos anciennes "heads" et leurs
+        parents. Ce sont les mêmes révisions que nous avions affichées avec
+        la commande <command role="hg-cmd">hg parents</command>.</para>
 
-</sect2>
-</sect1>
-<sect1>
-<title>Fusionner les modifications en conflit</title>
+       &interaction.tour.merge.tip;
 
-<para>La plupart des fusions sont assez simple à réaliser, mais parfois
-vous vous retrouverez à fusionner des fichiers où la modification touche
-la même portion de code, au sein d'un même fichier. À moins que ces
-modification ne soient identiques, ceci aboutira à un <emphasis>conflit</emphasis>,
-et vous devrez décider comment réconcilier les différentes modifications
-dans un tout cohérent.
-</para>
+      <para id="x_34a">Dans la figure <xref linkend="fig:tour-merge:merge"/>,
+        vous pouvez voir une représentation de ce qui se passe dans l'espace
+        de travail pendant la fusion, et comment ceci affecte le dépôt lors
+        du "commit". Pendant la fusion, l'espace de travail, qui a deux
+        révisions (changesets) comme parents, voit ces derniers devenir le parent
+        d'une nouvelle révision (changeset).</para>
 
-<informalfigure>
+      <figure id="fig:tour-merge:merge">
+        <title>Working directory and repository during merge, and
+          following commit</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figs/tour-merge-merge.png"/>
+          </imageobject>
+          <textobject><phrase>XXX ajoute texte</phrase></textobject>
+        </mediaobject>
+      </figure>
 
-<para>  <mediaobject><imageobject><imagedata fileref="tour-merge-conflict"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>
-  <caption><para>Modifications conflictuelles dans un document</para></caption>
-  \label{fig:tour-merge:conflict}
-</para>
-</informalfigure>
+    </sect2>
+  </sect1>
 
-<para>La figure <xref linkend="fig:tour-merge:conflict"/> illustre un cas de modifications
-conflictuelles dans un document. Nous avons commencé avec une version simple
-de ce fichier, puis nous avons ajouté des modifications, pendant que
-quelqu'un d'autre modifiait le même texte. Notre tâche dans la résolution
-du conflit est de décider à quoi le fichier devrait ressembler.
-</para>
+  <sect1>
+    <title>Fusionner les modifications en conflit</title>
 
-<para>Mercurial n'a pas de mécanisme interne pour gérer les conflits.
-À la place, il exécute un programme externe appelé <command>hgmerge</command>.
-Il s'agit d'un script shell qui est embarqué par Mercurial, vous
-pouvez le modifier si vous le voulez. Ce qu'il fait par défaut est
-d'essayer de trouver un des différents outils de fusion qui seront
-probablement installés sur le système. Il commence par les outils
-totalement automatiques, et si ils échouent (parce que la résolution
-du conflit nécessite une intervention humaine) ou si ils sont absents,
-le script tente d'exécuter certains outils graphiques de fusion.
-</para>
+    <para id="x_34b">La plupart des fusions sont assez simple à réaliser, mais 
+      parfois vous vous retrouverez à fusionner des fichiers où la modification 
+      touche la même portion de code, au sein d'un même fichier. À moins 
+      que ces modification ne soient identiques, ceci aboutira à un 
+      <emphasis>conflit</emphasis>, et vous devrez décider comment réconcilier 
+      les différentes modifications dans un tout cohérent.</para>
 
-<para>Il est aussi possible de demander à Mercurial d'exécuter un autre
-programme ou un autre script au lieu de la commande <command>hgmerge</command>,
-en définissant la variable d'environnement <envar>HGMERGE</envar> avec le nom
-du programme de votre choix.
-</para>
+    <figure>
+      <title>Modifications en conflits dans un document</title>
+      <mediaobject>
+        <imageobject><imagedata fileref="tour-merge-conflict"/></imageobject>
+        <textobject><phrase>XXX ajoute texte</phrase></textobject>
+      </mediaobject>
+    </figure>
 
-<sect2>
-<title>Utiliser un outil graphique de fusion</title>
+    <para id="x_34d">La figure <xref linkend="fig:tour-merge:conflict"/>
+      illustre un cas de modifications conflictuelles dans un document. Nous
+      avons commencé avec une version simple de ce fichier, puis nous avons
+      ajouté des modifications, pendant que quelqu'un d'autre modifiait le même
+      texte. Notre tâche dans la résolution du conflit est de décider à quoi le
+      fichier devrait ressembler.</para>
 
-<para>Mon outil de fusion préféré est <command>kdiff3</command>, que j'utilise ici
-pour illustrer les fonctionnalités classiques des outils graphiques
-de fusion. Vous pouvez voir une capture d'écran de l'utilisation de
-<command>kdiff3</command> dans la figure <xref linkend="fig:tour-merge:kdiff3"/>. Cet outil
-effectue une <emphasis>fusion \textit{three-way</emphasis>}, car il y a trois différentes
-versions du fichier qui nous intéresse. Le fichier découpe la partie
-supérieure de la fenêtre en trois panneaux:
-</para>
+    <para id="x_34e">Mercurial n'a pas de mécanisme interne pour gérer 
+      les conflits. À la place, il exécute un programme externe appelé 
+      <command>hgmerge</command>. Il s'agit d'un script shell qui est 
+      embarqué par Mercurial, vous pouvez le modifier si vous le voulez. 
+      Ce qu'il fait par défaut est d'essayer de trouver un des différents 
+      outils de fusion qui seront probablement installés sur le système. 
+      Il commence par les outils totalement automatiques, et si ils 
+      échouent (parce que la résolution du conflit nécessite une
+      intervention humaine) ou si ils sont absents, le script tente
+      d'exécuter certains outils graphiques de fusion.</para>
 
-<itemizedlist>
-<listitem><para>A gauche on la version de <emphasis>base</emphasis> du fichier, soit la plus
-  récente version des deux versions qu'on souhaite fusionner.
-</para>
-</listitem>
-<listitem><para>Au centre, il y a <quote>notre</quote> version du fichier, avec le contenu
-  que nous avons modifié.
-</para>
-</listitem>
-<listitem><para>Sur la droite, on trouve <quote>leur</quote> version du fichier, celui qui
-  contient le \textit{changeset} que nous souhaitons intégré.
-</para>
-</listitem></itemizedlist>
+    <para id="x_34f">Il est aussi possible de demander à Mercurial d'exécuter
+      un autre programme ou un autre script en définissant la variable
+      d'environnement <envar>HGMERGE</envar> avec le nom
+      du programme de votre choix.</para>
 
-<para>Dans le panneau en dessous, on trouve le <emphasis>résultat</emphasis> actuel de notre
-fusion. Notre tâche consiste donc à remplacement tous les textes en rouges,
-qui indiquent des conflits non résolus, avec une fusion manuelle et pertinente
-de <quote>notre</quote> version et de la <quote>leur</quote>.
-</para>
+    <sect2>
+      <title>Utiliser un outil graphique de fusion</title>
 
-<para>Tous les quatre panneaux sont <emphasis>accrochés ensemble</emphasis>, si nous déroulons
-les ascenseurs verticalement ou horizontalement dans chacun d'entre eux, les
-autres sont mis à jour avec la section correspondante dans leurs fichiers
-respectifs.
-</para>
+      <para id="x_350">Mon outil de fusion préféré est
+      <command>kdiff3</command>, que j'utilise ici pour illustrer les
+        fonctionnalités classiques des outils graphiques de fusion. Vous pouvez
+        voir une capture d'écran de l'utilisation de <command>kdiff3</command>
+        dans la figure <xref linkend="fig:tour-merge:kdiff3"/>. Cet outil
+        effectue une <emphasis>fusion \textit{three-way</emphasis>}, car il y a
+        trois différentes versions du fichier qui nous intéresse. Le fichier
+        découpe la partie supérieure de la fenêtre en trois panneaux:</para>
+      <itemizedlist>
+        <listitem><para id="x_351">A gauche on la version de
+          <emphasis>base</emphasis> du fichier, soit la plus récente version
+          des deux versions qu'on souhaite fusionner.</para></listitem>
+        <listitem><para id="x_352">Au centre, il y a <quote>notre</quote>
+          version du fichier, avec le contenu que nous avons modifié.</para></listitem>
+        <listitem><para id="x_353">Sur la droite, on trouve
+        <quote>leur</quote> version du fichier, celui qui contient la
+        révision que nous souhaitons intégré.</para>
+        </listitem></itemizedlist>
+      <para id="x_354">Dans le panneau en dessous, on trouve le
+        <emphasis>résultat</emphasis> actuel de notre fusion. Notre tâche
+        consiste donc à remplacement tous les textes en rouges,
+        qui indiquent des conflits non résolus, avec une fusion manuelle et 
+        pertinente de <quote>notre</quote> version et de la <quote>leur</quote>.
+      </para>
 
-<informalfigure>
+      <para id="">Tous les quatre panneaux sont <emphasis>accrochés ensemble</emphasis>, 
+        si nous déroulons les ascenseurs verticalement ou horizontalement dans chacun 
+        d'entre eux, les autres sont mis à jour avec la section correspondante dans leurs 
+        fichiers respectifs.</para>
 
-<para>  <mediaobject><imageobject><imagedata fileref="kdiff3"/></imageobject><textobject><phrase>XXX add text</phrase></textobject></mediaobject>
-  <caption><para>Utilisation de \command{kdiff3</para></caption> pour fusionner différentes versions
-  d'un fichier.}
-  \label{fig:tour-merge:kdiff3}
-</para>
-</informalfigure>
+      <figure id="fig:tour-merge:kdiff3">
+        <title>Utiliser <command>kdiff3</command> pour fusionner les
+          différentes version d'un fichier.</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata width="100%" fileref="figs/kdiff3.png"/></imageobject>
+            <textobject>
+              <phrase>XXX ajoute texte</phrase>
+            </textobject>
+          </mediaobject>
+       </figure>
 
-<para>Pour chaque portion de fichier posant problème, nous pouvons choisir
-de résoudre le conflit en utilisant une combinaison
-de texte depuis la version de base, la notre, ou la leur. Nous pouvons
-aussi éditer manuellement les fichiers à tout moment, si c'est
-nécessaire.
-</para>
+       <para id="x_357">Pour chaque portion de fichier posant problème, nous
+         pouvons choisir de résoudre le conflit en utilisant une combinaison de
+         texte depuis la version de base, la notre, ou la leur. Nous pouvons
+         aussi éditer manuellement les fichiers à tout moment, si c'est nécessaire.</para>
 
-<para>Il y a <emphasis>beaucoup</emphasis> d'outils de fusion disponibles, bien trop pour
-en parler de tous ici. Leurs disponibilités varient selon les plate formes
-ainsi que leurs avantages et inconvénients. La plupart sont optimisé pour
-la fusion de fichier contenant un texte plat, certains sont spécialisé
-dans un format de fichier précis (généralement XML).
-</para>
+       <para id="x_358">Il y a <emphasis>beaucoup</emphasis> d'outils de
+         fusion disponibles, bien trop pour en parler de tous ici. Leurs
+         disponibilités varient selon les plate formes  ainsi que leurs
+         avantages et inconvénients. La plupart sont optimisé pour
+         la fusion de fichier contenant un texte plat, certains sont spécialisé
+         dans un format de fichier précis (généralement XML).</para>
+    </sect2>
 
-</sect2>
-<sect2>
-<title>Un exemple concret</title>
+    <sect2>
+      <title>Un exemple concret</title>
 
-<para>Dans cet exemple, nous allons reproduire la modification de l'historique
-du fichier de la figure <xref linkend="fig:tour-merge:conflict"/> ci dessus. Commençons
-par créer un dépôt avec une version de base de notre document.
-</para>
+      <para id="x_359">Dans cet exemple, nous allons reproduire la
+        modification de l'historique du fichier de la figure <xref
+        linkend="fig:tour-merge:conflict"/> ci dessus. Commençons par créer
+        un dépôt avec une version de base de notre document.</para>
 
-<para><!-- &interaction.tour-merge-conflict.wife; -->
-Créons un clone de ce dépôt et faisons une modification dans le fichier.
-<!-- &interaction.tour-merge-conflict.cousin; -->
-Et un autre clone, pour simuler que quelqu'un d'autre effectue une
-modification sur le fichier. (Ceci pour suggérer qu'il n'est pas rare
-de devoir effectuer des \textit{merge} avec vos propres travaux quand
-vous isolez les tâches dans des dépôts distincts. En effet, vous
-aurez alors à trouver et résoudre certains conflits).
-<!-- &interaction.tour-merge-conflict.son; -->
-Maintenant que ces deux versions différentes du même fichier sont
-créées, nous allons configurer l'environnement de manière appropriée pour
-exécuter notre \textit{merge}.
-<!-- &interaction.tour-merge-conflict.pull; -->
-</para>
+      &interaction.tour-merge-conflict.wife; 
 
-<para>Dans cette exemple, je n'utiliserais pas la commande Mercurial
-habituelle <command>hgmerge</command> pour effectuer le \textit{merge},
-car il me faudrait abandonner ce joli petit exemple automatisé
-pour utiliser un outil graphique. À la place, je vais définir
-la variable d'environnement <envar>HGMERGE</envar> pour indiquer à
-Mercurial d'utiliser la commande non-interactive <command>merge</command>.
-Cette dernière est embarquée par de nombreux systèmes <quote>à la Unix</quote>.
-Si vous exécutez cet exemple depuis votre ordinateur, ne vous
-occupez pas de définir <envar>HGMERGE</envar>.
-<!-- &interaction.tour-merge-conflict.merge; -->
-Parce que <command>merge</command> ne peut pas résoudre les modifications
-conflictuelles, il laisse des <emphasis>marqueurs de différences</emphasis>
-\footnote{NdT: Oui, je traduis \textit{merge markers} par un sens
-inverse en Français, mais je pense vraiment que c'est plus clair
-comme ça...} à l'intérieur du fichier qui a des conflits, indiquant
-clairement quelles lignes sont en conflits, et si elles viennent de
-notre fichier ou du fichier externe.
-</para>
+      <para id="x_35a">Créons un clone de ce dépôt et faisons une
+        modification dans le fichier.</para>
 
-<para>Mercurial peut distinguer, à la manière dont la commande <command>merge</command>
-se termine, qu'elle n'a pas été capable d'effectuer le \textit{merge},
-alors il nous indique que nous devons effectuer de nouveau cette
-opération. Ceci peut être très utile si, par exemple, nous exécutons un
-outil graphique de fusion et que nous le quittons sans nous rendre compte
-qu'il reste des conflits ou simplement par erreur.
-</para>
+      &interaction.tour-merge-conflict.cousin;
+      
+      <para id="x_35b">Et un autre clone, pour simuler que quelqu'un d'autre effectue une
+        modification sur le fichier. (Ceci pour suggérer qu'il n'est pas rare
+        de devoir effectuer des fusions (merges) avec vos propres travaux quand
+        vous isolez les tâches dans des dépôts distincts. En effet, vous
+        aurez alors à trouver et résoudre certains conflits).</para>
 
-<para>Si le \textit{merge} automatique ou manuel échoue, il n'y a rien pour
-nous empêcher de <quote>corriger le tir</quote> en modifiant nous même les fichiers,
-et enfin effectuer le \textit{commit} du fichier:
-<!-- &interaction.tour-merge-conflict.commit; -->
-</para>
+      &interaction.tour-merge-conflict.son;
 
-</sect2>
-</sect1>
-<sect1>
-<title>Simplification de la séquence pull-merge-commit</title>
-<para>\label{sec:tour-merge:fetch}
-</para>
+      <para id="x_35c">Maintenant que ces deux versions différentes du même fichier sont
+        créées, nous allons configurer l'environnement de manière appropriée pour
+        exécuter notre fusion (merge).</para>
 
-<para>La procédure pour effectuer la fusion indiquée ci-dessus est simple,
-mais requiert le lancement de trois commandes à la suite.
-</para>
-<programlisting>
-<para>  hg pull
-  hg merge
-  hg commit -m 'Merged remote changes'
-</para>
-</programlisting>
+      &interaction.tour-merge-conflict.pull;
 
-<para>Lors du \textit{commit} final, vous devez également saisir un message,
-qui aura vraisemblablement assez peu d'intérêt.
-</para>
+      <para id="x_35d">Dans cette exemple, je n'utiliserais pas la commande Mercurial
+        habituelle <command>hgmerge</command> pour effectuer le
+        fusion (merge), car il me faudrait abandonner ce joli petit exemple automatisé
+        pour utiliser un outil graphique. À la place, je vais définir la
+        variable d'environnement <envar>HGMERGE</envar> pour indiquer à
+        Mercurial d'utiliser la commande non-interactive <command>merge</command>.
+        Cette dernière est embarquée par de nombreux systèmes <quote>à la Unix</quote>.
+        Si vous exécutez cet exemple depuis votre ordinateur, ne vous
+        occupez pas de définir <envar>HGMERGE</envar>.</para>
 
-<para>Il serait assez sympathique de pouvoir réduire le nombre d'opérations
-nécessaire, si possible. De fait Mercurial est fourni avec une
-extension appelé <literal role="hg-ext">fetch</literal> qui fait justement cela.
-</para>
-
-<para>Mercurial fourni un mécanisme d'extension flexible qui permet à chacun
-d'étendre ces fonctionnalités, tout en conservant le cœur de Mercurial
-léger et facile à utiliser. Certains extensions ajoutent de nouvelles
-commandes que vous pouvez utiliser en ligne de commande, alors que
-d'autres travaillent <quote>en coulisse,</quote> par exemple en ajoutant des
-possibilités au serveur.
-</para>
-
-<para>L'extension <literal role="hg-ext">fetch</literal> ajoute une nouvelle commande nommée, sans
-surprise, <command role="hg-cmd">hg fetch</command>. Cette extension résulte en une combinaison
-de <command role="hg-cmd">hg pull</command>, <command role="hg-cmd">hg update</command> and <command role="hg-cmd">hg merge</command>. Elle commence par
-récupérer les modifications d'un autre dépôt dans le dépôt courant.
-Si elle trouve que les modifications ajoutent une nouvelle \textit{head},
-elle effectue un \textit{merge}, et ensuite \texit{commit} le résultat
-du \textit{merge} avec un message généré automatiquement. Si aucune
-\textit{head} n'ont été ajouté, elle met à jour le répertoire de travail
-au niveau du nouveau \textit{changeset} \textit{tip}.
-</para>
+     &interaction.tour-merge-conflict.merge; 
 
 
-<para>Activer l'extension <literal role="hg-ext">fetch</literal> est facile. Modifiez votre <filename role="special">.hgrc</filename>,
-et soit allez à la section <literal role="rc-extensions">extensions</literal> soit créer une
-section <literal role="rc-extensions">extensions</literal>. Ensuite ajoutez une ligne qui consiste
-simplement en <quote>\Verb+fetch =</quote>.
-</para>
+     <para id="x_35f">Parce que <command>merge</command> ne peut pas résoudre
+       les modifications conflictuelles, il laisse des <emphasis>marqueurs de
+       différences</emphasis> à l'intérieur du fichier qui a des conflits,
+       indiquant clairement quelles lignes sont en conflits, et si elles
+       viennent de notre fichier ou du fichier externe.
+     </para>
 
-<programlisting>
-<para>  [extensions]
-  fetch =
-</para>
-</programlisting>
-<para>(Normalement, sur la partie droite de <quote><literal>=</literal></quote> devrait apparaître
-le chemin de l'extension, mais étant donné que l'extension <literal role="hg-ext">fetch</literal>
-fait partie de la distribution standard, Mercurial sait où la trouver.)
-</para>
+     <para id="x_360">Mercurial peut distinguer, à la manière dont la
+       commande <command>merge</command> se termine, qu'elle n'a pas été
+       capable d'effectuer la fusion (merge), alors il nous indique que nous
+       devons effectuer de nouveau cette opération. Ceci peut être très utile
+       si, par exemple, nous exécutons un outil graphique de fusion et que
+       nous le quittons sans nous rendre compte qu'il reste des conflits ou 
+       simplement par erreur.</para>
 
-</sect1>
+     <para id="x_361">Si la fusion (merge) automatique ou manuelle échoue, 
+       il n'y a rien pour nous empêcher de <quote>corriger le tir</quote> en
+       modifiant nous même les fichiers, et enfin effectuer le "commit" du 
+       fichier:</para>
+
+     &interaction.tour-merge-conflict.commit;
+
+     <note>
+       <title>Où est la <ocmmand>hg resolve</ocmmand> ?</title>
+       
+       <para id="x_724">La commande <command>hg resolve</command> a été
+         introduit dans la version 1.1 de Mercurial, qui a été publié en
+         décembre 2008. Si vous utilisez une version plus anciennne de
+         Mercurial (exécutez la command <command>hg version</command> pour en
+         avoir le coeur net), cette commande ne sera pas disponible. Si votre
+         version de Mercurial est plus ancienne que la 1.1, vous devriez très
+         fortement considérer une mise à jour à une version plus récente avant
+         d'essayer de régler des fusions complexes.</para>
+       </note>
+     </sect2>
+   </sect1>
+
+   <sect1 id="sec:tour-merge:fetch">
+     <title>Simplification de la séquence pull-merge-commit</title>
+
+     <para id="x_362">La procédure pour effectuer la fusion indiquée
+       ci-dessus est simple, mais requiert le lancement de trois commandes à la
+       suite.</para>
+
+     <programlisting>hg pull -u
+hg merge
+hg commit -m 'Merged remote changes'</programlisting>
+
+     <para id="x_363">Lors du "commit" final, vous devez également saisir un
+       message, qui aura vraisemblablement assez peu d'intérêt.</para>
+
+     <para id="x_364">Il serait assez sympathique de pouvoir réduire le
+       nombre d'opérations nécessaire, si possible. De fait Mercurial est
+       fourni avec une extension appelé <literal role="hg-ext">fetch</literal>
+       qui fait justement cela.</para>
+
+     <para id="x_365">Mercurial fourni un mécanisme d'extension flexible qui permet à chacun
+       d'étendre ces fonctionnalités, tout en conservant le cœur de Mercurial
+       léger et facile à utiliser. Certains extensions ajoutent de nouvelles
+       commandes que vous pouvez utiliser en ligne de commande, alors que
+       d'autres travaillent <quote>en coulisse,</quote> par exemple en ajoutant des
+       possibilités au serveur.</para>
+
+     <para id="x_366">L'extension <literal role="hg-ext">fetch</literal>
+       ajoute une nouvelle commande nommée, sans surprise, <command
+       role="hg-cmd">hg fetch</command>. Cette extension résulte en une
+       combinaison de <command role="hg-cmd">hg pull</command>, <command
+       role="hg-cmd">hg update</command> and <command role="hg-cmd">hg
+       merge</command>. Elle commence par récupérer les modifications d'un
+       autre dépôt dans le dépôt courant. Si elle trouve que les
+       modifications ajoutent une nouvelle "head", elle effectue un "merge",
+       et ensuite "commit" le résultat du "merge" avec un message généré
+       automatiquement. Si aucune "head" n'ont été ajouté, elle met à jour le
+       répertoire de travail au niveau de la nouvelle révision tip.</para>
+     
+     <para id="x_367">Activer l'extension <literal
+       role="hg-ext">fetch</literal> est facile. Modifiez votre <filename
+       role="special">.hgrc</filename>, et soit allez à la section <literal
+       role="rc-extensions">extensions</literal> soit créer une section
+       <literal role="rc-extensions">extensions</literal>. Ensuite ajoutez
+       une ligne qui consiste simplement en <quote>\Verb+fetch =</quote>.</para>
+
+     <programlisting>[extensions]
+fetch =</programlisting>
+
+    <para id="x_368">(Normalement, sur la partie droite de
+      <quote><literal>=</literal></quote> devrait apparaître le chemin de
+      l'extension, mais étant donné que l'extension <literal
+      role="hg-ext">fetch</literal> fait partie de la distribution standard,
+      Mercurial sait où la trouver.) </para>
+
+  </sect1>
+  
+  <sect1>
+    <title>Renommer, copier, et fusionner (merge)</title>
+
+    <para id="x_729">En cours de la vie d'un projet, nous allons souvent 
+      vouloir changer la disposition de ses fichiers et de ses répertoires. 
+      Ceci peut être aussi simple que de changer le nom d'un seul fichier, 
+      et aussi compliqué que de restructurer une hiérarchie entiere de fichier
+      au sein du projet.</para>
+
+    <para id="x_72a">Mercurial permet de faire ce genre de modification de
+      manière fluide, à condition de l'informer de ce que nous faisons. Si 
+      vous voulez renommenr un ficher, vous devriez utiliser les commande
+      <command>hg rename</command><footnote>
+        <para id="x_72b">Si vous un utilisateur de Unix, vous serez content
+          de savoir que la commande  <command>hg rename</command> command 
+          peut être abrégée en <command>hg mv</command>.</para>
+      </footnote> pour changer son nom, ainsi Mercurial peut ensuite prendre
+      la bonne décision, plus tard, en cas de fusionv (merge).</para>
+
+    <para id="x_72c">Nous étudierojns en détail l'utilisation de ces commandes, 
+      en détail, dans le chapitre <xref linkend="chap:daily.copy"/>.</para>
+  </sect1>
 </chapter>
 
 <!--
