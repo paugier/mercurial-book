@@ -5,17 +5,18 @@
   <title>Comment en est on arrivé là ?</title>
 
 <sect1>
-<title>À propos de la gestion source</title>
+<title>À propos de la gestion de révisions. Pourquoi Mercurial ?</title>
 
-    <para id="x_6d">La gestion de sources est un processus permettant de gérer différentes
+    <para id="x_6d">La gestion de révisions est un processus permettant de gérer différentes
 versions de la même information. Dans sa forme la plus simple, c'est
 ce que tout le monde fait manuellement : quand vous modifiez
 un fichier, vous le sauvegardez sous un nouveau nom contenant un numéro,
 à chaque fois plus grand que celui de la version précédente.</para>
 
-    <para id="x_6e">Ce genre de gestion de version manuelle est cependant facilement sujette
+    <para id="x_6e">Ce genre de gestion de révisions manuelle, ne serait-ce que 
+        d'un seul fichier, est cependant facilement sujette
 aux erreurs, ainsi, depuis longtemps, des logiciels existent pour
-résoudre cette problématique. Les premiers outils de gestion de sources
+résoudre cette problématique. Les premiers outils de gestion de révisions
 étaient destinés à aider un seul utilisateur, à automatiser la gestion
 des versions d'un seul fichier. Dans les dernières décades, cette cible
 s'est largement agrandie, ils gèrent désormais de multiples fichiers, et
@@ -24,23 +25,23 @@ plus modernes n'ont aucune difficulté à gérer plusieurs milliers de
 personnes travaillant ensemble sur des projets regroupant plusieurs
 centaines de milliers de fichiers.</para>
 
-    <para id="x_6f">L'arrivée de la gestion de révision distribuée est
+    <para id="x_6f">L'arrivée de la gestion de révisions distribuée est
     relativement récente, et, pour le moment, ce nouveau domaine a grandi
     grâce à la volonté des gens d'explorer ces territoires encore inconnus.
     </para>
 
-    <para id="x_70">J'écris un livre sur la gestion de révision distribuée
+    <para id="x_70">J'écris un livre sur la gestion de révisions distribuée
     parce que je pense qu'il s'agit d'un sujet important qui mérite un guide
-    du terrain. J'ai choisi d'écrire un livre sur Mercurial car il est
+    de terrain. J'ai choisi d'écrire un livre sur Mercurial car il est
     l'outil le plus facile pour découvrir ce nouveau domaine, tout en étant
     un outil efficace qui répond aux demandes d'environnements réels et
-    difficiles, là où d'autres outils de gestions de versions s'effondrent.</para>
+    difficiles, là où d'autres outils de gestion de révisions s'effondrent.</para>
 
     <sect2>
-      <title>Pourquoi utiliser un gestionnaire de source ?</title>
+      <title>Pourquoi utiliser un gestionnaire de révisions ?</title>
 
       <para id="x_71">Il y a de nombreuses raisons pour que vous ou votre équipe souhaitiez
-utiliser un outil automatisant la gestion de version pour votre projet.</para>
+utiliser un outil automatisant la gestion de révisions pour votre projet.</para>
 
       <itemizedlist>
 	<listitem><para id="x_72">L'outil se chargera de suivre l'évolution de votre projet, sans
@@ -50,14 +51,14 @@ il l'a fait, <emphasis>quand</emphasis> il l'a fait, et
 <emphasis>ce</emphasis> qu'il a modifié.</para>
 </listitem>
 <listitem><para id="x_73">Quand vous travaillez avec d'autres personnes, les logiciels de
-gestion de source facilitent le travail collaboratif. Par exemple, quand
+gestion de révisions facilitent le travail collaboratif. Par exemple, quand
 plusieurs personnes font, plus ou moins simultanément, des modifications
 incompatibles, le logiciel vous aidera à identifier et à résoudre les conflits.</para>
 </listitem>
 <listitem><para id="x_74">L'outil vous aidera à réparer vos erreurs. Si vous effectuez un changement
 qui se révèle être une erreur, vous pourrez revenir à une version
 antérieure d'un fichier ou même d'un ensemble de fichiers. En fait, un outil de
-gestion de source <emphasis>vraiment</emphasis> efficace vous permettra d'identifier à quel
+gestion de révisions <emphasis>vraiment</emphasis> efficace vous permettra d'identifier à quel
 moment le problème est apparu (voir la section <xref linkend="sec:undo:bisect"/> pour plus
 de détails).</para>
 </listitem>
@@ -65,27 +66,27 @@ de détails).</para>
 de votre projet et de gérer l'écart entre chacune.</para>
 </listitem></itemizedlist>
 <para id="x_76">La plupart de ces raisons ont autant d'importances &emdash;du
-  moins en théorie&emdash; que vous travailliez sur un projet pour vous, ou
+  moins en théorie&emdash; que vous travailliez seul sur un projet, ou
   avec une centaine d'autres personnes.
 </para>
 
 <para id="x_77">Une question fondamentale à propos des outils de gestion de
-  source, qu'il s'agisse du projet d'une personne ou d'une grande équipe, est
-  quels sont ses <emphasis>avantages</emphasis> par rapport à ses
-  <emphasis>coûts</emphasis>. Un outil qui est difficile à utiliser ou à
+  révisions, qu'il s'agisse du projet d'une personne ou d'une grande équipe, est
+  quels sont ses <emphasis>gains</emphasis> par rapport à ses
+  <emphasis>coût</emphasis>. Un outil qui est difficile à utiliser ou à
   comprendre exigera un lourd effort d'adaptation.
 </para>
 
-<para id="x_78">)Un projet de cinq milles personnes s'effondrera très
+<para id="x_78">Un projet de cinq milles personnes s'effondrera très
   certainement de lui même sans aucun processus et outil de gestion de
-  source. Dans ce cas, le coût d'utilisation d'un logiciel de gestion de
-  source est dérisoire puisque <emphasis>sans</emphasis>, l'échec est presque
+  révisions. Dans ce cas, le coût d'utilisation d'un logiciel de gestion de
+  révisions est dérisoire puisque <emphasis>sans</emphasis>, l'échec est presque
   garanti.
 </para>
 
 <para id="x_79">D'un autre coté, un <quote>rapide hack</quote> d'une personne
   peut sembler un contexte bien pauvre pour utiliser un outil de gestion de
-  source, car, bien évidement le coût d'utilisation dépasse le coût total du
+  révisions, car, bien évidement le coût d'utilisation dépasse le coût total du
   projet. N'est ce pas ?
 </para>
 
@@ -93,7 +94,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         échelles de travail. Vous pouvez apprendre les bases en quelques
         minutes seulement, et, grâce à sa performance, vous pouvez l'utiliser
         avec facilité sur le plus petit des projets. Cette simplicité
-        signifie que vous n'avez pas de concept obscurs ou de séquence de
+        signifie que vous n'avez pas de concept obscur ou de séquence de
         commandes défiant l'imagination, sans aucune corrélation avec
         <emphasis>ce que vous êtes entrain de faire</emphasis>. En même
         temps, ces mêmes performances et sa nature
@@ -101,7 +102,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         difficulté, son utilisation à de très grands projets.
 </para>
 
-      <para id="x_7b">Aucun outil de gestion de source ne peut sauver un
+      <para id="x_7b">Aucun outil de gestion de révisions ne peut sauver un
         projet mal mené, mais un bon outil peut rendre beaucoup plus fluide
         votre travail.
 </para>
@@ -113,7 +114,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
 
       <para id="x_7c">La gestion de source
         <!-- TODO:<footnote><J'ai utilisé systématiquement le terme
-            <quote>gestion de source</quote> à travers tout l'ouvrage. Ce
+            <quote>gestion de révisions</quote> à travers tout l'ouvrage. Ce
             n'est pas forcement la meilleure traduction, et ceci peut rendre
             la lecture un peu lourde, mais je pense que le document y gagne
             en clarté et en précision. -->
@@ -148,13 +149,13 @@ de votre projet et de gérer l'écart entre chacune.</para>
 
   <sect1>
 
-<title>A propos des exemples dans ce livre</title>
+<title>À propos des exemples dans ce livre</title>
 
-    <para id="x_84">Ce livre prend une approche non usuel pour les exemples
+    <para id="x_84">Ce livre prend une approche non usuelle pour les exemples
       de code. Tous les exemples sont en <quote>live</quote> &emdash; Chacun
       est actuellement le résultat d'un script shell qui exécute les
       commandes Mercurial que vous voyez. A chaque fois qu'une image du livre
-      est construite à partir des sources, tous les scripts d'exemple sont
+      est construite à partir des sources, tous les scripts d'exemples sont
       lancés automatiquement, et leurs résultats effectifs sont comparés aux
       résultats attendus.</para>
 
@@ -185,7 +186,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
     <para id="x_88">Donc, lorsque vous lisez ces exemples, ne prêtez pas trop
       d'importance aux dates et heures que vous voyez dans la sortie des
       commandes. Cependant, <emphasis>soyez</emphasis> confiants que le
-      comportement que vous voyez est consistent et reproductible 
+      comportement que vous voyez est constant et reproductible 
     </para>
 
   </sect1>
@@ -193,7 +194,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
 <!-- The next section has disapper from this part of the book. it may be splaced somewhere else... t-->
 
   <sect1>
-    <title>Tendances de la gestion de source</title>
+    <title>Tendances de la gestion de révisions</title>
 
     <para id="x_89">Il y a eu une tendance évidente dans le développement et
       l'utilisation d'outils de gestion de source depuis les quatre dernières
@@ -213,7 +214,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       adoptant une architecture réseau et centralisée, permettant de gérer
       plusieurs projets entiers en même temps. Alors que les projets
       grandirent en taille, ils rencontrèrent de nouveaux problèmes. Avec les
-      clients discutant régulièrement avec le serveurs, la montée en charge
+      clients discutant régulièrement avec le serveur, la montée en charge
       devint un réel problème sur les gros projets. Une connexion réseau peu
       fiable pouvait complètement empêcher les utilisateurs distants de
       dialoguer avec le serveur. Alors que les projets <emphasis
@@ -224,10 +225,10 @@ de votre projet et de gérer l'écart entre chacune.</para>
       comme ils ne pouvaient pas non plus enregistrer leurs modifications.
     </para>
 
-    <para id="x_8c">La génération actuelle des outils de gestion de source
+    <para id="x_8c">La génération actuelle des outils de gestion de révisions
       est <quote>peer-to-peer</quote> par nature. Tous ces systèmes ont
-      abandonné la dépendance à un serveur central, et ont permis à leur
-      utilisateur de distribuer les données de leur gestion de source à qui
+      abandonné la dépendance à un serveur central, et ont permis à leurs
+      utilisateurs de distribuer les données de leur gestion de révisions à qui
       en a besoin. La collaboration à travers Internet a transformé la
       contrainte technologique en une simple question de choix et de
       consensus. Les outils modernes peuvent maintenant fonctionner en mode
@@ -238,12 +239,12 @@ de votre projet et de gérer l'écart entre chacune.</para>
   </sect1>
     
   <sect1>
-    <title>Quelques avantages des gestionnaires de source distribués</title>
+    <title>Quelques avantages des gestionnaires de révisions distribués</title>
       
-    <para id="x_8d">Même si les gestionnaire de source distribués sont depuis
+    <para id="x_8d">Même si les gestionnaire de révisions distribués sont depuis
       plusieurs années assez robustes et aussi utilisables que leurs
       prédécesseurs, les utilisateurs d'autres outils n'y ont pas encore été
-      sensibilisés. Les gestionnaires de source distribués se distinguent
+      sensibilisés. Les gestionnaires de révisions distribués se distinguent
       particulièrement de leurs équivalents centralisés de nombreuses
       manières.
     </para>
@@ -256,7 +257,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       stocke toute ses métadonnées localement. À tâche égale, effectuer un
       échange avec le réseau ajoute un délai aux outils centralisés. Ne
       sous-estimez pas la valeur d'un outil rapide : vous allez passer
-      beaucoup de temps à interagir avec un logiciel de gestion de source.
+      beaucoup de temps à interagir avec un logiciel de gestion de révisions.
     </para>
 
     <para id="x_8f">Les outils distribués sont complètement indépendants des
@@ -264,7 +265,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       à beaucoup d'endroits. Si votre serveur central prend feu, vous avez
       intérêt à ce que les médias de sauvegardes soient fiables, et que votre
       dernier <quote>backup</quote> soit récent et fonctionne sans problème.
-      Avec un outil distribué, vous avez autant de <quote>backup</quote> que
+      Avec un outil distribué, vous avez autant de <quote>backups</quote> que
       de contributeurs.
     </para>
 
@@ -275,7 +276,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       pendant que vous travaillez, vous pouvez ne même pas vous en rendre
       compte. La seule chose que vous ne serez pas capable de faire sera de
       communiquer avec des dépôts distants, opération somme toute assez rare
-      en comparaison aux opérations locales. Si vous avez une équipe de
+      en comparaison des opérations locales. Si vous avez une équipe de
       collaborateurs très dispersée ceci peut être significatif.
     </para>
 
@@ -285,7 +286,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       <para id="x_91">Si vous prenez goût à un projet <emphasis
           remap="it">Open Source</emphasis> et que vous décidez de commencer
         à toucher à son code, et que le projet utilise un gestionnaire de
-        source distribué, vous êtes immédiatement un "pair" avec les
+        révisions distribué, vous êtes immédiatement un "pair" avec les
         personnes formant le <quote>cœur</quote> du projet. S'ils publient
         leurs dépôts, vous pouvez immédiatement copier leurs historiques de
         projet, faire des modifications, enregistrer votre travail en
@@ -303,7 +304,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       <title>Le non-problème du "fork"</title>
       
       <para id="x_92">Il a été souvent suggéré que les gestionnaires de
-        source distribués posent un risque pour les projets <emphasis
+        révisions distribués posent un risque pour les projets <emphasis
           remap="it">Open Source</emphasis> car ils facilitent grandement la
         création de <quote>fork</quote>.
         <!--footnote{NdT:Création d'une <ulink url="version alternative du
@@ -332,7 +333,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         probablement la <emphasis>meilleure</emphasis> façon de développer un
         projet. Chaque modification que vous effectuez est potentiellement un
         <quote>fork</quote>. La grande force de cette approche est que les
-        gestionnaires de source distribués doivent être vraiment très
+        gestionnaires de révisions distribués doivent être vraiment très
         efficaces pour <emphasis>fusionner (merge)</emphasis>
         <!-- TODO footnote{NdT:j'ai choisi de traduire ici <emphasis
           remap="it">merging</emphasis> par <quote>fusionner</quote> pour des
@@ -345,7 +346,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         moment, est vue comme un <quote>fork</quote> à fusionner, alors ce
         que le monde de l'<emphasis remap="it">Open Source</emphasis> voit
         comme un <quote>fork</quote> devient <emphasis>uniquement</emphasis>
-        une problématique sociale. En fait, les outils de gestions de source
+        une problématique sociale. En fait, les outils de gestions de révisions
         distribués <emphasis>réduisent</emphasis> les chances de
         <quote>fork</quote> :
       </para>
@@ -354,7 +355,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         <listitem>
         <para>Ils éliminent la distinction sociale qu'imposent les outils
           centralisés entre les membres du projets (ceux qui ont accès au
-          <quote>commit</quote>) et ceux de l'extérieur (ce qui ne l'ont
+          <quote>commit</quote>) et ceux de l'extérieur (qui ne l'ont
           pas).
         </para>
         <para>Ils rendent plus facile la réconciliation après un
@@ -365,7 +366,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       </itemizedlist>
 
       <para id="x_98">Certaines personnes font de la résistance envers les
-        gestionnaires de source distribués parce qu'ils veulent garder un
+        gestionnaires de révisions distribués parce qu'ils veulent garder un
         contrôle ferme sur leur projet, et ils pensent que les outils
         centralisés leur fournissent ce contrôle. Néanmoins, si c'est votre
         cas, sachez que si vous publiez votre dépôt CVS ou Subversion de
@@ -386,7 +387,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       <para id="x_99">Beaucoup de projets commerciaux sont réalisés par des
         équipes éparpillées à travers le globe. Les contributeurs qui sont
         loin du serveur central devront subir des commandes lentes et même
-        parfois peu fiables. Les solutions propriétaires de gestion de source
+        parfois peu fiables. Les solutions propriétaires de gestion de révisions
         tentent de palier ce problème avec des réplications de sites distants
         qui sont à la fois coûteuses à mettre en place et lourdes à
         administrer. Un système distribué ne souffre pas de ce genre de
@@ -396,24 +397,24 @@ de votre projet et de gérer l'écart entre chacune.</para>
         connexion longue distance souvent onéreuse.
       </para>
 
-      <para id="x_9a">Les systèmes de gestion de source supportent
+      <para id="x_9a">Les systèmes de gestion de révisions supportent
         généralement assez mal la monté en charge. Il n'est pas rare pour un
-        gestionnaire de source centralisé pourtant onéreux de s'effondrer
+        gestionnaire de révisions centralisé pourtant onéreux de s'effondrer
         sous la charge combinée d'une douzaine d'utilisateurs concurrents
         seulement. Une fois encore, la réponse à cette problématique est
         généralement encore la mise en place d'un ensemble complexe de
         serveurs synchronisés par un mécanisme de réplication. Dans le cas
-        d'un gestionnaire de source distribué, la charge du serveur central
-        &emdash; si vous avez un&emdash; est plusieurs fois inférieure (car
+        d'un gestionnaire de révisions distribué, la charge du serveur central
+        &emdash; si vous en avez un&emdash; est largement inférieure (car
         toutes les données sont déjà répliquées ailleurs), un simple serveur,
-        pas très cher, peut gérer les besoins d'une plus grande équipe, et la
+        peu onéreux, peut gérer les besoins d'une plus grande équipe, et la
         réplication pour balancer la charge devient le travail d'un simple
         script.
       </para>
 
       <para id="x_9b">Si vous avez des employés sur le terrain, en train de
         chercher à résoudre un souci sur le site d'un client, ils
-        bénéficieront aussi d'un gestionnaire de source distribué. Cet outil
+        bénéficieront aussi d'un gestionnaire de révisions distribué. Cet outil
         leur permettra de générer des versions personnalisées, d'essayer
         différentes solutions, en les isolant aisément les unes des autres,
         et de rechercher efficacement à travers l'historique des sources, la
@@ -427,7 +428,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       <title>Pourquoi choisir Mercurial?</title>
 
       <para id="x_9c">Mercurial a plusieurs caractéristiques qui en font un
-        choix particulièrement pertinent pour la gestion de source :
+        choix particulièrement pertinent pour la gestion de révisions :
       </para>
     <itemizedlist>
       <listitem><para id="x_9d">Il est simple à apprendre et à utiliser.</para></listitem>
@@ -437,7 +438,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
     </itemizedlist>
 
     <para id="x_a1">Si vous êtes déjà familier d'un outil de gestion de
-      source, vous serez capable de l'utiliser en moins de 5 minutes. Sinon,
+      révisions, vous serez capable de l'utiliser en moins de 5 minutes. Sinon,
       ça ne sera pas beaucoup plus long. Les commandes utilisées par
       Mercurial, comme ses fonctionnalités, sont généralement uniformes et
       cohérentes, et vous pouvez ainsi garder en tête simplement quelques
@@ -448,7 +449,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       avec Mercurial en quelques instants. Ajouter des modifications ou des
       branches, transférer ces modifications (localement ou via le réseau),
       et les opérations d'historique ou de statut sont aussi très rapides.
-      Mercurial reste hors de votre chemin grâce à sa simplicité
+      Mercurial ne vous encombre pas grâce à sa simplicité
       d'utilisation et sa rapidité d'exécution.
     </para>
 
@@ -481,7 +482,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
     <sect2>
       <title>Subversion</title>
 
-      <para id="x_a6">Subversion est un des outils de gestion de source les
+      <para id="x_a6">Subversion est un des outils de gestion de révisions les
         plus populaire, il fût développé pour remplacer CVS. Il a une
         architecture client/server centralisée.
       </para>
@@ -539,7 +540,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         vous suivez une cinquantaine de versions d'un fichier incompressible
         de 10MB, l'occupation disque coté client d'un projet sous Subversion
         restera à peu près constante. A l'inverse, l'occupation disque du
-        même projet sous n'importe lequel des gestionnaires de source
+        même projet sous n'importe lequel des gestionnaires de révisions
         distribués grandira rapidement, proportionnellement aux nombres de
         versions, car les différences entre chaque révisions seront très
         grandes.
@@ -568,7 +569,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
     <sect2>
       <title>Git</title>
 
-      <para id="x_af">Git est un outil de gestion de source distribué qui fût
+      <para id="x_af">Git est un outil de gestion de révisions distribué qui fût
         développé pour gérer le code source de noyau de Linux. Comme
         Mercurial, sa conception initiale a été inspirée par Monotone.
       </para>
@@ -605,7 +606,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
         Git sont implémentées sous forme de scripts Shell ou Perl, et la
         qualité de ces scripts varie grandement. J'ai plusieurs fois constaté
         que certains de ces scripts étaient chargés en mémoire aveuglément et
-        que la présence d'erreurs pouvait s'avérer fatal.
+        que la présence d'erreurs pouvait s'avérer fatale.
       </para>
 
       <para id="x_b4">Mercurial peut importer l'historique d'un dépôt Git.</para>
@@ -614,7 +615,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
     <sect2>
       <title>CVS</title>
 
-      <para id="x_b5">CVS est probablement l'outil de gestion de source le
+      <para id="x_b5">CVS est probablement l'outil de gestion de révisions le
         plus utilisé aujourd'hui dans le monde. À cause de son manque de
         clarté interne, il n'est plus maintenu depuis plusieurs années.
       </para>
@@ -622,8 +623,8 @@ de votre projet et de gérer l'écart entre chacune.</para>
       <para id="x_b6">Il a une architecture client/serveur centralisée. Il ne
         regroupe pas les modifications de fichiers dans une opération de
         <quote>commit</quote> atomique, ce qui permet à ses utilisateurs de
-        <quote>casser le <emphasis>build</emphasis></quote> assez facilement
-        : une personne peut effectuer une opération de <quote>commit</quote>
+        <quote>casser le <emphasis>build</emphasis></quote> assez facilement :
+        une personne peut effectuer une opération de <quote>commit</quote>
         sans problème puis être bloquée par besoin de fusion, avec comme
         conséquence néfaste, que les autres utilisateurs ne récupèreront
         qu'une partie de ses modifications. Ce problème affecte aussi la
@@ -647,7 +648,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       <para id="x_b8">Mercurial peut importer l'historique d'un projet CVS.
         Néanmoins, il y a quelques principes à respecter; ce qui est vrai
         aussi pour les autres outils d'import de projet CVS. À cause de
-        l'absence de <quote>commit</quote> atomique et gestion de version de
+        l'absence de <quote>commit</quote> atomique et gestion de versions de
         l'arborescence, il n'est pas possible de reconstruire de manière
         précise l'ensemble de l'historique. Un travail de
         <quote>devinette</quote> est donc nécessaire, et les fichiers
@@ -670,7 +671,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
 
       <para id="x_ba">Perforce a une architecture client/serveur centralisée,
         sans aucun mécanisme de mise en cache de données coté client.
-        Contrairement à la plupart des outils modernes de gestion de source,
+        Contrairement à la plupart des outils modernes de gestion de révisions,
         Perforce exige de ses utilisateurs d'exécuter une commande pour
         informer le serveur central de tout fichier qu'ils souhaitent
         modifier.
@@ -685,12 +686,12 @@ de votre projet et de gérer l'écart entre chacune.</para>
 
     </sect2>
     <sect2>
-      <title>Choisir un outil de gestion de source</title>
+      <title>Choisir un outil de gestion de révisions</title>
 
       <para id="x_bc">A l'exception de CVS, tous les outils listés ci-dessus
-        ont des forces qui leur sont propres et qui correspondent à certaines
+        ont des forces qui leurs sont propres et qui correspondent à certaines
         formes de projet. Il n'y a pas un seul meilleur outil de gestion de
-        source qui correspondrait le mieux à toutes les situations.
+        révisions qui correspondrait le mieux à toutes les situations.
       </para>
 
       <para id="x_bd">En guise exemple, Subversion est un très bon choix
@@ -718,7 +719,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
       effectuées depuis votre import initial.
     </para>
 
-    <para id="x_c0">Les outils de gestion de source supportés par <literal
+    <para id="x_c0">Les outils de gestion de révisions supportés par <literal
         role="hg-ext">convert</literal> sont :
     </para>
     <itemizedlist>
@@ -745,9 +746,9 @@ de votre projet et de gérer l'écart entre chacune.</para>
   </sect1>
 
   <sect1>
-    <title>Une courte histoire de la gestion de source</title>
+    <title>Une courte histoire de la gestion de révisions</title>
 
-    <para id="x_c7">Le plus célèbre des anciens outils de gestion de source
+    <para id="x_c7">Le plus célèbre des anciens outils de gestion de révisions
       est <emphasis remap="it">SCCS</emphasis> (Source Code Control System)},
       que Marc Rochkind conçu dans les laboratoires de recherche de Bell
       (<emphasis remap="it">Bell Labs</emphasis>), dans le début des années
@@ -796,12 +797,12 @@ de votre projet et de gérer l'écart entre chacune.</para>
       l'historique du projet. L'espace de travail client ne contient qu'une
       copie de la dernière version du projet, et quelques métadonnées pour
       indiquer où le serveur se trouve. CVS a été un grand succès,
-      aujourd'hui il est probablement l'outil de gestion de contrôle le plus
+      aujourd'hui il est probablement l'outil de gestion de révisions le plus
       utilisé au monde.
     </para>
     
     <para>Au début des années 1990, Sun Microsystems développa un premier
-      outil de gestion de source distribué, nommé TeamWare. Un espace de
+      outil de gestion de révisions distribué, nommé TeamWare. Un espace de
       travail TeamWare contient une copie complète de l'historique du projet.
       TeamWare n'a pas de notion de dépôt central. (CVS utilisait RCS pour le
       stockage de l'historique, TeamWare utilisait SCCS).
@@ -831,10 +832,10 @@ de votre projet et de gérer l'écart entre chacune.</para>
     </para>
     
     <para>Plus ou moins simultanément, Graydon Hoare a commencé sur
-      l'ambitieux système de gestion distribué Monotone. Bien que Monotone
+      l'ambitieux système de gestion distribuée Monotone. Bien que Monotone
       corrige plusieurs défauts de CVS tout en offrant une architecture
       <quote>peer-to-peer</quote>, il va aussi plus loin que la plupart des
-      outils de révision de manière assez innovante. Il utilise des
+      outils de gestion de révisions de manière assez innovante. Il utilise des
       <quote>hashs</quote> cryptographiques comme identifiants, et il a une
       notion complète de <quote>confiance</quote> du code issu des
       différentes sources.
@@ -842,7 +843,7 @@ de votre projet et de gérer l'écart entre chacune.</para>
     
     <para>Mercurial est né en 2005. Bien que très influencé par Monotone,
       Mercurial se concentre sur la facilité d'utilisation, les performances
-      et la capacité à monter en charge pour de très gros projets.
+      et la capacité à monter en charge sur de très gros projets.
     </para>
   
   </sect1>
