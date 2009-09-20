@@ -2,420 +2,449 @@
 
 <chapter id="cha:collab">
   <?dbhtml filename="collaborating-with-other-people.html"?>
-  <title>Collaborating with other people</title>
+  <title>Collaborer avec d'autres personnes</title>
 
-  <para id="x_44a">As a completely decentralised tool, Mercurial doesn't impose
-    any policy on how people ought to work with each other.  However,
-    if you're new to distributed revision control, it helps to have
-    some tools and examples in mind when you're thinking about
-    possible workflow models.</para>
+  <para id="x_44a">Comme tout outil complètement décentralisé, Mercurial
+    n'impose pas de politique sur la façon dont les personnes devraient
+    travailler ensemble. Cependant, si vous êtes nouveau dans les systèmes de
+    gestion de révisions distribués, cela aide d'avoir des outils et exemples
+    en tête lorsque vous réfléchissez à de possibles modèles de
+    workflow.</para>
+  <!--TODO : workflow peut éventuellement être traduit ici par travail -->
 
   <sect1>
-    <title>Mercurial's web interface</title>
+    <title>Interface web de Mercurial</title>
 
-    <para id="x_44b">Mercurial has a powerful web interface that provides several
-      useful capabilities.</para>
+    <para id="x_44b">Mercurial possède une interface web puissante qui
+      propose plusieurs capacités utiles.</para>
 
-    <para id="x_44c">For interactive use, the web interface lets you browse a
-      single repository or a collection of repositories.  You can view
-      the history of a repository, examine each change (comments and
-      diffs), and view the contents of each directory and file.  You
-      can even get a view of history that gives a graphical view of
-      the relationships between individual changes and merges.</para>
+    <para id="x_44c">Pour une utilisation intensive, l'interface web vous
+      permet de naviguer dans un ou une collection de dépôt. Vous pouvez voir
+      l'historique d'un dépôt, examiner chaque modification (commentaires et
+      "diffs"), et voir le contenu de chaque répertoire et fichier. Vous
+      pouvez même accéder à une vue de l'historique qui vous donne une vue
+      graphique de la relation entre les modifications individuelles et les
+      fusions (merge).</para>
 
-    <para id="x_44d">Also for human consumption, the web interface provides
-      Atom and RSS feeds of the changes in a repository.  This lets you
-      <quote>subscribe</quote> to a repository using your favorite
-      feed reader, and be automatically notified of activity in that
-      repository as soon as it happens.  I find this capability much
-      more convenient than the model of subscribing to a mailing list
-      to which notifications are sent, as it requires no additional
-      configuration on the part of whoever is serving the
-      repository.</para>
+    <para id="x_44d">De plus, pour la consommation humaine, l'interface web
+      fournit des flux Atom et RSS des changements dans un dépôt. Ceci vous
+      permet de <quote>souscrire</quote> à un dépôt en utilisant votre
+      lecteur de flux favori, et être automatiquement avertis de l'activité
+      dans ce dépôt aussi tôt qu'elle change. Je trouve cette fonctionnalité
+      bien plus commode que le modèle qui consiste à souscrire à une mailing
+      list à laquelle les avertissements sont envoyés, puisque cela demande
+      aucune configuration supplémentaire de la part de la personne qui
+      publie un dépôt.</para>
 
-    <para id="x_44e">The web interface also lets remote users clone a repository,
-      pull changes from it, and (when the server is configured to
-      permit it) push changes back to it.  Mercurial's HTTP tunneling
-      protocol aggressively compresses data, so that it works
-      efficiently even over low-bandwidth network connections.</para>
+    <para id="x_44e">L'interface web permet aussi aux utilisateurs distants
+      de cloner un dépôt, récupérer (pull) les changement à partir de celui
+      ci, et (lorsque le serveur est configuré pour l'autoriser) lui envoyer
+      (push) des changements. Le protocole de tunnel HTTP de Mercurial
+      compresse agressivement les données, ainsi, il fonctionne efficacement,
+      même au dessus des réseaux avec une bande passante faible.</para>
 
-    <para id="x_44f">The easiest way to get started with the web interface is to
-      use your web browser to visit an existing repository, such as
-      the master Mercurial repository at <ulink
-	url="http://www.selenic.com/repo/hg">http://www.selenic.com/repo/hg</ulink>.</para>
+    <para id="x_44f">La plus simple façon de démarrer avec l'interface
+      utilisateur est d'utiliser votre navigateur web pour visiter un dépôt
+      existant, tel que le dépôt principal de Mercurial à l'adresse <ulink
+        url="http://www.selenic.com/repo/hg">http://www.selenic.com/repo/hg</ulink>.</para>
 
-    <para id="x_450">If you're interested in providing a web interface
-      to your own repositories, there are several good ways to do
-      this.</para>
+    <para id="x_450">Si vous êtes intéressés pour proposer une interface web
+      de vos propres dépôts, il y a plusieurs façons de le faire.</para>
+    
+    <para id="x_69d">La façon la plus simple et la plus rapide pour commencer
+      dans un environnement informel est d'utiliser la commande <command
+        role="hg-cmd">hg serve</command> qui est la plus adaptée à un service
+      à court terme et <quote>léger</quote>. Référez vous à <xref
+        linkend="sec:collab:serve"/> plus pas pour les détails d'utilisation
+      de cette commande.</para>
 
-    <para id="x_69d">The easiest and fastest way to get started in an informal
-      environment is to use the <command role="hg-cmd">hg
-	serve</command> command, which is best suited to short-term
-      <quote>lightweight</quote> serving.  See <xref
-	linkend="sec:collab:serve"/> below for details of how to use
-      this command.</para>
+    <para id="x_69e">Pour des dépôts dont la durée de vie est plus longue, où
+      vous voudriez un service accessible en permanence, il existe plusieurs
+      services publics d'hébergement qui sont accessibles. Certains sont
+      libres et gratuits pour les projets Open Source, alors que d'autres
+      offrent un hébergement commercial et payant. Une lise à jour est
+      disponible à l'adresse : <ulink
+        url="http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting">http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting</ulink>.</para>
 
-    <para id="x_69e">For longer-lived repositories that you'd like to
-      have permanently available, there are several public hosting
-      services available.  Some are free to open source projects,
-      while others offer paid commercial hosting.  An up-to-date list
-      is available at <ulink
-	url="http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting">http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting</ulink>.</para>
-
-    <para id="x_6a0">If you would prefer to host your own repositories, Mercurial
-      has built-in support for several popular hosting technologies,
-      most notably CGI (Common Gateway Interface), and WSGI (Web
-      Services Gateway Interface).  See <xref
-	linkend="sec:collab:cgi"/> for details of CGI and WSGI
-      configuration.</para>
+    <para id="x_6a0">Si vous préférez héberger vos propres dépôts, Mercurial
+      possède un support intégré pour plusieurs technologies pupulaires
+      d'hébergement, plus particulièrement CGI (Common Gateway Interface) et
+      WSGI (Web Services Gateway Interface). Référez vous à <xref
+        linkend="sec:collab:cgi"/> pour des détails sur la configuration CGI
+      et WSGI.</para>
   </sect1>
 
   <sect1>
-    <title>Collaboration models</title>
+    <title>Modèles de collaboration</title>
 
-    <para id="x_451">With a suitably flexible tool, making decisions about
-      workflow is much more of a social engineering challenge than a
-      technical one. Mercurial imposes few limitations on how you can
-      structure the flow of work in a project, so it's up to you and
-      your group to set up and live with a model that matches your own
-      particular needs.</para>
+    <para id="x_451">Avec un outil convenablement flexible, faire des
+      décisions sur les workflow est plus un problème d'ingénierie sociale
+      qu'un problème technique. Mercurial n'impose que peu de limitations sur
+      la façon dont vous pouvez structurer le flux de travail dans un projet,
+      donc, c'est à vous et votre groupe de fixer et vivre avec un modèle qui
+      convient à vos besoins particuliers.</para>
 
     <sect2>
-      <title>Factors to keep in mind</title>
+      <title>Facteurs à garder en tête</title>
 
-      <para id="x_452">The most important aspect of any model that you must keep
-	in mind is how well it matches the needs and capabilities of
-	the people who will be using it.  This might seem
-	self-evident; even so, you still can't afford to forget it for
-	a moment.</para>
+      <para id="x_452">L'aspect le plus important de tout modèle que vous
+        devez garder en tête est la façon dont il subvient aux besoins et
+        capacités des personnes qui l'utiliseront. Ceci pourrait sembler
+        évident en soi ; pourtant, vous ne pouvez pas vous permettre de
+        l'oublier à un seul moment.</para>
 
-      <para id="x_453">I once put together a workflow model that seemed to make
-	perfect sense to me, but that caused a considerable amount of
-	consternation and strife within my development team.  In spite
-	of my attempts to explain why we needed a complex set of
-	branches, and how changes ought to flow between them, a few
-	team members revolted.  Even though they were smart people,
-	they didn't want to pay attention to the constraints we were
-	operating under, or face the consequences of those constraints
-	in the details of the model that I was advocating.</para>
+      <para id="x_453">Une fois, j'ai mis en place un modèle de workflow qui
+        m'apparaissait comme parfait, mais il a causé la consternation et des
+        conflits au sein de mon équipe de développement. En dépit de mes
+        tentatives pour expliquer pourquoi nous avions besoin d'un ensemble
+        complexe de branches, et comment les changements devaient couler
+        entre eux, certains membres de l'équipe se révoltèrent. Alors qu'ils
+        étaient pourtant des personnes sympathiques, ils ne voulaient pas
+        prêter attention aux contraintes sur lesquelles nous étions en train
+        d'opérer, ou, face aux conséquences de ces contraintes dans les
+        détails du modèle que je préconisais.</para>
 
-      <para id="x_454">Don't sweep foreseeable social or technical problems under
-	the rug. Whatever scheme you put into effect, you should plan
-	for mistakes and problem scenarios.  Consider adding automated
-	machinery to prevent, or quickly recover from, trouble that
-	you can anticipate.  As an example, if you intend to have a
-	branch with not-for-release changes in it, you'd do well to
-	think early about the possibility that someone might
-	accidentally merge those changes into a release branch.  You
-	could avoid this particular problem by writing a hook that
-	prevents changes from being merged from an inappropriate
-	branch.</para>
+      <para id="x_454">Ne balayez pas les problèmes sociaux ou techniques de
+        la main. Quelquesoit le schéma que vous promulguez, vous devriez
+        plannifier un protocole pour prévenir, ou rapidement vous relever de
+        troubles que vous pouvez anticiper. Par exemple, si vous vous
+        attentez à avoir une branche pour les changements pas-pour-release,
+        vous devriez penser très tôt sur la possibilité qu'une personne
+        fusionne (merge) accidentellement ces changements avec une branche de
+        release. Vous pouvez empécher ce problème particulier en écrivant un
+        hook qui prévient les changements d'être fusionnés à partir d'une
+        branche inapropriée.</para>
     </sect2>
 
     <sect2>
-      <title>Informal anarchy</title>
+      <title>Anarchie informelle</title>
 
-      <para id="x_455">I wouldn't suggest an <quote>anything goes</quote>
-	approach as something sustainable, but it's a model that's
-	easy to grasp, and it works perfectly well in a few unusual
-	situations.</para>
+      <para id="x_455">Je ne voudrais pas suggérer qu'une approche
+        <quote>tout peut arriver</quote> comme quelque chose de durable, mais
+        il s'agit d'un modèle qui est simple à saisir et qui fonctionne
+        parfaitement dans quelques situations inhabituelles.</para>
 
-      <para id="x_456">As one example, many projects have a loose-knit group of
-	collaborators who rarely physically meet each other.  Some
-	groups like to overcome the isolation of working at a distance
-	by organizing occasional <quote>sprints</quote>.  In a sprint,
-	a number of people get together in a single location (a
-	company's conference room, a hotel meeting room, that kind of
-	place) and spend several days more or less locked in there,
-	hacking intensely on a handful of projects.</para>
+      <para id="x_456">Par exemple, beaucoup de projets ont un groupe distant
+        de collaborateurs qui ne se rencontre physiquement que très rarement.
+        Certains groupes aiment vaincre l'isolation du travail à distance en
+        organisant occasionnellement des <quote>sprints</quote>. Dans un
+        sprint, le nombre de personne qui viennent ensemble dans un même
+        localité (la salle de conférence d'une companie, la salle de réunion
+        d'un hotel, ce type d'endroit) et y passe plusieurs jours, plus ou
+        moins enfermés, et hackant intensément sur une poignée de
+        projets.</para>
 
-      <para id="x_457">A sprint or a hacking session in a coffee shop are the perfect places to use the
-	<command role="hg-cmd">hg serve</command> command, since
-	<command role="hg-cmd">hg serve</command> does not require any
-	fancy server infrastructure.  You can get started with
-	<command role="hg-cmd">hg serve</command> in moments, by
-	reading <xref linkend="sec:collab:serve"/> below.  Then simply
-	tell the person next to you that you're running a server, send
-	the URL to them in an instant message, and you immediately
-	have a quick-turnaround way to work together.  They can type
-	your URL into their web browser and quickly review your
-	changes; or they can pull a bugfix from you and verify it; or
-	they can clone a branch containing a new feature and try it
-	out.</para>
-
-      <para id="x_458">The charm, and the problem, with doing things
-	in an ad hoc fashion like this is that only people who know
-	about your changes, and where they are, can see them.  Such an
-	informal approach simply doesn't scale beyond a handful
-	people, because each individual needs to know about
-	<emphasis>n</emphasis> different repositories to pull
-	from.</para>
+      <para id="x_457">Un "sprint" ou une session de "hacking" dans un café
+        sont les endroits parfaits pour utiliser la commande <command
+          role="hg-cmd">hg serve</command> puisque <command role="hg-cmd">hg
+          serve</command> n'a pas besoin d'une infrastructure extraordinaire
+        de serveurs. Vous pouvez commencer avec la commande <command
+          role="hg-cmd">hg serve</command> en un moment, en lisant <xref
+          linkend="sec:collab:serve"/> plus bas  Ensuite, dites simplement à
+        la personne à coté de vous que vous exécutez un serveur, envoyez lui
+        l'URL par un message instantané, et vous avez immédiatement un moyen
+        simple et rapide de travailler ensemble. Ils peuvent taper votre URL
+        dans leur navigateur web et rapidement avoir une revue des
+        changements ; ou ils peuvent récupérer chez vous un bugfix et le
+        vérifier ; ou ils peuvent cloner une branche contenant une nouvelle
+        fonctionnalité et la tester.</para>
+        
+      <para id="x_458">Le charme et le problème en faisant les choses ainsi,
+        dans une mode ad-hoc est que seules les personnes qui sont au courant
+        de vos changements, et de leur emplacement, peuvent les voir. Une
+        telle approche informelle ne passe simplement pas à l'échelle au delà
+        d'une poignée de personnes, puisque chacun a besoin de connaître
+        <emphasis>n</emphasis> différents dépôts à partir des quels récupérer
+        les changements (pull).</para>
     </sect2>
 
     <sect2>
-      <title>A single central repository</title>
+      <title>Un simple dépôt central</title>
 
-      <para id="x_459">For smaller projects migrating from a centralised revision
-	control tool, perhaps the easiest way to get started is to
-	have changes flow through a single shared central repository.
-	This is also the most common <quote>building block</quote> for
-	more ambitious workflow schemes.</para>
+      <para id="x_459">Pour de plus petits projets qui migrent depuis un
+        outil de gestion de révision centralisé, la façon la
+        plus simple de commencer est certainement d'avoir un flux de
+        changement à partir d'un unique dépôt central. Il s'agit aussi du
+        <quote>bloc de construction</quote> pour des schémas de workflow plus
+        ambitieux.</para>
 
-      <para id="x_45a">Contributors start by cloning a copy of this repository.
-	They can pull changes from it whenever they need to, and some
-	(perhaps all) developers have permission to push a change back
-	when they're ready for other people to see it.</para>
+      <para id="x_45a">Les contributeurs commencent par cloner une copie de
+        ce dépôt. Ils peuvent récupérer les changements à n'importe quel
+        moment où ils en ressentent le besoin, et certains (sûrement tous)
+        développeurs ont les persmissions qui leur permettent d'envoyer leurs
+        modifications (push) en retour lorsqu'elles sont prêtes pour que les
+        autres personnes puissent les voir.</para>
 
-      <para id="x_45b">Under this model, it can still often make sense for people
-	to pull changes directly from each other, without going
-	through the central repository.  Consider a case in which I
-	have a tentative bug fix, but I am worried that if I were to
-	publish it to the central repository, it might subsequently
-	break everyone else's trees as they pull it.  To reduce the
-	potential for damage, I can ask you to clone my repository
-	into a temporary repository of your own and test it.  This
-	lets us put off publishing the potentially unsafe change until
-	it has had a little testing.</para>
+      <para id="x_45b">Dans ce modèle, il peut encore être sensé pour les
+        gens de récupérer les changements directement entre eux, sans passer
+        par le dépôt central. Considérez le cas où j'ai une tentative de bug
+        fix, mais je m'inquiète de savoir si, dans le cas où je la publiais,
+        cela ne casserait pas l'arbre des autres contributeurs s'ils la
+        récupèrerais. Pour réduire les dommages potentiels, je peux vous
+        demander de cloner mon dépôt dans un dépôt temporaire qui vous
+        appartient et de le tester. Ceci nous permet de ne pas publier les
+        modification potentiellement dangereuses tant qu'elles n'ont pas
+        encore été un peu testées.</para>
 
-      <para id="x_45c">If a team is hosting its own repository in this
-	kind of scenario, people will usually use the
-	<command>ssh</command> protocol to securely push changes to
-	the central repository, as documented in <xref
-	  linkend="sec:collab:ssh"/>.  It's also usual to publish a
-	read-only copy of the repository over HTTP, as in
-	<xref linkend="sec:collab:cgi"/>. Publishing over HTTP
-	satisfies the needs of people who don't have push access, and
-	those who want to use web browsers to browse the repository's
-	history.</para>
+      <para id="x_45c">Si une équipe héberge son propre dépôt dans ce type de
+        scénario, les personnes qui utilisent habituellement le protocole
+        <command>ssh</command> pour envoyer (push) en toute sécurité leurs
+        changements au dépôt central, comme docummenté dans <xref
+          linkend="sec:collab:ssh"/>. Il est aussi usuel de publier une copie
+        en lecture seule du dépôt sur HTTP comme dans <xref
+          linkend="sec:collab:cgi"/>. Publier sur HTTP satisfait le besoin
+        des personnes qui n'ont pas d'accès en écriture, et ceux qui veulent
+        utiliser leur navigateur web pour explorer l'historique du
+        dépôt.</para>
     </sect2>
 
     <sect2>
-      <title>A hosted central repository</title>
+      <title>Un dépôt central hébergé</title>
 
-      <para id="x_6a1">A wonderful thing about public hosting services like
-	<ulink url="http://bitbucket.org/">Bitbucket</ulink> is that
-	not only do they handle the fiddly server configuration
-	details, such as user accounts, authentication, and secure
-	wire protocols, they provide additional infrastructure to make
-	this model work well.</para>
+      <para id="x_6a1">Une chose magnifique au sujet des services
+        d'hébergement comme <ulink
+          url="http://bitbucket.org/">Bitbucket</ulink> est qu'ils ne font
+        pas seulement gérer les détails minutieux de la configuration du
+        serveur, tels que les comptes utilisateur, l'authentification, les
+        protocoles sécurisés, ils fournissent aussi une infrastructure
+        additionnelle pour faire en sorte que ce modèle fonctionne
+        bien.</para>
 
-      <para id="x_6a2">For instance, a well-engineered hosting service will let
-	people clone their own copies of a repository with a single
-	click.  This lets people work in separate spaces and share
-	their changes when they're ready.</para>
+      <para id="x_6a2">Par exemple, un service d'hébergement bien conçu
+        laissera les personnes cloner leurs copies d'un dépôt à l'aide d'un
+        simple click. Ceci laisse les personnes travailler dans des espaces
+        séparés et partager leurs changements lorsqu'ils sont prêts.</para>
 
-      <para id="x_6a3">In addition, a good hosting service will let people
-	communicate with each other, for instance to say <quote>there
-	  are changes ready for you to review in this
-	  tree</quote>.</para>
+      <para id="x_6a3">De plus, un bon service d'hébergement laissera les
+        personnes communiquer ensemble, par exemple pour dire <quote>Il y a
+          des changements prêts pour toi pour relecture dans cet
+          arbre</quote>.</para>
+        
     </sect2>
 
     <sect2>
-      <title>Working with multiple branches</title>
+      <title>Travailler avec plusieurs branches</title>
 
-      <para id="x_45d">Projects of any significant size naturally tend to make
-	progress on several fronts simultaneously.  In the case of
-	software, it's common for a project to go through periodic
-	official releases.  A release might then go into
-	<quote>maintenance mode</quote> for a while after its first
-	publication; maintenance releases tend to contain only bug
-	fixes, not new features.  In parallel with these maintenance
-	releases, one or more future releases may be under
-	development.  People normally use the word
-	<quote>branch</quote> to refer to one of these many slightly
-	different directions in which development is
-	proceeding.</para>
+      <para id="x_45d">Les projets d'une taille significative ont tendance à
+        avancer sur plusieurs fronts en même temps. Dans le cas de logiciel,
+        il est commun qu'un projet sorte périodiquement des releases
+        officielles. Une release devrait ensuite aller dans le <quote>mode de
+          maintenance</quote> pour un moment après sa première publication ;
+        les releases de maintenance tendent à contenir seulement des
+        corrections de bugs, et non de nouvelles fonctionnalités. En
+        parallèle de ces releases de maintenance, une ou plusieurs futures
+        releases doivent être en cours de développement. Les gens utilisent
+        en général le mot <quote>branche</quote> pour référer à l'une de ces
+        nombreuses directions légèrement différentes dans lesquelles le
+        développement évolue.</para>
 
-      <para id="x_45e">Mercurial is particularly well suited to managing a number
-	of simultaneous, but not identical, branches.  Each
-	<quote>development direction</quote> can live in its own
-	central repository, and you can merge changes from one to
-	another as the need arises.  Because repositories are
-	independent of each other, unstable changes in a development
-	branch will never affect a stable branch unless someone
-	explicitly merges those changes into the stable branch.</para>
+      <para id="x_45e">Mercurial est particulièrement bien adapté pour gérer
+        plusieurs branches simultanées mais non identiques. Chaque
+        <quote>direction de développement</quote> peut vivre dans son propre
+        dépôt central, et vous pouvez récupérez les changements de l'un ou
+        l'autre lorsque le besoin s'en fait sentir. Parce que les dépôts sont
+        indépendant les un des autres, les modifications instables dans une
+        branche de développement n'affecteront jamais une branche stable,
+        sauf si quelqu'un fusionne (merge) explicitement ces changements dans
+        la branche stable.</para>
 
-      <para id="x_45f">Here's an example of how this can work in practice.  Let's
-	say you have one <quote>main branch</quote> on a central
-	server.</para>
+      <para id="x_45f">Voici un exemple sur comment cela peut se passer en
+        pratique. Disons que vous avez une <quote>branche principale</quote>
+        sur un serveur central.</para>
 
       &interaction.branching.init;
 
-      <para id="x_460">People clone it, make changes locally, test them, and push
-	them back.</para>
+      <para id="x_460">Les contributeurs le clonent, y apportent localement
+        des modifications, les testent et envoient (push) en retour leurs
+        changements.</para>
 
-      <para id="x_461">Once the main branch reaches a release milestone, you can
-	use the <command role="hg-cmd">hg tag</command> command to
-	give a permanent name to the milestone revision.</para>
+      <para id="x_461">Une fois que la branche principale atteint une étape
+        assez importante pour une release, vous pouvez utiliser la commande
+        <command role="hg-cmd">hg tag</command> pour donner un nom permanent
+        à cette étape de révision.</para>
+    
+      &interaction.branching.tag;
 
-	&interaction.branching.tag;
-
-      <para id="x_462">Let's say some ongoing
-	development occurs on the main branch.</para>
+      <para id="x_462">Disons que du developpement continue a lieu sur la
+        branche principale.</para>
 
       &interaction.branching.main;
 
-      <para id="x_463">Using the tag that was recorded at the milestone, people
-	who clone that repository at any time in the future can use
-	<command role="hg-cmd">hg update</command> to get a copy of
-	the working directory exactly as it was when that tagged
-	revision was committed.</para>
+      <para id="x_463">En utilisant le tag qui enregistre l'étape importante,
+        les gens qui clonenent ce dépôt peuvent à tout moment dans le futur
+        utiliser la commande <command role="hg-cmd">hg update</command> pour
+        avoir une copie du répertoire de travail exactement comme il était
+        lorsque cette révision "tag" a été committée.</para>
 
       &interaction.branching.update;
 
-      <para id="x_464">In addition, immediately after the main branch is tagged,
-	we can then clone the main branch on the server to a new
-	<quote>stable</quote> branch, also on the server.</para>
+      <para id="x_464">De plus, immédiatement après que la branche principale
+        soit taggée, nous pouvons maintenant cloner la branche principale sur
+        le serveur vers une nouvelle branche <quote>stable</quote> sur le
+        même serveur.</quote>
 
       &interaction.branching.clone;
 
-      <para id="x_465">If we need to make a change to the stable
-	branch, we can then clone <emphasis>that</emphasis>
-	repository, make our changes, commit, and push our changes
-	back there.</para>
+      <para id="x_465">Si nous avons besoin d'effectuer des modifications à
+        la branche stable, nous pouvons alors cloner <emphasis>ce</emphasis>
+        dépôt, effectuer nos modifications, committer, et envoyer nos
+        changements en retour là bas.</para>
 
       &interaction.branching.stable;
 
-      <para id="x_466">Because Mercurial repositories are independent, and
-	Mercurial doesn't move changes around automatically, the
-	stable and main branches are <emphasis>isolated</emphasis>
-	from each other.  The changes that we made on the main branch
-	don't <quote>leak</quote> to the stable branch, and vice
-	versa.</para>
+      <para id="x_466">Puisque les dépôts Mercurial sont indépendants, et que
+        Mercurial ne déplace pas les changements automatiquement, les
+        branches stable et principale sont <emphasis>isolées</emphasis> l'une
+        de l'autre. Les changements qui sont faits à la branche principale ne
+        <quote>fuient</quote> pas vers la branche stable, et vice
+        versa.</para>
 
-      <para id="x_467">We'll often want all of our bugfixes on the stable
-	branch to show up on the main branch, too.  Rather than
-	rewrite a bugfix on the main branch, we can simply pull and
-	merge changes from the stable to the main branch, and
-	Mercurial will bring those bugfixes in for us.</para>
+      <para id="x_467">Nous allons souvent avoir envie que toutes nos
+        correction de bugs sur la branche stable soient reportées sur la
+        branche principale. Plutôt que de réécrire une correction de bug pour
+        la branche principale, nous pouvons simplement récupérer (pull) et
+        fusionner (merge) les changements de la branche stable vers la
+        branche principal, et Mercurial se débrouillera pour rapporter ces
+        corrections de bugs pour nous.</para>
 
       &interaction.branching.merge;
 
-      <para id="x_468">The main branch will still contain changes that
-	are not on the stable branch, but it will also contain all of
-	the bugfixes from the stable branch.  The stable branch
-	remains unaffected by these changes, since changes are only
-	flowing from the stable to the main branch, and not the other
-	way.</para>
+      <para id="x_468">La branche principale contiendra toujours des
+        changements qui ne sont pas dans la branche stable, mais elle
+        contiendra aussi les corrections de bugs de la branche stable. La
+        branche stable restera non affectée par ces changements, tant qu'ils
+        coulent de la branche stable vers la branche principale, et non dans
+        l'autre sens.</para>
     </sect2>
 
     <sect2>
       <title>Feature branches</title>
 
-      <para id="x_469">For larger projects, an effective way to manage change is
-	to break up a team into smaller groups.  Each group has a
-	shared branch of its own, cloned from a single
-	<quote>master</quote> branch used by the entire project.
-	People working on an individual branch are typically quite
-	isolated from developments on other branches.</para>
+      <para id="x_469">Pour de plus gros projets, une façon efficace de gérer
+        les changements est de casser l'équipe en plus pettis groupes. Chaque
+        groupe a une branche partagée qui lui est attitrée, clonée à partir
+        d'une unique branche <quote>principale</quote> utilisée pour le
+        projet entier. Les personnes travaillant sur une branche individuelle
+        sont typiquement isolées des développements sur les autres
+        branches.</para>
 
       <figure id="fig:collab:feature-branches">
-	<title>Feature branches</title>
-	<mediaobject>
-	  <imageobject><imagedata width="100%" fileref="figs/feature-branches.png"/></imageobject>
-	  <textobject><phrase>XXX add text</phrase></textobject>
-	</mediaobject>
+        <title>Feature branches</title>
+        <mediaobject>
+          <imageobject><imagedata width="100%" fileref="figs/feature-branches.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject>
       </figure>
 
-      <para id="x_46b">When a particular feature is deemed to be in suitable
-	shape, someone on that feature team pulls and merges from the
-	master branch into the feature branch, then pushes back up to
-	the master branch.</para>
+      <para id="x_46b">Lorsqu'une fonctionnalité particulière est réputée
+        pour être dans une forme adaptée, quelqu'un de l'équipe qui s'occupe
+        de cette fonctionnalité récupère les changements (pull) à partir de
+        la branche principale vers la branche de cette fonctionnalité,
+        fusionne (merge) et renvoie (push) le tout vers la branche
+        principale.</para>
     </sect2>
 
     <sect2>
-      <title>The release train</title>
+      <title>Le train des releases</title>
+<!-- J'ai laissé train en traduction à train mais peut être que suite, file,
+... sont des mots qui conviennent mieux ? A méditer -->
 
-      <para id="x_46c">Some projects are organized on a <quote>train</quote>
-	basis: a release is scheduled to happen every few months, and
-	whatever features are ready when the <quote>train</quote> is
-	ready to leave are allowed in.</para>
+      <para id="x_46c">Certains projets sont organisés comme un
+        <quote>train</quote> basique : une release est planifiée tous les
+        quelques mois, et, toutes les fonctionnalités disponibles lorsque le
+        <quote>train</quote> est prêt à s'arrêter sont autorisées ici.
 
-      <para id="x_46d">This model resembles working with feature branches.  The
-	difference is that when a feature branch misses a train,
-	someone on the feature team pulls and merges the changes that
-	went out on that train release into the feature branch, and
-	the team continues its work on top of that release so that
-	their feature can make the next release.</para>
+      <para id="x_46d">Ce modèle ressemble à travailler avec des branches de
+        fonctionnalités. La différence est que lorsqu'une branche de
+        fonctionnalité rate le train, quelqu'un de l'équipe qui travaille sur
+        cette fonctionnalité récupère (pull) et fusionne (merge) ce qui a été
+        ajouté à la release du train dans la branche de la fonctionnalité,
+        puis, l'équipe continue son travail au dessus de cette release afin
+        que leur fonctionnalité puisse être ajoutée à la prochaine
+        release.</para>
     </sect2>
 
     <sect2>
-      <title>The Linux kernel model</title>
+      <title>Le modèle du Noyau Linux</title>
 
-      <para id="x_46e">The development of the Linux kernel has a shallow
-	hierarchical structure, surrounded by a cloud of apparent
-	chaos.  Because most Linux developers use
-	<command>git</command>, a distributed revision control tool
-	with capabilities similar to Mercurial, it's useful to
-	describe the way work flows in that environment; if you like
-	the ideas, the approach translates well across tools.</para>
+      <para id="x_46e">Le développement du noyau Linux est doté d'une
+        structure hiérarchique superficielle, entourée par un nuage de chaos
+        apparent. Parce que la plupart des développeurs Linux utilisent
+        <command>git</command>, un outil distribué de gestion de révisions
+        avec des capacités similaires à celles de Mercurial, il est utile de
+        décrire comment le travail se déroule dans cet environnement ; si
+        vous aimez ces idées, l'approche se traduit correctement à travers
+        les outils.</para>
 
-      <para id="x_46f">At the center of the community sits Linus Torvalds, the
-	creator of Linux.  He publishes a single source repository
-	that is considered the <quote>authoritative</quote> current
-	tree by the entire developer community. Anyone can clone
-	Linus's tree, but he is very choosy about whose trees he pulls
-	from.</para>
+      <para id="x_46f">Au centre de la communauté siège Linux Torvalds, le
+        créateur de Linux. Il publie un unique dépôt de sources qui est
+        considéré comme faisant <quote>authorité</quote> sur l'arborescence
+        par la communauté entière de développeurs. Tout le monde peut cloner
+        l'arbre de Linus, mais il est très difficile d'être choisi pour que
+        ses changements soient intégrés à l'arbre principal.</para>
 
-      <para id="x_470">Linus has a number of <quote>trusted lieutenants</quote>.
-	As a general rule, he pulls whatever changes they publish, in
-	most cases without even reviewing those changes.  Some of
-	those lieutenants are generally agreed to be
-	<quote>maintainers</quote>, responsible for specific
-	subsystems within the kernel.  If a random kernel hacker wants
-	to make a change to a subsystem that they want to end up in
-	Linus's tree, they must find out who the subsystem's
-	maintainer is, and ask that maintainer to take their change.
-	If the maintainer reviews their changes and agrees to take
-	them, they'll pass them along to Linus in due course.</para>
+      <para id="x_470">Linus a plusieurs <quote>leutenants de
+          confiance</quote>. Comme règle générale, il récupère (pull) tous
+        les changements qu'ils publient, dans la plupart des cas sans même
+        relire ces modifications. Certains de ces lieutenants sont
+        généralement autorisés à être <quote>mainteneurs</quote>,
+        responsables pour un sous-système spécifique du noyau. Si un kernel
+        hacker aléatoire veut apporter des modification au sous-système
+        qu'ils veut voir intégré à l'arbre de Linus, il doit trouver qui est
+        le mainteneur du sous-système, et lui demander de récupérer ses
+        changements. Si le mainteneur relit ses changements et les accepte,
+        ils seront transmis à Linus le moment venu.</para>
 
-      <para id="x_471">Individual lieutenants have their own approaches to
-	reviewing, accepting, and publishing changes; and for deciding
-	when to feed them to Linus.  In addition, there are several
-	well known branches that people use for different purposes.
-	For example, a few people maintain <quote>stable</quote>
-	repositories of older versions of the kernel, to which they
-	apply critical fixes as needed.  Some maintainers publish
-	multiple trees: one for experimental changes; one for changes
-	that they are about to feed upstream; and so on.  Others just
-	publish a single tree.</para>
+      <para id="x_471">Les lieutenants individuels ont leur propre approche
+        pour relire, accepter et publier les changements ; et pour décider
+        quand les apporter à Linus. De plus, il y a plusieurs branches
+        connues que les personnes utilisent pour différentes choses.
+        Par exemple, quelques personnes maintiennent des dépôts
+        <quote>stables</quote> de leurs versions du noyau, pour lesquels ils
+        apportent des corrections critiques lorsque nécessaire. Certains
+        mainteneurs publient plusieurs arbres : l'un pour les changements
+        expérimentaux, l'un pour les changements qu'ils vont faire remonter,
+        etc. D'autres ne publient qu'un unique arbre.</para>
 
-      <para id="x_472">This model has two notable features.  The first is that
-	it's <quote>pull only</quote>.  You have to ask, convince, or
-	beg another developer to take a change from you, because there
-	are almost no trees to which more than one person can push,
-	and there's no way to push changes into a tree that someone
-	else controls.</para>
+      <para id="x_472">Ce modèle a deux caractéristiques remarquables. La
+        première est qu'il s'agit de <quote>pull seulement</quote>. Vous
+        devez demander, convaincre, ou mendier au près d'un autre développeur
+        pour prendre vos modifications, puiqu'il n'y a vraissemblablement pas
+        d'abre où plus d'une personne peut envoyer des changement (push), et
+        qu'il n'y a pas de possibilité d'envoyer des changements (push) vers
+        un arbre que quelqu'un d'autre contrôle.</para>
 
-      <para id="x_473">The second is that it's based on reputation and acclaim.
-	If you're an unknown, Linus will probably ignore changes from
-	you without even responding.  But a subsystem maintainer will
-	probably review them, and will likely take them if they pass
-	their criteria for suitability. The more <quote>good</quote>
-	changes you contribute to a maintainer, the more likely they
-	are to trust your judgment and accept your changes.  If you're
-	well-known and maintain a long-lived branch for something
-	Linus hasn't yet accepted, people with similar interests may
-	pull your changes regularly to keep up with your work.</para>
+      <para id="x_473">La seconde est que c'est basé sur la réputation et
+        l'acclamation. Si vous êtes un inconnu, Linus va probablement ignorer
+        vos changement sans même répondre. Cependant, un mainteneur de
+        sous-système les relira probablement, et les acceptera sûrement s'ils
+        passent ses critaires d'acceptation. Plus vous contriburez du
+        <quote>bon</quote> code à un mainteneur, et plus celui ci aura
+        confiance en votre jugement pour accepter vos changements. Si vous
+        êtes bien connu et maintenez une branche ancienne pour quelque chose
+        que Linus n'a pas encore accepté, les gens avec un intérêt similaire
+        devraient récupérer vos changements régulièrement pour rester à jour
+        vis à vis de votre travail.</para>
 
-      <para id="x_474">Reputation and acclaim don't necessarily cross subsystem
-	or <quote>people</quote> boundaries.  If you're a respected
-	but specialised storage hacker, and you try to fix a
-	networking bug, that change will receive a level of scrutiny
-	from a network maintainer comparable to a change from a
-	complete stranger.</para>
+      <para id="x_474">La réputation et l'acclamation ne nécessite pas de
+        système croisé ou de limites <quote>personnelles</quote>. Si vous
+        êtes respectés mais que vous êtes un hacker spécialisé dans la
+        sauvegarde, et que vous tentez de corriger un bug réseau, ce
+        changement recevra un examen approfondu de la part du mainteneur
+        responsable du réseau comparable à celui d'un total étranger.</para>
 
-      <para id="x_475">To people who come from more orderly project backgrounds,
-	the comparatively chaotic Linux kernel development process
-	often seems completely insane.  It's subject to the whims of
-	individuals; people make sweeping changes whenever they deem
-	it appropriate; and the pace of development is astounding.
-	And yet Linux is a highly successful, well-regarded piece of
-	software.</para>
+      <para id="x_475">Pour les personnes qui viennent d'un projet dont
+        l'arrière plan est plus ordonné, le processus chaotique de
+        développement du noyau Linux en comparaison apparaît totalement
+        dément. C'est le sujet de bien des caprices d'individualistes ;
+        des personnes qui balayent les changements même s'ils croient que
+        c'est approprié ; et l'allure du développement de Linux est
+        ahurissant. Et pourtant, Linux est un bout de logiciel d'une grande
+        réussite et bien considéré.</para>
     </sect2>
-
+<!-- TODO : part 1/4 -->
     <sect2>
-      <title>Pull-only versus shared-push collaboration</title>
+      <title>Collaboration pull seulement versus pull partagé</title>
 
       <para id="x_476">A perpetual source of heat in the open source community is
 	whether a development model in which people only ever pull
@@ -777,7 +806,7 @@
 	on (usually 22).  Don't worry about more exotic possibilities
 	for misconfiguration until you've checked these two
 	first.</para>
-
+<!-- TODO : part 2/4 -->
       <para id="x_4a7">If you're using an authentication agent on the client side
 	to store passphrases for your keys, you ought to be able to
 	log into the server without being prompted for a passphrase or
@@ -1152,7 +1181,7 @@ cgi.assign = (".cgi" =&gt; "" )</programlisting>
 	  <literal>lighttpd</literal>.</para>
       </sect3>
     </sect2>
-
+<!-- TODO : part 3/4 -->
     <sect2>
       <title>Sharing multiple repositories with one CGI script</title>
 
@@ -1557,7 +1586,7 @@ users = apache, bobo
     </sect2>
   </sect1>
 </chapter>
-
+<!-- TODO : part 4/4 -->
 <!--
 local variables: 
 sgml-parent-document: ("00book.xml" "book" "chapter")
