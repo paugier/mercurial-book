@@ -442,317 +442,326 @@
         ahurissant. Et pourtant, Linux est un bout de logiciel d'une grande
         réussite et bien considéré.</para>
     </sect2>
-<!-- TODO : part 1/4 -->
+
     <sect2>
       <title>Collaboration pull seulement versus pull partagé</title>
 
-      <para id="x_476">A perpetual source of heat in the open source community is
-	whether a development model in which people only ever pull
-	changes from others is <quote>better than</quote> one in which
-	multiple people can push changes to a shared
-	repository.</para>
+      <para id="x_476">Une source perpétuelle de heurs dans une communauté
+        opensource est si un modèle de développement est celui où les
+        personnes ne peuvent que récupérer (pull) les changements ou l'autre
+        <quote>meilleur</quote> dans lequel de multiples personnes peuvent
+        envoyer (push) leurs changements vers un dépôt partagé.</para>
 
-      <para id="x_477">Typically, the backers of the shared-push model use tools
-	that actively enforce this approach.  If you're using a
-	centralised revision control tool such as Subversion, there's
-	no way to make a choice over which model you'll use: the tool
-	gives you shared-push, and if you want to do anything else,
-	you'll have to roll your own approach on top (such as applying
-	a patch by hand).</para>
+      <para id="x_477">Typiquement, les bailleurs de fonds du modèle push
+        partagé utilisent des outils qui renforcent activement cette
+        approche. Si vous utilisez un outil centralisé de gestion de révision
+        comme Subversion, il n'y a pas la possibilité de choisir quel modèle
+        utiliser : l'outil vous fournit un push partagé, et si vous voulez
+        faire quelque chose d'autre, vous avez à changer votre propre
+        approche à la base (comme appliquer les patchs manuellement).</para>
 
-      <para id="x_478">A good distributed revision control tool will
-	support both models.  You and your collaborators can then
-	structure how you work together based on your own needs and
-	preferences, not on what contortions your tools force you
-	into.</para>
+      <para id="x_478">Un bon outil de gestion distribuée de révisions doit
+        supporter les deux modèles. Vous et vos collaborateurs pouvez ensuite
+        structurer la façon dont vous travaillez ensemble en vous basant sur
+        vos besoins et vos préférences, et non sur les contortions que vos
+        outils vous forcent à effectuer.</para>
     </sect2>
     <sect2>
-      <title>Where collaboration meets branch management</title>
+      <title>Lorsque la collaboration rencontre la gestion de branches</title>
 
-      <para id="x_479">Once you and your team set up some shared
-	repositories and start propagating changes back and forth
-	between local and shared repos, you begin to face a related,
-	but slightly different challenge: that of managing the
-	multiple directions in which your team may be moving at once.
-	Even though this subject is intimately related to how your
-	team collaborates, it's dense enough to merit treatment of its
-	own, in <xref linkend="chap:branch"/>.</para>
+      <para id="x_479">Lorsque vous et votre équipe configurez des dépôts
+        partagés et commencez à propager vos changement dans tous les sens
+        entre les dépôts locaux et partagés, vous commencez à être face à un
+        challenge apparenté, mais un peu différent : celui de gérer les
+        multiples directions vers lesquelles votre équipe pourrait aller au
+        même moment. Même si ce sujet est intimement lié à la façon dont
+        votre équipe collabore, il est suffisement dence pour mériter un
+        traitement à part dans <xref linkend="chap:branch"/>.</para>
     </sect2>
   </sect1>
 
   <sect1>
-    <title>The technical side of sharing</title>
+    <title>Le coté technique du partage</title>
 
-    <para id="x_47a">The remainder of this chapter is devoted to the question of
-      sharing changes with your collaborators.</para>
+    <para id="x_47a">Le reste de ce chapitre est dévoué à la question du
+      partage des changements avec vos collaborateurs.</para>
   </sect1>
 
   <sect1 id="sec:collab:serve">
-    <title>Informal sharing with <command role="hg-cmd">hg
-	serve</command></title>
+    <title>Partage informel avec <command role="hg-cmd">hg
+    serve</command></title>
 
-    <para id="x_47b">Mercurial's <command role="hg-cmd">hg serve</command>
-      command is wonderfully suited to small, tight-knit, and
-      fast-paced group environments.  It also provides a great way to
-      get a feel for using Mercurial commands over a network.</para>
+    <para id="x_47b">La commande <command role="hg-cmd">hg serve</command> de
+      Mercurial est magnifiquement conçue pour un environnement de petit
+      groupe, soudé et rapide. Elle fournit aussi un très bon moyen d'avoir
+      un sentiment de l'utilisation des commandes Meruciral sur un
+      réseau.</para>
 
-    <para id="x_47c">Run <command role="hg-cmd">hg serve</command> inside a
-      repository, and in under a second it will bring up a specialised
-      HTTP server; this will accept connections from any client, and
-      serve up data for that repository until you terminate it.
-      Anyone who knows the URL of the server you just started, and can
-      talk to your computer over the network, can then use a web
-      browser or Mercurial to read data from that repository.  A URL
-      for a <command role="hg-cmd">hg serve</command> instance running
-      on a laptop is likely to look something like
+    <para id="x_47c">Exécutez <command role="hg-cmd">hg serve</command> à
+      l'intérieur d'un dépôtn et en moins d'une seconde, cela mettra en place
+      un serveur HTTP spécialisé ; qui va accepter les connexions de tout
+      client, et servir les donnée pour ce dépôt jusqu'à ce que vous le
+      terminiez. Toute personne qui connaît l'URL du serveur que vous venez
+      de démarrer, peut ensuite utiliser un navigateur web ou Mercurial pour
+      lire les données de ce dépôt. Une URL pour une instance exécutée de 
+      <command role="hg-cmd">hg serve</command> sur un ordinateur portable
+      ressemblera vraissemblablement à
       <literal>http://my-laptop.local:8000/</literal>.</para>
 
-    <para id="x_47d">The <command role="hg-cmd">hg serve</command> command is
-      <emphasis>not</emphasis> a general-purpose web server. It can do
-      only two things:</para>
+    <para id="x_47d">La commande <command role="hg-cmd">hg serve</command>
+      <emphasis>n'</emphasis>est <emphasis>pas</emphasis> un serveur web
+      générique. Il ne peut faire que deux choses : </para>
     <itemizedlist>
-      <listitem><para id="x_47e">Allow people to browse the history of the
-	  repository it's serving, from their normal web
-	  browsers.</para>
+      <listitem><para id="x_47e">Autoriser les personnes à explorer
+          l'historique du dépôt qu'il rend accessible, à partir d'un
+          navigateur web normal.</para>
       </listitem>
-      <listitem><para id="x_47f">Speak Mercurial's wire protocol, so that people
-	  can <command role="hg-cmd">hg clone</command> or <command
-	    role="hg-cmd">hg pull</command> changes from that
-	  repository.</para>
+      <listitem><para id="x_47f">Discuter à travers le protocole de
+          communication de Mercurial, ainsi, les personnes peuvent exécuter <command
+            role="hg-cmd">hg clone</command> ou <command role="hg-cmd">hg
+            pull</command> sur les changements de ce dépôt.</para>
       </listitem></itemizedlist>
-    <para id="x_480">In particular, <command role="hg-cmd">hg serve</command>
-      won't allow remote users to <emphasis>modify</emphasis> your
-      repository.  It's intended for read-only use.</para>
+    <para id="x_480">En particulier, <command role="hg-cmd">hg serve</command>
+      ne permettra pas aux utilisateurs distants de
+      <emphasis>modifier</emphasis> votre dépôt. C'est destiné à une
+      utilisation en lecture seule.</para>
 
-    <para id="x_481">If you're getting started with Mercurial, there's nothing to
-      prevent you from using <command role="hg-cmd">hg serve</command>
-      to serve up a repository on your own computer, then use commands
-      like <command role="hg-cmd">hg clone</command>, <command
-	role="hg-cmd">hg incoming</command>, and so on to talk to that
-      server as if the repository was hosted remotely. This can help
-      you to quickly get acquainted with using commands on
-      network-hosted repositories.</para>
+    <para id="x_481">Si vous commencez avec Mercurial, il n'y a rien qui vous
+      empèche d'utiliser <command role="hg-cmd">hg serve</command> pour
+      publier un dépôt sur votre ordinateur, utilisez ensuite des commandes
+      telles que <command role="hg-cmd">hg clone</command>, <command
+        role="hg-cmd">hg incoming</command>, et ainsi de suite pour parler à
+      ce serveur comme si ce dépôt était hébergé à distance. Ceci peut vous
+      aider à rapidement familiarisé avec les commandes sur les dépôts
+      hébergés sur un réseau.</para>
 
     <sect2>
-      <title>A few things to keep in mind</title>
+      <title>Quelques choses à garder à l'esprit</title>
 
-      <para id="x_482">Because it provides unauthenticated read access to all
-	clients, you should only use <command role="hg-cmd">hg
-	  serve</command> in an environment where you either don't
-	care, or have complete control over, who can access your
-	network and pull data from your repository.</para>
+      <para id="x_482">Puisque ceci fournit un accès en lecture sans
+        authentification à tous les clients, vous devriez utiliser la
+        commande <command role="hg-cmd">hg serve</command> dans un
+        environnement dans lequel vous ne vous inquiétez pas ou où vous avez
+        tout contrôle sur qui peut avoir accès au réseau et récupérer les
+        données de votre dépôt.</para>
 
-      <para id="x_483">The <command role="hg-cmd">hg serve</command> command
-	knows nothing about any firewall software you might have
-	installed on your system or network.  It cannot detect or
-	control your firewall software.  If other people are unable to
-	talk to a running <command role="hg-cmd">hg serve</command>
-	instance, the second thing you should do
-	(<emphasis>after</emphasis> you make sure that they're using
-	the correct URL) is check your firewall configuration.</para>
+      <para id="x_483">La commande <command role="hg-cmd">hg serve</command>
+        ne connaît sait rien sur un quelconque firewall que vous auriez
+        installé sur votre système ou réseau. Elle ne peut pas détecter ou
+        contrôler votre logiciel de pare-feu. Si d'autre personnes ont la
+        possibilité de dialoguer avec une instance de <command
+          role="hg-cmd">hg serve</command> ma seconde chose que vous devriez
+        faire (<emphasis>après</emphasis> être sûr qu'ils utilisent l'URL
+        correcte) est de vérifier la configuration de votre firewall.</para>
 
-      <para id="x_484">By default, <command role="hg-cmd">hg serve</command>
-	listens for incoming connections on port 8000.  If another
-	process is already listening on the port you want to use, you
-	can specify a different port to listen on using the <option
-	  role="hg-opt-serve">-p</option> option.</para>
+      <para id="x_484">Par défaut, <command role="hg-cmd">hg serve</command>
+        écoute pour les connexions entrantes sur le port 8000. Si un autre
+        processus est déjà en train d'écouter sur le port que vous voulez
+        écouter, vous pouvez spécifier un port différent sur lequel écouter à
+        l'aide de l'option <option role="hg-opt-serve">-p</option>.</para>
 
-      <para id="x_485">Normally, when <command role="hg-cmd">hg serve</command>
-	starts, it prints no output, which can be a bit unnerving.  If
-	you'd like to confirm that it is indeed running correctly, and
-	find out what URL you should send to your collaborators, start
-	it with the <option role="hg-opt-global">-v</option>
-	option.</para>
+      <para id="x_485">Normalement, lorsque <command role="hg-cmd">hg
+          serve</command> se lance, il n'affiche aucune sortie, ce qui peut
+        être un peu énervant. Si vous voulez une confirmation que tout s'est
+        déroulé correctement, et connaître l'URL que vous devriez fournir à
+        vos collaborateurs, démarrez avec l'option <option
+          role="hg-opt-global">-v</option>.</para>
     </sect2>
   </sect1>
 
   <sect1 id="sec:collab:ssh">
-    <title>Using the Secure Shell (ssh) protocol</title>
+    <title>Utiliser le protocole Secure Shell (ssh)</title>
 
-    <para id="x_486">You can pull and push changes securely over a network
-      connection using the Secure Shell (<literal>ssh</literal>)
-      protocol.  To use this successfully, you may have to do a little
-      bit of configuration on the client or server sides.</para>
+    <para id="x_486">Vous pouvez récupérer (pull) ou envoyer (push) des
+      changements de façon sécurisé au dessus d'une connexion utilisatnt le
+      protocole Secure Shell (<literal>ssh</literal>). Pour l'utiliser avec
+      succès, vous pouriez avoir à faire un peu de configuration du coté
+      client ou serveur.</para>
 
-    <para id="x_487">If you're not familiar with ssh, it's the name of
-      both a command and a network protocol that let you securely
-      communicate with another computer.  To use it with Mercurial,
-      you'll be setting up one or more user accounts on a server so
-      that remote users can log in and execute commands.</para>
+    <para id="x_487">Si vous n'êtes pas familiers avec ssh, c'est le nom de
+      la commande et d'un protocole réseau qui vous permet d'établir une
+      communication sécurisée avec un autre ordinateur. Pour l'utiliser avec
+      Mercurial, vous allez configurer un ou plusieurs comptes utilisateur
+      sur un serveur, comme ça, les utilisateurs distants peuvent logger et
+      exécuter les commandes.</para>
 
-    <para id="x_488">(If you <emphasis>are</emphasis> familiar with ssh, you'll
-      probably find some of the material that follows to be elementary
-      in nature.)</para>
+    <para id="x_488">(Si vous <emphasis>êtes</emphasis> familiers avec ssh,
+      vous allez probablement trouver quelques une des informations qui
+      suivent élémentaires par nature.)</para>
 
     <sect2>
-      <title>How to read and write ssh URLs</title>
+      <title>Comment lire et écrire des URLs ssh</title>
 
-      <para id="x_489">An ssh URL tends to look like this:</para>
+      <para id="x_489">Une URL ssh tent à ressembler à ceci :</para>
       <programlisting>ssh://bos@hg.serpentine.com:22/hg/hgbook</programlisting>
       <orderedlist>
-	<listitem><para id="x_48a">The <quote><literal>ssh://</literal></quote>
-	    part tells Mercurial to use the ssh protocol.</para>
-	</listitem>
-	<listitem><para id="x_48b">The <quote><literal>bos@</literal></quote>
-	    component indicates what username to log into the server
-	    as.  You can leave this out if the remote username is the
-	    same as your local username.</para>
-	</listitem>
-	<listitem><para id="x_48c">The
-	    <quote><literal>hg.serpentine.com</literal></quote> gives
-	    the hostname of the server to log into.</para>
-	</listitem>
-	<listitem><para id="x_48d">The <quote>:22</quote> identifies the port
-	    number to connect to the server on.  The default port is
-	    22, so you only need to specify a colon and port number if
-	    you're <emphasis>not</emphasis> using port 22.</para>
-	</listitem>
-	<listitem><para id="x_48e">The remainder of the URL is the local path to
-	    the repository on the server.</para>
-	</listitem></orderedlist>
+        <listitem><para id="x_48a">Le préfixe
+            <quote><literal>ssh://</literal></quote> dit à Mercurial
+            d'utiliser le protocole ssh.</para>
+        </listitem>
+        <listitem><para id="x_48b">Le composant
+            <quote><literal>bos@</literal></quote> indique que le nom
+            d'utilisateur à logger sur le serveur. Vous pouvez le laisser
+            vide si le nom d'utilisateur sur le serveur distant est le même
+            que localement.</para>
+        </listitem>
+        <listitem><para id="x_48c">La partie
+            <quote><literal>hg.serpentine.com</literal></quote> donne le nom
+            d'hôte du serveur sur lequel se logger.</para>
+        </listitem>
+        <listitem><para id="x_48d">Le <quote>:22</quote> identifie le numéro
+            de port où se connecter au serveur. Le port par défaut est 22,
+            donc vous n'avez besoin de spécifier ceci que si vous
+            <emphasis>n'</emphasis>utilisez <emphasis>pas</emphasis> le port
+            22.</para>
+        </listitem>
+        <listitem><para id="x_48e">Le reste de l'URL est le chemin local du
+            dépôt sur le serveur.</para></listitem></orderedlist>
+    
+      <para id="x_48f">Il y a beaucoup de place pour la confusion sur le
+        chemin du composant d'une URL ssh puisqu'il n'y a pas de façon
+        standard pour les outils de l'intérpréter. Certains programmes se
+        comportent différemment des autres lorsqu'ils traient ces chemins. Il
+        ne s'agit pas d'une situation idéale, mais ce n'est pas prêt de
+        changer. Lisez SVP les prochains paragraphes avec attention.</para>
 
-      <para id="x_48f">There's plenty of scope for confusion with the path
-	component of ssh URLs, as there is no standard way for tools
-	to interpret it.  Some programs behave differently than others
-	when dealing with these paths. This isn't an ideal situation,
-	but it's unlikely to change.  Please read the following
-	paragraphs carefully.</para>
+      <para id="x_490">Mercurial traite le chemin vers un dépôt sur le
+        serveur comme relatif au répertoire personnel de l'utilisateur sur le
+        serveur distant. Par exemple, si un utilisateur
+        <literal>foo</literal> sur le serveur a un répertoire personnel
+        <filename class="directory">/home/foo</filename>, alors l'URL ssh qui
+        vientient un composant chemin de <filename
+          class="directory">bar</filename> réfère en
+        <emphasis>réalité</emphasis> au répertoire <filename
+          class="directory">/home/foo/bar</filename>.</para>
 
-      <para id="x_490">Mercurial treats the path to a repository on the server as
-	relative to the remote user's home directory.  For example, if
-	user <literal>foo</literal> on the server has a home directory
-	of <filename class="directory">/home/foo</filename>, then an
-	ssh URL that contains a path component of <filename
-	  class="directory">bar</filename> <emphasis>really</emphasis>
-	refers to the directory <filename
-	  class="directory">/home/foo/bar</filename>.</para>
-
-      <para id="x_491">If you want to specify a path relative to another user's
-	home directory, you can use a path that starts with a tilde
-	character followed by the user's name (let's call them
-	<literal>otheruser</literal>), like this.</para>
+      <para id="x_491">Si vous voulez spécifier un chemin relatif à au
+        répertoire personnel d'un autre utilisateur, vous pouvez préciser un
+        chemin qui commence à l'aide du caractère tilde suivit du nom de
+        l'utilisateur (appelons le <literal>otheruser</literal>),
+        ainsi.</para>
       <programlisting>ssh://server/~otheruser/hg/repo</programlisting>
 
-      <para id="x_492">And if you really want to specify an
-	<emphasis>absolute</emphasis> path on the server, begin the
-	path component with two slashes, as in this example.</para>
+      <para id="x_492">Et si vous voulez vraiment spécifier un chemin
+        <emphasis>absolu</emphasis> sur le serveur, débutez la composante
+        chemin par deux slashs comme dans cet exemple.</para>
       <programlisting>ssh://server//absolute/path</programlisting>
     </sect2>
 
     <sect2>
-      <title>Finding an ssh client for your system</title>
+      <title>Trouver un client ssh pour votre système</title>
 
-      <para id="x_493">Almost every Unix-like system comes with OpenSSH
-	preinstalled.  If you're using such a system, run
-	<literal>which ssh</literal> to find out if the
-	<command>ssh</command> command is installed (it's usually in
-	<filename class="directory">/usr/bin</filename>).  In the
-	unlikely event that it isn't present, take a look at your
-	system documentation to figure out how to install it.</para>
+      <para id="x_493">La plupart des systèmes du type Unix arrivent avec
+        OpenSSH préinstallé. Si vous utilisez un tel système, utilisez
+        <literal>which ssh</literal> pour trouver où la commande
+        <command>ssh</command> est installée (il s'agit généralement de
+        <filename class="directory">/usr/bin</filename>). Dans le cas peu
+        probable où il ne serait pas présent, regarder à la documentation de
+        votre système pour voir comment l'installer.</para>
 
-      <para id="x_494">On Windows, the TortoiseHg package is bundled
-	with a version of Simon Tatham's excellent
-	<command>plink</command> command, and you should not need to
-	do any further configuration.</para>
+      <para id="x_494">Sous Windows, le packetage ToirtoiseHg est livré avec
+        une version de l'excellente commande <command>plink</command> de
+        Simon Tatham's, et ne devrait pas avoir besoin de plus de
+        configuration.</para>
     </sect2>
 
     <sect2>
-      <title>Generating a key pair</title>
+      <title>Générer une paire de clef</title>
 
-      <para id="x_499">To avoid the need to repetitively type a
-	password every time you need to use your ssh client, I
-	recommend generating a key pair.</para>
+      <para id="x_499">Pour éviter d'avoir à chaque fois taper un mot de
+        passe lorsque vous utilisez votre client ssh, je recommande le fait
+        de générer une paire de clefs.</para>
 
       <tip>
-	<title>Key pairs are not mandatory</title>
-
-	<para id="x_6a4">Mercurial knows nothing about ssh authentication or key
-	  pairs.  You can, if you like, safely ignore this section and
-	  the one that follows until you grow tired of repeatedly
-	  typing ssh passwords.</para>
+        <title>Les paires de clefs ne sont pas obligatoires</title>
+      
+        <para id="x_6a4">Mercurial ne sait rien du tout de l'authentification
+          de ssh ou de la paire de clefs. Vous pouvez, si vous le désirez,
+          ignorer sans risque cette section et ce qu'il suit jusqu'à ce que
+          vous soyez fatigué de constament retaper des mots de passe
+          ssh.</para>
       </tip>
 
       <itemizedlist>
-	<listitem>
-	  <para id="x_6a5">On a Unix-like system, the
-	    <command>ssh-keygen</command> command will do the
-	    trick.</para>
-	  <para id="x_6a6">On Windows, if you're using TortoiseHg, you may need
-	    to download a command named <command>puttygen</command>
-	    from <ulink
-	      url="http://www.chiark.greenend.org.uk/~sgtatham/putty">the 
-	      PuTTY web site</ulink> to generate a key pair.  See
-	    <ulink
-	      url="http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter8.html#pubkey-puttygen">the 
-	      <command>puttygen</command> documentation</ulink> for
-	    details of how use the command.</para>
-	</listitem>
+        <listitem> <para id="x_6a5">Sur un système de type Unix, la commande
+            <command>ssh-keygen</command> fera l'affaire.</para></listitem>
+        <listitem> <para id="x_6a6">Sous Windows, si vous utilisez
+            ToirtoiseHg, vous devriez avoir besoin de télécharger la commande
+            nommée <command>puttygen</command> à partir du <ulink
+              url="http://www.chiark.greenend.org.uk/~sgtatham/putty">site
+              web de PuTTY</ulink> pour générer une paire de clefs.  Référez
+            vous à <ulink
+              url="http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter8.html#pubkey-puttygen">la
+              documentation <command>puttygen</command></ulink> pour les
+            détails sur l'utilisation de cette commande.</para></listitem>
       </itemizedlist>
 
-      <para id="x_49a">When you generate a key pair, it's usually
-	<emphasis>highly</emphasis> advisable to protect it with a
-	passphrase.  (The only time that you might not want to do this
-	is when you're using the ssh protocol for automated tasks on a
-	secure network.)</para>
+      <para id="x_49a">Lorsque vous générez une paire de clefs, il est
+        habituellement <emphasis>autement</emphasis> recommendé de la
+        protéger avec un mot de passe. (Le seul moment où vous pourriez ne
+        pas devoir le faire est lorsque vous utilisez le protocole ssh pour
+        des tâches automatisées sur un réseau sécurisé.)</para>
 
-      <para id="x_49b">Simply generating a key pair isn't enough, however.
-	You'll need to add the public key to the set of authorised
-	keys for whatever user you're logging in remotely as.  For
-	servers using OpenSSH (the vast majority), this will mean
-	adding the public key to a list in a file called <filename
-	  role="special">authorized_keys</filename> in their <filename
-	  role="special" class="directory">.ssh</filename>
-	directory.</para>
+      <para id="x_49b">Le simple fait de générer une paire de clefs n'est
+        cependant pas suffisent. Vous aurez besoin d'ajouter la clef publique
+        à l'ensemble des clefs authorisées pour tout utilisateur que vous
+        utilisez pour vous connecter à distance. Pour les serveurs utilisant
+        OpenSSh (la grande majorité), ceci voudra dire d'ajouter la clef
+        publique à la liste dans un fichier appelé <filename
+          role="special">authorized_keys</filename> dans leur répertoire
+        <filename role="special" class="directory">.ssh</filename>.</para>
 
-      <para id="x_49c">On a Unix-like system, your public key will have a
-	<filename>.pub</filename> extension.  If you're using
-	<command>puttygen</command> on Windows, you can save the
-	public key to a file of your choosing, or paste it from the
-	window it's displayed in straight into the <filename
-	  role="special">authorized_keys</filename> file.</para>
+      <para id="x_49c">Sur un système de type Unix, votre clef publique aura
+        l'extension <filename>.pub</filename>. Si vous utilisez la commande
+        <command>puttygen</command> sous Windows, vous pouvez sauvegarder la
+        clef publique dans un fichier que vous choisissez ou la copier à
+        partir de la fenêtre qui apparait directement dans le fichier
+        <filename role="special">authorized_keys</filename>.</para>
     </sect2>
     <sect2>
-      <title>Using an authentication agent</title>
+      <title>Utiliser un agent d'authentification</title>
 
-      <para id="x_49d">An authentication agent is a daemon that stores
-	passphrases in memory (so it will forget passphrases if you
-	log out and log back in again). An ssh client will notice if
-	it's running, and query it for a passphrase.  If there's no
-	authentication agent running, or the agent doesn't store the
-	necessary passphrase, you'll have to type your passphrase
-	every time Mercurial tries to communicate with a server on
-	your behalf (e.g. whenever you pull or push changes).</para>
+      <para id="x_49d">Un agent d'authentification est un démon qui
+        enregistre les mots de passe en mémoire (il oublira ainsi les mots de
+        passe si vous vous déloggez et reloggez). Un client ssh sera averti
+        si un tel agent est en fonctionnement, et lui demandera un mot de
+        passe. S'il n'y a pas d'agent en fonctionnement, ou si l'agent ne
+        connaît pas le mot de passe nécessaire, vous aurez à taper votre mot
+        de passe chaque fois que Mercurial tente de communiquer avec un
+        serveur en votre nom (ex. lorsque vous faite un pull ou un push sur
+        des changements).</para>
 
-      <para id="x_49e">The downside of storing passphrases in an agent is that
-	it's possible for a well-prepared attacker to recover the
-	plain text of your passphrases, in some cases even if your
-	system has been power-cycled. You should make your own
-	judgment as to whether this is an acceptable risk.  It
-	certainly saves a lot of repeated typing.</para>
+      <para id="x_49e">L'inconveignant de sauvegarder les mots de passes dans
+        un agent est qu'il est possible pour un attaquant bien préparé de
+        retrouver le mot de passe clair, dans certains cas, même si votre
+        système a été redémarré. Vous devriez vous faire votre propre
+        jugement pour savoir si ce risque est acceptable. Ceci vous exempte
+        certainement d'un tas de répétitions.</para>
 
       <itemizedlist>
-	<listitem>
-	  <para id="x_49f">On Unix-like systems, the agent is called
-	    <command>ssh-agent</command>, and it's often run
-	    automatically for you when you log in.  You'll need to use
-	    the <command>ssh-add</command> command to add passphrases
-	    to the agent's store.</para>
-	</listitem>
-	<listitem>
-	  <para id="x_6a7">On Windows, if you're using TortoiseHg, the
-	    <command>pageant</command> command acts as the agent.  As
-	    with <command>puttygen</command>, you'll need to <ulink
-	      url="http://www.chiark.greenend.org.uk/%7Esgtatham/putty/download.html">download 
-	      <command>pageant</command></ulink> from the PuTTY web
-	    site and read <ulink
-	      url="http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter9.html#pageant">its 
-	      documentation</ulink>.  The <command>pageant</command>
-	    command adds an icon to your system tray that will let you
-	    manage stored passphrases.</para>
-	</listitem>
+        <listitem> <para id="x_49f">Sur les systèmes de type Unix, l'agent
+            est appelé <command>ssh-agent</command>, et est souvent lancé
+            automatiquement pour vous lorsque vous vous loggez. Vous aurez
+            besoin d'utiliser la commande <command>ssh-add</command> pour
+            ajouter des mots de passe à l'entrepôt de l'agent.</para>
+        </listitem>
+        <listitem>
+          <para id="x_6a7">Sous Windows, si vous utilisez ToirtoiseHg, la
+            commande <command>pageant</command> agit comme un agent. Comme
+            avec <command>puttygen</command>, vous aurez besoin de <ulink
+              url="http://www.chiark.greenend.org.uk/%7Esgtatham/putty/download.html">télécharger
+              <command>pageant</command></ulink> à partir du site web de
+            PuTTY et lire <ulink
+              url="http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter9.html#pageant">sa
+              documentation</ulink>.  La commande <command>pageant</command>
+            ajoute une icône à votre barre de tâches qui vous permettra de
+            gérer les mots de passe stockés.</para></listitem>
+          <!-- TODO : J'ai traduit system tray par barre des tâches, mais ne
+          conaissant pas windows, je ne suis pas sûr du nom réel. A corriger
+          le cas échéant ! -->
       </itemizedlist>
     </sect2>
-
+<!-- TODO : part 2/4 -->
     <sect2>
       <title>Configuring the server side properly</title>
 
@@ -806,7 +815,6 @@
 	on (usually 22).  Don't worry about more exotic possibilities
 	for misconfiguration until you've checked these two
 	first.</para>
-<!-- TODO : part 2/4 -->
       <para id="x_4a7">If you're using an authentication agent on the client side
 	to store passphrases for your keys, you ought to be able to
 	log into the server without being prompted for a passphrase or
