@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     # Only uncomment this for local testing without Apache.
     # (r'^html/(?P<path>.*)$', 'django.views.static.serve',
     # {'document_root': os.path.realpath(os.path.dirname(
-    #    sys.modules[__name__].__file__) + '/../../en/html'),
+    #    sys.modules[__name__].__file__) + '/../../en/html')}),
 
     # Uncomment this for admin:
     (r'^admin/(.*)', admin.site.root),
