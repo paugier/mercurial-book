@@ -65,10 +65,13 @@ $(document).ready(function() {
   $("p[@id]").each(function() {
     $(this).append(loading($(this).attr("id")));
   });
+  $("table[@id].equation").each(function() {
+    $(this).append(loading($(this).attr("id")));
+  });
   $("pre[@id]").each(function() {
     $(this).after(loading($(this).attr("id")));
   });
-  var chapid = $("div.preface, div.chapter, div.appendix, div.bibliography").attr("id");
+  var chapid = $("body, div.preface, div.chapter, div.appendix, div.bibliography").attr("id");
   $("#chapterfeed").attr("href",
 			 $("#chapterfeed").attr("href") + chapid + "/");
   $.getJSON(location.protocol + "//" + location.host + "/comments/chapter/" +
