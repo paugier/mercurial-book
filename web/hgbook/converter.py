@@ -17,10 +17,13 @@ doc_id = 'MMSC'
 sel = CSSSelector('p, pre, h1, table.equation')
 body = CSSSelector('body')
 
-filename = args[0]
+try:
+    filename = args[0]
+except IndexError:
+    raise IndexError("Usage: %s <path-to-html-file>" % __file__)
+
 tree = etree.parse(filename, html.HTMLParser())
 root = tree.getroot()
-
 
 body(root)[0].set('id', doc_id)
 
