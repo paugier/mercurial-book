@@ -49,7 +49,7 @@ help:
 clean:
 	@rm -fr build hello po/*.mo en/hello en/html en/.validated-00book.xml \
           en/examples/.run en/examples/results en/figs/*-tmp.svg \
-          stylesheets/system-xsl web/index-read.html.in
+          stylesheets/system-xsl web/index-read.html.in /tmp/REV*-hello
 
 	@(for l in $(DBK_LANGUAGES); do \
 	  rm -fr $(subst en/figs/, $$l/figs/, $(images-out)) ;\
@@ -79,10 +79,10 @@ stat:
 
 tidypo:
 ifdef LINGUA
-ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
+  ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
 	msgcat --sort-by-file --width=80 po/$(LINGUA).po > po/$(LINGUA).tmp && \
 	    mv po/$(LINGUA).tmp po/$(LINGUA).po;
-endif
+  endif
 else
 	for po in $(wildcard po/*.po); do \
 	    msgcat --sort-by-file --width=80 $$po > $$po.tmp && mv $$po.tmp $$po; \
@@ -115,7 +115,7 @@ else
 validate: build/$(LINGUA)/source/hgbook.xml
 	xmllint --nonet --noout --postvalid --xinclude $<
 
-ifneq "$(findstring $(LINGUA),$(DBK_LANGUAGES))" ""
+  ifneq "$(findstring $(LINGUA),$(DBK_LANGUAGES))" ""
 $(LINGUA)/examples/.run:
 	if test -x $(LINGUA)/examples/run-example; then \
 	  (cd $(LINGUA)/examples; ./run-example -v -a); \
@@ -129,7 +129,7 @@ build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(subst en/figs/,
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
 	(cd $(LINGUA); xmllint --nonet --noent --xinclude --postvalid --output ../$@.tmp 00book.xml)
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
-else
+  else
 en/examples/.run:
 	(cd en/examples; ./run-example -v -a)
 
@@ -144,7 +144,7 @@ build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images
 	xmllint --nonet --noent --xinclude --postvalid --output $@.tmp en/hgbook.xml.$(LINGUA)
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
 	mv en/hgbook.xml.$(LINGUA) build/$(LINGUA)/source
-endif
+  endif
 
 endif
 
