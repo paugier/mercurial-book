@@ -66,13 +66,13 @@ II. COMPILING THE DOCS
 7. Make
   Run 'make' for more details, for example:
 
-  * make all document(pdf, html and html-single for all languages)
+  * make all document(pdf, epub, html and html-single for all languages)
       % make all
 
-  * make english document(pdf, html and html-single for all languages)
+  * make english document(pdf, epub, html and html-single for all languages)
       % make LINGUA=en all
 
-  * make Chinese document(pdf, html and html-single for all languages)
+  * make Chinese document(pdf, epub, html and html-single for all languages)
       % make LINGUA=zh all
 
   * make Chinese pdf document
