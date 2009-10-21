@@ -43,7 +43,7 @@ II. COMPILING THE DOCS
 
       % sudo apt-get install openjdk-6-jdk docbook-xsl-saxon libsaxon-java fop
 
-  The Makefile will actually invoke tools/fop/fop.sh, you should do
+  The Makefile will actually invoke $FOP_HOME/fop.sh, you should do
   some trick, let fop's CLASSPATH include saxon.jar and docbook-xsl-saxon.jar .
 
 5. Make
