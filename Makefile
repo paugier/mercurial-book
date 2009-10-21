@@ -6,7 +6,7 @@ include Makefile.vars
 FORMATS=html html-single pdf epub
 
 PO_LANGUAGES := zh
-DBK_LANGUAGES := en
+DBK_LANGUAGES := en it
 LANGUAGES := $(DBK_LANGUAGES) $(PO_LANGUAGES)
 
 UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
@@ -22,76 +22,38 @@ TRANSLATE = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-translate -M UTF-8 \
 #rev_id = $(shell hg parents --template '{node|short} ({date|isodate})')
 rev_id = $(shell hg parents --template '{node|short} ({date|shortdate})')
 
-images := \
-	en/figs/bad-merge-1.png \
-	en/figs/bad-merge-2.png \
-	en/figs/bad-merge-3.png \
-	en/figs/bad-merge-4.png \
-	en/figs/bad-merge-5.png \
-	en/figs/feature-branches.png \
-	en/figs/filelog.png \
-	en/figs/metadata.png \
-	en/figs/mq-stack.png \
-	en/figs/revlog.png \
-	en/figs/snapshot.png \
-	en/figs/tour-history.png \
-	en/figs/tour-merge-conflict.png \
-	en/figs/tour-merge-merge.png \
-	en/figs/tour-merge-pull.png \
-	en/figs/tour-merge-sep-repos.png \
-	en/figs/undo-manual-merge.png \
-	en/figs/undo-manual.png \
-	en/figs/undo-non-tip.png \
-	en/figs/undo-simple.png \
-	en/figs/wdir-after-commit.png \
-	en/figs/wdir-branch.png \
-	en/figs/wdir-merge.png \
-	en/figs/wdir.png \
-	en/figs/wdir-pre-branch.png
+images-src := $(wildcard en/figs/*.dot en/figs/*.svg en/figs/*.png)
+
+images-dot := $(filter %.dot, $(images-src))
+images-svg := $(filter %.svg, $(images-src))
+
+images-dst := $(images-src:dot=png)
+images-dst := $(images-dst:svg=png)
+
+images-out := $(images-dot:dot=svg)
+images-out += $(images-dot:dot=png)
+images-out += $(images-svg:svg=png)
 
 help:
-	@echo "  make epub         [LINGUA=en|zh|...]"
-	@echo "  make html         [LINGUA=en|zh|...]"
-	@echo "  make html-single  [LINGUA=en|zh|...]"
-	@echo "  make pdf          [LINGUA=en|zh|...]"
-	@echo "  make validate     [LINGUA=en|zh|...] # always before commit!"
+	@echo "  make epub         [LINGUA=en|it|zh|...]"
+	@echo "  make html         [LINGUA=en|it|zh|...]"
+	@echo "  make html-single  [LINGUA=en|it|zh|...]"
+	@echo "  make pdf          [LINGUA=en|it|zh|...]"
+	@echo "  make validate     [LINGUA=en|it|zh|...] # always before commit!"
 	@echo "  make tidypo       [LINGUA=zh|...]    # always before commit!"
 	@echo "  make updatepo     [LINGUA=zh|...]    # update po files."
-	@echo "  make all          [LINGUA=en|zh|...]"
+	@echo "  make all          [LINGUA=en|it|zh|...]"
 	@echo "  make stat         # print statistics about po files."
 	@echo "  make clean        # Remove the build files."
 
 clean:
-	@rm -fr build po/*.mo hello en/hello en/html en/.validated-00book.xml en/examples/.run en/examples/results \
-          stylesheets/system-xsl en/figs/*-tmp.svg \
-          web/index-read.html.in \
-          en/figs/bad-merge-1.png \
-          en/figs/bad-merge-2.png \
-          en/figs/bad-merge-3.png \
-          en/figs/bad-merge-4.png \
-          en/figs/bad-merge-5.png \
-          en/figs/feature-branches.png \
-          en/figs/filelog.png \
-          en/figs/feature-branches.png \
-          en/figs/filelog.png \
-          en/figs/metadata.png \
-          en/figs/mq-stack.png \
-          en/figs/revlog.png \
-          en/figs/snapshot.png \
-          en/figs/tour-history.png \
-          en/figs/tour-merge-conflict.png \
-          en/figs/tour-merge-merge.png \
-          en/figs/tour-merge-pull.png \
-          en/figs/tour-merge-sep-repos.png \
-          en/figs/undo-manual-merge.png \
-          en/figs/undo-manual.png \
-          en/figs/undo-non-tip.png \
-          en/figs/undo-simple.png \
-          en/figs/wdir-after-commit.png \
-          en/figs/wdir-branch.png \
-          en/figs/wdir-merge.png \
-          en/figs/wdir-pre-branch.png \
-          en/figs/wdir.png
+	@rm -fr build hello po/*.mo en/hello en/html en/.validated-00book.xml \
+          en/examples/.run en/examples/results en/figs/*-tmp.svg \
+          stylesheets/system-xsl web/index-read.html.in
+
+	@(for l in $(DBK_LANGUAGES); do \
+	  rm -fr $(subst en/figs/, $$l/figs/, $(images-out)) ;\
+	done)
 
 all:
 ifdef LINGUA
@@ -117,8 +79,10 @@ stat:
 
 tidypo:
 ifdef LINGUA
+ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
 	msgcat --sort-by-file --width=80 po/$(LINGUA).po > po/$(LINGUA).tmp && \
 	    mv po/$(LINGUA).tmp po/$(LINGUA).po;
+endif
 else
 	for po in $(wildcard po/*.po); do \
 	    msgcat --sort-by-file --width=80 $$po > $$po.tmp && mv $$po.tmp $$po; \
@@ -151,9 +115,13 @@ validate: build/$(LINGUA)/source/hgbook.xml
 
 ifneq "$(findstring $(LINGUA),$(DBK_LANGUAGES))" ""
 $(LINGUA)/examples/.run:
-	(cd $(LINGUA)/examples; ./run-example -v -a)
+	if test -x $(LINGUA)/examples/run-example; then \
+	  (cd $(LINGUA)/examples; ./run-example -v -a); \
+	else \
+	  touch $@; \
+	fi
 
-build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(images) $(LINGUA)/examples/.run
+build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(subst en/figs/, $(LINGUA)/figs/, $(images-dst)) $(LINGUA)/examples/.run
 	mkdir -p build/$(LINGUA)/source/figs
 	cp $(LINGUA)/figs/*.png build/$(LINGUA)/source/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
@@ -166,7 +134,7 @@ en/examples/.run:
 build/en/source/hgbook.xml:
 	${MAKE} LINGUA=en $@
 
-build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images)
+build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images-dst)
 	mkdir -p build/$(LINGUA)/source/figs
 	cp en/figs/*.png build/$(LINGUA)/source/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
@@ -245,6 +213,17 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 
 	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh -c $(FOP_HOME)/conf/userconfig.xml hgbook.fo ../pdf/hgbook.pdf)
 endif
+
+$(LINGUA)/figs/%.png: $(LINGUA)/figs/%.svg 
+	if test -x $(LINGUA)/fixsvg; then \
+	  $(LINGUA)/fixsvg $<; \
+	  inkscape -D -d 120 -e $@ $<-tmp.svg; \
+	else \
+	  inkscape -D -d 120 -e $@ $<; \
+	fi
+
+$(LINGUA)/figs/%.svg: $(LINGUA)/figs/%.dot
+	dot -Tsvg -o $@ $<
 
 en/figs/%.png: en/figs/%.svg en/fixsvg
 	en/fixsvg $<
