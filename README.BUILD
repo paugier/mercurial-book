@@ -46,7 +46,24 @@ II. COMPILING THE DOCS
   The Makefile will actually invoke $FOP_HOME/fop.sh, you should do
   some trick, let fop's CLASSPATH include saxon.jar and docbook-xsl-saxon.jar .
 
-5. Make
+5. Configure XML Catalogs
+  For non pdf output, we use xsltproc for XSLT process, which use system
+  catalog files automatically, usually /etc/xml/catalog. Users do not need to
+  care about it.
+
+  For pdf output, we need use the xsl extensions (docbook-xsl-saxon), so we must
+  create file $JAVA_LIB/CatalogManager.properties like this:
+
+      catalogs=/etc/xml/catalog
+      relative-catalogs=true
+      static-catalog=yes
+      catalog-class-name=org.apache.xml.resolver.Resolver
+      verbosity=1
+
+6. Create Makefile.vars
+  Please create your Makefile.vars from Makefile.vars.tmpl .
+
+7. Make
   Run 'make' for more details, for example:
 
   * make all document(pdf, html and html-single for all languages)
