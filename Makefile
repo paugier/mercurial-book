@@ -95,13 +95,15 @@ updatepo:
 	    $(MAKE) $@ LINGUA=$$l; \
 	done
 else
-updatepo:
-ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
+po/$(LINGUA).po: $(wildcard en/*.xml)
+  ifneq "$(findstring $(LINGUA),$(PO_LANGUAGES))" ""
 	(cd po; \
 	$(UPDATEPO) -m ../en/00book.xml -p $(LINGUA).po; \
 	)
 	$(MAKE) tidypo LINGUA=$(LINGUA)
-endif
+  endif
+
+updatepo: po/$(LINGUA).po
 endif
 
 ifndef LINGUA
