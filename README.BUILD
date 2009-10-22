@@ -31,9 +31,9 @@ II. COMPILING THE DOCS
 
       % sudo apt-get install libxml2-utils
 
-3. Install graph drawing tools
+3. Install graph drawing and patches tools
 
-      % sudo apt-get install graphviz inkscape
+      % sudo apt-get install graphviz inkscape patchutils
 
 4. Install pdf support
 
