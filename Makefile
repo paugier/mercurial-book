@@ -22,17 +22,19 @@ TRANSLATE = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-translate -M UTF-8 \
 #rev_id = $(shell hg parents --template '{node|short} ({date|isodate})')
 rev_id = $(shell hg parents --template '{node|short} ({date|shortdate})')
 
-images-src := $(wildcard en/figs/*.dot en/figs/*.svg en/figs/*.png)
+images-dot := $(wildcard en/figs/*.dot)
 
-images-dot := $(filter %.dot, $(images-src))
-images-svg := $(filter %.svg, $(images-src))
+images-svg := $(wildcard en/figs/*.svg)
+images-svg :=$(filter-out %-tmp.svg, $(images-svg))
+images-svg -= $(images-dot:dot=svg)
 
-images-dst := $(images-src:dot=png)
-images-dst := $(images-dst:svg=png)
+images-dst := $(wildcard en/figs/*.png)
+images-dst += $(images-dot:dot=png)
+images-dst += $(images-svg:svg=png)
 
-images-out := $(images-dot:dot=svg)
-images-out += $(images-dot:dot=png)
-images-out += $(images-svg:svg=png)
+images-gen := $(images-dot:dot=png)
+images-gen += $(images-svg:svg=png)
+images-gen += $(wildcard en/figs/*-tmp.svg)
 
 help:
 	@echo "  make epub         [LINGUA=en|it|zh|...]"
@@ -47,12 +49,10 @@ help:
 	@echo "  make clean        # Remove the build files."
 
 clean:
-	@rm -fr build hello po/*.mo en/hello en/html en/.validated-00book.xml \
-          en/examples/.run en/examples/results en/figs/*-tmp.svg \
-          stylesheets/system-xsl web/index-read.html.in /tmp/REV*-hello
+	@rm -fr build hello po/*.mo /tmp/REV*-hello en/examples/results
 
 	@(for l in $(DBK_LANGUAGES); do \
-	  rm -fr $(subst en/figs/, $$l/figs/, $(images-out)) ;\
+	  rm -fr $(subst en/figs/, $$l/figs/, $(images-gen))  $$l/examples/.run;\
 	done)
 
 all:
@@ -118,7 +118,7 @@ validate: build/$(LINGUA)/source/hgbook.xml
   ifneq "$(findstring $(LINGUA),$(DBK_LANGUAGES))" ""
 $(LINGUA)/examples/.run:
 	if test -x $(LINGUA)/examples/run-example; then \
-	  (cd $(LINGUA)/examples; ./run-example -v -a); \
+	  (cd $(LINGUA)/examples; ./run-example -a); \
 	else \
 	  touch $@; \
 	fi
@@ -131,12 +131,12 @@ build/$(LINGUA)/source/hgbook.xml: $(wildcard $(LINGUA)/*.xml) $(subst en/figs/,
 	cat $@.tmp | sed 's/\$$rev_id\$$/${rev_id}/' > $@
   else
 en/examples/.run:
-	(cd en/examples; ./run-example -v -a)
+	(cd en/examples; ./run-example -a)
 
 build/en/source/hgbook.xml:
 	${MAKE} LINGUA=en $@
 
-build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images-dst)
+build/$(LINGUA)/source/hgbook.xml: $(wildcard en/*.xml) po/$(LINGUA).po $(images-dst) en/examples/.run
 	mkdir -p build/$(LINGUA)/source/figs
 	cp en/figs/*.png build/$(LINGUA)/source/figs
 	cp stylesheets/hgbook.css build/$(LINGUA)/source
