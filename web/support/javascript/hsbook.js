@@ -15,7 +15,7 @@ function beforeComment(formData, jqForm, options) {
     return false;
   }
   $(options.target + " span.comment_error").empty().after(
-    "<img src=\"figs/throbber.gif\" style=\"vertical-align: middle\"/>");
+    "<img src=\"/support/icons/throbber.gif\" style=\"vertical-align: middle\"/>");
   $(options.target + " input[@name=submit]").attr("disabled", true);
 }
 
