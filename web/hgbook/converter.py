@@ -22,7 +22,7 @@ try:
 except IndexError:
     raise IndexError("Usage: %s <path-to-html-file>" % __file__)
 
-tree = etree.parse(filename, html.HTMLParser())
+tree = etree.parse(filename, html.HTMLParser(remove_blank_text=True))
 root = tree.getroot()
 
 body(root)[0].set('id', doc_id)
