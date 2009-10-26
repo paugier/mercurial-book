@@ -66,7 +66,7 @@ $(document).ready(function() {
     $(this).append(loading($(this).attr("id")));
   });
   $("table[@id].equation").each(function() {
-    $(this).append(loading($(this).attr("id")));
+    $(this).after(loading($(this).attr("id")));
   });
   $("pre[@id]").each(function() {
     $(this).after(loading($(this).attr("id")));
