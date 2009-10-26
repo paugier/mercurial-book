@@ -14,8 +14,8 @@ setup_environ(settings)       # ugly django collateral effects :(
 from comments.models import Element
 
 doc_id = 'MMSC'
-sel = CSSSelector('p, pre, h1, table.equation')
-body = CSSSelector('body')
+sel = CSSSelector('div.chapter p, pre, h1, table.equation')
+chapter_sel = CSSSelector('div.chapter')
 
 try:
     filename = args[0]
@@ -25,7 +25,11 @@ except IndexError:
 tree = etree.parse(filename, html.HTMLParser(remove_blank_text=True))
 root = tree.getroot()
 
-body(root)[0].set('id', doc_id)
+chapter = chapter_sel(root)[0]
+chapter_title = chapter.get('id').split(':')[1]
+chapter_hash = md5.new(chapter.get('id').encode('utf8')).hexdigest()
+
+chapter.set('id', chapter_hash)
 
 for element in sel(root):
     hsh_source = element.text or element.get('alt') or etree.tostring(element)
@@ -33,13 +37,13 @@ for element in sel(root):
     if hsh_source:
         hsh_source_encoded = hsh_source.encode('utf8')
         hsh = md5.new(hsh_source_encoded).hexdigest()
-        element.set('id', '%s-%s' % (doc_id, hsh))
+        element.set('id', '%s-%s' % (chapter_hash, hsh))
     
         # create the commentable element in the DB
         e = Element()
-        e.id = '%s-%s' % (doc_id, hsh)
-        e.chapter = doc_id
-        e.title = hsh
+        e.id = '%s-%s' % (chapter_hash, hsh)
+        e.chapter = chapter_hash
+        e.title = chapter_title
         e.save()
 
 
