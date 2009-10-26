@@ -22,6 +22,9 @@ urlpatterns = patterns('',
      (r'^support/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': os.path.realpath(os.path.dirname(
         sys.modules[__name__].__file__) + '/../javascript')}),
+     (r'^styles/(?P<path>.*)$', 'django.views.static.serve',
+     {'document_root': os.path.realpath(os.path.dirname(
+        sys.modules[__name__].__file__) + '/../styles')}),
 
     # Uncomment this for admin:
     (r'^admin/(.*)', admin.site.root),
