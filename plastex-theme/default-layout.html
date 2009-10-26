@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title tal:content="self/title">Book Title</title>
+    <meta name="generator" content="plasTeX" />
+    <meta content="text/html; charset=${config/files/output-encoding}" http-equiv="content-type" />
+
+    <link rel="stylesheet" href="styles/styles.css"/>
+    <link rel="stylesheet" href="/support/styles/styles.css"/>
+
+    <link rel="alternate" type="application/atom+xml" title="Comments"
+          href="/feeds/comments/"/>
+    <link rel="shortcut icon" type="image/png"
+          href="/support/figs/favicon.png"/>
+
+    <script type="text/javascript" src="/support/javascript/jquery.js"></script>
+    <script type="text/javascript" src="/support/javascript/form-min.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="navheader"><h2 class="booktitle">
+        <tal:booktitle replace="self/title" />
+        <div class="authors">by 
+          <tal:author tal:content="self/author">
+            Author
+          </tal:author>
+        </div>
+      </h2>
+    </div>
+
+    <div class="chapter" id="{% doc_id %}">
+      
+      <div class="file_contents" tal:content="self">File contents.</div>
+      
+      <div id="footnotes" tal:condition="self/footnotes">
+        <p><b>Footnotes</b></p>
+        <ol>
+          <li tal:repeat="footnote self/footnotes" 
+              tal:content="footnote" 
+              tal:attributes="id footnote/id">footnote text</li>
+        </ol>
+      </div>
+
+    </div>
+
+
+      <div class="hgbookfooter"> <p><img src="/support/icons/rss.png"> Want to stay
+	  up to date? Subscribe to the comment feed for the 
+          <a class="feed"
+	     href="/feeds/comments/">entire book</a>.</p> 
+        <p>Icons by
+	  <a href="mailto:mattahan@gmail.com">Paul Davey</a> aka <a
+	  href="http://mattahan.deviantart.com/">Mattahan</a>.</p>
+      </div>
+
+  </body>
+
+  <script language="javascript" src="icons/imgadjust.js"
+	  type="text/javascript">
+  </script>
+  <script type="text/javascript" src="/support/javascript/hsbook.js">
+  </script>
+
+</html>
