@@ -6,7 +6,7 @@ mutable = True
 class Element(models.Model):
     id = models.CharField('ID attribute', max_length=64, editable=False,
                           primary_key=True)
-    chapter = models.CharField('Chapter ID', max_length=64, editable=False,
+    chapter = models.CharField('Chapter ID', max_length=100, editable=False,
                                db_index=True)
     title = models.CharField('Section title', max_length=256, editable=False)
 
