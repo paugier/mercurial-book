@@ -3241,8 +3241,10 @@ msgid ""
 "instances of daily backups taking far longer than 24 hours as a result.  A "
 "freshly packed Git repository is slightly smaller than a Mercurial "
 "repository, but an unpacked repository is several orders of magnitude larger."
-msgstr ""
-
+msgstr "Mercurial的版本库不需要维护，而Git的版本库需要频繁的手工将其元数据<quote>repacks</quote>"
+"如果不这样做，性能就会下降，磁盘空间也会迅速增加。有多个Git版本库的服务器需要严格和频繁的重新打包"
+"否则在备份的时候就会成为严重的磁盘瓶颈，曾经有日备份超过24小时的例子。一个新打包的Git版本库"
+"比Mercurial稍小一些，但是未打包的版本库则会大几个数量级。"
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:520
 msgid ""
@@ -3250,12 +3252,13 @@ msgid ""
 "or Perl scripts, and the quality of these scripts varies widely. I have "
 "encountered several instances where scripts charged along blindly in the "
 "presence of errors that should have been fatal."
-msgstr ""
+msgstr "Git核心由C语言编写，许多Git命令是用shell或者perl脚本实现的，这些脚本的质量差别很大。"
+"我碰到过几次已经出现了致命错误了，那些脚本还在盲目的执行。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:526
 msgid "Mercurial can import revision history from a Git repository."
-msgstr ""
+msgstr "Mercurial可以从Git的版本库中导入版本历史。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:534
@@ -3263,7 +3266,7 @@ msgid ""
 "CVS is probably the most widely used revision control tool in the world.  Due "
 "to its age and internal untidiness, it has been only lightly maintained for "
 "many years."
-msgstr ""
+msgstr "CVS可能是世界上使用最广泛的版本控制工具。因为它是太古老和核心复杂，许多年来都处于维护状态。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:538
@@ -3277,8 +3280,11 @@ msgid ""
 "part of a task, you will need to manually inspect the descriptions and "
 "timestamps of the changes made to each file involved (if you even know what "
 "those files were)."
-msgstr ""
-
+msgstr "它采用的是集中式客户/服务器结构。它不会将相关的文件变更作为原子提交，"
+"这使得它很容易<quote>毁坏创建</quote>：一个人成功的提交了一部分更改，然后他必须停下来"
+"处理合并，这使得其他人只能看见他们的部分工作。这样影响力你如何和版本史进行工作。"
+"如果你想看到其他人作为一部分任务的全部修改，你必须手动检查每个文件的变更描述和时间戳"
+"（假如你知道是那些文件）。"
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:550
 msgid ""
