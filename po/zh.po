@@ -3259,6 +3259,11 @@ msgid ""
 "freshly packed Git repository is slightly smaller than a Mercurial "
 "repository, but an unpacked repository is several orders of magnitude larger."
 msgstr ""
+"Mercurial的版本库不需要维护，但Git的版本库需要频繁的手工维护，将其元数据"
+"<quote>repacks</quote>，如果不这样做，性能就会下降，磁盘空间也会迅速增加。有多"
+"个Git版本库的服务器需要严格和频繁的重新打包，否则在备份的时候就会成为严重的瓶"
+"颈，曾经有每日备份运行超过24小时的例子。一个新打包的Git版本库比Mercurial稍小一"
+"些，但是未打包的版本库则会大几个数量级。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:520
@@ -3268,11 +3273,13 @@ msgid ""
 "encountered several instances where scripts charged along blindly in the "
 "presence of errors that should have been fatal."
 msgstr ""
+"Git的核心由C语言编写，许多Git命令是用shell或者perl脚本实现的，这些脚本的质量差"
+"别很大。我碰到过几次这样的情况，明明已经出现了致命错误了，脚本还在盲目的执行。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:526
 msgid "Mercurial can import revision history from a Git repository."
-msgstr ""
+msgstr "Mercurial可以从Git的版本库中导入版本历史。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:534
@@ -3281,6 +3288,8 @@ msgid ""
 "to its age and internal untidiness, it has been only lightly maintained for "
 "many years."
 msgstr ""
+"CVS可能是世界上使用最广泛的版本控制工具。因为它是太古老和内部实现很混乱，许多"
+"年来都处于维护状态。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:538
@@ -3295,6 +3304,11 @@ msgid ""
 "timestamps of the changes made to each file involved (if you even know what "
 "those files were)."
 msgstr ""
+"CVS采用的是集中式客户/服务器结构。它不会将相关的文件变更一起作为原子提交，这使"
+"得它很容易<quote>破坏构建</quote>：一个人成功的提交了一部分更改，然后要停下来"
+"处理合并，这使得其他人只能看见他们的部分工作。这样也会影响你和项目历史的工作方"
+"式。如果你想看到其他人针对他的那部分任务做的全部修改，你必须手动检查每个受影响"
+"的文件的变更描述和时间戳（假如你知道是哪些文件）。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:550
