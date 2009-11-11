@@ -3262,8 +3262,8 @@ msgstr ""
 "Mercurial的版本库不需要维护，但Git的版本库需要频繁的手工维护，将其元数据"
 "<quote>repacks</quote>，如果不这样做，性能就会下降，磁盘空间也会迅速增加。有多"
 "个Git版本库的服务器需要严格和频繁的重新打包，否则在备份的时候就会成为严重的瓶"
-"颈，曾经有每日备份运行超过24小时的例子。一个新打包的Git版本库比Mercurial稍小一"
-"些，但是未打包的版本库则会大几个数量级。"
+"颈，曾经有过运行每日备份超过24小时的例子。一个新打包的Git版本库比Mercurial稍小"
+"一些，但是未打包的版本库则会大几个数量级。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:520
@@ -3274,7 +3274,8 @@ msgid ""
 "presence of errors that should have been fatal."
 msgstr ""
 "Git的核心由C语言编写，许多Git命令是用shell或者perl脚本实现的，这些脚本的质量差"
-"别很大。我碰到过几次这样的情况，明明已经出现了致命错误了，脚本还在盲目的执行。"
+"别很大。我碰到过好几次这样的情况，明明已经出现了致命错误了，脚本还在盲目的执"
+"行。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:526
@@ -3320,6 +3321,9 @@ msgid ""
 "how a repository is corrupt.  I would not recommend CVS for any project, "
 "existing or new."
 msgstr ""
+"CVS的分支和标签的概念实在是太混乱了，我都不想给你介绍。它也不支持文件和目录的"
+"重命名。这使得版本库非常容易崩溃。它几乎没任何的内部一致性检查功能，所以通常你"
+"不可能知道版本库是不是崩溃了。不管是新项目还是老项目，我都不推荐使用CVS。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:558
@@ -3335,11 +3339,17 @@ msgid ""
 "timestamps and files that have remained locked for over a decade are just two "
 "of the less interesting problems I can recall from personal experience)."
 msgstr ""
+"Mercurial可以导入CVS的版本历史。然而，这里面有很多限制；对其版本控制工具的CVS"
+"导入程序也是一样。因为CVS缺少原子更改并且不支持文件系统层次的版本控制，所以不"
+"可能完全精确的重建CVS的历史。有些需要猜测，重命名通常发现不了。因为CVS的很多的"
+"高级管理功能必须手动完成，因此非常容易出错。碰到崩溃的版本库，CVS导入程序通常"
+"会出现很多问题(完全伪造的版本时间戳，若干文件被锁定十多年，这是我个人经历的两"
+"个不太有趣的问题）。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:572
 msgid "Mercurial can import revision history from a CVS repository."
-msgstr ""
+msgstr "Mercurial可以从CVS版本库导入版本历史。"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch01-intro.xml:578
@@ -3354,6 +3364,8 @@ msgid ""
 "that a user run a command to inform the server about every file they intend "
 "to edit."
 msgstr ""
+"Perforce采用的是集中式客户/服务器结构，客户端不缓存任何数据。和现代的版本控制"
+"工具不同，每次想要编辑的一个文件，用户必须运行一个命令通知Perforce服务器。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:586
@@ -3363,6 +3375,8 @@ msgid ""
 "Perforce installations require the deployment of proxies to cope with the "
 "load their users generate."
 msgstr ""
+"对于小的团队而言，Perforce相当好，但是当用户数目超过数十个以后，性能急剧下降。"
+"中等大小Perforce安装需要部署代理来处理用户产生的负载。"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch01-intro.xml:595
@@ -3376,6 +3390,7 @@ msgid ""
 "strengths that suit them to particular styles of work.  There is no single "
 "revision control tool that is best in all situations."
 msgstr ""
+"除了CVS之外，以上列出的所有工具都各有所长，没有一个版本控制工具适合所有情况。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:602
@@ -3383,6 +3398,8 @@ msgid ""
 "As an example, Subversion is a good choice for working with frequently edited "
 "binary files, due to its centralised nature and support for file locking."
 msgstr ""
+"比如说，因为采用集中式的结构并且支持文件锁定，Subversion非常适合频繁编辑二进制"
+"文件的场合。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch01-intro.xml:606
@@ -3391,6 +3408,8 @@ msgid ""
 "merge support to be a compelling combination that has served me well for "
 "several years."
 msgstr ""
+"我已经使用Mercurial很多年了，个人认为它有简洁，高性能，良好的合并支持诸多特"
+"点。"
 
 #. type: Content of: <book><chapter><sect1><title>
 #: ../en/ch01-intro.xml:614
