@@ -15,7 +15,7 @@ function beforeComment(formData, jqForm, options) {
     return false;
   }
   $(options.target + " span.comment_error").empty().after(
-    "<img src=\"figs/throbber.gif\" style=\"vertical-align: middle\"/>");
+    "<img src=\"/support/icons/throbber.gif\" style=\"vertical-align: middle\"/>");
   $(options.target + " input[@name=submit]").attr("disabled", true);
 }
 
@@ -62,16 +62,17 @@ $(document).ready(function() {
 	    function() { $(this).nextAll().hide("normal"); })
     .hover(function() { $(this).fadeTo("normal", 0.8); },
 	   function() { $(this).fadeTo("normal", 0.35); });
-  $("p[@id]").each(function() {
+  $(".chapter p[@id]").each(function() {
     $(this).append(loading($(this).attr("id")));
   });
-  $("table[@id].equation").each(function() {
+  $(".chapter table[@id].equation").each(function() {
+    id = $(this).attr("id");
+    $("#" + id + " tr").after('<tr><td colspan="4">' + loading($(this).attr("id")) + '</td></tr>');
+  });
+  $(".chapter pre[@id]").each(function() {
     $(this).after(loading($(this).attr("id")));
   });
-  $("pre[@id]").each(function() {
-    $(this).after(loading($(this).attr("id")));
-  });
-  var chapid = $("body, div.preface, div.chapter, div.appendix, div.bibliography").attr("id");
+  var chapid = $("div.preface, div.chapter, div.appendix, div.bibliography").attr("id");
   $("#chapterfeed").attr("href",
 			 $("#chapterfeed").attr("href") + chapid + "/");
   $.getJSON(location.protocol + "//" + location.host + "/comments/chapter/" +
