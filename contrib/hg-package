@@ -1,9 +1,13 @@
 #!/bin/sh
 
+#
+# Package build results & Upload to i18n-zh
+#
+
 build_dir=`dirname "$0"`/../build
 rev_id=`hg parents --template '{date|shortdate}' | sed 's/-//g'`
 
-for l in en zh; do
+for l in en zh it; do
   (
   if [ ! -d "${build_dir}/${l}" ] ; then
     continue
