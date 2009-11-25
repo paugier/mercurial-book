@@ -14,12 +14,12 @@
     Mercurial a été développé avec soin pour être à la fois
     <emphasis>sûr</emphasis> et <emphasis>efficace</emphasis>. De surcroît,
     s'il m'est facile de garder en tête ce que le logiciel fait lorsque
-    j'accompli des tâches de révision, j'aurai moins de risques d'être
+    j'accomplis des tâches de révision, j'aurai moins de risques d'être
     surpris par son comportement.</para>
 
   <para id="x_2ea">Dans ce chapitre, nous décrirons tout d'abord les concepts
     essentiels de l'architecture de Mercurial, pour ensuite discuter quelques
-    uns des détails intéressants de son implémentation.</para>
+    détails intéressants de son implémentation.</para>
 
   <sect1>
     <title>Conservation de l'historique sous Mercurial</title>
@@ -33,7 +33,7 @@
         révision du fichier correspondant. Les <quote>filelogs</quote> sont des fichiers
         stockés dans le répertoire  <filename role="special"
             class="directory">.hg/store/data</filename>. Un <quote>filelog</quote> contient
-        des informations de deux types: les données de révision, et un index
+        des informations de deux types : les données de révision, et un index
         pour permettre à Mercurial une recherche efficace d'une révision
         donnée.</para>
 
@@ -79,7 +79,7 @@
     <sect2>
       <title>Relations entre les révisions</title>
 
-      <para id="x_2f0">A l'intérieur d'un <quote>changelog</quote>, d'un <quote>manifest</quote>, ou d'un
+      <para id="x_2f0">À l'intérieur d'un <quote>changelog</quote>, d'un <quote>manifest</quote>, ou d'un
           <quote>filelog</quote>, chaque révision enregistre un pointeur vers son parent
         immédiat (ou à ses deux parents s'il s'agit d'une révision
         correspondant à une fusion (merge)). Comme mentionné plus haut, il y
@@ -124,13 +124,13 @@
       <emphasis>revlog</emphasis>.</para>
 
     <sect2>
-      <title>stockage efficace</title>
+      <title>Stockage efficace</title>
 
       <para id="x_2f5">Le <quote>revlog</quote> fournit un stockage efficace des révisions en
-        utilisant un mécanisme <emphasis>delta</emphasis>. A lieu de stocker
+        utilisant un mécanisme <emphasis>delta</emphasis>. Au lieu de stocker
         une copie complète d'un fichier à chaque révision, il stocke les
         changements requis pour transformer une révision plus ancienne en une
-        nouvelle révision. Pour plusieurs type de données, ces deltas sont
+        nouvelle révision. Pour plusieurs types de données, ces deltas sont
         typiquement une fraction de pourcentage de la taille de la copie
         complète d'un fichier.</para>
 
@@ -155,7 +155,7 @@
       <para id="x_2f8">De plus, Mercurial traite chaque écriture comme la
         partie d'une <emphasis>transaction</emphasis> qui peut comprendre
         plusieurs fichiers. Une transaction est <emphasis>atomique</emphasis>
-        : soit la transaction entière réussie ses effets sont tous
+        : soit la transaction entière réussit et ses effets sont tous
         visibles aux lecteurs en une étape, soit la totalité est annulée.
         Cette garantie de l'atomicité signifie que si vous exécutez deux
         copies de Mercurial, où une lit les données et l'autre les écrit, le
@@ -173,7 +173,7 @@
 
       <para id="x_2fa">Mercurial évite habillement un piège commun à tous les
         vieux systèmes de gestion de révisions : le problème de la
-        <emphasis>récupération inefficace</emphasis> La plupart des systèmes
+        <emphasis>récupération inefficace</emphasis>. La plupart des systèmes
         de gestion de révisions stockent le contenu d'une révision comme une
         série incrémentale de modifications faites à un
         <quote>snapshot</quote>. (Certains basent le <quote>snapshot</quote> sur la plus
@@ -192,8 +192,8 @@
         </mediaobject>
       </figure>
 
-      <para id="x_2fc">L'inovation que Mercurial apporte à ce problème est
-        simple mais effective. Une fois que la quantité cumulée de deltas
+      <para id="x_2fc">L'innovation que Mercurial apporte à ce problème est
+        simple mais efficace. Une fois que la quantité cumulée de deltas
         d'informations stockées depuis le dernier snapshot excède un seuil
         fixé, il stocke un nouveau <quote>snapshot</quote> (compressé bien sûr), plutôt qu'un
         nouveau delta. Ceci rend possible la reconstruction de
@@ -207,13 +207,13 @@
         lire pour reconstruire une révision particulière.</para>
 
       <sect3>
-        <title>En amont : l'influence de la compression vidéo</title>
+        <title>Aparté : l'influence de la compression vidéo</title>
       
         <para id="x_2fe">Si vous êtes familiés de la compression vidéo ou
-          avez déjà regardé un programme TV par cable ou par un service
+          avez déjà regardé un programme TV par câble ou par un service
           satellite, vous devez savoir que la plupart des schémas de
-          compression vidéo stockent chaque frame de vidéo comme un delta vis
-          à vis de la frame précédente.</para>
+          compression vidéo stockent chaque trame de vidéo comme un delta
+          vis-à-vis de la trame précédente.</para>
       
         <para id="x_2ff">Mercurial emprunte cette idée pour rendre possible
           la reconstruction d'une révision à partir d'un snapshot et d'un
@@ -235,8 +235,8 @@
         identifiants pour les révisions. Les <quote>hashs</quote> d'identifications d'un
         <quote>changeset</quote> que vous voyez comme utilisateur final proviennent des
         révisions du <quote>changelog</quote>. Bien que les <quote>filelogs</quote> et le <quote>manifest</quote>
-        utilisent aussi des <quote>hashs</quote>, Mercurial ne les utilise qu'en arrière
-        plan.</para>
+        utilisent aussi des <quote>hashs</quote>, Mercurial ne les utilise qu'en
+        arrière-plan.</para>
 
     <para id="x_302">Mercurial vérifie que les <quote>hashs</quote> sont corrects lorsqu'il
         récupère les révisions de fichiers et lorsqu'il récupère (pull) les
@@ -329,11 +329,11 @@
       donne les parents du dirstate.</para>
 
     <sect2>
-        <title>Que se passe-t'il lorsque vous <quote>committez</quote></title>
+        <title>Que se passe-t-il lorsque vous <quote>committez</quote></title>
 
         <para id="x_30b">Le <quote>dirstate</quote> stocke les informations sur les parents
-        pour plus qu'un simple livre de stockage. Mercurial utilise les
-        parents du <quote>distate</quote> comme <emphasis>les parents d'un nouveau
+        pour plus qu'une simple comptabilité. Mercurial utilise les
+        parents du <quote>dirstate</quote> comme <emphasis>les parents d'un nouveau
             <quote>changeset</quote></emphasis> lorsque vous <quote>committez</quote>.</para>
 
       <figure id="fig:concepts:wdir"> 
@@ -385,7 +385,7 @@
         introduit un bug. Dans des cas comme ça, la chose naturelle à faire
         est de faire un <quote>update</quote> du répertoire de travail au <quote>changeset</quote> qui vous
         intéresse, et ensuite d'en examiner les fichiers pour regarder leurs
-        contenus comme ils l'étaient lorsque vous avez <quote>commité</quote> ce <quote>changeset</quote>.
+        contenus comme ils l'étaient lorsque vous avez <quote>committé</quote> ce <quote>changeset</quote>.
         L'effet de ceci est montré dans <xref
           linkend="fig:concepts:wdir-pre-branch"/>.</para>
 
@@ -399,7 +399,7 @@
       </figure>
 
       <para id="x_313">En ayant fait un <quote>update</quote> du répertoire de travail vers
-          un <quote>changeset</quote> plus ancien, que se passe-t'il si vous faites des
+          un <quote>changeset</quote> plus ancien, que se passe-t-il si vous faites des
           changements et ensuite <quote>committez</quote> ? Mercurial se comporte comme je
         l'ai fait remarqué plus haut. Les parents du répertoire de travail
         deviennent les parents du nouveau <quote>changeset</quote>. Ce nouveau <quote>changeset</quote> n'a
@@ -418,7 +418,7 @@
       </figure>
 
       <note>
-        <para id="x_315">Si vous êtes nouveau à Mercurial, vous devez garder
+        <para id="x_315">Si vous êtes un nouvel utilisateur de Mercurial, vous devez garder
           à l'esprit une <quote>erreur</quote> commune, qui est d'utiliser la
           commande <command role="hg-cmd">hg pull</command> sans aucune
           option. Par défaut, la commande <command role="hg-cmd">hg
@@ -433,7 +433,7 @@
             pull -u</command>.</para>
       
         <para id="x_316">Je place le mot <quote>erreur</quote> entre
-          guillemets parce que tous ce dont vous avez besoin de faire pour
+          guillemets parce que tout ce dont vous avez besoin de faire pour
           rectifier la situation où vous avez créé une nouvelle <quote>head</quote> par
           accident est un <command role="hg-cmd">hg merge</command> suivi
           d'un <command role="hg-cmd">hg commit</command>.  En d'autres mots,
@@ -479,27 +479,27 @@
             mais que l'autre a modifié le fichier, demander à l'utilisateur
             quoi faire : garder le fichier modifié ou le supprimer ?</para>
         </listitem>
-        <listitem><para id="x_31e">Si chacun des <quote>changeset</quote> a modifié un
+        <listitem><para id="x_31e">Si chacun des <quote>changesets</quote> a modifié un
             fichier, invoquer le programme externe de fusion pour choisir les
             nouveaux contenus pour le fichier fusionné. Ceci peut demander
-            des entrées de l'utilisateur.</para></listitem>
+            une intervention de l'utilisateur.</para></listitem>
     <listitem><para id="x_31f">Si un <quote>changeset</quote> a modifié un fichier, et
             que l'autre a renommé ou copié le fichier, être sûr que les
             changements suivent le nouveau nom du fichier.</para></listitem>
       </itemizedlist>
       
       <para id="x_320">Il y a plus de détails&emdash;fusionner a beaucoup de
-        cas anguleux&emdash;mais ceux-ci sont des chois plus communs qui sont
-        invoqués pendant une fusion (merge). Comme vous pouvez le voir, la
+        <quote>corner cases</quote>&emdash;mais ceux-ci sont des choix plus communs qui sont
+        liés à une fusion (merge). Comme vous pouvez le voir, la
         plupart des cas sont entièrement automatiques, et effectivement, la
-        plupart des fusions (merge) se terminent automatiquement, sans avoir
-        besoin d'entrées pour résoudre un conflit.</para>
+        plupart des fusions (merge) se terminent automatiquement, sans nécessiter
+        votre intervention pour résoudre un conflit.</para>
 
       <para id="x_321">Lorsque vous pensez à ce qu'il se passe lorsque vous
           <quote>committez</quote> après un <quote>merge</quote>, une fois encore, le répertoire de travail
         est <quote>le changeset que je suis sur le point de
           committer</quote>. Après que la commande <command role="hg-cmd">hg
-          merge</command> ait terminé, le répertoire de travail a deux
+          merge</command> soit terminée, le répertoire de travail a deux
         parents ; ceux ci vont devenir les parents du nouveau
         <quote>changeset</quote>.</para>
 
@@ -508,10 +508,10 @@
         au fur et à mesure. Ceci est nécessaire puisque Mercurial ne stocke
         que deux parents pour chaque révision et le répertoire de travail.
         Alors qu'il serait techniquement faisable de fusionner de multiples
-        <quote>changesets</quote> en même temps, Mercurial interdit cette simplicité. Avec
+        <quote>changesets</quote> en même temps, Mercurial interdit cela pour être plus simple. Avec
         des fusions multiples, les risques de confusion pour l'utilisateur, de
-        conflits de résolutions, et de pagaille dans les fusions
-        augmenteraient de façon Intolérable.</para>
+        mauvaie résolution de conflits, et de pagaille dans les fusions
+        augmenteraient de façon intolérable.</para>
 
     </sect2>
 
@@ -519,13 +519,13 @@
       <title>Fusions et renommages</title>
 
       <para id="x_69a">Un nombre surprenant de systèmes de gestion de
-        révisions fait peu ou pas attention à un <emphasis>nom</emphasis> au
+        révisions fait peu ou pas attention à un <emphasis>nom</emphasis> de fichier au
         cours du temps. Par exemple, il était habituel que si un fichier
         était renommé d'un coté de la fusion, les changements à partir de
         l'autre coté étaient supprimés silencieusement.</para>
 
       <para id="x_69b">Mercurial enregistre les metadata lorsque vous lui
-        dite d'exécuter un renommage ou une copie. Il utilise ces metadatas
+        dites d'exécuter un renommage ou une copie. Il utilise ces metadatas
         durant une fusion pour faire les bonnes choses dans le cas d'un
         <quote>merge</quote>. Par exemple, si je renomme un fichier et que vous l'éditez
         sans le renommer, lorsque l'on fusionne, le fichier sera renommé et
@@ -542,14 +542,14 @@
       illustrer l'attention particulière qui a été portée à la fiabilité et à
       la performance. Cependant, l'attention aux détails ne s'arrête pas ici.
       Il y a de nombreux aspects sur la construction de Mercurial que je
-      trouve personnellement intéressante. J'en détaillerai quelques-uns 
+      trouve personnellement intéressants. J'en détaillerai quelques-uns 
       ici, séparément des éléments du <quote>big ticket</quote> ci-dessus,
       ainsi, si vous êtes intéressés, vous pourrez avoir une meilleure idée
       de la quantité d'ingéniosité qu'il y a derrière un système bien
       conçu.</para>
 
     <sect2>
-      <title>Compression élégante</title>
+      <title>Compression astucieuse</title>
 
       <para id="x_324">Lorsque cela est approprié, Mercurial stocke les
           <quote>snapshots</quote> et deltas sous une forme compressée. Il le fait en
@@ -565,7 +565,7 @@
         compressée une seule fois et Mercurial stockera alors le
         <literal>zip</literal> ou JPEG.</para>
 
-      <para id="x_326">Les Deltas entre les révisions d'un fichier compressé
+      <para id="x_326">Les deltas entre les révisions d'un fichier compressé
         sont habituellement plus gros que les snapshots du fichier, et
         Mercurial fait à nouveau <quote>la bonne chose</quote> dans ces cas.
         Il trouve qu'un delta dépasse le seuil auquel il devrait stocker un
@@ -574,12 +574,12 @@
         seulement.</quote>
 
       <sect3>
-        <title>Recompression réseau</title>
+        <title>Recompression sur le réseau</title>
       
         <para id="x_327">Lors du stockage des révisions sur le disque,
           Mercurial utilise l'algorithme de compression
-          <quote>deflate</quote> (le même que celui utilisé pour le format
-          d'archive populaire <literal>zip</literal>), qui est un bon
+          <quote>deflate</quote> (le même que celui utilisé pour le format populaire
+          d'archive <literal>zip</literal>), qui est un bon
           compromis entre la vitesse et le taux de compression. Cependant,
           lors de la transmission d'une révision de données par une connexion
           réseau, Mercurial décompresse les données de révision
@@ -590,7 +590,7 @@
           compression qui donne un meilleur taux de compression (l'algorithme
           Burrows-Wheeler utilisé principalement par le logiciel de
           compression <literal>bzip2</literal>). Cette combinaison de
-          l'algorithme et de compression du flux entier (plutôt que pour une
+          l'algorithme et de la compression du flux entier (plutôt que pour une
           révision à la fois) réduit substantiellement le nombre de bits qui
           sont transférés, résultant en une performance réseau accrue sur
           la plupart des supports.</para>
@@ -598,7 +598,7 @@
         <para id="x_329">Si la connexion passe par
           <command>ssh</command>, Mercurial <emphasis>ne</emphasis>
           recompresse <emphasis>pas</emphasis> le flux puisque
-          <command>ssh</command> peut déjà le faire par lui même. Vous pouvez
+          <command>ssh</command> peut déjà le faire par lui-même. Vous pouvez
           demander à Mercurial de toujours utiliser la compression
           <command>ssh</command> en éditant le fichier
           <filename>.hgrc</filename> de votre répertoire personnel comme ci-dessous.
@@ -610,7 +610,7 @@ ssh = ssh -C</programlisting>
       </sect3>
     </sect2>
     <sect2>
-      <title>Ordres de Lecture/Écriture et atomicité</title>
+      <title>Ordre de lecture/écriture et atomicité</title>
 
       <para id="x_32a">L'histoire ne se résume pas à ajouter à la fin des fichiers
         lorsque l'on cherche à garantir que le lecteur ne verra
@@ -651,15 +651,15 @@ ssh = ssh -C</programlisting>
         multi-utilisateurs, vous n'avez pas besoin de donner aux autres
         utilisateurs locaux la permission d'<emphasis>écrire</emphasis> sur
         votre dépôt pour qu'ils soient capable de faire un clone ou un <quote>pull</quote>
-        des changements à partir de celui ci ; ils ont seulement besoin de la
+        des changements à partir de celui-ci ; ils ont seulement besoin de la
         permission en <emphasis>lecture</emphasis>. (Il
         <emphasis>ne</emphasis> s'agit <emphasis>pas</emphasis> d'une
         fonctionnalité commune à travers les systèmes de gestion de révisions,
-        donc ne prenez pas ça pour garantie ! La plupart ont besoin que les
+        donc ne prenez pas ça pour argent comptant ! La plupart ont besoin que les
         lecteurs soient capables de mettre un lock sur le dépôt pour y
         accéder en toute sécurité, et ceci demande des permissions en
         écriture, sur au moins un répertoire, ce qui provoque bien sûr toutes
-        sortes de problèmes néfastes et ennuyants relatifs à la sécurité et à
+        sortes de problèmes pénibles et agaçants relatifs à la sécurité et à
         l'administration.)</para>
 
     <para id="x_32f">Mercurial utilise des <quote>locks</quote> pour assurer qu'un seul
@@ -739,7 +739,7 @@ ssh = ssh -C</programlisting>
           role="hg-cmd">hg add</command>, <command role="hg-cmd">hg
           remove</command>, <command role="hg-cmd">hg rename</command> ou
         <command role="hg-cmd">hg copy</command> sur des fichiers, Mercurial
-        met à jour le <quote>dirstate</quote> afin de savoir quoi faire lorsque vous
+        met à jour le <quote>dirstate</quote> afin de savoir que faire lorsque vous
         effectuez un <quote>commit</quote>.</para>
 
     <para id="x_337">Le <quote>dirstate</quote> aide Mercurial à vérifier efficacement le
@@ -750,9 +750,9 @@ ssh = ssh -C</programlisting>
             fichier du répertoire de travail, il compare d'abord la date de
             dernière modification du fichier avec celle enregistrée dans le
             <quote>dirstate</quote> qui correspond à celle que Mercurial a écrit en dernier sur ce
-            fichier. Si le temps de dernière modification correspond au temps
+            fichier. Si la date de dernière modification correspond à la date
             où Mercurial a écrit le fichier, celui ci n'a pas été modifié,
-            donc mercurial n'a pas besoin de revérifier.</para> </listitem>
+            donc Mercurial n'a pas besoin de revérifier.</para> </listitem>
     <listitem> <para id="x_727"> Si la taille du fichier a changé, celui-ci 
             a été modifié. Si la date de modification a changé mais que la
             taille est restée inchangée, seulement à ce moment là Mercurial
