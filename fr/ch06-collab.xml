@@ -348,7 +348,7 @@
       <title>Le train des releases</title>
 <!-- J'ai laissé train en traduction à train mais peut être que suite, file,
 ... sont des mots qui conviennent mieux ? À méditer -->
-<!-- Je mettrais suite -->
+<!-- Je mettrais "suite" -->
 
       <para id="x_46c">Certains projets sont organisés comme un
         <quote>train</quote> élémentaire : une release est planifiée tous les
@@ -731,7 +731,7 @@
         serveur en votre nom (ex. lorsque vous faite un pull ou un push 
         de changements).</para>
 
-      <para id="x_49e">L'inconvénient de sauvegarder les mots de passes dans
+      <para id="x_49e">L'inconvénient de sauvegarder les mots de passe dans
         un agent est qu'il est possible pour un attaquant bien préparé de
         retrouver le mot de passe clair, dans certains cas, même si votre
         système a été redémarré. Vous devriez vous faire votre propre
@@ -763,826 +763,818 @@
           <!-- J'ai précisé avec ce que j'ai trouvé sur Wikipedia -->
       </itemizedlist>
     </sect2>
-<!-- TODO : part 2/4 -->
+
     <sect2>
-      <title>Configuring the server side properly</title>
+      <title>Configurer correctement le serveur</title>
+<!-- TODO : comment traduire "passphrase" ? -->
+      <para id="x_4a0">Parce que ssh peut être délicat à installer si c'est nouveau pour vous,
+      différentes choses peuvent mal se passer. Ajouter Mercurial
+      en plus, et il y a beaucoup plus de possibilités pour s'arracher les cheveux.
+      La plupart de ces problèmes potentiels apparaissent du côté serveur, non
+      du côté client. La bonne nouvelle est qu'une fois que vous avez
+      une configuration qui marche, elle continue habituellement de fonctionner
+      indéfiniment.</para>
 
-      <para id="x_4a0">Because ssh can be fiddly to set up if you're new to it,
-	a variety of things can go wrong.  Add Mercurial
-	on top, and there's plenty more scope for head-scratching.
-	Most of these potential problems occur on the server side, not
-	the client side.  The good news is that once you've gotten a
-	configuration working, it will usually continue to work
-	indefinitely.</para>
+      <para id="x_4a1">Avant d'essayer de faire communiquer Mercurial avec un serveur ssh,
+      il est mieux de s'assurer que vous pouvez d'abord utiliser le
+      <command>ssh</command> normal ou la commande <command>putty</command>
+      pour communiquer avec le serveur. Si vous vous heurtez a des problèmes en utilisant
+      ces commandes directement, Mercurial ne fonctionnera sûrement pas. Pire,
+      il cachera le problème sous-jacent. Chaque fois que vous voulez
+      déboguer des problèmes de Mercurial liés à ssh, vous devriez d'abord
+      vous assurer que les commandes du client ssh fonctionne d'abord,
+      <emphasis>avant</emphasis> de vous inquiéter à propos de savoir si 
+      il y a un problème avec Mercurial.</para>
 
-      <para id="x_4a1">Before you try using Mercurial to talk to an ssh server,
-	it's best to make sure that you can use the normal
-	<command>ssh</command> or <command>putty</command> command to
-	talk to the server first.  If you run into problems with using
-	these commands directly, Mercurial surely won't work.  Worse,
-	it will obscure the underlying problem.  Any time you want to
-	debug ssh-related Mercurial problems, you should drop back to
-	making sure that plain ssh client commands work first,
-	<emphasis>before</emphasis> you worry about whether there's a
-	problem with Mercurial.</para>
-
-      <para id="x_4a2">The first thing to be sure of on the server side is that
-	you can actually log in from another machine at all.  If you
-	can't use <command>ssh</command> or <command>putty</command>
-	to log in, the error message you get may give you a few hints
-	as to what's wrong.  The most common problems are as
-	follows.</para>
+      <para id="x_4a2">La première chose à s'assurer du côté serveur est que
+      vous puissiez réellement vous connecter depuis une autre machine. Si vous
+      ne pouvez pas utiliser <command>ssh</command> ou <command>putty</command>
+      pour vous connecter, le message d'erreur que vous aurez peut vous donner quelques indices
+      sur ce qui ne fonctionne pas. Les problèmes les plus courants sont les suivants.</para>
       <itemizedlist>
-	<listitem><para id="x_4a3">If you get a <quote>connection refused</quote>
-	    error, either there isn't an SSH daemon running on the
-	    server at all, or it's inaccessible due to firewall
-	    configuration.</para>
+	<listitem><para id="x_4a3">Si vous avez une erreur <quote>connexion refusée</quote>,
+    soit il n'y a pas de démon SSH tournant sur le serveur, soit il est inaccessible à cause
+    de la configuration du pare-feu.</para>
 	</listitem>
-	<listitem><para id="x_4a4">If you get a <quote>no route to host</quote>
-	    error, you either have an incorrect address for the server
-	    or a seriously locked down firewall that won't admit its
-	    existence at all.</para>
+	<listitem><para id="x_4a4">Si vous avez une erreur <quote>no route to host</quote>,
+    soit vous avez une adresse incorrecte pour le serveur
+    soit un pare-feu sérieusement verrouillé qui ne veut pas du tout reconnaître son existence.</para>
 	</listitem>
-	<listitem><para id="x_4a5">If you get a <quote>permission denied</quote>
-	    error, you may have mistyped the username on the server,
-	    or you could have mistyped your key's passphrase or the
-	    remote user's password.</para>
+	<listitem><para id="x_4a5">Si vous avez une erreur <quote>permission denied</quote>,
+    vous pouvez avoir mal tapé le nom d'utilisateur sur le serveur,
+    ou vous pouvez avoir mal tapé votre passphrase de clé ou 
+    le mot de passe d'utilisateur distant.</para>
 	</listitem></itemizedlist>
-      <para id="x_4a6">In summary, if you're having trouble talking to the
-	server's ssh daemon, first make sure that one is running at
-	all.  On many systems it will be installed, but disabled, by
-	default.  Once you're done with this step, you should then
-	check that the server's firewall is configured to allow
-	incoming connections on the port the ssh daemon is listening
-	on (usually 22).  Don't worry about more exotic possibilities
-	for misconfiguration until you've checked these two
-	first.</para>
-      <para id="x_4a7">If you're using an authentication agent on the client side
-	to store passphrases for your keys, you ought to be able to
-	log into the server without being prompted for a passphrase or
-	a password.  If you're prompted for a passphrase, there are a
-	few possible culprits.</para>
+      <para id="x_4a6">En résumé, si vous avez des difficultés pour communiquer avec
+      le démon ssh du serveur, d'abord assurez-vous qu'il y en a un en fonctionnement.
+      Sur beaucoup de systèmes, il est installé, mais désactivé, par
+      défaut. Une fois que c'est fait, vous devriez alors
+      vérifier que le pare-feu du serveur est configuré pour permettre
+      les connexions entrantes sur le port que le démon ssh écoute
+      (habituellement 22). Ne vous inquiétez pas à propos de possibilités plus exotiques
+      de mauvaise configuration tant que vous n'avez pas vérifier ces deux premières.</para>
+
+      <para id="x_4a7">Si vous utilisez un agent d'authentification du côté client
+      pour stocker les passphrases de vos clés, vous devriez être capable de 
+      vous connecter au serveur sans avoir à entrer une passphrase ou
+      un mot de passe. Si vous devez entrer une passphrase, il y a
+      quelques coupables possibles.</para>
       <itemizedlist>
-	<listitem><para id="x_4a8">You might have forgotten to use
-	    <command>ssh-add</command> or <command>pageant</command>
-	    to store the passphrase.</para>
+	<listitem><para id="x_4a8">Vous pouvez avoir oublié d'utiliser
+	    <command>ssh-add</command> ou <command>pageant</command>
+	    pour stocker la passphrase.</para>
 	</listitem>
-	<listitem><para id="x_4a9">You might have stored the passphrase for the
-	    wrong key.</para>
+	<listitem><para id="x_4a9">Vous pouvez avoir stocké la passphrase
+    pour une mauvaise clé.</para>
 	</listitem></itemizedlist>
-      <para id="x_4aa">If you're being prompted for the remote user's password,
-	there are another few possible problems to check.</para>
+      <para id="x_4aa">Si vous devez entrer le mot de passe d'utilisateur distant,
+      il y a quelques autres problèmes possibles à vérifier.</para>
       <itemizedlist>
-	<listitem><para id="x_4ab">Either the user's home directory or their
-	    <filename role="special" class="directory">.ssh</filename>
-	    directory might have excessively liberal permissions.  As
-	    a result, the ssh daemon will not trust or read their
-	    <filename role="special">authorized_keys</filename> file.
-	    For example, a group-writable home or <filename
+	<listitem><para id="x_4ab">Soit le répertoire utilisateur ou le
+    répertoire <filename role="special" class="directory">.ssh</filename>
+    peut avoir des droits trop tolérants. Comme résultat,
+    le démon ssh n'aura pas confiance ni ne lira le fichier
+	    <filename role="special">authorized_keys</filename>.
+        Par exemple, un <quote>group-writable home</quote> ou un répertoire <filename
 	      role="special" class="directory">.ssh</filename>
-	    directory will often cause this symptom.</para>
+          sera souvent la cause de ce symptôme.</para>
+          <!-- TODO : comment traduire "group-writable home" ? -->
 	</listitem>
-	<listitem><para id="x_4ac">The user's <filename
-	      role="special">authorized_keys</filename> file may have
-	    a problem. If anyone other than the user owns or can write
-	    to that file, the ssh daemon will not trust or read
-	    it.</para>
+	<listitem><para id="x_4ac">Le fichier <filename
+	      role="special">authorized_keys</filename> de l'utilisateur peut avoir
+          un problème. Si quelqu'un d'autre que l'utilisateur possède ou peut écrire
+          dans ce fichier, le démon ssh n'aura pas confiance ni ne le lira.</para>
 	</listitem></itemizedlist>
 
-      <para id="x_4ad">In the ideal world, you should be able to run the
-	following command successfully, and it should print exactly
-	one line of output, the current date and time.</para>
+      <para id="x_4ad">Dans le monde idéal, vous devriez être capable d'exécuter la 
+      commande suivante avec succès, et elle devrait imprimer exactement
+      une ligne en sortie, la date et l'heure actuelle.</para>
       <programlisting>ssh myserver date</programlisting>
-
-      <para id="x_4ae">If, on your server, you have login scripts that print
-	banners or other junk even when running non-interactive
-	commands like this, you should fix them before you continue,
-	so that they only print output if they're run interactively.
-	Otherwise these banners will at least clutter up Mercurial's
-	output.  Worse, they could potentially cause problems with
-	running Mercurial commands remotely.  Mercurial tries to
-	detect and ignore banners in non-interactive
-	<command>ssh</command> sessions, but it is not foolproof.  (If
-	you're editing your login scripts on your server, the usual
-	way to see if a login script is running in an interactive
-	shell is to check the return code from the command
+<!-- TODO : comment traduire "junk" ? -->
+      <para id="x_4ae">Si, sur votre serveur, vous avec des scripts de connexion qui
+      impriment des bannières ou d'autre "junk" même en fonctionnement non-interactif
+      comme ici, vous devriez corriger cela avant de continuer, comme cela elles 
+      imprimeront des sorties que si elles fonctionnent en mode interactif.
+      Autrement, au minimum, ces bannières encombreront les sorties de Mercurial. 
+      Pire, elles pourront potentiellement causer des problèmes avec des commandes
+      Mercurial exécutées à distance. Mercurial essaye de détecter et d'ignorer des
+      bannières dans des sessions <command>ssh</command> non-interactives, mais il
+      n'est pas infaillible. (Si
+      vous éditez vos scripts de connexion sur votre serveur, la manière habituelle
+      de voir si un script de connexion fonctionne dans un shell interactif
+      est de vérifier le code de retour de la commande
 	<literal>tty -s</literal>.)</para>
 
-      <para id="x_4af">Once you've verified that plain old ssh is working with
-	your server, the next step is to ensure that Mercurial runs on
-	the server.  The following command should run
-	successfully:</para>
+      <para id="x_4af">Lorsque vous avez vérifié que le bon vieux ssh fonctionne
+      avec votre serveur, l'étape suivante est de s'assurer que Mercurial fonctionne
+      sur le serveur. La commande suivant devrait fonctionnement correctement :</para>
 
       <programlisting>ssh myserver hg version</programlisting>
 
-      <para id="x_4b0">If you see an error message instead of normal <command
-	  role="hg-cmd">hg version</command> output, this is usually
-	because you haven't installed Mercurial to <filename
-	  class="directory">/usr/bin</filename>.  Don't worry if this
-	is the case; you don't need to do that.  But you should check
-	for a few possible problems.</para>
+      <para id="x_4b0">Si vous voyez un message d'erreur au lieu de la sortie normale de
+      <command role="hg-cmd">hg version</command>, c'est habituellement
+      parce que vous n'avez pas installé Mercurial dans <filename
+	  class="directory">/usr/bin</filename>.  Ne vous inquiétez pas si 
+      c'est le cas ; vous n'avez pas besoin de le faire. Mais vous devriez
+      vérifiez quelques problèmes possibles.</para>
       <itemizedlist>
-	<listitem><para id="x_4b1">Is Mercurial really installed on the server at
-	    all?  I know this sounds trivial, but it's worth
-	    checking!</para>
+	<listitem><para id="x_4b1">Mercurial est-il vraiment installé sur le 
+    serveur ? Je sais que cela semble évident, mais cela vaut la peine
+    de vérifier !</para>
 	</listitem>
-	<listitem><para id="x_4b2">Maybe your shell's search path (usually set
-	    via the <envar>PATH</envar> environment variable) is
-	    simply misconfigured.</para>
+	<listitem><para id="x_4b2">Peut-être que le chemin de recherche de votre shell
+    (habituellement défini via la variable d'environnement<envar>PATH</envar>)
+    est simplement mal configuré.</para>
 	</listitem>
-	<listitem><para id="x_4b3">Perhaps your <envar>PATH</envar> environment
-	    variable is only being set to point to the location of the
-	    <command>hg</command> executable if the login session is
-	    interactive.  This can happen if you're setting the path
-	    in the wrong shell login script.  See your shell's
-	    documentation for details.</para>
+	<listitem><para id="x_4b3">Peut-être que votre variable d'environnement
+    <envar>PATH</envar> pointe vers l'endroit de l'exécutable
+	    <command>hg</command> uniquement si la session est
+	    interactive.  Ceci peut arriver si vous mettez le chemin dans 
+        le mauvais script de connextion. Regardez la documentation de 
+        votre shell pour les détails.</para>
 	</listitem>
-	<listitem><para id="x_4b4">The <envar>PYTHONPATH</envar> environment
-	    variable may need to contain the path to the Mercurial
-	    Python modules.  It might not be set at all; it could be
-	    incorrect; or it may be set only if the login is
-	    interactive.</para>
+	<listitem><para id="x_4b4">La variable d'environnement <envar>PYTHONPATH</envar>
+    peut devoir contenir le chemin vers les modules Python de Mercurial.
+    Elle peut ne pas être définie ; elle peut être incorrecte ; ou elle peut être
+    définie que si la connexion est interactive.</para>
 	</listitem></itemizedlist>
 
-      <para id="x_4b5">If you can run <command role="hg-cmd">hg version</command>
-	over an ssh connection, well done! You've got the server and
-	client sorted out.  You should now be able to use Mercurial to
-	access repositories hosted by that username on that server.
-	If you run into problems with Mercurial and ssh at this point,
-	try using the <option role="hg-opt-global">--debug</option>
-	option to get a clearer picture of what's going on.</para>
+      <para id="x_4b5">Si vous pouvez exécuter <command role="hg-cmd">hg version</command>
+      sur une connexion ssh, bravo ! Vous avez réglé les problèmes du serveur
+      et du client. Vous devriez maintenant être capable d'utiliser Mercurial pour
+      accéder à des dépôts hébergés par cet utilisateur sur ce serveur.
+      Si vous avez des problèmes avec Mercurial et ssh à ce moment,
+      essayer d'utiliser l'option <option role="hg-opt-global">--debug</option>
+      pour obtenir une image plus claire de ce qui se passe.</para>
     </sect2>
     <sect2>
-      <title>Using compression with ssh</title>
+      <title>Utilisation de la compression avec ssh</title>
 
-      <para id="x_4b6">Mercurial does not compress data when it uses the ssh
-	protocol, because the ssh protocol can transparently compress
-	data.  However, the default behavior of ssh clients is
-	<emphasis>not</emphasis> to request compression.</para>
+      <para id="x_4b6">Mercurial ne comprime pas les données quand il utilise
+      le protocole ssh, car le protocole ssh peut comprimer de manière transparente
+      les données. De plus, le comportement par défaut des clients ssh est de 
+	<emphasis>ne pas</emphasis> demander de la compression.</para>
 
-      <para id="x_4b7">Over any network other than a fast LAN (even a wireless
-	network), using compression is likely to significantly speed
-	up Mercurial's network operations.  For example, over a WAN,
-	someone measured compression as reducing the amount of time
-	required to clone a particularly large repository from 51
-	minutes to 17 minutes.</para>
+      <para id="x_4b7">Sur n'importe quel réseau autre qu'un réseau local rapide (même
+      un réseau sans fil), utiliser la compression améliore significativement la
+      vitesse des opérations réseau de Mercurial. Par exemple, sur un WAN,
+      quelqu'un a mesuré que la compression a réduit la durée pour cloner un dépôt
+      particulièrement grand de 51 minutes à 17 minutes.</para>
 
-      <para id="x_4b8">Both <command>ssh</command> and <command>plink</command>
-	accept a <option role="cmd-opt-ssh">-C</option> option which
-	turns on compression.  You can easily edit your <filename
-	  role="special">~/.hgrc</filename> to enable compression for
-	all of Mercurial's uses of the ssh protocol.  Here is how to
-	do so for regular <command>ssh</command> on Unix-like systems,
-	for example.</para>
+      <para id="x_4b8">Les deux commandes <command>ssh</command> et <command>plink</command>
+	acceptent une option <option role="cmd-opt-ssh">-C</option> qui active
+	la compression. Vous pouvez facilement éditer votre <filename
+	  role="special">~/.hgrc</filename> pour activer la compression pour
+	tous les usages de Mercurial du protocole ssh. Voici comment faire
+    pour la commande habituelle <command>ssh</command> sur des systèmes Unix-like,
+	par exemple.</para>
       <programlisting>[ui]
 ssh = ssh -C</programlisting>
-
-      <para id="x_4b9">If you use <command>ssh</command> on a
-	Unix-like system, you can configure it to always use
-	compression when talking to your server.  To do this, edit
-	your <filename role="special">.ssh/config</filename> file
-	(which may not yet exist), as follows.</para>
+<!-- TODO comment traduire "Unix-like" ? -->
+      <para id="x_4b9">Si vous utilisez <command>ssh</command> sur un
+	système Unix-like, vous pouvez le configurer pour toujours utiliser
+    la compression lors de la connexion avec votre serveur. Pour cela, éditer
+    votre fichier <filename role="special">.ssh/config</filename>
+	(qui peut ne pas encore exister), comme suit.</para>
 
       <programlisting>Host hg
   Compression yes
   HostName hg.example.com</programlisting>
 
-      <para id="x_4ba">This defines a hostname alias,
-	<literal>hg</literal>.  When you use that hostname on the
-	<command>ssh</command> command line or in a Mercurial
-	<literal>ssh</literal>-protocol URL, it will cause
-	<command>ssh</command> to connect to
-	<literal>hg.example.com</literal> and use compression.  This
-	gives you both a shorter name to type and compression, each of
-	which is a good thing in its own right.</para>
+      <para id="x_4ba">Ceci définit un alias pour le nom d'hôte,
+	<literal>hg</literal>. Quand vous utilisez ce nom d'hôte sur la
+    ligne de commande <command>ssh</command> ou dans une URL Mercurial en
+    protocole <literal>ssh</literal>, 
+	<command>ssh</command> se connectera à
+	<literal>hg.example.com</literal> et utilisera la compression. Ceci
+	vous offre à la fois un nom plus court à taper et la compression,
+    chacun est une bonne chose en lui-même.</para>
     </sect2>
   </sect1>
 
   <sect1 id="sec:collab:cgi">
-    <title>Serving over HTTP using CGI</title>
+    <title>Service sur HTTP grâce à CGI</title>
 
-    <para id="x_6a8">The simplest way to host one or more repositories in a
-      permanent way is to use a web server and Mercurial's CGI
-      support.</para>
+    <para id="x_6a8">La manière la plus simple d'héberger un ou plusieurs dépôts de
+    manière permanente est d'utiliser un serveur web et le support CGI de Mercurial.
+    </para>
 
-    <para id="x_4bb">Depending on how ambitious you are, configuring Mercurial's
-      CGI interface can take anything from a few moments to several
-      hours.</para>
+    <para id="x_4bb">En fonction de votre ambition, configurer l'interface CGI
+    de Mercurial peut vous prendre de quelques instants à plusieurs heures.</para>
 
-    <para id="x_4bc">We'll begin with the simplest of examples, and work our way
-      towards a more complex configuration.  Even for the most basic
-      case, you're almost certainly going to need to read and modify
-      your web server's configuration.</para>
+    <para id="x_4bc">Nous commencerons par le plus simple des exemples, et travailler
+    vers une configuration plus complexe. Même pour le cas le plus élémentaire,
+    vous devrez certainement lire et modifier la configuration de votre serveur web.</para>
 
     <note>
-      <title>High pain tolerance required</title>
+      <title>Grande tolérance à la peine exigée</title>
 
-      <para id="x_4bd">Configuring a web server is a complex, fiddly,
-	and highly system-dependent activity.  I can't possibly give
-	you instructions that will cover anything like all of the
-	cases you will encounter. Please use your discretion and
-	judgment in following the sections below.  Be prepared to make
-	plenty of mistakes, and to spend a lot of time reading your
-	server's error logs.</para>
+      <para id="x_4bd">Configurer un serveur web est une activité complexe,
+      délicate, et dépendant fortement du système. Il m'est absolument impossible
+      de vous donner les instructions qui couvriront tous les cas que vous
+      rencontrerez. Faites comme bon vous semblera en suivant les sections ci-dessous.
+      Soyez prêts à faire beaucoup d'erreurs, et à consacrer beaucoup de temps à lire
+      les logs d'erreur de votre serveur.</para>
 
-      <para id="x_6a9">If you don't have a strong stomach for tweaking
-	configurations over and over, or a compelling need to host
-	your own services, you might want to try one of the public
-	hosting services that I mentioned earlier.</para>
+      <para id="x_6a9">Si vous n'avez pas un estomac solide pour tordre des 
+      configurations à maintes reprises, ou un besoin irrésistible d'héberger vos
+      propres services, vous pourriez vouloir essayer un des services d'hébergement
+      public que j'ai mentionné plus tôt.</para>
     </note>
 
     <sect2>
-      <title>Web server configuration checklist</title>
+      <title>Liste de contrôle de la configuration du serveur web</title>
 
-      <para id="x_4be">Before you continue, do take a few moments to check a few
-	aspects of your system's setup.</para>
+      <para id="x_4be">Avant de continuer, prenez quelques instants pour contrôler
+      quelques aspects de l'installation de votre système.</para>
 
       <orderedlist>
-	<listitem><para id="x_4bf">Do you have a web server installed
-	    at all? Mac OS X and some Linux distributions ship with
-	    Apache, but many other systems may not have a web server
-	    installed.</para>
+	<listitem><para id="x_4bf">Avez-vous un serveur web installé ?
+    Mac OS X et quelques distributions Linux sont fournis avec
+	    Apache, mais beaucoup d'autres systèmes peuvent ne pas avoir de serveur web
+        installé.</para>
 	</listitem>
-	<listitem><para id="x_4c0">If you have a web server installed, is it
-	    actually running?  On most systems, even if one is
-	    present, it will be disabled by default.</para>
+	<listitem><para id="x_4c0">Si vous avez un serveur web installé, fonctionne-t-il
+    réellement ? Sur la plupart des systèmes, même si il y a en un, il sera désactivité
+    par défaut.</para>
 	</listitem>
-	<listitem><para id="x_4c1">Is your server configured to allow you to run
-	    CGI programs in the directory where you plan to do so?
-	    Most servers default to explicitly disabling the ability
-	    to run CGI programs.</para>
+	<listitem><para id="x_4c1">Votre serveur est-il configuré pour vous permettre de 
+    faire fonctionner des programmes CGI dans le répertoire où vous prévoyer de le faire ?
+    La plupart des serveurs désactivent explicitement l'aptitude à faire fonctionner des 
+    programmes CGI.</para>
 	</listitem></orderedlist>
 
-      <para id="x_4c2">If you don't have a web server installed, and don't have
-	substantial experience configuring Apache, you should consider
-	using the <literal>lighttpd</literal> web server instead of
-	Apache.  Apache has a well-deserved reputation for baroque and
-	confusing configuration. While <literal>lighttpd</literal> is
-	less capable in some ways than Apache, most of these
-	capabilities are not relevant to serving Mercurial
-	repositories.  And <literal>lighttpd</literal> is undeniably
-	<emphasis>much</emphasis> easier to get started with than
-	Apache.</para>
+      <para id="x_4c2">Si vous n'avez pas de serveur web installé, et n'avez pas 
+      d'expérience solide dans la configuration Apache, vous devriez envisager
+      d'utiliser le serveur web <literal>lighttpd</literal> au lieu
+	d'Apache.  Apache a une réputation bien méritée de configuration baroque et 
+    déroutante. Bien que <literal>lighttpd</literal> ait moins de fonctions
+    qu'Apache, la plupart de celles-ci ne sont pas utiles pour servir
+    des dépôts Mercurial. Et <literal>lighttpd</literal> est incontestablement
+	<emphasis>beaucoup</emphasis> plus facile pour débuter
+    qu'Apache.</para>
     </sect2>
 
-    <sect2>
-      <title>Basic CGI configuration</title>
 
-      <para id="x_4c3">On Unix-like systems, it's common for users to have a
-	subdirectory named something like <filename
-	  class="directory">public_html</filename> in their home
-	directory, from which they can serve up web pages.  A file
-	named <filename>foo</filename> in this directory will be
-	accessible at a URL of the form
+    <sect2>
+      <title>Configuration élémentaire de CGI</title>
+
+      <para id="x_4c3">Sur les systèmes Unix-like, il est habituel pour les utilisateurs d'avoir un
+      sous-répertoire nommé quelque chose comme <filename
+	  class="directory">public_html</filename> dans leur "home
+	directory", à partir duquel ils peuvent servir des pages web. Un fichier
+    appelé <filename>foo</filename> dans ce répertoire sera
+	accessible à une URL de la forme
 	<literal>http://www.example.com/username/foo</literal>.</para>
 
-      <para id="x_4c4">To get started, find the <filename
-	  role="special">hgweb.cgi</filename> script that should be
-	present in your Mercurial installation.  If you can't quickly
-	find a local copy on your system, simply download one from the
-	master Mercurial repository at <ulink
+      <para id="x_4c4">Pour commencer, trouver le script <filename
+	  role="special">hgweb.cgi</filename> qui devrait être
+	présent dans votre installation de Mercurial. Si vous ne pouvez pas trouver
+	rapidement une copie locale sur votre système, téléchargez-le simplement
+    du dépôt maître de Mercurial à <ulink
 	  url="http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi">http://www.selenic.com/repo/hg/raw-file/tip/hgweb.cgi</ulink>.</para>
 
-      <para id="x_4c5">You'll need to copy this script into your <filename
-	  class="directory">public_html</filename> directory, and
-	ensure that it's executable.</para>
+      <para id="x_4c5">Vous devrez copier ce script dans votre répertoire <filename
+	  class="directory">public_html</filename>, et vous assurez qu'il est
+	exécutable.</para>
       <programlisting>cp .../hgweb.cgi ~/public_html
 chmod 755 ~/public_html/hgweb.cgi</programlisting>
-      <para id="x_4c6">The <literal>755</literal> argument to
-	<command>chmod</command> is a little more general than just
-	making the script executable: it ensures that the script is
-	executable by anyone, and that <quote>group</quote> and
-	<quote>other</quote> write permissions are
-	<emphasis>not</emphasis> set.  If you were to leave those
-	write permissions enabled, Apache's <literal>suexec</literal>
-	subsystem would likely refuse to execute the script.  In fact,
-	<literal>suexec</literal> also insists that the
-	<emphasis>directory</emphasis> in which the script resides
-	must not be writable by others.</para>
+      <para id="x_4c6">L'argument <literal>755</literal> de
+	<command>chmod</command> est un peu plus général que de rendre
+    le script exécutable: il garantit que le script est
+	exécutable par n'importe qui, et que les permissions d'écriture pour le <quote>group</quote> et les 
+	<quote>other</quote> <emphasis>ne</emphasis> sont 
+	<emphasis>pas</emphasis> définies.  Si vous laissez ces 
+	permissions d'écriture activées, le sous-système <literal>suexec</literal>
+	d'Apache refuserait probablement d'exécuter le script. En fait,
+	<literal>suexec</literal> insiste aussi pour que le
+	<emphasis>répertoire</emphasis> dans lequel le script réside
+	ne soit pas inscriptible par d'autres.</para>
       <programlisting>chmod 755 ~/public_html</programlisting>
 
       <sect3 id="sec:collab:wtf">
-	<title>What could <emphasis>possibly</emphasis> go
-	  wrong?</title>
+	<title>Que pourrait-il <emphasis>éventuellement</emphasis> mal
+	  se passer ?</title>
 
-	<para id="x_4c7">Once you've copied the CGI script into place,
-	  go into a web browser, and try to open the URL
-	  <literal>http://myhostname/~myuser/hgweb.cgi</literal>,
-	  <emphasis>but</emphasis> brace yourself for instant failure.
-	  There's a high probability that trying to visit this URL
-	  will fail, and there are many possible reasons for this.  In
-	  fact, you're likely to stumble over almost every one of the
-	  possible errors below, so please read carefully.  The
-	  following are all of the problems I ran into on a system
-	  running Fedora 7, with a fresh installation of Apache, and a
-	  user account that I created specially to perform this
-	  exercise.</para>
-
-	<para id="x_4c8">Your web server may have per-user directories disabled.
-	  If you're using Apache, search your config file for a
-	  <literal>UserDir</literal> directive.  If there's none
-	  present, per-user directories will be disabled.  If one
-	  exists, but its value is <literal>disabled</literal>, then
-	  per-user directories will be disabled.  Otherwise, the
-	  string after <literal>UserDir</literal> gives the name of
-	  the subdirectory that Apache will look in under your home
-	  directory, for example <filename
+	<para id="x_4c7">Une fois que vous avez copié le script CGI à sa place,
+      allez dans un navigateur et essayer d'ouvrir l'URL
+      <literal>http://myhostname/~myuser/hgweb.cgi</literal>,
+	  <emphasis>mais</emphasis> attendez-vous à un échec immédiat.
+	  Il y a une forte probabilité que d'essayer de visiter cette URL
+      échouera, et il y a beaucoup de raisons possibles pour cela. En
+      fait, vous devrez probablement trébucher sour pratiquement chacun des
+      erreurs possibles ci-dessous, donc lisez attentivement. Les 
+      problèmes suivants sont tous ceux que j'ai rencontré sur un système
+      tournant Fedora 7, avec une nouvelle installation d'Apache, et un 
+      compte utilisateur que j'avais créé spécialement pour réaliser cet
+      exercice.</para>
+<!-- TODO comment traduire "per-user" ? -->
+	<para id="x_4c8">Votre serveur web peut avoir des répertoires "per-user" désactivés.
+	  Si vous utilisez Apache, cherchez une directive <literal>UserDir
+      </literal>dans votre fichier de configuration. Si il n'y en a pas,
+      les répertoires "per-user" seront désactivés. Si il en existe un,
+      mais que sa valeur est <literal>disabled</literal>, alors
+	  les répertoires "per-user" seront désactivés. Autrement, la
+	  chaîne de caractères après <literal>UserDir</literal> donne le nom du
+	  sous-répertoire qu'Apache regardera dans votre répertoire "home",
+      par exemple<filename
 	    class="directory">public_html</filename>.</para>
 
-	<para id="x_4c9">Your file access permissions may be too restrictive.
-	  The web server must be able to traverse your home directory
-	  and directories under your <filename
-	    class="directory">public_html</filename> directory, and
-	  read files under the latter too.  Here's a quick recipe to
-	  help you to make your permissions more appropriate.</para>
+	<para id="x_4c9">Vos permissions d'accès de fichier peuvent être trop restrictives.
+	  Le serveur web doit être capable de traverser votre répertoire home
+      et les répertoires sous votre répertoire <filename
+	    class="directory">public_html</filename>, et 
+	  de lire les fichiers sous le dernier aussi. Voici une recette rapide
+      pour vous aider à rendre vos permissions plus adéquates.</para>
 	<programlisting>chmod 755 ~
 find ~/public_html -type d -print0 | xargs -0r chmod 755
 find ~/public_html -type f -print0 | xargs -0r chmod 644</programlisting>
 
-	<para id="x_4ca">The other possibility with permissions is that you might
-	  get a completely empty window when you try to load the
-	  script.  In this case, it's likely that your access
-	  permissions are <emphasis>too permissive</emphasis>.  Apache's
-	  <literal>suexec</literal> subsystem won't execute a script
-	  that's group- or world-writable, for example.</para>
+	<para id="x_4ca">L'autre possibilité avec les permissions est que vous
+      pourriez obtenir une fenêtre complètement vide lorsque vous essayez de
+      charger le script. Dans ce cas, c'est probablement que vos permissions
+      d'accès sont <emphasis>trop permissives</emphasis>. Le sous-système
+      <literal>suexec</literal> d'Apache n'exécute pas un script
+	  qui est inscriptible par le groupe ou le monde, par exemple.</para>
 
-	<para id="x_4cb">Your web server may be configured to disallow execution
-	  of CGI programs in your per-user web directory.  Here's
-	  Apache's default per-user configuration from my Fedora
-	  system.</para>
+	<para id="x_4cb">Votre serveur web peut être configuration pour refuser
+      l'exécution de programmes CGI dans votre répertoire web "per-user".
+      Voici la configuration "per-user" par défaut d'Apache pour mon
+      système Fedora.</para>
 
 	&ch06-apache-config.lst;
 
-	<para id="x_4cc">If you find a similar-looking
-	  <literal>Directory</literal> group in your Apache
-	  configuration, the directive to look at inside it is
-	  <literal>Options</literal>. Add <literal>ExecCGI</literal>
-	  to the end of this list if it's missing, and restart the web
-	  server.</para>
+	<para id="x_4cc">Si vous trouvez un groupe qui ressemble à
+	  <literal>Directory</literal> dans votre configuration Apache,
+      la directive à regarder est
+	  <literal>Options</literal>. Ajoutez <literal>ExecCGI</literal>
+	  à la fin de cette liste si cela manque, et redémarrer le serveur
+	  web.</para>
 
-	<para id="x_4cd">If you find that Apache serves you the text of the CGI
-	  script instead of executing it, you may need to either
-	  uncomment (if already present) or add a directive like
-	  this.</para>
+	<para id="x_4cd">Si vous trouvez qu'Apache vous donne le texte du script 
+	  CGI au lie de l'exécuter, vous pouvez avoir besoin soit de
+      décommenter (si déjà présent) ou d'ajouter une directive telle que
+      celle-ci.</para>
 	<programlisting>AddHandler cgi-script .cgi</programlisting>
+<!-- TODO comment traduire "system-wide" ? -->
+	<para id="x_4ce">La possibilité suivante est que vous pourriez
+      obtenir une trace coloré Python prétendant qu'il ne peut pas 
+      importer un module relatif à <literal>mercurial</literal>. Ceci est 
+      réellement un progrès ! Le serveur est maintenant capable d'exécuter
+      votre script CGI. Cette erreur arrive probablement si vous exécutez
+      une installation privée de Mercurial, au lieu d'une version
+      "system-wide". Souvenez-vous que le serveur web fait fonctionner
+      le programme CGI sans aucune des variables d'environnement que vous
+      considérez comme certaines dans une session interactive. Si
+      cette erreur vous arrive, éditez une copie de <filename
+	    role="special">hgweb.cgi</filename> et suivez les indications
+        à l'intérieur de celui-ci pour corriger votre variable
+        d'environnement <envar>PYTHONPATH</envar>.</para>
 
-	<para id="x_4ce">The next possibility is that you might be served with a
-	  colourful Python backtrace claiming that it can't import a
-	  <literal>mercurial</literal>-related module.  This is
-	  actually progress!  The server is now capable of executing
-	  your CGI script.  This error is only likely to occur if
-	  you're running a private installation of Mercurial, instead
-	  of a system-wide version.  Remember that the web server runs
-	  the CGI program without any of the environment variables
-	  that you take for granted in an interactive session.  If
-	  this error happens to you, edit your copy of <filename
-	    role="special">hgweb.cgi</filename> and follow the
-	  directions inside it to correctly set your
-	  <envar>PYTHONPATH</envar> environment variable.</para>
+	<para id="x_4cf">Pour finir, vous êtes <emphasis>certain</emphasis>
+      d'avoir une autre trace colorée Python : celle-ci
+	  se plaindra de ne pas pouvoir trouver <filename
+	    class="directory">/path/to/repository</filename>.  Éditez
+	  votre script <filename role="special">hgweb.cgi</filename>
+	  et remplacez la chaîne de caractères <filename
+	    class="directory">/path/to/repository</filename> par le
+	  chemin complet du dépôt que vous voulez servir.</para>
 
-	<para id="x_4cf">Finally, you are <emphasis>certain</emphasis> to be
-	  served with another colourful Python backtrace: this one
-	  will complain that it can't find <filename
-	    class="directory">/path/to/repository</filename>.  Edit
-	  your <filename role="special">hgweb.cgi</filename> script
-	  and replace the <filename
-	    class="directory">/path/to/repository</filename> string
-	  with the complete path to the repository you want to serve
-	  up.</para>
-
-	<para id="x_4d0">At this point, when you try to reload the page, you
-	  should be presented with a nice HTML view of your
-	  repository's history.  Whew!</para>
+	<para id="x_4d0">À ce moment-là, quand vous essayez de recharger la page,
+      vous devriez avoir une jolie vue HTML de l'historique de votre dépôt.
+      Ouf !</para>
       </sect3>
 
       <sect3>
-	<title>Configuring lighttpd</title>
+	<title>Configurer lighttpd</title>
 
-	<para id="x_4d1">To be exhaustive in my experiments, I tried configuring
-	  the increasingly popular <literal>lighttpd</literal> web
-	  server to serve the same repository as I described with
-	  Apache above.  I had already overcome all of the problems I
-	  outlined with Apache, many of which are not server-specific.
-	  As a result, I was fairly sure that my file and directory
-	  permissions were good, and that my <filename
-	    role="special">hgweb.cgi</filename> script was properly
-	  edited.</para>
+	<para id="x_4d1">Pour être exhaustif dans mes expériences, j'ai essayé
+      de configurer le serveur web <literal>lighttpd</literal> devenu
+      populaire pour servir le même dépôt que celui décrit plus haut
+      avec Apache. J'ai déjà surmonter tous les problèmes décrits avec
+      Apache, beaucoup ne sont pas spécifique à un serveur.
+      Comme résultat, j'étais pratiquement sûr que mes permissions de
+      fichiers et de répertoires étaient bonnes, et que mon script
+      <filename role="special">hgweb.cgi</filename> était correctement
+	  édité.</para>
 
-	<para id="x_4d2">Once I had Apache running, getting
-	  <literal>lighttpd</literal> to serve the repository was a
-	  snap (in other words, even if you're trying to use
-	  <literal>lighttpd</literal>, you should read the Apache
-	  section).  I first had to edit the
-	  <literal>mod_access</literal> section of its config file to
-	  enable <literal>mod_cgi</literal> and
-	  <literal>mod_userdir</literal>, both of which were disabled
-	  by default on my system.  I then added a few lines to the
-	  end of the config file, to configure these modules.</para>
+	<para id="x_4d2">Une fois qu'Apache tournait, avoir 
+	  <literal>lighttpd</literal> pour servir le dépôt était immédiat
+      (en d'autres mots, même si vous essayez d'utiliser
+	  <literal>lighttpd</literal>, vous devriez lire la section
+      Apache). J'ai d'abord dû éditer la section
+	  <literal>mod_access</literal> de son fichier de configuration
+      pour activer <literal>mod_cgi</literal> et
+	  <literal>mod_userdir</literal>, les deux étaient désactivés
+      par défaut sur mon système. J'ai ensuite ajouté quelques lignes à
+      la fin du fichier de configuration, pour ajouter ces modules.</para>
 	<programlisting>userdir.path = "public_html"
 cgi.assign = (".cgi" =&gt; "" )</programlisting>
-	<para id="x_4d3">With this done, <literal>lighttpd</literal> ran
-	  immediately for me.  If I had configured
-	  <literal>lighttpd</literal> before Apache, I'd almost
-	  certainly have run into many of the same system-level
-	  configuration problems as I did with Apache.  However, I
-	  found <literal>lighttpd</literal> to be noticeably easier to
-	  configure than Apache, even though I've used Apache for over
-	  a decade, and this was my first exposure to
+	<para id="x_4d3">Un fois ceci fait, <literal>lighttpd</literal> a
+      fonctionné immédiatemment pour moi. Si j'avais configuré
+	  <literal>lighttpd</literal> avant Apache, je serais sans doute
+      tombé dans beaucoup des mêmes problèmes de configuration
+      "system-level" comme j'ai eu avec Apache.  De plus, j'ai
+	  trouvé <literal>lighttpd</literal> être notablemen plus facile à
+	  configurer qu'Apache, même si j'ai utilisé Apache depuis plus
+      d'une décennie, et ceci était ma première expérience avec
 	  <literal>lighttpd</literal>.</para>
       </sect3>
     </sect2>
-<!-- TODO : part 3/4 -->
+
     <sect2>
-      <title>Sharing multiple repositories with one CGI script</title>
+      <title>Partager plusieurs dépôts avec un seul script CGI</title>
 
-      <para id="x_4d4">The <filename role="special">hgweb.cgi</filename> script
-	only lets you publish a single repository, which is an
-	annoying restriction.  If you want to publish more than one
-	without wracking yourself with multiple copies of the same
-	script, each with different names, a better choice is to use
-	the <filename role="special">hgwebdir.cgi</filename>
-	script.</para>
+      <para id="x_4d4">Le script <filename role="special">hgweb.cgi</filename>
+	vous laisse seulement publier un seul dépôt, ce qui est une limitation
+    ennuyeuse. Si vous voulez publier plus d'un dépôt
+    sans "wracking yourself" avec de multiples copies du même
+    script, chacune avec un nom différent, un meilleur choix est d'utiliser
+	le script <filename role="special">hgwebdir.cgi</filename>.</para>
 
-      <para id="x_4d5">The procedure to configure <filename
-	  role="special">hgwebdir.cgi</filename> is only a little more
-	involved than for <filename
-	  role="special">hgweb.cgi</filename>.  First, you must obtain
-	a copy of the script.  If you don't have one handy, you can
-	download a copy from the master Mercurial repository at <ulink
+      <para id="x_4d5">La procédure pour configurer <filename
+	  role="special">hgwebdir.cgi</filename> est seulement un peu plus
+	  compliquée que pour <filename
+	  role="special">hgweb.cgi</filename>. D'abord, vous devez obtenir
+	une copie du script. Si vous n'en avez pas une sous la main, vous pouvez
+    télécharger une copie depuis le dépôt maître de Mercurial à <ulink
 	  url="http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi">http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi</ulink>.</para>
 
-      <para id="x_4d6">You'll need to copy this script into your <filename
-	  class="directory">public_html</filename> directory, and
-	ensure that it's executable.</para>
+      <para id="x_4d6">Vous aurez besoin de copier ce script dans votre
+      répertoire <filename class="directory">public_html</filename>, et
+	vous assurer qu'il est exécutable.</para>
 
       <programlisting>cp .../hgwebdir.cgi ~/public_html
 chmod 755 ~/public_html ~/public_html/hgwebdir.cgi</programlisting>
 
-      <para id="x_4d7">With basic configuration out of the way, try to
-	visit <literal>http://myhostname/~myuser/hgwebdir.cgi</literal>
-	in your	browser.  It should
-	display an empty list of repositories.  If you get a blank
-	window or error message, try walking through the list of
-	potential problems in <xref
+<!-- TODO comment traduire "out of the way" ? -->
+      <para id="x_4d7">Avec une configuration élémentaire "out of the way", essayez de
+	visiter <literal>http://myhostname/~myuser/hgwebdir.cgi</literal>
+	dans votre navigateur. Il devrait afficher une liste vide
+    de dépôts. Si vous obtenez une fenêtre vide ou un message
+    d'erreur, essayer de parcourir la liste de problèmes 
+    potentiels dans <xref
 	  linkend="sec:collab:wtf"/>.</para>
 
-      <para id="x_4d8">The <filename role="special">hgwebdir.cgi</filename>
-	script relies on an external configuration file.  By default,
-	it searches for a file named <filename
-	  role="special">hgweb.config</filename> in the same directory
-	as itself.  You'll need to create this file, and make it
-	world-readable.  The format of the file is similar to a
-	Windows <quote>ini</quote> file, as understood by Python's
-	<literal>ConfigParser</literal>
-	<citation>web:configparser</citation> module.</para>
+      <para id="x_4d8">Le script <filename role="special">hgwebdir.cgi</filename>
+	se base sur un fichier de configuration externe. Par défaut,
+    il cherche un fichier nommé <filename
+	  role="special">hgweb.config</filename> dans le même répertoire
+      que lui. Vous devrez créer ce fichier, et le rendre
+      lisible par tout le monde. Le format de ce fichier est semblable à
+      un fichier Windows <quote>ini</quote>, comme compris par un module
+      Python <literal>ConfigParser</literal>
+	<citation>web:configparser</citation>.</para>
 
-      <para id="x_4d9">The easiest way to configure <filename
-	  role="special">hgwebdir.cgi</filename> is with a section
-	named <literal>collections</literal>.  This will automatically
-	publish <emphasis>every</emphasis> repository under the
-	directories you name.  The section should look like
-	this:</para>
+      <para id="x_4d9">La façon la plus facile de configurer <filename
+	  role="special">hgwebdir.cgi</filename> est avec une section
+	appellée <literal>collections</literal>.  Ceci publiera automatiquement
+	<emphasis>chaque</emphasis> dépôt sous les répertoires
+	que vous citez. La section devrait ressembler à ceci :</para>
       <programlisting>[collections]
 /my/root = /my/root</programlisting>
-      <para id="x_4da">Mercurial interprets this by looking at the directory name
-	on the <emphasis>right</emphasis> hand side of the
-	<quote><literal>=</literal></quote> sign; finding repositories
-	in that directory hierarchy; and using the text on the
-	<emphasis>left</emphasis> to strip off matching text from the
-	names it will actually list in the web interface.  The
-	remaining component of a path after this stripping has
-	occurred is called a <quote>virtual path</quote>.</para>
 
-      <para id="x_4db">Given the example above, if we have a
-	repository whose local path is <filename
-	  class="directory">/my/root/this/repo</filename>, the CGI
-	script will strip the leading <filename
-	  class="directory">/my/root</filename> from the name, and
-	publish the repository with a virtual path of <filename
-	  class="directory">this/repo</filename>.  If the base URL for
-	our CGI script is
-	<literal>http://myhostname/~myuser/hgwebdir.cgi</literal>, the
-	complete URL for that repository will be
+      <para id="x_4da">Mercurial interprète ceci en regardant le nom du répertoire
+	sur la partie <emphasis>droite</emphasis> du signe
+	<quote><literal>=</literal></quote> ; en trouvant les répertoires
+    dans cette hiérarchie de répertoires ; et en utilisant le texte sur la
+    <emphasis>gauche</emphasis> pour retirer le texte correspondant des
+    noms qu'il listera réellement dans l'interface web.
+    Le restant du chemin après que ce "stripping" a été réalisé est 
+    appelé un <quote>chemin virtuel (virtual path)</quote>.</para>
+
+      <para id="x_4db">Étant donné l'exemple ci-dessus, si vous avez un
+      dépôt dont le chemin local est <filename
+	  class="directory">/my/root/this/repo</filename>, le script CGI
+	retirera le début <filename
+	  class="directory">/my/root</filename> du nom, et
+	publiera le dépôt avec un chemin virtuel <filename
+	  class="directory">this/repo</filename>. Si l'URL de base de 
+	notre script CGI est
+	<literal>http://myhostname/~myuser/hgwebdir.cgi</literal>, 
+	l'URL complète URL pour ce dépôt sera
 	<literal>http://myhostname/~myuser/hgwebdir.cgi/this/repo</literal>.</para>
 
-      <para id="x_4dc">If we replace <filename
-	  class="directory">/my/root</filename> on the left hand side
-	of this example with <filename
-	  class="directory">/my</filename>, then <filename
-	  role="special">hgwebdir.cgi</filename> will only strip off
-	<filename class="directory">/my</filename> from the repository
-	name, and will give us a virtual path of <filename
-	  class="directory">root/this/repo</filename> instead of
+      <para id="x_4dc">Si nous remplaçons<filename
+	  class="directory">/my/root</filename> sur la gauche de
+	cet exemple par <filename
+	  class="directory">/my</filename>, alors <filename
+	  role="special">hgwebdir.cgi</filename> retirera seulement
+	<filename class="directory">/my</filename> du nom du dépôt,
+	et nous donnera comme chemin virtuel <filename
+	  class="directory">root/this/repo</filename> au lieu de
 	<filename class="directory">this/repo</filename>.</para>
 
-      <para id="x_4dd">The <filename role="special">hgwebdir.cgi</filename>
-	script will recursively search each directory listed in the
-	<literal>collections</literal> section of its configuration
-	file, but it will <literal>not</literal> recurse into the
-	repositories it finds.</para>
+      <para id="x_4dd">Le script <filename role="special">hgwebdir.cgi</filename>
+	cherchera récursivement dans chaque répertoire listé dans la 
+    section	<literal>collections</literal> de son fichier de configuration,
+	mais, il <literal>ne</literal> cherchera <literal>pas</literal> recursivement
+    dans les répertoires qu'il trouvera.</para>
 
-      <para id="x_4de">The <literal>collections</literal> mechanism makes it easy
-	to publish many repositories in a <quote>fire and
-	  forget</quote> manner.  You only need to set up the CGI
-	script and configuration file one time.  Afterwards, you can
-	publish or unpublish a repository at any time by simply moving
-	it into, or out of, the directory hierarchy in which you've
-	configured <filename role="special">hgwebdir.cgi</filename> to
-	look.</para>
+      <para id="x_4de">Le mécanisme de <literal>collections</literal> rend facile
+      la publication de plusieurs dépôts de façon <quote>fire and
+	  forget</quote>.  Vous devez seulement installer le script CGI
+	et le fichier de configuration une seule fois.  Après, vous pouvez
+    publier ou "dépublier" un dépôt n'importe quand en le déplaçant simplement
+    dans, ou hors de la hiérarchie de répertoire dans laquelle vous avez
+    indiqué à <filename role="special">hgwebdir.cgi</filename> de
+	regarder.</para>
 
       <sect3>
-	<title>Explicitly specifying which repositories to
-	  publish</title>
+	<title>Spécifier explicitement quels dépôts publier</title>
 
-	<para id="x_4df">In addition to the <literal>collections</literal>
-	  mechanism, the <filename
-	    role="special">hgwebdir.cgi</filename> script allows you
-	  to publish a specific list of repositories.  To do so,
-	  create a <literal>paths</literal> section, with contents of
-	  the following form.</para>
+	<para id="x_4df">En plus du mécanisme de <literal>collections</literal>,
+	  le script <filename
+	    role="special">hgwebdir.cgi</filename> vous permet
+      de publier une liste spécifique de dépôts. Pour cela,
+      créez une section <literal>paths</literal>, avec un contenu de
+      la forme suivante.</para>
 	<programlisting>[paths]
 repo1 = /my/path/to/some/repo
 repo2 = /some/path/to/another</programlisting>
-	<para id="x_4e0">In this case, the virtual path (the component that will
-	  appear in a URL) is on the left hand side of each
-	  definition, while the path to the repository is on the
-	  right.  Notice that there does not need to be any
-	  relationship between the virtual path you choose and the
-	  location of a repository in your filesystem.</para>
 
-	<para id="x_4e1">If you wish, you can use both the
-	  <literal>collections</literal> and <literal>paths</literal>
-	  mechanisms simultaneously in a single configuration
-	  file.</para>
+	<para id="x_4e0">Dans ce cas, le chemin virtuel (le composant qui
+    apparaîtra dans une URL) est sur la gauche de chaque
+    définition, tandis que le chemin vers le dépôt est sur la
+    droite. Notez qu'il n'y a pas besoin de relation 
+    entre le chemin virtuel que vous choisissez et
+    l'emplacement d'un dépôt dans votre système de fichiers.</para>
+
+	<para id="x_4e1">Si vous le souhaitez, vous pouvez utiliser
+    les mécanismes de 
+	  <literal>collections</literal> et de <literal>paths</literal>
+	  simultanément dans un seul fichier de configuration.</para>
 
 	<note>
-	  <title>Beware duplicate virtual paths</title>
+	  <title>Prendre garde aux chemins virtuels en double</title>
 
-	  <para id="x_4e2">  If several repositories have the same
-	    virtual path, <filename
-	      role="special">hgwebdir.cgi</filename> will not report
-	    an error.  Instead, it will behave unpredictably.</para>
+	  <para id="x_4e2">Si plusieurs dépôts ont le même
+      chemin virtuel, <filename
+	      role="special">hgwebdir.cgi</filename> ne signalera pas
+	    d'erreur. Au lieu de cela, il se comportera de façon
+        imprévisible.</para>
 	</note>
       </sect3>
     </sect2>
 
     <sect2>
-      <title>Downloading source archives</title>
+      <title>Télécharger des archives de sources</title>
 
-      <para id="x_4e3">Mercurial's web interface lets users download an archive
-	of any revision.  This archive will contain a snapshot of the
-	working directory as of that revision, but it will not contain
-	a copy of the repository data.</para>
+      <para id="x_4e3">L'interface web de Mercurial laisse les utilisateurs télécharger
+      une archive de n'importe quelle révision. Cette archive contiendra une image du
+      répertoire de travail comme pour cette révision, mais il ne contiendra pas
+      une copie des données du dépôt.</para>
 
-      <para id="x_4e4">By default, this feature is not enabled.  To enable it,
-	you'll need to add an <envar
-	  role="rc-item-web">allow_archive</envar> item to the
-	<literal role="rc-web">web</literal> section of your <filename
-	  role="special">~/.hgrc</filename>; see below for details.</para>
+      <para id="x_4e4">Par défaut, cette fonctionnalité n'est pas activée. Pour l'activer,
+      vous devrez ajouter un élément <envar
+	  role="rc-item-web">allow_archive</envar> à la section
+	<literal role="rc-web">web</literal> de votre <filename
+	  role="special">~/.hgrc</filename>; voyez plus loin pour des détails.</para>
     </sect2>
     <sect2>
-      <title>Web configuration options</title>
+      <title>Options de configuration web</title>
 
-      <para id="x_4e5">Mercurial's web interfaces (the <command role="hg-cmd">hg
-	  serve</command> command, and the <filename
-	  role="special">hgweb.cgi</filename> and <filename
-	  role="special">hgwebdir.cgi</filename> scripts) have a
-	number of configuration options that you can set.  These
-	belong in a section named <literal
+      <para id="x_4e5">Les interfaces web de Mercurial (la commande <command role="hg-cmd">hg
+	  serve</command>, et les scripts <filename
+	  role="special">hgweb.cgi</filename> et <filename
+	  role="special">hgwebdir.cgi</filename>) ont un nombre
+      d'options de configuration que vous pouvez mettre. Celles-ci
+      appartiennent à une section appelée <literal
 	  role="rc-web">web</literal>.</para>
       <itemizedlist>
 	<listitem><para id="x_4e6"><envar
-	      role="rc-item-web">allow_archive</envar>: Determines
-	    which (if any) archive download mechanisms Mercurial
-	    supports.  If you enable this feature, users of the web
-	    interface will be able to download an archive of whatever
-	    revision of a repository they are viewing. To enable the
-	    archive feature, this item must take the form of a
-	    sequence of words drawn from the list below.</para>
+	      role="rc-item-web">allow_archive</envar> : détermine
+	    quels mécanismes de téléchargement d'archive (si il y en a) Mercurial
+        accepte. Si vous activez cette fonctionnalité, les utilisateurs de
+        l'interface web seront capable de télécharger une archive de
+        n'importe quelle révision d'un dépôt qu'ils regardent. Pour activer
+        la fonction archive, cet élément doit prendre la forme d'une
+        série de mots pris dans la liste ci-dessous.</para>
 	  <itemizedlist>
-	    <listitem><para id="x_4e7"><literal>bz2</literal>: A
-		<command>tar</command> archive, compressed using
-		<literal>bzip2</literal> compression.  This has the
-		best compression ratio, but uses the most CPU time on
-		the server.</para>
+	    <listitem><para id="x_4e7"><literal>bz2</literal>: une
+		archive <command>tar</command>, comprimée en utilisant la
+		compression <literal>bzip2</literal>. Ceci a le meilleur
+        taux de compression, mais utilise le plus de temps processeur sur
+        le serveur.</para>
 	    </listitem>
-	    <listitem><para id="x_4e8"><literal>gz</literal>: A
-		<command>tar</command> archive, compressed using
-		<literal>gzip</literal> compression.</para>
+	    <listitem><para id="x_4e8"><literal>gz</literal>: une
+		archive <command>tar</command>, comprimée en utilisant la
+		compression <literal>gzip</literal>.</para>
 	    </listitem>
-	    <listitem><para id="x_4e9"><literal>zip</literal>: A
-		<command>zip</command> archive, compressed using LZW
-		compression.  This format has the worst compression
-		ratio, but is widely used in the Windows world.</para>
+	    <listitem><para id="x_4e9"><literal>zip</literal>: une
+		archive <command>zip</command>, comprimée en utilisant la
+		compression LZW.  Ce format a le pire taux de compression,
+        mais il est largement utilisé dans le monde Windows.</para>
 	    </listitem>
 	  </itemizedlist>
-	  <para id="x_4ea">  If you provide an empty list, or don't have an
-	    <envar role="rc-item-web">allow_archive</envar> entry at
-	    all, this feature will be disabled.  Here is an example of
-	    how to enable all three supported formats.</para>
+	  <para id="x_4ea">Si vous fournissez une liste vide, ou n'avez pas
+      d'entrée <envar role="rc-item-web">allow_archive</envar> du tout,
+      cette fonctionnalité sera désactivée. Voici un exemple de
+      comment activer les trois formats supportés.</para>
 	  <programlisting>[web]
 allow_archive = bz2 gz zip</programlisting>
 	</listitem>
 	<listitem><para id="x_4eb"><envar role="rc-item-web">allowpull</envar>:
-	    Boolean.  Determines whether the web interface allows
-	    remote users to <command role="hg-cmd">hg pull</command>
-	    and <command role="hg-cmd">hg clone</command> this
-	    repository over HTTP.  If set to <literal>no</literal> or
-	    <literal>false</literal>, only the
-	    <quote>human-oriented</quote> portion of the web interface
-	    is available.</para>
+	    Boolean. Détermine si l'interface web permet aux
+        utilisateurs distants de <command role="hg-cmd">hg pull</command>
+	    et <command role="hg-cmd">hg clone</command> ce
+	    dépôt sur HTTP.  Si mis à <literal>no</literal> ou
+	    <literal>false</literal>, seule la partie
+	    <quote>orienté humain</quote> de l'interface web
+        est disponible.</para>
 	</listitem>
+    <!-- TODO comment traduire "free-form" ? -->
 	<listitem><para id="x_4ec"><envar role="rc-item-web">contact</envar>:
-	    String.  A free-form (but preferably brief) string
-	    identifying the person or group in charge of the
-	    repository.  This often contains the name and email
-	    address of a person or mailing list.  It often makes sense
-	    to place this entry in a repository's own <filename
-	      role="special">.hg/hgrc</filename> file, but it can make
-	    sense to use in a global <filename
-	      role="special">~/.hgrc</filename> if every repository
-	    has a single maintainer.</para>
+	    String.  Une chaîne de caractères "free-form" (mais de préférence brève)
+	    identifiant la personne ou le groupe responsable du
+        dépôt. Ceci contient souvent le nom et l'adresse électronique
+        d'une personne ou d'une liste de distribution. Il est judicieux de
+        placer cette entrée dans le fichier <filename
+	      role="special">.hg/hgrc</filename> du dépôt, mais il peut être
+        judicieux d'utiliser un <filename
+	      role="special">~/.hgrc</filename> global si chaque dépôt
+          a un seul "mainteneur".</para>
 	</listitem>
 	<listitem><para id="x_4ed"><envar role="rc-item-web">maxchanges</envar>:
-	    Integer.  The default maximum number of changesets to
-	    display in a single page of output.</para>
+	    Integer.  La valeur maximum par défaut du nombre de changesets à
+        afficher dans une seule page de sortie.</para>
 	</listitem>
 	<listitem><para id="x_4ee"><envar role="rc-item-web">maxfiles</envar>:
-	    Integer.  The default maximum number of modified files to
-	    display in a single page of output.</para>
+	    Integer.  Le nombre maximum par défaut de fichier modifiés à
+        à afficher dans une seule page de sortie.</para>
 	</listitem>
 	<listitem><para id="x_4ef"><envar role="rc-item-web">stripes</envar>:
-	    Integer.  If the web interface displays alternating
-	    <quote>stripes</quote> to make it easier to visually align
-	    rows when you are looking at a table, this number controls
-	    the number of rows in each stripe.</para>
+	    Integer.  Si l'interface web affiche alternativement desIf the web interface displays alternating
+	    <quote>rayures</quote> pour rendre plus facile l'alignement visuel
+        des lignes lorsque vous regarder une table, ce nombre contrôle
+        le nombre de lignes dans chaque rayure.</para>
 	</listitem>
+    <!-- TODO comment traduire "template" ? J'ai mis "modèle" mais j'ai un doute. -->
 	<listitem><para id="x_4f0"><envar
-	      role="rc-item-web">style</envar>: Controls the template
-	    Mercurial uses to display the web interface.  Mercurial
-	    ships with several web templates.</para>
+	      role="rc-item-web">style</envar>: Contrôle le "modèle"
+	    que Mercurial utilise pour afficher l'interface web.  Mercurial
+	    est livré avec plusieurs "modèles" web.</para>
 	  <itemizedlist>
 	    <listitem>
-	      <para id="x_6aa"><literal>coal</literal> is monochromatic.</para>
+	      <para id="x_6aa"><literal>coal</literal> est monochromatique.</para>
 	    </listitem>
 	    <listitem>
-	      <para id="x_6ab"><literal>gitweb</literal> emulates the visual
-		style of git's web interface.</para>
+	      <para id="x_6ab"><literal>gitweb</literal> émule le style visuel
+		de l'interface web de git.</para>
 	    </listitem>
 	    <listitem>
-	      <para id="x_6ac"><literal>monoblue</literal> uses solid blues and
-		greys.</para>
+	      <para id="x_6ac"><literal>monoblue</literal> utilise des bleus et des
+          gris massifs.</para>
 	    </listitem>
 	    <listitem>
-	      <para id="x_6ad"><literal>paper</literal> is the default.</para>
+	      <para id="x_6ad"><literal>paper</literal> est le "modèle" par défaut.</para>
 	    </listitem>
 	    <listitem>
-	      <para id="x_6ae"><literal>spartan</literal> was the default for a
-		long time.</para>
+	      <para id="x_6ae"><literal>spartan</literal> a été le "modèle" par défaut
+          durant longtemps.</para>
 	    </listitem>
 	  </itemizedlist>
-	  <para id="x_6af">You can
-	    also specify a custom template of your own; see 
-	    <xref linkend="chap:template"/> for details. Here, you can
-	    see how to enable the <literal>gitweb</literal>
-	    style.</para>
+	  <para id="x_6af">Vous pouvez aussi spécifiez un "modèle" personnalisé à vous;
+      voyez <xref linkend="chap:template"/> pour des détails. Ici, vous pouvez
+	    voir comment activer le style <literal>gitweb</literal>.</para>
 	  <programlisting>[web]
 style = gitweb</programlisting>
 	</listitem>
 	<listitem><para id="x_4f1"><envar role="rc-item-web">templates</envar>:
-	    Path.  The directory in which to search for template
-	    files.  By default, Mercurial searches in the directory in
-	    which it was installed.</para>
+	    Path.  Le répertoire dans lequel chercher les fichiers "modèles".
+        Par défaut, Mercurial cherche dans le répertoire dans lequel
+        il a été installé.</para>
 	</listitem></itemizedlist>
-      <para id="x_4f2">If you are using <filename
-	  role="special">hgwebdir.cgi</filename>, you can place a few
-	configuration items in a <literal role="rc-web">web</literal>
-	section of the <filename
-	  role="special">hgweb.config</filename> file instead of a
-	<filename role="special">~/.hgrc</filename> file, for
-	convenience.  These items are <envar
-	  role="rc-item-web">motd</envar> and <envar
+      <para id="x_4f2">Si vous utilisez <filename
+	  role="special">hgwebdir.cgi</filename>, vous pouvez mettre quelques
+      éléments de configuration dans une section <literal role="rc-web">web</literal>
+	du fichier <filename
+	  role="special">hgweb.config</filename> au lieu d'un fichier
+	<filename role="special">~/.hgrc</filename>, par
+    commodité. Ces éléments sont <envar
+	  role="rc-item-web">motd</envar> et <envar
 	  role="rc-item-web">style</envar>.</para>
 
       <sect3>
-	<title>Options specific to an individual repository</title>
+	<title>Options spécifiques à un dépôt individuel</title>
 
-	<para id="x_4f3">A few <literal role="rc-web">web</literal> configuration
-	  items ought to be placed in a repository's local <filename
-	    role="special">.hg/hgrc</filename>, rather than a user's
-	  or global <filename role="special">~/.hgrc</filename>.</para>
+	<para id="x_4f3">Quelques éléments de configuration <literal role="rc-web">web</literal>
+	  devraient être mis dans <filename
+	    role="special">.hg/hgrc</filename> local à un dépôt, plutôt que dans un
+	  <filename role="special">~/.hgrc</filename> d'utilisateur ou global.</para>
 	<itemizedlist>
 	  <listitem><para id="x_4f4"><envar
-		role="rc-item-web">description</envar>: String.  A
-	      free-form (but preferably brief) string that describes
-	      the contents or purpose of the repository.</para>
+		role="rc-item-web">description</envar>: String.  Une chaîne de
+	      caractères "free-form" (mais de préférence brève) qui décrit
+          le contenu ou le but du dépôt.</para>
 	  </listitem>
 	  <listitem><para id="x_4f5"><envar role="rc-item-web">name</envar>:
-	      String.  The name to use for the repository in the web
-	      interface.  This overrides the default name, which is
-	      the last component of the repository's path.</para>
+	      String.  Le nom à utiliser pour le dépôt dans l'interface
+          web. Ceci prime sur le nom par défaut, qui est le dernier
+          composant du chemin du dépôt.</para>
 	  </listitem></itemizedlist>
       </sect3>
 
       <sect3>
-	<title>Options specific to the <command role="hg-cmd">hg
-	    serve</command> command</title>
+	<title>Options spécifiques à la commande <command role="hg-cmd">hg
+	    serve</command></title>
 
-	<para id="x_4f6">Some of the items in the <literal
-	    role="rc-web">web</literal> section of a <filename
-	    role="special">~/.hgrc</filename> file are only for use
-	  with the <command role="hg-cmd">hg serve</command>
-	  command.</para>
+	<para id="x_4f6">Certaines entrées dans la section <literal
+	    role="rc-web">web</literal> d'un fichier <filename
+	    role="special">~/.hgrc</filename> sont là seulement pour être utilisée
+        avec la commande <command role="hg-cmd">hg serve</command>.</para>
 	<itemizedlist>
 	  <listitem><para id="x_4f7"><envar role="rc-item-web">accesslog</envar>:
-	      Path.  The name of a file into which to write an access
-	      log.  By default, the <command role="hg-cmd">hg
-		serve</command> command writes this information to
-	      standard output, not to a file.  Log entries are written
-	      in the standard <quote>combined</quote> file format used
-	      by almost all web servers.</para>
+	      Path.  Le nom d'un fichier dans lequel écrire le "log" d'accès.
+          Par défaut, la commande <command role="hg-cmd">hg
+		serve</command> écrit cette information sur la sortie
+        standard, pas dans un fichier. Les entrées de "log" sont écrites
+        dans le format de fichier standard <quote>combined</quote> utilisé
+        par pratiquement tous les serveurs web.</para>
 	  </listitem>
 	  <listitem><para id="x_4f8"><envar role="rc-item-web">address</envar>:
-	      String.  The local address on which the server should
-	      listen for incoming connections.  By default, the server
-	      listens on all addresses.</para>
+	      String.  L'adresse locale sur laquelle le serveur devrait
+          écouter les connexions entrantes. Par défaut, le serveur
+          écoute sur toutes les adresses.</para>
 	  </listitem>
 	  <listitem><para id="x_4f9"><envar role="rc-item-web">errorlog</envar>:
-	      Path.  The name of a file into which to write an error
-	      log.  By default, the <command role="hg-cmd">hg
-		serve</command> command writes this information to
-	      standard error, not to a file.</para>
+	      Path.  Le nom d'un fichier dans lequel écrire le "log" d'erreur.
+          Par défaut, la commande <command role="hg-cmd">hg
+		serve</command> écrit cette information sur la sortie erreur,
+        pas dans un fichier.</para>
 	  </listitem>
 	  <listitem><para id="x_4fa"><envar role="rc-item-web">ipv6</envar>:
-	      Boolean.  Whether to use the IPv6 protocol. By default,
-	      IPv6 is not used.</para>
+	      Boolean.  Si il faut utiliser le protocole IPv6. Par défaut,
+          IPv6 n'est pas utilisé.</para>
 	  </listitem>
 	  <listitem><para id="x_4fb"><envar role="rc-item-web">port</envar>:
-	      Integer.  The TCP port number on which the server should
-	      listen.  The default port number used is 8000.</para>
+	      Integer.  Le numéro de port TCP sur lequel le serveur devrait
+          écouter. Le numéro de port par défaut utilisé est 8000.</para>
 	  </listitem></itemizedlist>
       </sect3>
 
       <sect3>
-	<title>Choosing the right <filename
-	    role="special">~/.hgrc</filename> file to add <literal
-	    role="rc-web">web</literal> items to</title>
+	<title>Choisir le bon fichier <filename
+	    role="special">~/.hgrc</filename> auquel ajouter les éléments <literal
+	    role="rc-web">web</literal></title>
 
-	<para id="x_4fc">It is important to remember that a web server like
-	  Apache or <literal>lighttpd</literal> will run under a user
-	  ID that is different to yours. CGI scripts run by your
-	  server, such as <filename
-	    role="special">hgweb.cgi</filename>, will usually also run
-	  under that user ID.</para>
+	<para id="x_4fc">Il est important de se souvenir qu'un serveur web comme
+      Apache ou <literal>lighttpd</literal> fonctionnera avec un ID utilisateur
+      qui est différent du vôtre. Les scripts CGI fonctionnant sur votre serveur,
+      tels que <filename
+	    role="special">hgweb.cgi</filename>, s'exécuteront habituellement aussi
+        sous un autre ID utilisateur.</para>
 
-	<para id="x_4fd">If you add <literal role="rc-web">web</literal> items to
-	  your own personal <filename role="special">~/.hgrc</filename> file, CGI scripts won't read that
-	  <filename role="special">~/.hgrc</filename> file.  Those
-	  settings will thus only affect the behavior of the <command
-	    role="hg-cmd">hg serve</command> command when you run it.
-	  To cause CGI scripts to see your settings, either create a
-	  <filename role="special">~/.hgrc</filename> file in the
-	  home directory of the user ID that runs your web server, or
-	  add those settings to a system-wide <filename
-	    role="special">hgrc</filename> file.</para>
+	<para id="x_4fd">Si vous ajoutez des éléments <literal role="rc-web">web</literal> à
+    votre propre fichier <filename role="special">~/.hgrc</filename> personnel,
+    les scripts CGI ne pourront pas lire ce fichier
+	  <filename role="special">~/.hgrc</filename>. Ces réglages
+      toucheront donc seulement le comportement de la commande <command
+	    role="hg-cmd">hg serve</command> quand vous l'exécuterez.
+	  Pour faire voir vos réglages aux scripts CGI, soit créez un
+	  fichier <filename role="special">~/.hgrc</filename> dans le répertoire
+      "home" de l'utilisateur qui exécute votre serveur web, soit
+      ajouter ces réglages dans un fichier <filename
+	    role="special">hgrc</filename> "system-wide".</para>
       </sect3>
     </sect2>
   </sect1>
 
   <sect1>
-    <title>System-wide configuration</title>
+    <title>Configuration "system-wide"</title>
 
-    <para id="x_6b0">On Unix-like systems shared by multiple users (such as a
-      server to which people publish changes), it often makes sense to
-      set up some global default behaviors, such as what theme to use
-      in web interfaces.</para>
+    <para id="x_6b0">Sur des systèmes "Unix-like" partagé par plusieurs utilisateurs
+      (tel qu'un serveur où les gens publient des modifications), il est souvent judicieux
+      de définir certains comportement globaux par défaut, tels que le thème à utiliser
+      dans les interfaces web.</para>
 
-    <para id="x_6b1">If a file named <filename>/etc/mercurial/hgrc</filename>
-      exists, Mercurial will read it at startup time and apply any
-      configuration settings it finds in that file.  It will also look
-      for files ending in a <literal>.rc</literal> extension in a
-      directory named <filename>/etc/mercurial/hgrc.d</filename>, and
-      apply any configuration settings it finds in each of those
-      files.</para>
+    <para id="x_6b1">Si un fichier appelé <filename>/etc/mercurial/hgrc</filename>
+      existe, Mercurial le lira au démarrage et appliquera tous les réglages
+      de configuration qu'il trouve dans ce fichier. Il regardera aussi
+      les fichiers finissant par une extension <literal>.rc</literal> dans un
+      répertoire appelé <filename>/etc/mercurial/hgrc.d</filename>, et
+      appliquera tous les réglages de configuration qu'il trouve dans chacun
+      de ces fichiers.</para>
 
     <sect2>
-      <title>Making Mercurial more trusting</title>
+      <title>Rendre Mercurial plus confiant</title>
 
-      <para id="x_6b2">One situation in which a global <filename>hgrc</filename>
-	can be useful is if users are pulling changes owned by other
-	users.  By default, Mercurial will not trust most of the
-	configuration items in a <filename>.hg/hgrc</filename> file
-	inside a repository that is owned by a different user. If we
-	clone or pull changes from such a repository, Mercurial will
-	print a warning stating that it does not trust their
+      <para id="x_6b2">Une situation dans laquelle un <filename>hgrc</filename>
+	global peut être utile est si des utilisateurs "pullent" des modifications
+    faites par d'autres utilisateurs. Par défaut, Mercurial can be useful is if users are pulling changes owned by other
+	users.  By default, Mercurial ne se fiera pas à la plupart des
+    entrées de configuration dans un fichier <filename>.hg/hgrc</filename>
+	à l'intérieur d'un dépôt qui appartient à un utilisateur différent. Si nous
+    clonons ou "pullons" des modifications d'un tel dépôt, Mercurial
+    affichera un avertissement indiquant qu'il ne fait pas confiance aux 
 	<filename>.hg/hgrc</filename>.</para>
 
-      <para id="x_6b3">If everyone in a particular Unix group is on the same team
-	and <emphasis>should</emphasis> trust each other's
-	configuration settings, or we want to trust particular users,
-	we can override Mercurial's skeptical defaults by creating a
-	system-wide <filename>hgrc</filename> file such as the
-	following:</para>
+      <para id="x_6b3">Si quelqu'un dans un groupe Unix particulier est dans la même équipe
+      et <emphasis>devrait</emphasis> avoir confiance dans chaque réglage
+      de configuration des autres, ou si nous voulons avoir confiance dans des utilisateurs
+      particuliers, nous pouvons passer outre les défauts sceptiques de Mercurial
+      en créant un fichier <filename>hgrc</filename> "system-wide" tel que celui qui
+    suit ::</para>
 
     <programlisting># Save this as e.g. /etc/mercurial/hgrc.d/trust.rc
 [trusted]
@@ -1596,7 +1588,6 @@ users = apache, bobo
     </sect2>
   </sect1>
 </chapter>
-<!-- TODO : part 4/4 -->
 <!--
 local variables: 
 sgml-parent-document: ("00book.xml" "book" "chapter")
