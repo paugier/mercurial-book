@@ -139,75 +139,8 @@
       </listitem></itemizedlist>
 
     <para id="x_510">The <literal role="hg-ext">inotify</literal> extension is
-      not yet shipped with Mercurial as of May 2007, so it's a little
-      more involved to set up than other extensions.  But the
-      performance improvement is worth it!</para>
-
-    <para id="x_511">The extension currently comes in two parts: a set of patches
-      to the Mercurial source code, and a library of Python bindings
-      to the <literal>inotify</literal> subsystem.</para>
-    <note>
-      <para id="x_512">  There are <emphasis>two</emphasis> Python
-	<literal>inotify</literal> binding libraries.  One of them is
-	called <literal>pyinotify</literal>, and is packaged by some
-	Linux distributions as <literal>python-inotify</literal>.
-	This is <emphasis>not</emphasis> the one you'll need, as it is
-	too buggy and inefficient to be practical.</para>
-    </note>
-    <para id="x_513">To get going, it's best to already have a functioning copy
-      of Mercurial installed.</para>
-    <note>
-      <para id="x_514">  If you follow the instructions below, you'll be
-	<emphasis>replacing</emphasis> and overwriting any existing
-	installation of Mercurial that you might already have, using
-	the latest <quote>bleeding edge</quote> Mercurial code. Don't
-	say you weren't warned!</para>
-    </note>
-    <orderedlist>
-      <listitem><para id="x_515">Clone the Python <literal>inotify</literal>
-	  binding repository.  Build and install it.</para>
-	<programlisting>hg clone http://hg.kublai.com/python/inotify
-cd inotify
-python setup.py build --force
-sudo python setup.py install --skip-build</programlisting>
-      </listitem>
-      <listitem><para id="x_516">Clone the <filename
-	    class="directory">crew</filename> Mercurial repository.
-	  Clone the <literal role="hg-ext">inotify</literal> patch
-	  repository so that Mercurial Queues will be able to apply
-	  patches to your cope of the <filename
-	    class="directory">crew</filename> repository.</para>
-	<programlisting>hg clone http://hg.intevation.org/mercurial/crew
-hg clone crew inotify
-hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches</programlisting>
-      </listitem>
-      <listitem><para id="x_517">Make sure that you have the Mercurial Queues
-	  extension, <literal role="hg-ext">mq</literal>, enabled.  If
-	  you've never used MQ, read <xref
-	    linkend="sec:mq:start"/> to get started
-	  quickly.</para>
-      </listitem>
-      <listitem><para id="x_518">Go into the <filename
-	    class="directory">inotify</filename> repo, and apply all
-	  of the <literal role="hg-ext">inotify</literal> patches
-	  using the <option role="hg-ext-mq-cmd-qpush-opt">hg
-	    -a</option> option to the <command
-	    role="hg-ext-mq">qpush</command> command.</para>
-	<programlisting>cd inotify
-hg qpush -a</programlisting>
-      </listitem>
-      <listitem><para id="x_519">  If you get an error message from <command
-	    role="hg-ext-mq">qpush</command>, you should not continue.
-	  Instead, ask for help.</para>
-      </listitem>
-      <listitem><para id="x_51a">Build and install the patched version of
-	  Mercurial.</para>
-	<programlisting>python setup.py build --force
-sudo python setup.py install --skip-build</programlisting>
-      </listitem>
-    </orderedlist>
-    <para id="x_51b">Once you've build a suitably patched version of Mercurial,
-      all you need to do to enable the <literal
+      shipped with Mercurial since 1.0.
+      All you need to do to enable the <literal
 	role="hg-ext">inotify</literal> extension is add an entry to
       your <filename role="special">~/.hgrc</filename>.</para>
     <programlisting>[extensions] inotify =</programlisting>
