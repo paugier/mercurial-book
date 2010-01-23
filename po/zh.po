@@ -7318,6 +7318,10 @@ msgid ""
 "original file.  It treats these copied files specially when you merge your "
 "work with someone else's."
 msgstr ""
+"Mercurial提供了一个<command role=\"hg-cmd\">hg copy</command>命令，可以用来拷"
+"贝文件。当你用这个命令拷贝文件时，Mercurial会记录下这个文件是由原来的文件拷贝"
+"而来的。以后在你把工作和其他人的工作合并的时候，它会对这些拷贝的文件进行特殊处"
+"理。"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch05-daily.xml:229
@@ -7331,13 +7335,15 @@ msgid ""
 "best illustrate what this means, let's create an example.  We'll start with "
 "the usual tiny repository that contains a single file."
 msgstr ""
+"在合并过程中，变更会<quote>传递</quote>给拷贝。为了更好的解释它，我们创建一个"
+"例子。我们从一个仅仅包含一个文件的小版本库开始。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:238
 msgid ""
 "We need to do some work in parallel, so that we'll have something to merge.  "
 "So let's clone our repository."
-msgstr ""
+msgstr "我们需要并行的工作，所以我们要进行合并。所以我们将版本库克隆。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:244
@@ -7345,6 +7351,8 @@ msgid ""
 "Back in our initial repository, let's use the <command role=\"hg-cmd\">hg "
 "copy</command> command to make a copy of the first file we created."
 msgstr ""
+"回到初始的版本库，我们用<command role=\"hg-cmd\">hg copy</command>命令创建我们"
+"开始时建立的文件的拷贝。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:250
@@ -7352,6 +7360,8 @@ msgid ""
 "If we look at the output of the <command role=\"hg-cmd\">hg status</command> "
 "command afterwards, the copied file looks just like a normal added file."
 msgstr ""
+"然后如果我们看一下<command role=\"hg-cmd\">hg status</command>的输出，发现拷贝"
+"的文件看起来像普通的新添加的文件。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:256
@@ -7361,6 +7371,9 @@ msgid ""
 "output: this is the file that our newly-added file was copied <emphasis>from</"
 "emphasis>."
 msgstr ""
+"当时如果我们给<command role=\"hg-cmd\">hg status</command>加上option role="
+"\"hg-opt-status\">-C</option>选项，它会输出另外一行：新添加的文件是从那个文件"
+"拷贝<emphasis>而来</emphasis>的。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:264
@@ -7368,6 +7381,8 @@ msgid ""
 "Now, back in the repository we cloned, let's make a change in parallel.  "
 "We'll add a line of content to the original file that we created."
 msgstr ""
+"现在，回到我们克隆的那个版本库，我们并行的作一点改动，给我们最开始创建的文件添"
+"加一行。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:270
@@ -7377,6 +7392,9 @@ msgid ""
 "Mercurial will propagate the changes that we made locally to <filename>file</"
 "filename> into its copy, <filename>new-file</filename>."
 msgstr ""
+"现在版本库里面有了修改过的文件。我们从第一个版本库拖变更，并且合并两个顶版本，"
+"Mercurial会将变更从我们修改的文件<filename>file</filename>传递给给它的拷贝，"
+"<filename>new-file</filename>。"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch05-daily.xml:280
