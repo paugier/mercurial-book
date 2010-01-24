@@ -7307,7 +7307,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><title>
 #: ../en/ch05-daily.xml:219
 msgid "Copying files"
-msgstr "复制文件"
+msgstr "拷贝文件"
 
 #. type: Content of: <book><chapter><sect1><para>
 #: ../en/ch05-daily.xml:221
@@ -7326,7 +7326,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch05-daily.xml:229
 msgid "The results of copying during a merge"
-msgstr "合并期间的复制结果"
+msgstr "合并后拷贝文件的内容"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:231
@@ -7399,7 +7399,7 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch05-daily.xml:280
 msgid "Why should changes follow copies?"
-msgstr "为什么复制后需要后续修改?"
+msgstr "为什么要传递变更?"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:282
@@ -7441,6 +7441,10 @@ msgid ""
 "repository, without knowing about the bug or having seen the fix, and you "
 "have started hacking on your copy of the file."
 msgstr ""
+"Mercurial这样设计的原因如下。假设我们在源代码中修正了一个重要的bug，然后提交了"
+"变更。与此同时，你决定用<command role=\"hg-cmd\">hg copy</command>命令在你的版"
+"本库中拷贝这个文件，但你并不知到这个bug也没有发现它已经被修复了，并且你已经开"
+"始在你的拷贝上进行修改了。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:304
@@ -7450,6 +7454,9 @@ msgid ""
 "contain the bug, and unless you knew to propagate the bug fix by hand, the "
 "bug would <emphasis>remain</emphasis> in your copy of the file."
 msgstr ""
+"如果你把我的变更拖进来并且合并，但Mercurial<emphasis>不会</emphasis>将变更传递"
+"给拷贝，那么你的新代码文件将仍然包含那个bug，除非你知道并且手动修复那个它，这"
+"个bug会一直<emphasis>保留</emphasis>在你的拷贝里面。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:310
@@ -7459,6 +7466,9 @@ msgid ""
 "Mercurial is the <emphasis>only</emphasis> revision control system that "
 "propagates changes across copies like this."
 msgstr ""
+"Mercurial将修复了bug的变更从原始文件自动的传播到拷贝，从而避免了这样的问题。据"
+"我了解，Mercurial是<emphasis>唯一</emphasis>的像这样在拷贝间传播变更的版本控制"
+"系统。"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:316
@@ -7468,11 +7478,14 @@ msgid ""
 "original file to the copied file, and that's why Mercurial only propagates "
 "changes across copies at the first merge, and not afterwards."
 msgstr ""
+"一旦你的变更历史中有了拷贝和随后的合并记录，通常再次将变更从原始文件传递到拷贝"
+"文件，这就是Mercurial仅仅在第一次合并的时候在拷贝间传递变更的原因，而不是此"
+"后。"
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
 #: ../en/ch05-daily.xml:324
 msgid "How to make changes <emphasis>not</emphasis> follow a copy"
-msgstr "如何让复制后<emphasis>不</emphasis>修改?"
+msgstr "如何<emphasis>禁止</emphasis>变更传递?"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch05-daily.xml:327
