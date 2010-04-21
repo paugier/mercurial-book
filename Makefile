@@ -6,7 +6,7 @@ include Makefile.vars
 FORMATS=html html-single pdf epub
 
 PO_LANGUAGES := zh
-DBK_LANGUAGES := en it
+DBK_LANGUAGES := en it fr
 LANGUAGES := $(DBK_LANGUAGES) $(PO_LANGUAGES)
 
 UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
