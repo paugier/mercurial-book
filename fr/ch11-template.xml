@@ -1,0 +1,685 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:template">
+  <?dbhtml filename="customizing-the-output-of-mercurial.html"?>
+  <title>Customizing the output of Mercurial</title>
+
+  <para id="x_578">Mercurial provides a powerful mechanism to let you control how
+    it displays information.  The mechanism is based on templates.
+    You can use templates to generate specific output for a single
+    command, or to customize the entire appearance of the built-in web
+    interface.</para>
+
+  <sect1 id="sec:style">
+    <title>Using precanned output styles</title>
+
+    <para id="x_579">Packaged with Mercurial are some output styles that you can
+      use immediately.  A style is simply a precanned template that
+      someone wrote and installed somewhere that Mercurial can
+      find.</para>
+
+    <para id="x_57a">Before we take a look at Mercurial's bundled styles, let's
+      review its normal output.</para>
+
+    &interaction.template.simple.normal;
+
+    <para id="x_57b">This is somewhat informative, but it takes up a lot of
+      space&emdash;five lines of output per changeset.  The
+      <literal>compact</literal> style reduces this to three lines,
+      presented in a sparse manner.</para>
+
+    &interaction.template.simple.compact;
+
+    <para id="x_57c">The <literal>changelog</literal> style hints at the
+      expressive power of Mercurial's templating engine.  This style
+      attempts to follow the GNU Project's changelog
+      guidelines<citation>web:changelog</citation>.</para>
+
+    &interaction.template.simple.changelog;
+
+    <para id="x_57d">You will not be shocked to learn that Mercurial's default
+      output style is named <literal>default</literal>.</para>
+
+    <sect2>
+      <title>Setting a default style</title>
+
+      <para id="x_57e">You can modify the output style that Mercurial will use
+	for every command by editing your <filename
+	  role="special">~/.hgrc</filename> file, naming the style
+	you would prefer to use.</para>
+
+      <programlisting>[ui]
+style = compact</programlisting>
+
+      <para id="x_57f">If you write a style of your own, you can use it by either
+	providing the path to your style file, or copying your style
+	file into a location where Mercurial can find it (typically
+	the <literal>templates</literal> subdirectory of your
+	Mercurial install directory).</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Commands that support styles and templates</title>
+
+    <para id="x_580">All of Mercurial's
+      <quote><literal>log</literal>-like</quote> commands let you use
+      styles and templates: <command role="hg-cmd">hg
+	incoming</command>, <command role="hg-cmd">hg log</command>,
+      <command role="hg-cmd">hg outgoing</command>, and <command
+	role="hg-cmd">hg tip</command>.</para>
+
+    <para id="x_581">As I write this manual, these are so far the only commands
+      that support styles and templates.  Since these are the most
+      important commands that need customizable output, there has been
+      little pressure from the Mercurial user community to add style
+      and template support to other commands.</para>
+  </sect1>
+
+  <sect1>
+    <title>The basics of templating</title>
+
+    <para id="x_582">At its simplest, a Mercurial template is a piece of text.
+      Some of the text never changes, while other parts are
+      <emphasis>expanded</emphasis>, or replaced with new text, when
+      necessary.</para>
+
+    <para id="x_583">Before we continue, let's look again at a simple example of
+      Mercurial's normal output.</para>
+
+    &interaction.template.simple.normal;
+
+    <para id="x_584">Now, let's run the same command, but using a template to
+      change its output.</para>
+
+    &interaction.template.simple.simplest;
+
+    <para id="x_585">The example above illustrates the simplest possible
+      template; it's just a piece of static text, printed once for
+      each changeset.  The <option
+	role="hg-opt-log">--template</option> option to the <command
+	role="hg-cmd">hg log</command> command tells Mercurial to use
+      the given text as the template when printing each
+      changeset.</para>
+
+    <para id="x_586">Notice that the template string above ends with the text
+      <quote><literal>\n</literal></quote>.  This is an
+      <emphasis>escape sequence</emphasis>, telling Mercurial to print
+      a newline at the end of each template item.  If you omit this
+      newline, Mercurial will run each piece of output together.  See
+      <xref linkend="sec:template:escape"/> for more details
+      of escape sequences.</para>
+
+    <para id="x_587">A template that prints a fixed string of text all the time
+      isn't very useful; let's try something a bit more
+      complex.</para>
+
+    &interaction.template.simple.simplesub;
+
+    <para id="x_588">As you can see, the string
+      <quote><literal>{desc}</literal></quote> in the template has
+      been replaced in the output with the description of each
+      changeset.  Every time Mercurial finds text enclosed in curly
+      braces (<quote><literal>{</literal></quote> and
+      <quote><literal>}</literal></quote>), it will try to replace the
+      braces and text with the expansion of whatever is inside.  To
+      print a literal curly brace, you must escape it, as described in
+      <xref linkend="sec:template:escape"/>.</para>
+  </sect1>
+
+  <sect1 id="sec:template:keyword">
+    <title>Common template keywords</title>
+
+    <para id="x_589">You can start writing simple templates immediately using the
+      keywords below.</para>
+
+    <itemizedlist>
+      <listitem><para id="x_58a"><literal
+	    role="template-keyword">author</literal>: String.  The
+	  unmodified author of the changeset.</para>
+      </listitem>
+      <listitem><para id="x_58b"><literal
+	    role="template-keyword">branches</literal>: String.  The
+	  name of the branch on which the changeset was committed.
+	  Will be empty if the branch name was
+	  <literal>default</literal>.</para>
+      </listitem>
+      <listitem><para id="x_58c"><literal role="template-keyword">date</literal>:
+	  Date information.  The date when the changeset was
+	  committed.  This is <emphasis>not</emphasis> human-readable;
+	  you must pass it through a filter that will render it
+	  appropriately.  See <xref
+	    linkend="sec:template:filter"/> for more information
+	  on filters. The date is expressed as a pair of numbers.  The
+	  first number is a Unix UTC timestamp (seconds since January
+	  1, 1970); the second is the offset of the committer's
+	  timezone from UTC, in seconds.</para>
+      </listitem>
+      <listitem><para id="x_58d"><literal role="template-keyword">desc</literal>:
+	  String.  The text of the changeset description.</para>
+      </listitem>
+      <listitem><para id="x_58e"><literal
+	    role="template-keyword">files</literal>: List of strings.
+	  All files modified, added, or removed by this
+	  changeset.</para>
+      </listitem>
+      <listitem><para id="x_58f"><literal
+	    role="template-keyword">file_adds</literal>: List of
+	  strings.  Files added by this changeset.</para>
+      </listitem>
+      <listitem><para id="x_590"><literal
+	    role="template-keyword">file_dels</literal>: List of
+	  strings.  Files removed by this changeset.</para>
+      </listitem>
+      <listitem><para id="x_591"><literal role="template-keyword">node</literal>:
+	  String.  The changeset identification hash, as a
+	  40-character hexadecimal string.</para>
+      </listitem>
+      <listitem><para id="x_592"><literal
+	    role="template-keyword">parents</literal>: List of
+	  strings.  The parents of the changeset.</para>
+      </listitem>
+      <listitem><para id="x_593"><literal role="template-keyword">rev</literal>:
+	  Integer.  The repository-local changeset revision
+	  number.</para>
+      </listitem>
+      <listitem><para id="x_594"><literal role="template-keyword">tags</literal>:
+	  List of strings.  Any tags associated with the
+	  changeset.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para id="x_595">A few simple experiments will show us what to expect when we
+      use these keywords; you can see the results below.</para>
+
+    &interaction.template.simple.keywords;
+
+    <para id="x_596">As we noted above, the date keyword does not produce
+      human-readable output, so we must treat it specially.  This
+      involves using a <emphasis>filter</emphasis>, about which more
+      in <xref linkend="sec:template:filter"/>.</para>
+
+    &interaction.template.simple.datekeyword;
+  </sect1>
+
+  <sect1 id="sec:template:escape">
+    <title>Escape sequences</title>
+
+    <para id="x_597">Mercurial's templating engine recognises the most commonly
+      used escape sequences in strings.  When it sees a backslash
+      (<quote><literal>\</literal></quote>) character, it looks at the
+      following character and substitutes the two characters with a
+      single replacement, as described below.</para>
+
+    <itemizedlist>
+      <listitem><para id="x_598"><literal>\</literal>:
+	  Backslash, <quote><literal>\</literal></quote>, ASCII
+	  134.</para>
+      </listitem>
+      <listitem><para id="x_599"><literal>\n</literal>: Newline,
+	  ASCII 12.</para>
+      </listitem>
+      <listitem><para id="x_59a"><literal>\r</literal>: Carriage
+	  return, ASCII 15.</para>
+      </listitem>
+      <listitem><para id="x_59b"><literal>\t</literal>: Tab, ASCII
+	  11.</para>
+      </listitem>
+      <listitem><para id="x_59c"><literal>\v</literal>: Vertical
+	  tab, ASCII 13.</para>
+      </listitem>
+      <listitem><para id="x_59d"><literal>\{</literal>: Open curly
+	  brace, <quote><literal>{</literal></quote>, ASCII
+	  173.</para>
+      </listitem>
+      <listitem><para id="x_59e"><literal>\}</literal>: Close curly
+	  brace, <quote><literal>}</literal></quote>, ASCII
+	  175.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_59f">As indicated above, if you want the expansion of a template
+      to contain a literal <quote><literal>\</literal></quote>,
+      <quote><literal>{</literal></quote>, or
+      <quote><literal>{</literal></quote> character, you must escape
+      it.</para>
+  </sect1>
+
+  <sect1 id="sec:template:filter">
+    <title>Filtering keywords to change their results</title>
+
+    <para id="x_5a0">Some of the results of template expansion are not
+      immediately easy to use.  Mercurial lets you specify an optional
+      chain of <emphasis>filters</emphasis> to modify the result of
+      expanding a keyword.  You have already seen a common filter,
+      <literal role="template-kw-filt-date">isodate</literal>, in
+      action above, to make a date readable.</para>
+
+    <para id="x_5a1">Below is a list of the most commonly used filters that
+      Mercurial supports.  While some filters can be applied to any
+      text, others can only be used in specific circumstances.  The
+      name of each filter is followed first by an indication of where
+      it can be used, then a description of its effect.</para>
+
+    <itemizedlist>
+      <listitem><para id="x_5a2"><literal
+	    role="template-filter">addbreaks</literal>: Any text. Add
+	  an XHTML <quote><literal>&lt;br/&gt;</literal></quote> tag
+	  before the end of every line except the last.  For example,
+	  <quote><literal>foo\nbar</literal></quote> becomes
+	  <quote><literal>foo&lt;br/&gt;\nbar</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5a3"><literal
+	    role="template-kw-filt-date">age</literal>: <literal
+	    role="template-keyword">date</literal> keyword.  Render
+	  the age of the date, relative to the current time.  Yields a
+	  string like <quote><literal>10
+	      minutes</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5a4"><literal
+	    role="template-filter">basename</literal>: Any text, but
+	  most useful for the <literal
+	    role="template-keyword">files</literal> keyword and its
+	  relatives.  Treat the text as a path, and return the
+	  basename. For example,
+	  <quote><literal>foo/bar/baz</literal></quote> becomes
+	  <quote><literal>baz</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5a5"><literal
+	    role="template-kw-filt-date">date</literal>: <literal
+	    role="template-keyword">date</literal> keyword.  Render a
+	  date in a similar format to the Unix <literal
+	    role="template-keyword">date</literal> command, but with
+	  timezone included.  Yields a string like <quote><literal>Mon
+	      Sep 04 15:13:13 2006 -0700</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5a6"><literal
+	    role="template-kw-filt-author">domain</literal>: Any text,
+	  but most useful for the <literal
+	    role="template-keyword">author</literal> keyword.  Finds
+	  the first string that looks like an email address, and
+	  extract just the domain component.  For example,
+	  <quote><literal>Bryan O'Sullivan
+	      &lt;bos@serpentine.com&gt;</literal></quote> becomes
+	  <quote><literal>serpentine.com</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5a7"><literal
+	    role="template-kw-filt-author">email</literal>: Any text,
+	  but most useful for the <literal
+	    role="template-keyword">author</literal> keyword.  Extract
+	  the first string that looks like an email address.  For
+	  example, <quote><literal>Bryan O'Sullivan
+	      &lt;bos@serpentine.com&gt;</literal></quote> becomes
+	  <quote><literal>bos@serpentine.com</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5a8"><literal
+	    role="template-filter">escape</literal>: Any text.
+	  Replace the special XML/XHTML characters
+	  <quote><literal>&amp;</literal></quote>,
+	  <quote><literal>&lt;</literal></quote> and
+	  <quote><literal>&gt;</literal></quote> with XML
+	  entities.</para>
+      </listitem>
+      <listitem><para id="x_5a9"><literal
+	    role="template-filter">fill68</literal>: Any text.  Wrap
+	  the text to fit in 68 columns.  This is useful before you
+	  pass text through the <literal
+	    role="template-filter">tabindent</literal> filter, and
+	  still want it to fit in an 80-column fixed-font
+	  window.</para>
+      </listitem>
+      <listitem><para id="x_5aa"><literal
+	    role="template-filter">fill76</literal>: Any text.  Wrap
+	  the text to fit in 76 columns.</para>
+      </listitem>
+      <listitem><para id="x_5ab"><literal
+	    role="template-filter">firstline</literal>: Any text.
+	  Yield the first line of text, without any trailing
+	  newlines.</para>
+      </listitem>
+      <listitem><para id="x_5ac"><literal
+	    role="template-kw-filt-date">hgdate</literal>: <literal
+	    role="template-keyword">date</literal> keyword.  Render
+	  the date as a pair of readable numbers.  Yields a string
+	  like <quote><literal>1157407993
+	      25200</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5ad"><literal
+	    role="template-kw-filt-date">isodate</literal>: <literal
+	    role="template-keyword">date</literal> keyword.  Render
+	  the date as a text string in ISO 8601 format.  Yields a
+	  string like <quote><literal>2006-09-04 15:13:13
+	      -0700</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5ae"><literal
+	    role="template-filter">obfuscate</literal>: Any text, but
+	  most useful for the <literal
+	    role="template-keyword">author</literal> keyword.  Yield
+	  the input text rendered as a sequence of XML entities.  This
+	  helps to defeat some particularly stupid screen-scraping
+	  email harvesting spambots.</para>
+      </listitem>
+      <listitem><para id="x_5af"><literal
+	    role="template-kw-filt-author">person</literal>: Any text,
+	  but most useful for the <literal
+	    role="template-keyword">author</literal> keyword.  Yield
+	  the text before an email address. For example,
+	  <quote><literal>Bryan O'Sullivan
+	      &lt;bos@serpentine.com&gt;</literal></quote> becomes
+	  <quote><literal>Bryan O'Sullivan</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5b0"><literal
+	    role="template-kw-filt-date">rfc822date</literal>:
+	  <literal role="template-keyword">date</literal> keyword.
+	  Render a date using the same format used in email headers.
+	  Yields a string like <quote><literal>Mon, 04 Sep 2006
+	      15:13:13 -0700</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5b1"><literal
+	    role="template-kw-filt-node">short</literal>: Changeset
+	  hash.  Yield the short form of a changeset hash, i.e. a
+	  12-character hexadecimal string.</para>
+      </listitem>
+      <listitem><para id="x_5b2"><literal
+	    role="template-kw-filt-date">shortdate</literal>: <literal
+	    role="template-keyword">date</literal> keyword.  Render
+	  the year, month, and day of the date.  Yields a string like
+	  <quote><literal>2006-09-04</literal></quote>.</para>
+      </listitem>
+      <listitem><para id="x_5b3"><literal role="template-filter">strip</literal>:
+	  Any text.  Strip all leading and trailing whitespace from
+	  the string.</para>
+      </listitem>
+      <listitem><para id="x_5b4"><literal
+	    role="template-filter">tabindent</literal>: Any text.
+	  Yield the text, with every line except the first starting
+	  with a tab character.</para>
+      </listitem>
+      <listitem><para id="x_5b5"><literal
+	    role="template-filter">urlescape</literal>: Any text.
+	  Escape all characters that are considered
+	  <quote>special</quote> by URL parsers.  For example,
+	  <literal>foo bar</literal> becomes
+	  <literal>foo%20bar</literal>.</para>
+      </listitem>
+      <listitem><para id="x_5b6"><literal
+	    role="template-kw-filt-author">user</literal>: Any text,
+	  but most useful for the <literal
+	    role="template-keyword">author</literal> keyword.  Return
+	  the <quote>user</quote> portion of an email address.  For
+	  example, <quote><literal>Bryan O'Sullivan
+	      &lt;bos@serpentine.com&gt;</literal></quote> becomes
+	  <quote><literal>bos</literal></quote>.</para>
+      </listitem>
+    </itemizedlist>
+
+    &interaction.template.simple.manyfilters;
+
+    <note>
+      <para id="x_5b7">  If you try to apply a filter to a piece of data that it
+	cannot process, Mercurial will fail and print a Python
+	exception.  For example, trying to run the output of the
+	<literal role="template-keyword">desc</literal> keyword into
+	the <literal role="template-kw-filt-date">isodate</literal>
+	filter is not a good idea.</para>
+    </note>
+
+    <sect2>
+      <title>Combining filters</title>
+
+      <para id="x_5b8">It is easy to combine filters to yield output in the form
+	you would like.  The following chain of filters tidies up a
+	description, then makes sure that it fits cleanly into 68
+	columns, then indents it by a further 8 characters (at least
+	on Unix-like systems, where a tab is conventionally 8
+	characters wide).</para>
+
+      &interaction.template.simple.combine;
+
+      <para id="x_5b9">Note the use of <quote><literal>\t</literal></quote> (a
+	tab character) in the template to force the first line to be
+	indented; this is necessary since <literal
+	  role="template-keyword">tabindent</literal> indents all
+	lines <emphasis>except</emphasis> the first.</para>
+
+      <para id="x_5ba">Keep in mind that the order of filters in a chain is
+	significant.  The first filter is applied to the result of the
+	keyword; the second to the result of the first filter; and so
+	on.  For example, using <literal>fill68|tabindent</literal>
+	gives very different results from
+	<literal>tabindent|fill68</literal>.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>From templates to styles</title>
+
+    <para id="x_5bb">A command line template provides a quick and simple way to
+      format some output.  Templates can become verbose, though, and
+      it's useful to be able to give a template a name.  A style file
+      is a template with a name, stored in a file.</para>
+
+    <para id="x_5bc">More than that, using a style file unlocks the power of
+      Mercurial's templating engine in ways that are not possible
+      using the command line <option
+	role="hg-opt-log">--template</option> option.</para>
+
+    <sect2>
+      <title>The simplest of style files</title>
+
+      <para id="x_5bd">Our simple style file contains just one line:</para>
+
+      &interaction.template.simple.rev;
+
+      <para id="x_5be">This tells Mercurial, <quote>if you're printing a
+	  changeset, use the text on the right as the
+	  template</quote>.</para>
+    </sect2>
+
+    <sect2>
+      <title>Style file syntax</title>
+
+      <para id="x_5bf">The syntax rules for a style file are simple.</para>
+
+      <itemizedlist>
+	<listitem><para id="x_5c0">The file is processed one line at a
+	    time.</para>
+	</listitem>
+	<listitem><para id="x_5c1">Leading and trailing white space are
+	    ignored.</para>
+	</listitem>
+	<listitem><para id="x_5c2">Empty lines are skipped.</para>
+	</listitem>
+	<listitem><para id="x_5c3">If a line starts with either of the characters
+	    <quote><literal>#</literal></quote> or
+	    <quote><literal>;</literal></quote>, the entire line is
+	    treated as a comment, and skipped as if empty.</para>
+	</listitem>
+	<listitem><para id="x_5c4">A line starts with a keyword.  This must start
+	    with an alphabetic character or underscore, and can
+	    subsequently contain any alphanumeric character or
+	    underscore.  (In regexp notation, a keyword must match
+	    <literal>[A-Za-z_][A-Za-z0-9_]*</literal>.)</para>
+	</listitem>
+	<listitem><para id="x_5c5">The next element must be an
+	    <quote><literal>=</literal></quote> character, which can
+	    be preceded or followed by an arbitrary amount of white
+	    space.</para>
+	</listitem>
+	<listitem><para id="x_5c6">If the rest of the line starts and ends with
+	    matching quote characters (either single or double quote),
+	    it is treated as a template body.</para>
+	</listitem>
+	<listitem><para id="x_5c7">If the rest of the line <emphasis>does
+	      not</emphasis> start with a quote character, it is
+	    treated as the name of a file; the contents of this file
+	    will be read and used as a template body.</para>
+	</listitem></itemizedlist>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Style files by example</title>
+
+    <para id="x_5c8">To illustrate how to write a style file, we will construct a
+      few by example.  Rather than provide a complete style file and
+      walk through it, we'll mirror the usual process of developing a
+      style file by starting with something very simple, and walking
+      through a series of successively more complete examples.</para>
+
+    <sect2>
+      <title>Identifying mistakes in style files</title>
+
+      <para id="x_5c9">If Mercurial encounters a problem in a style file you are
+	working on, it prints a terse error message that, once you
+	figure out what it means, is actually quite useful.</para>
+
+&interaction.template.svnstyle.syntax.input;
+
+      <para id="x_5ca">Notice that <filename>broken.style</filename> attempts to
+	define a <literal>changeset</literal> keyword, but forgets to
+	give any content for it. When instructed to use this style
+	file, Mercurial promptly complains.</para>
+
+      &interaction.template.svnstyle.syntax.error;
+
+      <para id="x_5cb">This error message looks intimidating, but it is not too
+	hard to follow.</para>
+
+      <itemizedlist>
+	<listitem><para id="x_5cc">The first component is simply Mercurial's way
+	    of saying <quote>I am giving up</quote>.</para>
+	  <programlisting>___abort___: broken.style:1: parse error</programlisting>
+	</listitem>
+	<listitem><para id="x_5cd">Next comes the name of the style file that
+	    contains the error.</para>
+	  <programlisting>abort: ___broken.style___:1: parse error</programlisting>
+	</listitem>
+	<listitem><para id="x_5ce">Following the file name is the line number
+	    where the error was encountered.</para>
+	  <programlisting>abort: broken.style:___1___: parse error</programlisting>
+	</listitem>
+	<listitem><para id="x_5cf">Finally, a description of what went
+	    wrong.</para>
+	  <programlisting>abort: broken.style:1: ___parse error___</programlisting>
+	</listitem>
+	<listitem><para id="x_5d0">The description of the problem is not always
+	    clear (as in this case), but even when it is cryptic, it
+	    is almost always trivial to visually inspect the offending
+	    line in the style file and see what is wrong.</para>
+	</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Uniquely identifying a repository</title>
+
+      <para id="x_5d1">If you would like to be able to identify a Mercurial
+	repository <quote>fairly uniquely</quote> using a short string
+	as an identifier, you can use the first revision in the
+	repository.</para>
+
+      &interaction.template.svnstyle.id;
+
+      <para id="x_5d2">This is likely to be unique, and so it is
+	useful in many cases.  There are a few caveats.</para>
+      <itemizedlist>
+	<listitem><para id="x_5d3">It will not work in a completely empty
+	    repository, because such a repository does not have a
+	    revision zero.</para>
+	</listitem>
+	<listitem><para id="x_5d4">Neither will it work in the (extremely rare)
+	    case where a repository is a merge of two or more formerly
+	    independent repositories, and you still have those
+	    repositories around.</para>
+	</listitem></itemizedlist>
+      <para id="x_5d5">Here are some uses to which you could put this
+	identifier:</para>
+      <itemizedlist>
+	<listitem><para id="x_5d6">As a key into a table for a database that
+	    manages repositories on a server.</para>
+	</listitem>
+	<listitem><para id="x_5d7">As half of a {<emphasis>repository
+	      ID</emphasis>, <emphasis>revision ID</emphasis>} tuple.
+	    Save this information away when you run an automated build
+	    or other activity, so that you can <quote>replay</quote>
+	    the build later if necessary.</para>
+	</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Listing files on multiple lines</title>
+
+      <para id="x_714">Suppose we want to list the files changed by a changeset,
+	one per line, with a little indentation before each file
+	name.</para>
+
+      &interaction.ch10-multiline.go;
+    </sect2>
+
+    <sect2>
+      <title>Mimicking Subversion's output</title>
+
+      <para id="x_5d8">Let's try to emulate the default output format used by
+	another revision control tool, Subversion.</para>
+
+      &interaction.template.svnstyle.short;
+
+      <para id="x_5d9">Since Subversion's output style is fairly simple, it is
+	easy to copy-and-paste a hunk of its output into a file, and
+	replace the text produced above by Subversion with the
+	template values we'd like to see expanded.</para>
+
+      &interaction.template.svnstyle.template;
+
+      <para id="x_5da">There are a few small ways in which this template deviates
+	from the output produced by Subversion.</para>
+      <itemizedlist>
+	<listitem><para id="x_5db">Subversion prints a <quote>readable</quote>
+	    date (the <quote><literal>Wed, 27 Sep 2006</literal></quote> in the
+	    example output above) in parentheses.  Mercurial's
+	    templating engine does not provide a way to display a date
+	    in this format without also printing the time and time
+	    zone.</para>
+	</listitem>
+	<listitem><para id="x_5dc">We emulate Subversion's printing of
+	    <quote>separator</quote> lines full of
+	    <quote><literal>-</literal></quote> characters by ending
+	    the template with such a line. We use the templating
+	    engine's <literal role="template-keyword">header</literal>
+	    keyword to print a separator line as the first line of
+	    output (see below), thus achieving similar output to
+	    Subversion.</para>
+	</listitem>
+	<listitem><para id="x_5dd">Subversion's output includes a count in the
+	    header of the number of lines in the commit message.  We
+	    cannot replicate this in Mercurial; the templating engine
+	    does not currently provide a filter that counts the number
+	    of lines the template generates.</para>
+	</listitem></itemizedlist>
+      <para id="x_5de">It took me no more than a minute or two of work to replace
+	literal text from an example of Subversion's output with some
+	keywords and filters to give the template above.  The style
+	file simply refers to the template.</para>
+
+      &interaction.template.svnstyle.style;
+
+      <para id="x_5df">We could have included the text of the template file
+	directly in the style file by enclosing it in quotes and
+	replacing the newlines with
+	<quote><literal>\n</literal></quote> sequences, but it would
+	have made the style file too difficult to read.  Readability
+	is a good guide when you're trying to decide whether some text
+	belongs in a style file, or in a template file that the style
+	file points to.  If the style file will look too big or
+	cluttered if you insert a literal piece of text, drop it into
+	a template instead.</para>
+    </sect2>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->

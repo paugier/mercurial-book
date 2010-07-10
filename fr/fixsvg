@@ -1,0 +1,29 @@
+#!/bin/bash
+
+test -d hello || hg clone http://hg.serpentine.com/tutorial/hello
+
+set -e
+
+for i in 0 1 2 3 4
+do
+  export REV$i=$(hg --cwd hello log -r $i --template '{node|short}' | cut -c1-4)
+done
+export REV_my_hello=$(cat /tmp/REV5.my-hello)
+export REV_my_new_hello=$(cat /tmp/REV5.my-new-hello)
+export REV6_my_new_hello=$(cat /tmp/REV6.my-new-hello)
+export REV7_my_new_hello=$(cat /tmp/REV7.my-new-hello)
+
+FILE=$1
+OUTFILE=$FILE-tmp.svg
+rm -f $OUTFILE
+echo "Fixing $FILE"
+cp $FILE $OUTFILE
+perl -p -i -e "s#REV0#$REV0#" $OUTFILE
+perl -p -i -e "s#REV1#$REV1#" $OUTFILE
+perl -p -i -e "s#REV2#$REV2#" $OUTFILE
+perl -p -i -e "s#REV3#$REV3#" $OUTFILE
+perl -p -i -e "s#REV4#$REV4#" $OUTFILE
+perl -p -i -e "s#REV_my_hello#$REV_my_hello#" $OUTFILE
+perl -p -i -e "s#REV_my_new_hello#$REV_my_new_hello#" $OUTFILE
+perl -p -i -e "s#REV6_my_new_hello#$REV6_my_new_hello#" $OUTFILE
+perl -p -i -e "s#REV7_my_new_hello#$REV7_my_new_hello#" $OUTFILE
