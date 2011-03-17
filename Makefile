@@ -37,14 +37,14 @@ images-gen += $(images-svg:svg=png)
 images-gen += $(wildcard en/figs/*-tmp.svg)
 
 help:
-	@echo "  make epub         [LINGUA=en|it|zh|...]"
-	@echo "  make html         [LINGUA=en|it|zh|...]"
-	@echo "  make html-single  [LINGUA=en|it|zh|...]"
-	@echo "  make pdf          [LINGUA=en|it|zh|...]"
-	@echo "  make validate     [LINGUA=en|it|zh|...] # always before commit!"
+	@echo "  make epub         [LINGUA=en|fr|it|zh|...]"
+	@echo "  make html         [LINGUA=en|fr|it|zh|...]"
+	@echo "  make html-single  [LINGUA=en|fr|it|zh|...]"
+	@echo "  make pdf          [LINGUA=en|fr|it|zh|...]"
+	@echo "  make validate     [LINGUA=en|fr|it|zh|...] # always before commit!"
 	@echo "  make tidypo       [LINGUA=zh|...]    # always before commit!"
 	@echo "  make updatepo     [LINGUA=zh|...]    # update po files."
-	@echo "  make all          [LINGUA=en|it|zh|...]"
+	@echo "  make all          [LINGUA=en|fr|it|zh|...]"
 	@echo "  make stat         # print statistics about po files."
 	@echo "  make clean        # Remove the build files."
 
