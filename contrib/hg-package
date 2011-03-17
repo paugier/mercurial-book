@@ -34,6 +34,7 @@ for l in en fr it zh; do
 
   if [ -f "epub/hgbook.epub" ] ; then
      cp epub/hgbook.epub ../hgbook-${l}-${rev_id}.epub
+     gzip -f9 ../hgbook-${l}-${rev_id}.epub
   fi
   )
 done
@@ -44,11 +45,7 @@ upload_user=$2
 # echo "upload_pass: ${upload_pass}"
 # echo "upload_user: ${upload_user}"
 
-if [ "${upload_user}x" == "x" ]; then
-  upload_user="dongsheng.song"
-fi
-
-if [ "${upload_pass}x" != "x" ]; then
+if [ "${upload_pass}x" != "x" ] && [ "${upload_user}x" != "x" ]; then
   (
   cd ${build_dir}
   curl -s -O http://support.googlecode.com/svn/trunk/scripts/googlecode_upload.py
@@ -57,11 +54,11 @@ if [ "${upload_pass}x" != "x" ]; then
   fi
 
   for l in en zh; do
-    if [ -f "hgbook-${l}-${rev_id}.epub" ] ; then
+    if [ -f "hgbook-${l}-${rev_id}.epub.gz" ] ; then
       python googlecode_upload.py --user="${upload_user}" --password="${upload_pass}" \
           -p "i18n-zh" -l "Type-Docs,book,hgbook,hg,mercurial,ebook" \
           -s "Distributed revision control with Mercurial - ${l} - ePub" \
-          hgbook-${l}-${rev_id}.epub
+          hgbook-${l}-${rev_id}.epub.gz
     fi
 
     if [ -f "hgbook-${l}-${rev_id}.pdf.gz" ] ; then
