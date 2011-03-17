@@ -5,7 +5,7 @@
 #
 
 build_dir=`dirname "$0"`/../build
-rev_id=`hg parents --template '{date|shortdate}' | sed 's/-//g'`
+rev_id=`hg parents --template '{date|shortdate}' | sed 's/-//g'`-`hg parents --template '{node|short}'`
 
 for l in en fr it zh; do
   (
