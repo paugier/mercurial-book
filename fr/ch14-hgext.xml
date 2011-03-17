@@ -1,0 +1,554 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:hgext">
+  <?dbhtml filename="adding-functionality-with-extensions.html"?>
+  <title>Adding functionality with extensions</title>
+
+  <para id="x_4fe">While the core of Mercurial is quite complete from a
+    functionality standpoint, it's deliberately shorn of fancy
+    features.  This approach of preserving simplicity keeps the
+    software easy to deal with for both maintainers and users.</para>
+
+  <para id="x_4ff">However, Mercurial doesn't box you in with an inflexible
+    command set: you can add features to it as
+    <emphasis>extensions</emphasis> (sometimes known as
+    <emphasis>plugins</emphasis>).  We've already discussed a few of
+    these extensions in earlier chapters.</para>
+  <itemizedlist>
+    <listitem><para id="x_500"><xref linkend="sec:tour-merge:fetch"/>
+	covers the <literal role="hg-ext">fetch</literal> extension;
+	this combines pulling new changes and merging them with local
+	changes into a single command, <command
+	  role="hg-ext-fetch">fetch</command>.</para>
+    </listitem>
+    <listitem><para id="x_501">In <xref linkend="chap:hook"/>, we covered
+	several extensions that are useful for hook-related
+	functionality: <literal role="hg-ext">acl</literal> adds
+	access control lists; <literal
+	  role="hg-ext">bugzilla</literal> adds integration with the
+	Bugzilla bug tracking system; and <literal
+	  role="hg-ext">notify</literal> sends notification emails on
+	new changes.</para>
+    </listitem>
+    <listitem><para id="x_502">The Mercurial Queues patch management extension is
+	so invaluable that it merits two chapters and an appendix all
+	to itself. <xref linkend="chap:mq"/> covers the
+	basics; <xref
+	  linkend="chap:mq-collab"/> discusses advanced topics;
+	and <xref linkend="chap:mqref"/> goes into detail on
+	each
+	command.</para>
+    </listitem></itemizedlist>
+
+  <para id="x_503">In this chapter, we'll cover some of the other extensions that
+    are available for Mercurial, and briefly touch on some of the
+    machinery you'll need to know about if you want to write an
+    extension of your own.</para>
+  <itemizedlist>
+    <listitem><para id="x_504">In <xref linkend="sec:hgext:inotify"/>,
+	we'll discuss the possibility of <emphasis>huge</emphasis>
+	performance improvements using the <literal
+	  role="hg-ext">inotify</literal> extension.</para>
+    </listitem></itemizedlist>
+
+  <sect1 id="sec:hgext:inotify">
+    <title>Improve performance with the <literal
+	role="hg-ext">inotify</literal> extension</title>
+
+    <para id="x_505">Are you interested in having some of the most common
+      Mercurial operations run as much as a hundred times faster?
+      Read on!</para>
+
+    <para id="x_506">Mercurial has great performance under normal circumstances.
+      For example, when you run the <command role="hg-cmd">hg
+	status</command> command, Mercurial has to scan almost every
+      directory and file in your repository so that it can display
+      file status.  Many other Mercurial commands need to do the same
+      work behind the scenes; for example, the <command
+	role="hg-cmd">hg diff</command> command uses the status
+      machinery to avoid doing an expensive comparison operation on
+      files that obviously haven't changed.</para>
+
+    <para id="x_507">Because obtaining file status is crucial to good
+      performance, the authors of Mercurial have optimised this code
+      to within an inch of its life.  However, there's no avoiding the
+      fact that when you run <command role="hg-cmd">hg
+	status</command>, Mercurial is going to have to perform at
+      least one expensive system call for each managed file to
+      determine whether it's changed since the last time Mercurial
+      checked.  For a sufficiently large repository, this can take a
+      long time.</para>
+
+    <para id="x_508">To put a number on the magnitude of this effect, I created a
+      repository containing 150,000 managed files.  I timed <command
+	role="hg-cmd">hg status</command> as taking ten seconds to
+      run, even when <emphasis>none</emphasis> of those files had been
+      modified.</para>
+
+    <para id="x_509">Many modern operating systems contain a file notification
+      facility. If a program signs up to an appropriate service, the
+      operating system will notify it every time a file of interest is
+      created, modified, or deleted.  On Linux systems, the kernel
+      component that does this is called
+      <literal>inotify</literal>.</para>
+
+    <para id="x_50a">Mercurial's <literal role="hg-ext">inotify</literal>
+      extension talks to the kernel's <literal>inotify</literal>
+      component to optimise <command role="hg-cmd">hg status</command>
+      commands.  The extension has two components.  A daemon sits in
+      the background and receives notifications from the
+      <literal>inotify</literal> subsystem.  It also listens for
+      connections from a regular Mercurial command.  The extension
+      modifies Mercurial's behavior so that instead of scanning the
+      filesystem, it queries the daemon.  Since the daemon has perfect
+      information about the state of the repository, it can respond
+      with a result instantaneously, avoiding the need to scan every
+      directory and file in the repository.</para>
+
+    <para id="x_50b">Recall the ten seconds that I measured plain Mercurial as
+      taking to run <command role="hg-cmd">hg status</command> on a
+      150,000 file repository.  With the <literal
+	role="hg-ext">inotify</literal> extension enabled, the time
+      dropped to 0.1 seconds, a factor of <emphasis>one
+	hundred</emphasis> faster.</para>
+
+    <para id="x_50c">Before we continue, please pay attention to some
+      caveats.</para>
+    <itemizedlist>
+      <listitem><para id="x_50d">The <literal role="hg-ext">inotify</literal>
+	  extension is Linux-specific.  Because it interfaces directly
+	  to the Linux kernel's <literal>inotify</literal> subsystem,
+	  it does not work on other operating systems.</para>
+      </listitem>
+      <listitem><para id="x_50e">It should work on any Linux distribution that
+	  was released after early 2005.  Older distributions are
+	  likely to have a kernel that lacks
+	  <literal>inotify</literal>, or a version of
+	  <literal>glibc</literal> that does not have the necessary
+	  interfacing support.</para>
+      </listitem>
+      <listitem><para id="x_50f">Not all filesystems are suitable for use with
+	  the <literal role="hg-ext">inotify</literal> extension.
+	  Network filesystems such as NFS are a non-starter, for
+	  example, particularly if you're running Mercurial on several
+	  systems, all mounting the same network filesystem.  The
+	  kernel's <literal>inotify</literal> system has no way of
+	  knowing about changes made on another system.  Most local
+	  filesystems (e.g. ext3, XFS, ReiserFS) should work
+	  fine.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_510">The <literal role="hg-ext">inotify</literal> extension is
+      not yet shipped with Mercurial as of May 2007, so it's a little
+      more involved to set up than other extensions.  But the
+      performance improvement is worth it!</para>
+
+    <para id="x_511">The extension currently comes in two parts: a set of patches
+      to the Mercurial source code, and a library of Python bindings
+      to the <literal>inotify</literal> subsystem.</para>
+    <note>
+      <para id="x_512">  There are <emphasis>two</emphasis> Python
+	<literal>inotify</literal> binding libraries.  One of them is
+	called <literal>pyinotify</literal>, and is packaged by some
+	Linux distributions as <literal>python-inotify</literal>.
+	This is <emphasis>not</emphasis> the one you'll need, as it is
+	too buggy and inefficient to be practical.</para>
+    </note>
+    <para id="x_513">To get going, it's best to already have a functioning copy
+      of Mercurial installed.</para>
+    <note>
+      <para id="x_514">  If you follow the instructions below, you'll be
+	<emphasis>replacing</emphasis> and overwriting any existing
+	installation of Mercurial that you might already have, using
+	the latest <quote>bleeding edge</quote> Mercurial code. Don't
+	say you weren't warned!</para>
+    </note>
+    <orderedlist>
+      <listitem><para id="x_515">Clone the Python <literal>inotify</literal>
+	  binding repository.  Build and install it.</para>
+	<programlisting>hg clone http://hg.kublai.com/python/inotify
+cd inotify
+python setup.py build --force
+sudo python setup.py install --skip-build</programlisting>
+      </listitem>
+      <listitem><para id="x_516">Clone the <filename
+	    class="directory">crew</filename> Mercurial repository.
+	  Clone the <literal role="hg-ext">inotify</literal> patch
+	  repository so that Mercurial Queues will be able to apply
+	  patches to your cope of the <filename
+	    class="directory">crew</filename> repository.</para>
+	<programlisting>hg clone http://hg.intevation.org/mercurial/crew
+hg clone crew inotify
+hg clone http://hg.kublai.com/mercurial/patches/inotify inotify/.hg/patches</programlisting>
+      </listitem>
+      <listitem><para id="x_517">Make sure that you have the Mercurial Queues
+	  extension, <literal role="hg-ext">mq</literal>, enabled.  If
+	  you've never used MQ, read <xref
+	    linkend="sec:mq:start"/> to get started
+	  quickly.</para>
+      </listitem>
+      <listitem><para id="x_518">Go into the <filename
+	    class="directory">inotify</filename> repo, and apply all
+	  of the <literal role="hg-ext">inotify</literal> patches
+	  using the <option role="hg-ext-mq-cmd-qpush-opt">hg
+	    -a</option> option to the <command
+	    role="hg-ext-mq">qpush</command> command.</para>
+	<programlisting>cd inotify
+hg qpush -a</programlisting>
+      </listitem>
+      <listitem><para id="x_519">  If you get an error message from <command
+	    role="hg-ext-mq">qpush</command>, you should not continue.
+	  Instead, ask for help.</para>
+      </listitem>
+      <listitem><para id="x_51a">Build and install the patched version of
+	  Mercurial.</para>
+	<programlisting>python setup.py build --force
+sudo python setup.py install --skip-build</programlisting>
+      </listitem>
+    </orderedlist>
+    <para id="x_51b">Once you've build a suitably patched version of Mercurial,
+      all you need to do to enable the <literal
+	role="hg-ext">inotify</literal> extension is add an entry to
+      your <filename role="special">~/.hgrc</filename>.</para>
+    <programlisting>[extensions] inotify =</programlisting>
+    <para id="x_51c">When the <literal role="hg-ext">inotify</literal> extension
+      is enabled, Mercurial will automatically and transparently start
+      the status daemon the first time you run a command that needs
+      status in a repository.  It runs one status daemon per
+      repository.</para>
+
+    <para id="x_51d">The status daemon is started silently, and runs in the
+      background.  If you look at a list of running processes after
+      you've enabled the <literal role="hg-ext">inotify</literal>
+      extension and run a few commands in different repositories,
+      you'll thus see a few <literal>hg</literal> processes sitting
+      around, waiting for updates from the kernel and queries from
+      Mercurial.</para>
+
+    <para id="x_51e">The first time you run a Mercurial command in a repository
+      when you have the <literal role="hg-ext">inotify</literal>
+      extension enabled, it will run with about the same performance
+      as a normal Mercurial command.  This is because the status
+      daemon needs to perform a normal status scan so that it has a
+      baseline against which to apply later updates from the kernel.
+      However, <emphasis>every</emphasis> subsequent command that does
+      any kind of status check should be noticeably faster on
+      repositories of even fairly modest size.  Better yet, the bigger
+      your repository is, the greater a performance advantage you'll
+      see.  The <literal role="hg-ext">inotify</literal> daemon makes
+      status operations almost instantaneous on repositories of all
+      sizes!</para>
+
+    <para id="x_51f">If you like, you can manually start a status daemon using
+      the <command role="hg-ext-inotify">inserve</command> command.
+      This gives you slightly finer control over how the daemon ought
+      to run.  This command will of course only be available when the
+      <literal role="hg-ext">inotify</literal> extension is
+      enabled.</para>
+
+    <para id="x_520">When you're using the <literal
+	role="hg-ext">inotify</literal> extension, you should notice
+      <emphasis>no difference at all</emphasis> in Mercurial's
+      behavior, with the sole exception of status-related commands
+      running a whole lot faster than they used to.  You should
+      specifically expect that commands will not print different
+      output; neither should they give different results. If either of
+      these situations occurs, please report a bug.</para>
+
+  </sect1>
+  <sect1 id="sec:hgext:extdiff">
+    <title>Flexible diff support with the <literal
+	role="hg-ext">extdiff</literal> extension</title>
+
+    <para id="x_521">Mercurial's built-in <command role="hg-cmd">hg
+	diff</command> command outputs plaintext unified diffs.</para>
+
+    &interaction.extdiff.diff;
+
+    <para id="x_522">If you would like to use an external tool to display
+      modifications, you'll want to use the <literal
+	role="hg-ext">extdiff</literal> extension.  This will let you
+      use, for example, a graphical diff tool.</para>
+
+    <para id="x_523">The <literal role="hg-ext">extdiff</literal> extension is
+      bundled with Mercurial, so it's easy to set up.  In the <literal
+	role="rc-extensions">extensions</literal> section of your
+      <filename role="special">~/.hgrc</filename>, simply add a
+      one-line entry to enable the extension.</para>
+    <programlisting>[extensions]
+extdiff =</programlisting>
+    <para id="x_524">This introduces a command named <command
+	role="hg-ext-extdiff">extdiff</command>, which by default uses
+      your system's <command>diff</command> command to generate a
+      unified diff in the same form as the built-in <command
+	role="hg-cmd">hg diff</command> command.</para>
+    
+    &interaction.extdiff.extdiff;
+
+    <para id="x_525">The result won't be exactly the same as with the built-in
+      <command role="hg-cmd">hg diff</command> variations, because the
+      output of <command>diff</command> varies from one system to
+      another, even when passed the same options.</para>
+
+    <para id="x_526">As the <quote><literal>making snapshot</literal></quote>
+      lines of output above imply, the <command
+	role="hg-ext-extdiff">extdiff</command> command works by
+      creating two snapshots of your source tree.  The first snapshot
+      is of the source revision; the second, of the target revision or
+      working directory.  The <command
+	role="hg-ext-extdiff">extdiff</command> command generates
+      these snapshots in a temporary directory, passes the name of
+      each directory to an external diff viewer, then deletes the
+      temporary directory.  For efficiency, it only snapshots the
+      directories and files that have changed between the two
+      revisions.</para>
+
+    <para id="x_527">Snapshot directory names have the same base name as your
+      repository. If your repository path is <filename
+	class="directory">/quux/bar/foo</filename>, then <filename
+	class="directory">foo</filename> will be the name of each
+      snapshot directory.  Each snapshot directory name has its
+      changeset ID appended, if appropriate.  If a snapshot is of
+      revision <literal>a631aca1083f</literal>, the directory will be
+      named <filename class="directory">foo.a631aca1083f</filename>.
+      A snapshot of the working directory won't have a changeset ID
+      appended, so it would just be <filename
+	class="directory">foo</filename> in this example.  To see what
+      this looks like in practice, look again at the <command
+	role="hg-ext-extdiff">extdiff</command> example above.  Notice
+      that the diff has the snapshot directory names embedded in its
+      header.</para>
+
+    <para id="x_528">The <command role="hg-ext-extdiff">extdiff</command> command
+      accepts two important options. The <option
+	role="hg-ext-extdiff-cmd-extdiff-opt">hg -p</option> option
+      lets you choose a program to view differences with, instead of
+      <command>diff</command>.  With the <option
+	role="hg-ext-extdiff-cmd-extdiff-opt">hg -o</option> option,
+      you can change the options that <command
+	role="hg-ext-extdiff">extdiff</command> passes to the program
+      (by default, these options are
+      <quote><literal>-Npru</literal></quote>, which only make sense
+      if you're running <command>diff</command>).  In other respects,
+      the <command role="hg-ext-extdiff">extdiff</command> command
+      acts similarly to the built-in <command role="hg-cmd">hg
+	diff</command> command: you use the same option names, syntax,
+      and arguments to specify the revisions you want, the files you
+      want, and so on.</para>
+
+    <para id="x_529">As an example, here's how to run the normal system
+      <command>diff</command> command, getting it to generate context
+      diffs (using the <option role="cmd-opt-diff">-c</option> option)
+      instead of unified diffs, and five lines of context instead of
+      the default three (passing <literal>5</literal> as the argument
+      to the <option role="cmd-opt-diff">-C</option> option).</para>
+
+      &interaction.extdiff.extdiff-ctx;
+
+    <para id="x_52a">Launching a visual diff tool is just as easy.  Here's how to
+      launch the <command>kdiff3</command> viewer.</para>
+    <programlisting>hg extdiff -p kdiff3 -o</programlisting>
+
+    <para id="x_52b">If your diff viewing command can't deal with directories,
+      you can easily work around this with a little scripting.  For an
+      example of such scripting in action with the <literal
+	role="hg-ext">mq</literal> extension and the
+      <command>interdiff</command> command, see <xref
+	linkend="mq-collab:tips:interdiff"/>.</para>
+
+    <sect2>
+      <title>Defining command aliases</title>
+
+      <para id="x_52c">It can be cumbersome to remember the options to both the
+	<command role="hg-ext-extdiff">extdiff</command> command and
+	the diff viewer you want to use, so the <literal
+	  role="hg-ext">extdiff</literal> extension lets you define
+	<emphasis>new</emphasis> commands that will invoke your diff
+	viewer with exactly the right options.</para>
+
+      <para id="x_52d">All you need to do is edit your <filename
+	  role="special">~/.hgrc</filename>, and add a section named
+	<literal role="rc-extdiff">extdiff</literal>.  Inside this
+	section, you can define multiple commands.  Here's how to add
+	a <literal>kdiff3</literal> command.  Once you've defined
+	this, you can type <quote><literal>hg kdiff3</literal></quote>
+	and the <literal role="hg-ext">extdiff</literal> extension
+	will run <command>kdiff3</command> for you.</para>
+      <programlisting>[extdiff]
+cmd.kdiff3 =</programlisting>
+      <para id="x_52e">If you leave the right hand side of the definition empty,
+	as above, the <literal role="hg-ext">extdiff</literal>
+	extension uses the name of the command you defined as the name
+	of the external program to run.  But these names don't have to
+	be the same.  Here, we define a command named
+	<quote><literal>hg wibble</literal></quote>, which runs
+	<command>kdiff3</command>.</para>
+      <programlisting>[extdiff]
+ cmd.wibble = kdiff3</programlisting>
+
+      <para id="x_52f">You can also specify the default options that you want to
+	invoke your diff viewing program with.  The prefix to use is
+	<quote><literal>opts.</literal></quote>, followed by the name
+	of the command to which the options apply.  This example
+	defines a <quote><literal>hg vimdiff</literal></quote> command
+	that runs the <command>vim</command> editor's
+	<literal>DirDiff</literal> extension.</para>
+      <programlisting>[extdiff]
+ cmd.vimdiff = vim
+opts.vimdiff = -f '+next' '+execute "DirDiff" argv(0) argv(1)'</programlisting>
+
+    </sect2>
+  </sect1>
+  <sect1 id="sec:hgext:transplant">
+    <title>Cherrypicking changes with the <literal
+	role="hg-ext">transplant</literal> extension</title>
+
+    <para id="x_530">Need to have a long chat with Brendan about this.</para>
+
+  </sect1>
+  <sect1 id="sec:hgext:patchbomb">
+    <title>Send changes via email with the <literal
+	role="hg-ext">patchbomb</literal> extension</title>
+
+    <para id="x_531">Many projects have a culture of <quote>change
+	review</quote>, in which people send their modifications to a
+      mailing list for others to read and comment on before they
+      commit the final version to a shared repository.  Some projects
+      have people who act as gatekeepers; they apply changes from
+      other people to a repository to which those others don't have
+      access.</para>
+
+    <para id="x_532">Mercurial makes it easy to send changes over email for
+      review or application, via its <literal
+	role="hg-ext">patchbomb</literal> extension.  The extension is
+      so named because changes are formatted as patches, and it's usual
+      to send one changeset per email message.  Sending a long series
+      of changes by email is thus much like <quote>bombing</quote> the
+      recipient's inbox, hence <quote>patchbomb</quote>.</para>
+
+    <para id="x_533">As usual, the basic configuration of the <literal
+	role="hg-ext">patchbomb</literal> extension takes just one or
+      two lines in your <filename role="special">
+	/.hgrc</filename>.</para>
+    <programlisting>[extensions]
+patchbomb =</programlisting>
+    <para id="x_534">Once you've enabled the extension, you will have a new
+      command available, named <command
+	role="hg-ext-patchbomb">email</command>.</para>
+
+    <para id="x_535">The safest and best way to invoke the <command
+	role="hg-ext-patchbomb">email</command> command is to
+      <emphasis>always</emphasis> run it first with the <option
+	role="hg-ext-patchbomb-cmd-email-opt">hg -n</option> option.
+      This will show you what the command <emphasis>would</emphasis>
+      send, without actually sending anything.  Once you've had a
+      quick glance over the changes and verified that you are sending
+      the right ones, you can rerun the same command, with the <option
+	role="hg-ext-patchbomb-cmd-email-opt">hg -n</option> option
+      removed.</para>
+
+    <para id="x_536">The <command role="hg-ext-patchbomb">email</command> command
+      accepts the same kind of revision syntax as every other
+      Mercurial command.  For example, this command will send every
+      revision between 7 and <literal>tip</literal>, inclusive.</para>
+    <programlisting>hg email -n 7:tip</programlisting>
+    <para id="x_537">You can also specify a <emphasis>repository</emphasis> to
+      compare with.  If you provide a repository but no revisions, the
+      <command role="hg-ext-patchbomb">email</command> command will
+      send all revisions in the local repository that are not present
+      in the remote repository.  If you additionally specify revisions
+      or a branch name (the latter using the <option
+	role="hg-ext-patchbomb-cmd-email-opt">hg -b</option> option),
+      this will constrain the revisions sent.</para>
+
+    <para id="x_538">It's perfectly safe to run the <command
+	role="hg-ext-patchbomb">email</command> command without the
+      names of the people you want to send to: if you do this, it will
+      just prompt you for those values interactively.  (If you're
+      using a Linux or Unix-like system, you should have enhanced
+      <literal>readline</literal>-style editing capabilities when
+      entering those headers, too, which is useful.)</para>
+
+    <para id="x_539">When you are sending just one revision, the <command
+	role="hg-ext-patchbomb">email</command> command will by
+      default use the first line of the changeset description as the
+      subject of the single email message it sends.</para>
+
+    <para id="x_53a">If you send multiple revisions, the <command
+	role="hg-ext-patchbomb">email</command> command will usually
+      send one message per changeset.  It will preface the series with
+      an introductory message, in which you should describe the
+      purpose of the series of changes you're sending.</para>
+
+    <sect2>
+      <title>Changing the behavior of patchbombs</title>
+
+      <para id="x_53b">Not every project has exactly the same conventions for
+	sending changes in email; the <literal
+	  role="hg-ext">patchbomb</literal> extension tries to
+	accommodate a number of variations through command line
+	options.</para>
+      <itemizedlist>
+	<listitem><para id="x_53c">You can write a subject for the introductory
+	    message on the command line using the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg -s</option>
+	    option.  This takes one argument, the text of the subject
+	    to use.</para>
+	</listitem>
+	<listitem><para id="x_53d">To change the email address from which the
+	    messages originate, use the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg -f</option>
+	    option.  This takes one argument, the email address to
+	    use.</para>
+	</listitem>
+	<listitem><para id="x_53e">The default behavior is to send unified diffs
+	    (see <xref linkend="sec:mq:patch"/> for a
+	    description of the
+	    format), one per message.  You can send a binary bundle
+	    instead with the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg -b</option>
+	    option.</para>
+	</listitem>
+	<listitem><para id="x_53f">Unified diffs are normally prefaced with a
+	    metadata header.  You can omit this, and send unadorned
+	    diffs, with the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg
+	      --plain</option> option.</para>
+	</listitem>
+	<listitem><para id="x_540">Diffs are normally sent <quote>inline</quote>,
+	    in the same body part as the description of a patch.  This
+	    makes it easiest for the largest number of readers to
+	    quote and respond to parts of a diff, as some mail clients
+	    will only quote the first MIME body part in a message. If
+	    you'd prefer to send the description and the diff in
+	    separate body parts, use the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg -a</option>
+	    option.</para>
+	</listitem>
+	<listitem><para id="x_541">Instead of sending mail messages, you can
+	    write them to an <literal>mbox</literal>-format mail
+	    folder using the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg -m</option>
+	    option.  That option takes one argument, the name of the
+	    file to write to.</para>
+	</listitem>
+	<listitem><para id="x_542">If you would like to add a
+	    <command>diffstat</command>-format summary to each patch,
+	    and one to the introductory message, use the <option
+	      role="hg-ext-patchbomb-cmd-email-opt">hg -d</option>
+	    option.  The <command>diffstat</command> command displays
+	    a table containing the name of each file patched, the
+	    number of lines affected, and a histogram showing how much
+	    each file is modified.  This gives readers a qualitative
+	    glance at how complex a patch is.</para>
+	</listitem></itemizedlist>
+
+    </sect2>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->

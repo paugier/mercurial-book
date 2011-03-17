@@ -6,7 +6,7 @@ include Makefile.vars
 FORMATS=html html-single pdf epub
 
 PO_LANGUAGES := zh
-DBK_LANGUAGES := en it
+DBK_LANGUAGES := en fr it
 LANGUAGES := $(DBK_LANGUAGES) $(PO_LANGUAGES)
 
 UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
@@ -213,10 +213,16 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	    stylesheets/$(LINGUA)/fo.xsl \
 	    fop1.extensions=1
 
-	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh -c $(FOP_HOME)/conf/userconfig.xml hgbook.fo ../pdf/hgbook.pdf)
+	if test -r $(FOP_HOME)/conf/userconfig.xml ; then \
+		FOP_CONFIG=" -c $(FOP_HOME)/conf/userconfig.xml"; \
+    else \
+        echo "Waring: file $(FOP_HOME)/conf/userconfig.xml does not exist"; \
+    fi
+
+	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh ${FOP_CONFIG} hgbook.fo ../pdf/hgbook.pdf)
 endif
 
-$(LINGUA)/figs/%.png: $(LINGUA)/figs/%.svg 
+$(LINGUA)/figs/%.png: $(LINGUA)/figs/%.svg
 	if test -x $(LINGUA)/fixsvg; then \
 	  $(LINGUA)/fixsvg $<; \
 	  inkscape -D -d 120 -e $@ $<-tmp.svg; \

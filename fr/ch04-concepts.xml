@@ -1,0 +1,776 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:concepts">
+  <?dbhtml filename="behind-the-scenes.html"?>
+  <title>Derrière le décor</title>
+  
+  <para id="x_2e8">À la différence de beaucoup d'outils de gestion de révisions,
+    les concepts sur lesquels se base Mercurial sont assez simples pour
+    qu'il soit facile de comprendre comment le logiciel fonctionne.
+    Bien que leur connaissance ne soit pas indispensable, je trouve utile
+    d'avoir un <quote>modèle mental</quote> de ce qui se passe.</para>
+
+  <para id="x_2e9">En effet, cette compréhension m'apporte la confiance que
+    Mercurial a été développé avec soin pour être à la fois
+    <emphasis>sûr</emphasis> et <emphasis>efficace</emphasis>. De surcroît,
+    s'il m'est facile de garder en tête ce que le logiciel fait lorsque
+    j'accomplis des tâches de révision, j'aurai moins de risques d'être
+    surpris par son comportement.</para>
+
+  <para id="x_2ea">Dans ce chapitre, nous décrirons tout d'abord les concepts
+    essentiels de l'architecture de Mercurial, pour ensuite discuter quelques
+    détails intéressants de son implémentation.</para>
+
+  <sect1>
+    <title>Conservation de l'historique sous Mercurial</title>
+    <sect2>
+      <title>Suivi de l'historique pour un seul fichier</title>
+      
+      <para id="x_2eb">Lorsque Mercurial effectue un suivi des modifications
+        faites à un fichier, il conserve l'historique pour ce fichier dans un
+        <emphasis>filelog</emphasis> sous forme de métadonnées. Chaque entrée
+        dans le <quote>filelog</quote> contient assez d'informations pour reconstituer une
+        révision du fichier correspondant. Les <quote>filelogs</quote> sont des fichiers
+        stockés dans le répertoire  <filename role="special"
+            class="directory">.hg/store/data</filename>. Un <quote>filelog</quote> contient
+        des informations de deux types : les données de révision, et un index
+        pour permettre à Mercurial une recherche efficace d'une révision
+        donnée.</para>
+
+      <para id="x_2ec">Lorsqu'un fichier devient trop gros ou a un long
+          historique, son <quote>filelog</quote> se voit stocké dans un fichier de données
+        (avec un suffixe <quote><literal>.d</literal></quote>) et un fichier
+        index (avec un suffixe<quote><literal>.i</literal></quote>)
+        distincts. La relation entre un fichier dans le répertoire de travail
+        et le <quote>filelog</quote> couvrant le suivi de son historique dans le dépôt est
+        illustré à la figure <xref linkend="fig:concepts:filelog"/>.</para>
+
+      <figure id="fig:concepts:filelog">
+        <title>Relations entre les fichiers dans le répertoire de travail et
+            leurs <quote>filelogs</quote> dans le dépôt</title> 
+        <mediaobject> <imageobject><imagedata
+              fileref="figs/filelog.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject> </figure>
+
+    </sect2>
+    <sect2>
+      <title>Gestion des fichiers suivis</title>
+      
+      <para id="x_2ee">Mercurial a recours à une structure nommée
+        <emphasis>manifest</emphasis> pour rassembler les informations sur
+        les fichiers dont il gère le suivi. Chaque entrée dans ce <quote>manifest</quote>
+        contient des informations sur les fichiers présents dans une révision
+        donnée. Une entrée enregistre la liste des fichiers faisant partie de la
+        révision, la version de chaque fichier, et quelques autres
+        métadonnées sur ces fichiers.</para>
+
+    </sect2>
+    <sect2>
+        <title>Enregistrer les informations des <quote>changesets</quote></title>
+
+      <para id="x_2ef">Le <emphasis>changelog</emphasis> contient les
+          informations sur chaque <quote>changeset</quote>. Chaque révision enregistre qui a
+          <quote>committé</quote> un changement, le commentaire du <quote>changeset</quote>, d'autres
+          morceaux d'information relatives au <quote>changeset</quote> et la révision du
+          <quote>manifest</quote> à utiliser.</para>
+
+    </sect2>
+    <sect2>
+      <title>Relations entre les révisions</title>
+
+      <para id="x_2f0">À l'intérieur d'un <quote>changelog</quote>, d'un <quote>manifest</quote>, ou d'un
+          <quote>filelog</quote>, chaque révision enregistre un pointeur vers son parent
+        immédiat (ou à ses deux parents s'il s'agit d'une révision
+        correspondant à une fusion (merge)). Comme mentionné plus haut, il y
+        a aussi des relations entre les révisions <emphasis>à
+          travers</emphasis> ces structures, qui sont de nature
+        hiérarchique.</para>
+
+    <para id="x_2f1">Pour chaque <quote>changeset</quote> dans un dépôt, il y a exactement
+        une révision stockée dans le <quote>changelog</quote>. Chaque révision du <quote>changelog</quote>
+        contient un pointeur vers une unique révision du <quote>manifest</quote>. Une
+        révision du <quote>manifest</quote> garde un pointeur vers une unique révision pour
+        chaque <quote>filelog</quote> suivi lorsque le <quote>changeset</quote> est créé. Ces relations
+        sont illustrées dans <xref linkend="fig:concepts:metadata"/>.</para>
+
+      <figure id="fig:concepts:metadata">
+        <title>Metadata relationships</title>
+        <mediaobject> <imageobject><imagedata
+              fileref="figs/metadata.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject> 
+        </mediaobject>
+      </figure>
+
+      <para id="x_2f3">Comme l'illustration le montre, il
+        <emphasis>n'</emphasis>y a <emphasis>pas</emphasis> de relation
+        <quote>un à un</quote> entre les révisions dans un <quote>changelog</quote>,
+        <quote>manifest</quote> ou <quote>filelog</quote>. Si un fichier que Mercurial suit n'a pas changé
+        entre deux <quote>changesets</quote>, l'entrée pour ce fichier dans les deux
+        révisions du <quote>manifest</quote> pointera vers la même révision de son <quote>filelog</quote>
+        <footnote> <para id="x_725">Il est possible (bien qu'inhabituel)
+                qu'un <quote>manifest</quote> reste le même entre deux <quote>changesets</quote>, auquel cas
+                l'entrée du <quote>changelog</quote> pour ces <quote>changesets</quote> pointera vers la même
+                révision du <quote>manifest</quote>.</para>
+        </footnote>.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Stockage sûr et efficace</title>
+
+    <para id="x_2f4">Les fondements des <quote>changelogs</quote>, des <quote>manifests</quote> et des
+        <quote>filelogs</quote> sont fournis par une unique structure appelée le
+      <emphasis>revlog</emphasis>.</para>
+
+    <sect2>
+      <title>Stockage efficace</title>
+
+      <para id="x_2f5">Le <quote>revlog</quote> fournit un stockage efficace des révisions en
+        utilisant un mécanisme <emphasis>delta</emphasis>. Au lieu de stocker
+        une copie complète d'un fichier à chaque révision, il stocke les
+        changements requis pour transformer une révision plus ancienne en une
+        nouvelle révision. Pour plusieurs types de données, ces deltas sont
+        typiquement une fraction de pourcentage de la taille de la copie
+        complète d'un fichier.</para>
+
+      <para id="x_2f6">Certains systèmes de gestion de révisions obsolètes
+        peuvent seulement travailler avec les deltas de fichiers texte. Il
+        doivent d'ailleurs stocker les fichiers binaires comme des images
+        complètes ou encodées avec une représentation texte, chacune de ces
+        approches étant gaspilleuse. Mercurial peut traiter les deltas de
+        fichiers avec du contenu binaire arbitraire ; il n'a pas besoin de
+        traiter spécialement du texte.</para>
+
+    </sect2>
+    <sect2 id="sec:concepts:txn">
+      <title>Opérations sûres</title>
+
+      <para id="x_2f7">Mercurial <emphasis>empile</emphasis> toujours les
+          données à la fin d'un fichier <quote>revlog</quote>. Il ne modifie jamais la section
+        d'un fichier après qu'il l'ait écrite. C'est à la fois plus robuste
+        et efficace que les schémas qui ont besoin de modifier ou réécrire
+        les données.</para>
+
+      <para id="x_2f8">De plus, Mercurial traite chaque écriture comme la
+        partie d'une <emphasis>transaction</emphasis> qui peut comprendre
+        plusieurs fichiers. Une transaction est <emphasis>atomique</emphasis>
+        : soit la transaction entière réussit et ses effets sont tous
+        visibles aux lecteurs en une étape, soit la totalité est annulée.
+        Cette garantie de l'atomicité signifie que si vous exécutez deux
+        copies de Mercurial, où une lit les données et l'autre les écrit, le
+        lecteur ne verra jamais un résultat partiellement écrit qui pourrait
+        le perturber.</para>
+
+      <para id="x_2f9">Le fait que Mercurial ne fasse qu'ajouter aux fichiers
+        fait qu'il est facile de fournir cette garantie de transaction. Plus
+        les choses sont faites simplement comme ça, plus vous pouvez être
+        rassurés qu'elles sont bien faites.</para>
+    
+    </sect2>
+    <sect2>
+      <title>Récupération rapide</title>
+
+      <para id="x_2fa">Mercurial évite habillement un piège commun à tous les
+        vieux systèmes de gestion de révisions : le problème de la
+        <emphasis>récupération inefficace</emphasis>. La plupart des systèmes
+        de gestion de révisions stockent le contenu d'une révision comme une
+        série incrémentale de modifications faites à un
+        <quote>snapshot</quote>. (Certains basent le <quote>snapshot</quote> sur la plus
+        vieille révision, d'autres sur la plus récente.) Pour reconstruire
+        une révision spécifique, vous devez d'abord lire le <quote>snapshot</quote>, et
+        ensuite toutes les révisions entre le <quote>snapshot</quote> et votre révision
+        cible. Plus vous avez d'historique accumulé dans un fichier, plus de
+        révisions vous avez à lire, d'où la longueur que cela prend à
+        reconstruire une révision particulière.</para>
+
+      <figure id="fig:concepts:snapshot">
+          <title><quote>Snapshot</quote> d'un <quote>revlog</quote>, avec des deltas incrémentaux</title>
+        <mediaobject> <imageobject><imagedata
+              fileref="figs/snapshot.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject>
+      </figure>
+
+      <para id="x_2fc">L'innovation que Mercurial apporte à ce problème est
+        simple mais efficace. Une fois que la quantité cumulée de deltas
+        d'informations stockées depuis le dernier snapshot excède un seuil
+        fixé, il stocke un nouveau <quote>snapshot</quote> (compressé bien sûr), plutôt qu'un
+        nouveau delta. Ceci rend possible la reconstruction de
+        <emphasis>toute</emphasis> révision d'un fichier rapidement. Cette
+        approche fonctionne si bien que depuis, elle a été copiée par
+        plusieurs autres systèmes de gestion de révisions.</para>
+
+      <para id="x_2fd"><xref linkend="fig:concepts:snapshot"/> illustre
+          l'idée. Dans une entrée d'un fichier d'index de <quote>revlog</quote>, Mercurial
+        stocke l'intervalle des entrées depuis le fichier de données qu'il doit
+        lire pour reconstruire une révision particulière.</para>
+
+      <sect3>
+        <title>Aparté : l'influence de la compression vidéo</title>
+      
+        <para id="x_2fe">Si vous êtes familiés de la compression vidéo ou
+          avez déjà regardé un programme TV par câble ou par un service
+          satellite, vous devez savoir que la plupart des schémas de
+          compression vidéo stockent chaque trame de vidéo comme un delta
+          vis-à-vis de la trame précédente.</para>
+      
+        <para id="x_2ff">Mercurial emprunte cette idée pour rendre possible
+          la reconstruction d'une révision à partir d'un snapshot et d'un
+          petit nombre de deltas.</para>
+
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>Identification et intégrité forte</title>
+
+      <para id="x_300">Avec les deltas ou l'information du snapshot, une
+        entrée d'un revlog contient un hash cryptographique des données qu'il
+        représente. Ceci fait qu'il est difficile de construire les données
+        d'une révision, mais facile de détecter une corruption
+        accidentelle.</para>
+
+      <para id="x_301">Les hash fournissent plus qu'un bon moyen de
+        vérification contre la corruption ; il sont aussi utilisés comme
+        identifiants pour les révisions. Les <quote>hashs</quote> d'identifications d'un
+        <quote>changeset</quote> que vous voyez comme utilisateur final proviennent des
+        révisions du <quote>changelog</quote>. Bien que les <quote>filelogs</quote> et le <quote>manifest</quote>
+        utilisent aussi des <quote>hashs</quote>, Mercurial ne les utilise qu'en
+        arrière-plan.</para>
+
+    <para id="x_302">Mercurial vérifie que les <quote>hashs</quote> sont corrects lorsqu'il
+        récupère les révisions de fichiers et lorsqu'il récupère (pull) les
+        changements d'un autre dépôt. S'il rencontre un problème d'intégrité,
+        il se plaindra et arrêtera tout ce qu'il est en train de faire.</para>
+
+      <para id="x_303">En plus de l'effet qu'il a sur l'efficacité des
+          récupérations, l'utilisation par Mercurial de <quote>snapshots</quote> périodiques
+        fait qu'il est plus robuste contre la corruption partielle de
+        données. Si un <quote>revlog</quote> devient partiellement corrompu à cause d'une
+        erreur matérielle ou d'un bug système, il est souvent possible de
+        reconstruire certaines ou la plupart des révisions à partir des
+        sections non corrompues du <quote>revlog</quote>, avant et après la section
+        corrompue. Ceci ne serait pas possible à partir d'un modèle de
+        stockage de deltas seul.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Historique des révisions, branches et fusions (merge)</title>
+
+    <para id="x_304">Chaque entrée dans un <quote>revlog</quote> Mercurial connaît
+      l'identité de l'ancêtre immédiat de la révision, habituellement désignée
+      comme son <emphasis>parent</emphasis>. En fait, une révision contient
+      de la place pour non pas un parent, mais deux. Mercurial utilise un
+      <quote>hash</quote> spécial, appelé le <quote>null ID</quote> pour représenter l'idée
+      qu'<quote>il n'y a pas de parent ici</quote>. Ce <quote>hash</quote> est simplement
+      une chaîne de zéros.</para>
+
+    <para id="x_305">Dans <xref linkend="fig:concepts:revlog"/>, vous pouvez
+        voir un exemple de la structure conceptuelle d'un <quote>revlog</quote>. Les <quote>filelogs</quote>,
+        <quote>manifests</quote> et <quote>changelogs</quote> ont tous cette même structure ; ils diffèrent
+      simplement dans le type de donnée stockée dans chaque delta ou
+      <quote>snapshot</quote>.</para>
+
+  <para id="x_306">La première révision d'un <quote>revlog</quote> (au bas de l'image) a
+      le <quote>null ID</quote> dans chacune de ses cases parent. Pour une révision
+      <quote>normale</quote>, sa première case parent contient l'ID de sa
+      révision parent et la seconde contient le <quote>null ID</quote>, indiquant que cette
+      révision n'a qu'un seul vrai parent. Si deux révisions ont le même
+      parent, il s'agit de branches. Une révision qui représente une fusion
+      (merge) entre deux branches a deux identifiants de révision normaux
+      dans ses cases parents.</para>
+
+    <figure id="fig:concepts:revlog">
+        <title>Le concept de la structure d'un <quote>revlog</quote></title>
+      <mediaobject> <imageobject><imagedata
+            fileref="figs/revlog.png"/></imageobject> <textobject><phrase>XXX
+            add text</phrase></textobject>
+      </mediaobject>
+    </figure>
+
+  </sect1>
+  <sect1>
+    <title>Le répertoire de travail</title>
+
+    <para id="x_307">Dans un répertoire de travail, Mercurial stocke une image
+        des fichiers du dépôt à un <quote>changeset</quote> particulier.</para>
+
+    <para id="x_308">Le répertoire de travail <quote>sait</quote> quel
+        <quote>changeset</quote> il contient. Lorsque vous mettez à jour (update) le
+        répertoire de travail à un certain <quote>changeset</quote>, Mercurial regarde la
+        révision appropriée du <quote>manifest</quote> pour trouver quels fichiers il suivait
+        au moment où le <quote>changeset</quote> a été <quote>committé</quote>, et quelle révision de chaque
+      fichier était alors courante. Il recrée ensuite une copie de chacun de
+      ces fichiers, avec le même contenu qu'ils avaient lorsque le <quote>changeset</quote>
+      a été <quote>committé</quote>.</para>
+
+    <para id="x_309">La structure spéciale <emphasis>dirstate</emphasis>
+      contient la connaissance de Mercurial sur le répertoire de travail.
+      Elle est maintenue par un fichier appelé
+      <filename>.hg/dirstate</filename> dans un dépôt. Les détails du
+      dirstate sont le <quote>changeset</quote> vers lequel le répertoire de travail se met
+      à jour (update), et tous les fichiers que Mercurial suit dans le
+      répertoire de travail. Il permet aussi à Mercurial de connaître
+      rapidement les fichiers modifiés, en enregistrant l'heure de
+      dernière modification et la taille de chacun.</para>
+
+  <para id="x_30a">Puisqu'une révision de <quote>revlog</quote> a des emplacements pour
+      deux parents et peut représenter aussi bien une révision normale (avec
+      un parent) ou une fusion de deux révisions anciennes, le <quote>dirstate</quote> a des
+      emplacements pour deux parents. Lorsque vous utilisez la commande
+      <command role="hg-cmd">hg update</command>, le <quote>changeset</quote> que vous
+      mettez à jour est stocké dans l'emplacement du <quote>premier
+          parent</quote>, et le <quote>null ID</quote> l'est dans le second. Lorsque vous
+      utilisez la commande <command role="hg-cmd">hg merge</command> avec un
+      autre changeset, le premier parent reste inchangé, et le second est
+      rempli avec le <quote>changeset</quote> à partir duquel vous êtes en train de
+      fusionner. La commande <command role="hg-cmd">hg parents</command> vous
+      donne les parents du dirstate.</para>
+
+    <sect2>
+        <title>Que se passe-t-il lorsque vous <quote>committez</quote></title>
+
+        <para id="x_30b">Le <quote>dirstate</quote> stocke les informations sur les parents
+        pour plus qu'une simple comptabilité. Mercurial utilise les
+        parents du <quote>dirstate</quote> comme <emphasis>les parents d'un nouveau
+            <quote>changeset</quote></emphasis> lorsque vous <quote>committez</quote>.</para>
+
+      <figure id="fig:concepts:wdir"> 
+        <title>Le répertoire de travail peut avoir deux parents</title>
+        <mediaobject>
+          <imageobject><imagedata fileref="figs/wdir.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject></mediaobject>
+      </figure>
+
+      <para id="x_30d"><xref linkend="fig:concepts:wdir"/> montre l'état
+          normal d'un répertoire de travail, où il n'y a qu'un seul <quote>changeset</quote>
+          comme parent. Ce <quote>changeset</quote> est le <emphasis>tip</emphasis>, le
+          <quote>changeset</quote> le plus récent dans le dépôt n'a pas d'enfant.</para>
+
+      <figure id="fig:concepts:wdir-after-commit">
+        <title>Le répertoire de travail gagne de nouveaux parents après un
+            <quote>commit</quote></title>
+        <mediaobject>
+          <imageobject><imagedata
+              fileref="figs/wdir-after-commit.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject>
+      </figure>
+
+      <para id="x_30f">On peut se représenter le répertoire de travail comme
+        <quote>le changeset que je vais committer</quote>. Chaque fichier
+        que vous demandez à Mercurial d'ajouter, de supprimer, de renommer ou de
+        copier va être intégré dans ce changeset, tout comme les
+        modifications de n'importe quel fichier que Mercurial est déjà en
+        train de suivre ; le nouveau <quote>changeset</quote> aura les mêmes parents que le
+        répertoire de travail.</para>
+
+      <para id="x_310">Après un commit, Mercurial va mettre à jour les
+        parents du répertoire de travail, ainsi, le premier parent est l'ID
+        du nouveau <quote>changeset</quote>, et le second, le <quote>null ID</quote>. Ceci est illustré dans
+        <xref linkend="fig:concepts:wdir-after-commit"/>. Mercurial ne touche
+        à aucun des fichiers du répertoire de travail lorsque vous <quote>committez</quote>
+        ; il modifie simplement le dirstate pour noter ses nouveaux
+        parents.</para>
+
+    </sect2>
+    <sect2>
+      <title>Création d'une nouvelle <quote>head</quote></title>
+
+      <para id="x_311">Il est parfaitement normal de faire un <quote>update</quote> du
+          répertoire de travail à un <quote>changeset</quote> autre que le <quote>tip</quote> courant. Par
+        exemple, vous pourriez vouloir savoir à quoi votre projet
+        ressemblait mardi dernier, ou regarder le <quote>changeset</quote> qui a
+        introduit un bug. Dans des cas comme ça, la chose naturelle à faire
+        est de faire un <quote>update</quote> du répertoire de travail au <quote>changeset</quote> qui vous
+        intéresse, et ensuite d'en examiner les fichiers pour regarder leurs
+        contenus comme ils l'étaient lorsque vous avez <quote>committé</quote> ce <quote>changeset</quote>.
+        L'effet de ceci est montré dans <xref
+          linkend="fig:concepts:wdir-pre-branch"/>.</para>
+
+      <figure id="fig:concepts:wdir-pre-branch">
+          <title>Le répertoire de travail, <quote>updaté</quote> pour un <quote>changeset</quote> plus
+        ancien</title>
+        <mediaobject> <imageobject><imagedata
+              fileref="figs/wdir-pre-branch.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject>
+      </figure>
+
+      <para id="x_313">En ayant fait un <quote>update</quote> du répertoire de travail vers
+          un <quote>changeset</quote> plus ancien, que se passe-t-il si vous faites des
+          changements et ensuite <quote>committez</quote> ? Mercurial se comporte comme je
+        l'ai fait remarqué plus haut. Les parents du répertoire de travail
+        deviennent les parents du nouveau <quote>changeset</quote>. Ce nouveau <quote>changeset</quote> n'a
+        pas d'enfant, donc il devient le nouveau <quote>tip</quote>. Le dépôt contient
+        maintenant deux <quote>changesets</quote> qui n'ont pas d'enfant ; on appelle ceci
+        des <emphasis>heads</emphasis>. Vous pouvez voir la structure que
+        cela crée dans <xref linkend="fig:concepts:wdir-branch"/>.</para>
+
+      <figure id="fig:concepts:wdir-branch">
+          <title>Après un <quote>commit</quote> fait pendant la synchronisation avec un ancien
+              <quote>changeset</quote></title>
+        <mediaobject> <imageobject><imagedata
+              fileref="figs/wdir-branch.png"/></imageobject>
+          <textobject><phrase>XXX add text</phrase></textobject>
+        </mediaobject>
+      </figure>
+
+      <note>
+        <para id="x_315">Si vous êtes un nouvel utilisateur de Mercurial, vous devez garder
+          à l'esprit une <quote>erreur</quote> commune, qui est d'utiliser la
+          commande <command role="hg-cmd">hg pull</command> sans aucune
+          option. Par défaut, la commande <command role="hg-cmd">hg
+              pull</command> <emphasis>ne fait pas</emphasis> d'<quote>update</quote> sur le
+          répertoire de travail, ainsi, vous allez récupérer les nouveaux
+          changesets dans votre dépôt, mais le répertoire de travail va
+          rester synchronisé au même <quote>changeset</quote> qu'il l'était avant le <quote>pull</quote>.
+          Si vous faites des changements et <quote>committez</quote> ensuite, vous allez
+          créer une nouvelle <quote>head</quote> puisque votre répertoire de travail n'est
+          pas synchronisé au <quote>tip</quote> actuel. Pour combiner les
+          opérations d'un <quote>pull</quote> suivi d'un <quote>update</quote>, exécutez <command>hg
+            pull -u</command>.</para>
+      
+        <para id="x_316">Je place le mot <quote>erreur</quote> entre
+          guillemets parce que tout ce dont vous avez besoin de faire pour
+          rectifier la situation où vous avez créé une nouvelle <quote>head</quote> par
+          accident est un <command role="hg-cmd">hg merge</command> suivi
+          d'un <command role="hg-cmd">hg commit</command>.  En d'autres mots,
+          ceci n'a presque jamais de conséquences négatives ; il s'agit juste
+          d'une surprise pour les nouveaux arrivants. Je discuterai d'autres
+          moyens d'éviter ce comportement, et pourquoi Mercurial agit de
+          cette façon surprenante plus tard.</para>
+      </note>
+
+    </sect2>
+    <sect2>
+      <title>Fusionner (merge) les changements</title>
+
+      <para id="x_317">Lorsque vous exécutez la commande <command
+          role="hg-cmd">hg merge</command>, Mercurial laisse le premier
+        parent du répertoire de travail inchangé et fixe le second au
+        <quote>changeset</quote> avec lequel vous fusionnez (merge), comme montré dans <xref
+          linkend="fig:concepts:wdir-merge"/>.</para>
+
+      <figure id="fig:concepts:wdir-merge">
+          <title>Fusionner (merge) deux <quote>heads</quote></title>
+        <mediaobject>
+          <imageobject> <imagedata fileref="figs/wdir-merge.png"/>
+        </imageobject> <textobject><phrase>XXX add text</phrase></textobject>
+      </mediaobject>
+      </figure>
+
+      <para id="x_319">Mercurial doit aussi modifier le répertoire de
+          travail pour fusionner les fichiers gérés dans les deux <quote>changesets</quote>.
+        Un peu simplifié, le processus de fusion fonctionne comme ça : pour
+        chaque fichier dans le <quote>manifest</quote> de chaque <quote>changeset</quote>.</para>
+
+      <itemizedlist>
+          <listitem><para id="x_31a">Si aucun <quote>changeset</quote> n'a modifié un fichier,
+            ne rien faire avec ce fichier.</para> </listitem>
+    <listitem><para id="x_31b">Si un <quote>changeset</quote> a modifié un fichier et
+            que l'autre ne l'a pas fait, créer une copie modifiée du fichier
+            dans le répertoire de travail.</para> </listitem>
+    <listitem><para id="x_31c">Si un <quote>changeset</quote> a modifié un fichier, et
+            que l'autre ne l'a pas fait (ou l'a supprimé), supprimer le
+            fichier du répertoire de travail.</para> </listitem>
+    <listitem><para id="x_31d">Si un <quote>changeset</quote> a supprimé un fichier,
+            mais que l'autre a modifié le fichier, demander à l'utilisateur
+            quoi faire : garder le fichier modifié ou le supprimer ?</para>
+        </listitem>
+        <listitem><para id="x_31e">Si chacun des <quote>changesets</quote> a modifié un
+            fichier, invoquer le programme externe de fusion pour choisir les
+            nouveaux contenus pour le fichier fusionné. Ceci peut demander
+            une intervention de l'utilisateur.</para></listitem>
+    <listitem><para id="x_31f">Si un <quote>changeset</quote> a modifié un fichier, et
+            que l'autre a renommé ou copié le fichier, être sûr que les
+            changements suivent le nouveau nom du fichier.</para></listitem>
+      </itemizedlist>
+      
+      <para id="x_320">Il y a plus de détails&emdash;fusionner a beaucoup de
+        cas épineux&emdash;mais ceux-ci sont des choix plus communs qui sont
+        liés à une fusion (merge). Comme vous pouvez le voir, la
+        plupart des cas sont entièrement automatiques, et effectivement, la
+        plupart des fusions (merge) se terminent automatiquement, sans nécessiter
+        votre intervention pour résoudre un conflit.</para>
+
+      <para id="x_321">Lorsque vous pensez à ce qu'il se passe lorsque vous
+          <quote>committez</quote> après un <quote>merge</quote>, une fois encore, le répertoire de travail
+        est <quote>le changeset que je suis sur le point de
+          committer</quote>. Après que la commande <command role="hg-cmd">hg
+          merge</command> soit terminée, le répertoire de travail a deux
+        parents ; ceux ci vont devenir les parents du nouveau
+        <quote>changeset</quote>.</para>
+
+      <para id="x_322">Mercurial vous permet d'exécuter de multiples fusions,
+          mais vous devez <quote>committer</quote> le résultat de chaque fusion individuellement
+        au fur et à mesure. Ceci est nécessaire puisque Mercurial ne stocke
+        que deux parents pour chaque révision et le répertoire de travail.
+        Alors qu'il serait techniquement faisable de fusionner de multiples
+        <quote>changesets</quote> en même temps, Mercurial interdit cela pour être plus simple. Avec
+        des fusions multiples, les risques de confusion pour l'utilisateur, de
+        mauvaie résolution de conflits, et de pagaille dans les fusions
+        augmenteraient de façon intolérable.</para>
+
+    </sect2>
+
+    <sect2>
+      <title>Fusions et renommages</title>
+
+      <para id="x_69a">Un nombre surprenant de systèmes de gestion de
+        révisions fait peu ou pas attention à un <emphasis>nom</emphasis> de fichier au
+        cours du temps. Par exemple, il était habituel que si un fichier
+        était renommé d'un coté de la fusion, les changements à partir de
+        l'autre coté étaient supprimés silencieusement.</para>
+
+      <para id="x_69b">Mercurial enregistre les metadata lorsque vous lui
+        dites d'exécuter un renommage ou une copie. Il utilise ces metadatas
+        durant une fusion pour faire les bonnes choses dans le cas d'un
+        <quote>merge</quote>. Par exemple, si je renomme un fichier et que vous l'éditez
+        sans le renommer, lorsque l'on fusionne, le fichier sera renommé et
+        aura les changements appliqués.</para>
+
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>D'autres fonctionnalités intéressantes</title>
+
+    <para id="x_323">Dans les sections au-dessus, j'ai tenté de mettre
+      l'accent sur certains aspects importants du design de Mercurial pour
+      illustrer l'attention particulière qui a été portée à la fiabilité et à
+      la performance. Cependant, l'attention aux détails ne s'arrête pas ici.
+      Il y a de nombreux aspects sur la construction de Mercurial que je
+      trouve personnellement intéressants. J'en détaillerai quelques-uns 
+      ici, séparément des éléments du <quote>big ticket</quote> ci-dessus,
+      ainsi, si vous êtes intéressés, vous pourrez avoir une meilleure idée
+      de la quantité d'ingéniosité qu'il y a derrière un système bien
+      conçu.</para>
+
+    <sect2>
+      <title>Compression astucieuse</title>
+
+      <para id="x_324">Lorsque cela est approprié, Mercurial stocke les
+          <quote>snapshots</quote> et deltas sous une forme compressée. Il le fait en
+          <emphasis>essayant</emphasis> toujours de compresser un <quote>snapshot</quote> ou
+        un delta, mais en ne stockant la version compressée que si celle-ci
+        est plus petite que la version non compressée.</para>
+
+      <para id="x_325">Ceci signifie que Mercurial fait <quote>la bonne
+          chose</quote> lorsqu'il stocke un fichier dont la forme native est
+        compressée, comme une archive <literal>zip</literal> ou une image
+        JPEG. Lorsque ces types de fichiers sont compressés une seconde fois,
+        le fichier obtenu est habituellement plus gros que la forme
+        compressée une seule fois et Mercurial stockera alors le
+        <literal>zip</literal> ou JPEG.</para>
+
+      <para id="x_326">Les deltas entre les révisions d'un fichier compressé
+        sont habituellement plus gros que les snapshots du fichier, et
+        Mercurial fait à nouveau <quote>la bonne chose</quote> dans ces cas.
+        Il trouve qu'un delta dépasse le seuil auquel il devrait stocker un
+        <quote>snapshot</quote> complet du fichier, alors il stocke le <quote>snapshot</quote>, en gagnant
+        encore de la place en comparaison d'une approche naïve avec un delta
+        seulement.</para>
+
+      <sect3>
+        <title>Recompression sur le réseau</title>
+      
+        <para id="x_327">Lors du stockage des révisions sur le disque,
+          Mercurial utilise l'algorithme de compression
+          <quote>deflate</quote> (le même que celui utilisé pour le format populaire
+          d'archive <literal>zip</literal>), qui est un bon
+          compromis entre la vitesse et le taux de compression. Cependant,
+          lors de la transmission d'une révision de données par une connexion
+          réseau, Mercurial décompresse les données de révision
+          compressées.</para>
+      
+        <para id="x_328">Si la connexion passe par HTTP, Mercurial
+          recompresse le flux entier de données en utilisant un algorithme de
+          compression qui donne un meilleur taux de compression (l'algorithme
+          Burrows-Wheeler utilisé principalement par le logiciel de
+          compression <literal>bzip2</literal>). Cette combinaison de
+          l'algorithme et de la compression du flux entier (plutôt que pour une
+          révision à la fois) réduit substantiellement le nombre de bits qui
+          sont transférés, résultant en une performance réseau accrue sur
+          la plupart des supports.</para>
+      
+        <para id="x_329">Si la connexion passe par
+          <command>ssh</command>, Mercurial <emphasis>ne</emphasis>
+          recompresse <emphasis>pas</emphasis> le flux puisque
+          <command>ssh</command> peut déjà le faire par lui-même. Vous pouvez
+          demander à Mercurial de toujours utiliser la compression
+          <command>ssh</command> en éditant le fichier
+          <filename>.hgrc</filename> de votre répertoire personnel comme ci-dessous.
+      </para>
+      
+        <programlisting>[ui]
+ssh = ssh -C</programlisting>
+
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>Ordre de lecture/écriture et atomicité</title>
+
+      <para id="x_32a">L'histoire ne se résume pas à ajouter à la fin des fichiers
+        lorsque l'on cherche à garantir que le lecteur ne verra
+        pas qu'une écriture partielle. Si vous relisez <xref
+            linkend="fig:concepts:metadata"/>, les révisions dans le <quote>changelog</quote>
+        pointent vers les révisions dans le <quote>manifest</quote>, et les révisions du
+        <quote>manifest</quote> pointent vers les révisions du <quote>filelog</quote>. Cette hiérarchie est
+        délibérée.</para>
+
+      <para id="x_32b">L'écriture commence par une transaction en écrivant dans
+          le <quote>filelog</quote> et dans les données du <quote>manifest</quote>, et n'écrit aucune donnée
+        du  <quote>changelog</quote> tant que ce n'est pas terminé. La lecture commence en
+        lisant les données du <quote>changelog</quote>, puis les données du <quote>manifest</quote>, et
+        enfin les données du <quote>filelog</quote>.</para>
+
+      <para id="x_32c">Puisque que l'écriture ne finit pas d'écrire les
+          données du <quote>filelog</quote> et du <quote>manifest</quote> avant d'écrire dans le <quote>changelog</quote>,
+          la lecture ne verra jamais un pointeur vers une révision du <quote>manifest</quote>
+          partiellement écrite à partir du <quote>changelog</quote>, et ne lira jamais un
+          pointeur vers une révision du <quote>filelog</quote> partiellement écrite dans le
+          <quote>manifest</quote>.</para>
+
+    </sect2>
+    <sect2>
+      <title>Accès concurrent</title>
+
+      <para id="x_32d">La garantie de l'ordre de lecture/écriture et
+        de l'atomicité signifie que Mercurial n'a jamais besoin de poser de
+        <emphasis>lock</emphasis> sur un dépôt lorsqu'il lit des données,
+        même si le dépôt est en train d'être écrit au même moment que la
+        lecture a lieu. Ceci a un grand impact sur la fiabilité ; vous
+        pouvez avoir un nombre arbitraire de processus Mercurial qui lisent
+        sans risque les données d'un dépôt en même temps, peu importe s'il
+        est en train d'être lu ou non.</para>
+
+      <para id="x_32e">La nature sans <quote>lock</quote> de la lecture
+        signifie que si vous partagez un dépôt sur un système
+        multi-utilisateurs, vous n'avez pas besoin de donner aux autres
+        utilisateurs locaux la permission d'<emphasis>écrire</emphasis> sur
+        votre dépôt pour qu'ils soient capable de faire un clone ou un <quote>pull</quote>
+        des changements à partir de celui-ci ; ils ont seulement besoin de la
+        permission en <emphasis>lecture</emphasis>. (Il
+        <emphasis>ne</emphasis> s'agit <emphasis>pas</emphasis> d'une
+        fonctionnalité commune à travers les systèmes de gestion de révisions,
+        donc ne prenez pas ça pour argent comptant ! La plupart ont besoin que les
+        lecteurs soient capables de mettre un lock sur le dépôt pour y
+        accéder en toute sécurité, et ceci demande des permissions en
+        écriture, sur au moins un répertoire, ce qui provoque bien sûr toutes
+        sortes de problèmes pénibles et agaçants relatifs à la sécurité et à
+        l'administration.)</para>
+
+    <para id="x_32f">Mercurial utilise des <quote>locks</quote> pour assurer qu'un seul
+        processus peut écrire dans le dépôt à un moment donné (le mécanisme
+        de <quote>lock</quote> est sûr, même sur des systèmes de fichiers qui sont connus
+        pour être hostiles aux <quote>locks</quote>, comme NFS). Si un dépôt dispose d'un
+        <quote>lock</quote>, un processus qui cherche à écrire va attendre un peu avant de
+        retenter pour voir si le dépôt perd son <quote>lock</quote>, mais si le dépôt garde
+        trop longtemps son <quote>lock</quote>, le processus qui tente d'écrire va expirer
+        (time out) après un moment. Cela veut dire par exemple que vos
+        scripts lancés quotidiennement n'attendront pas toujours et boucleront
+        si un système plantait sans avertissement, par exemple. (Oui, le
+        timeout est configurable, de zéro à l'infini.)</para>
+
+      <sect3>
+          <title>Accès <quote>dirstate</quote> sûr</title>
+
+	<para id="x_330">Comme avec les données de révision, Mercurial n'utilise pas
+        de <quote>lock</quote> pour lire le fichier <quote>dirstate</quote> ; il n'acquiert pas un <quote>lock</quote> pour
+    y écrire. Pour empêcher la possibilité de lire une copie partiellement
+    écrite du fichier <quote>dirstate</quote>, Mercurial écrit sur un fichier avec un nom
+    unique dans le même répertoire que le fichier <quote>dirstate</quote>, ensuite renomme
+    le fichier temporaire automatiquement en <filename>dirstate</filename>.
+    Le fichier nommé <filename>dirstate</filename> est ainsi garanti d'être
+    écrit totalement, et non partiellement.</para>
+
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>Empêcher les recherches</title>
+
+      <para id="x_331">L'absence de recherche sur les têtes de disques est
+        critique pour la performance de Mercurial, puisque toute recherche
+        est beaucoup plus coûteuse comparativement à une grosse opération de
+        lecture.</para>
+
+    <para id="x_332">C'est pour ça, par exemple, que le <quote>dirstate</quote> est stocké
+        dans un fichier unique. S'il y avait eu un <quote>dirstate</quote> par répertoire
+        que Mercurial suivrait, le disque aurait recherché une fois par
+        répertoire. Au lieu de ça, Mercurial lit entièrement un 
+        fichier unique, en une étape.</para>
+
+      <para id="x_333">Mercurial utilise aussi un schéma <quote>copie à
+          l'écriture</quote> lorsqu'il clone un dépôt sur un stockage local.
+      Au lieu de copier chaque <quote>fichier</quote> revlog depuis l'ancien dépôt vers le
+        nouveau dépôt, il crée un <quote>lien physique</quote>, qui est le
+        plus court chemin pour dire <quote>Ces deux noms pointent vers le
+          même fichier</quote>. Lorsque Mercurial est sur le point d'écrire
+        sur l'un des revlogs de ces fichiers, il vérifie si le nombre de noms
+        pointant sur ce fichier est plus grand que un. Si c'est le cas, plus
+        d'un dépôt utilise le fichier, donc Mercurial crée une nouvelle copie
+        du fichier qui est privée à ce dépôt.</para>
+
+      <para id="x_334">Quelques développeurs de systèmes de gestion de
+        révisions ont montré que cette idée de faire une copie privée complète
+        d'un fichier n'est pas vraiment efficace au niveau du
+        stockage. Bien que ce soit vrai, le stockage est peu onéreux, et
+        cette méthode donne la plus grande performance lorsque l'on reporte
+        la plupart des journalisations au système d'exploitation. Un schéma
+        alternatif réduirait certainement la performance tout en augmentant
+        la complexité du logiciel, mais la vitesse et la simplicité sont les
+        clefs du <quote>confort</quote> de l'utilisation
+        quotidienne.</para>
+
+    </sect2>
+    <sect2>
+        <title>Autres contenus du <quote>dirstate</quote></title>
+
+      <para id="x_335">Puisque Mercurial ne vous force pas à signaler que
+          vous modifiez un fichier, il utilise le <quote>dirstate</quote> pour stocker
+        certaines informations supplémentaires pour déterminer efficacement
+        si vous avez ou non modifié un fichier. Pour chaque fichier du
+        répertoire de travail, il stocke l'heure à laquelle il a été modifié,
+        ainsi que la taille du fichier à cette heure.</para>
+
+      <para id="x_336">Lorsque vous faites explicitement un <command
+          role="hg-cmd">hg add</command>, <command role="hg-cmd">hg
+          remove</command>, <command role="hg-cmd">hg rename</command> ou
+        <command role="hg-cmd">hg copy</command> sur des fichiers, Mercurial
+        met à jour le <quote>dirstate</quote> afin de savoir que faire lorsque vous
+        effectuez un <quote>commit</quote>.</para>
+
+    <para id="x_337">Le <quote>dirstate</quote> aide Mercurial à vérifier efficacement le
+        statut des fichiers dans un dépôt.</para>
+
+      <itemizedlist>
+        <listitem> <para id="x_726"> Lorsque Mercurial vérifie l'état d'un
+            fichier du répertoire de travail, il compare d'abord la date de
+            dernière modification du fichier avec celle enregistrée dans le
+            <quote>dirstate</quote> qui correspond à celle que Mercurial a écrit en dernier sur ce
+            fichier. Si la date de dernière modification correspond à la date
+            où Mercurial a écrit le fichier, celui ci n'a pas été modifié,
+            donc Mercurial n'a pas besoin de revérifier.</para> </listitem>
+    <listitem> <para id="x_727"> Si la taille du fichier a changé, celui-ci 
+            a été modifié. Si la date de modification a changé mais que la
+            taille est restée inchangée, seulement à ce moment là Mercurial
+            doit vérifier le contenu du fichier pour savoir s'il a été
+            modifié.</para> </listitem>
+      </itemizedlist>
+
+      <para id="x_728">Enregistrer la date de modification et la taille
+        réduit grandement le nombre d'opérations de lecture que Mercurial
+        doit effectuer lorsque l'on utilise une commande comme <command>hg
+          status</command>. Le résultat est un grand gain de
+        performance.</para>
+    </sect2>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->

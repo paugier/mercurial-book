@@ -12,7 +12,7 @@
   <xsl:param name="body.font.family">Cambria,Cambria Math,serif,SimSun</xsl:param>
   <xsl:param name="sans.font.family">Calibri,sans-serif,SimHei</xsl:param>
   <xsl:param name="dingbat.font.family">Cambria,Cambria Math,serif,SimSun</xsl:param>
-  <xsl:param name="monospace.font.family">Courier New,monospace,FangSong</xsl:param>
+  <xsl:param name="monospace.font.family">Courier New,monospace,FangSong,SimSun</xsl:param>
 
   <!-- Chinese para related settings -->
   <xsl:param name="body.font.master">12</xsl:param>

@@ -44,10 +44,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: hgbook 1.2\n"
-"POT-Creation-Date: 2009-11-04 14:06+0800\n"
+"POT-Creation-Date: 2011-03-17 09:52+0800\n"
 "PO-Revision-Date: 2009-10-21 16:42+0800\n"
 "Last-Translator: 宋冬生 <songdonogsheng@live.cn>\n"
 "Language-Team: Simplified Chinese <i18n-zh@googlegroups.com >\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3687,12 +3688,12 @@ msgstr "Windows"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch02-tour-basic.xml:17
+#, fuzzy
 msgid ""
 "The best version of Mercurial for Windows is TortoiseHg, which can be found "
-"at <ulink url=\"http://bitbucket.org/tortoisehg/stable/wiki/Home\">http://"
-"bitbucket.org/tortoisehg/stable/wiki/Home</ulink>.  This package has no "
-"external dependencies; it <quote>just works</quote>.  It provides both "
-"command line and graphical user interfaces."
+"at <ulink url=\"http://tortoisehg.org\">http://tortoisehg.org</ulink>.  This "
+"package has no external dependencies; it <quote>just works</quote>.  It "
+"provides both command line and graphical user interfaces."
 msgstr ""
 "Windows 中最好的 Mercurial 版本是TortoiseHg，它的主页地址是 <ulink url="
 "\"http://bitbucket.org/tortoisehg/stable/wiki/Home\">http://bitbucket.org/"
@@ -7039,10 +7040,12 @@ msgstr "告诉 Mercurial 要跟踪哪些文件"
 
 #. type: Content of: <book><chapter><sect1><para>
 #: ../en/ch05-daily.xml:10
+#, fuzzy
 msgid ""
 "Mercurial does not work with files in your repository unless you tell it to "
 "manage them.  The <command role=\"hg-cmd\">hg status</command> command will "
 "tell you which files Mercurial doesn't know about; it uses a <quote><literal>?"
+"</literal></quote> to display such files."
 msgstr ""
 "Mercurial并不会管理你的版本库中的文件，除非你命令它去做。<command role=\"hg-"
 "cmd\">hg status</command>命令会告诉你哪些文件Mercurial没有跟踪；它用"
@@ -18691,7 +18694,7 @@ msgid ""
 msgstr ""
 
 #
-#. &example.hg-interdiff;
+#. 	&example.hg-interdiff; 
 #. type: Content of: <book><chapter><sect1><sect2><para>
 #: ../en/ch13-mq-collab.xml:473
 msgid ""
@@ -18934,100 +18937,14 @@ msgstr ""
 #. type: Content of: <book><chapter><sect1><para>
 #: ../en/ch14-hgext.xml:141
 msgid ""
-"The <literal role=\"hg-ext\">inotify</literal> extension is not yet shipped "
-"with Mercurial as of May 2007, so it's a little more involved to set up than "
-"other extensions.  But the performance improvement is worth it!"
+"The <literal role=\"hg-ext\">inotify</literal> extension is shipped with "
+"Mercurial since 1.0.  All you need to do to enable the <literal role=\"hg-ext"
+"\">inotify</literal> extension is add an entry to your <filename role="
+"\"special\">~/.hgrc</filename>."
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:146
-msgid ""
-"The extension currently comes in two parts: a set of patches to the Mercurial "
-"source code, and a library of Python bindings to the <literal>inotify</"
-"literal> subsystem."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><note><para>
-#: ../en/ch14-hgext.xml:150
-msgid ""
-"There are <emphasis>two</emphasis> Python <literal>inotify</literal> binding "
-"libraries.  One of them is called <literal>pyinotify</literal>, and is "
-"packaged by some Linux distributions as <literal>python-inotify</literal>.  "
-"This is <emphasis>not</emphasis> the one you'll need, as it is too buggy and "
-"inefficient to be practical."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:157
-msgid ""
-"To get going, it's best to already have a functioning copy of Mercurial "
-"installed."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><note><para>
-#: ../en/ch14-hgext.xml:160
-msgid ""
-"If you follow the instructions below, you'll be <emphasis>replacing</"
-"emphasis> and overwriting any existing installation of Mercurial that you "
-"might already have, using the latest <quote>bleeding edge</quote> Mercurial "
-"code. Don't say you weren't warned!"
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><orderedlist><listitem><para>
-#: ../en/ch14-hgext.xml:167
-msgid ""
-"Clone the Python <literal>inotify</literal> binding repository.  Build and "
-"install it."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><orderedlist><listitem><para>
-#: ../en/ch14-hgext.xml:174
-msgid ""
-"Clone the <filename class=\"directory\">crew</filename> Mercurial "
-"repository.  Clone the <literal role=\"hg-ext\">inotify</literal> patch "
-"repository so that Mercurial Queues will be able to apply patches to your "
-"cope of the <filename class=\"directory\">crew</filename> repository."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><orderedlist><listitem><para>
-#: ../en/ch14-hgext.xml:184
-msgid ""
-"Make sure that you have the Mercurial Queues extension, <literal role=\"hg-ext"
-"\">mq</literal>, enabled.  If you've never used MQ, read <xref linkend=\"sec:"
-"mq:start\"/> to get started quickly."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><orderedlist><listitem><para>
-#: ../en/ch14-hgext.xml:190
-msgid ""
-"Go into the <filename class=\"directory\">inotify</filename> repo, and apply "
-"all of the <literal role=\"hg-ext\">inotify</literal> patches using the "
-"<option role=\"hg-ext-mq-cmd-qpush-opt\">hg -a</option> option to the "
-"<command role=\"hg-ext-mq\">qpush</command> command."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><orderedlist><listitem><para>
-#: ../en/ch14-hgext.xml:199
-msgid ""
-"If you get an error message from <command role=\"hg-ext-mq\">qpush</command>, "
-"you should not continue.  Instead, ask for help."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><orderedlist><listitem><para>
-#: ../en/ch14-hgext.xml:203
-msgid "Build and install the patched version of Mercurial."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:209
-msgid ""
-"Once you've build a suitably patched version of Mercurial, all you need to do "
-"to enable the <literal role=\"hg-ext\">inotify</literal> extension is add an "
-"entry to your <filename role=\"special\">~/.hgrc</filename>."
-msgstr ""
-
-#. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:214
+#: ../en/ch14-hgext.xml:147
 msgid ""
 "When the <literal role=\"hg-ext\">inotify</literal> extension is enabled, "
 "Mercurial will automatically and transparently start the status daemon the "
@@ -19036,7 +18953,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:220
+#: ../en/ch14-hgext.xml:153
 msgid ""
 "The status daemon is started silently, and runs in the background.  If you "
 "look at a list of running processes after you've enabled the <literal role="
@@ -19046,7 +18963,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:228
+#: ../en/ch14-hgext.xml:161
 msgid ""
 "The first time you run a Mercurial command in a repository when you have the "
 "<literal role=\"hg-ext\">inotify</literal> extension enabled, it will run "
@@ -19062,7 +18979,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:242
+#: ../en/ch14-hgext.xml:175
 msgid ""
 "If you like, you can manually start a status daemon using the <command role="
 "\"hg-ext-inotify\">inserve</command> command.  This gives you slightly finer "
@@ -19072,7 +18989,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:249
+#: ../en/ch14-hgext.xml:182
 msgid ""
 "When you're using the <literal role=\"hg-ext\">inotify</literal> extension, "
 "you should notice <emphasis>no difference at all</emphasis> in Mercurial's "
@@ -19083,14 +19000,14 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><title>
-#: ../en/ch14-hgext.xml:260
+#: ../en/ch14-hgext.xml:193
 msgid ""
 "Flexible diff support with the <literal role=\"hg-ext\">extdiff</literal> "
 "extension"
 msgstr "使用扩展 <literal role=\"hg-ext\">extdiff</literal> 以扩展差异支持"
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:263
+#: ../en/ch14-hgext.xml:196
 msgid ""
 "Mercurial's built-in <command role=\"hg-cmd\">hg diff</command> command "
 "outputs plaintext unified diffs."
@@ -19099,7 +19016,7 @@ msgstr ""
 "不同。"
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:268
+#: ../en/ch14-hgext.xml:201
 msgid ""
 "If you would like to use an external tool to display modifications, you'll "
 "want to use the <literal role=\"hg-ext\">extdiff</literal> extension.  This "
@@ -19107,7 +19024,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:273
+#: ../en/ch14-hgext.xml:206
 msgid ""
 "The <literal role=\"hg-ext\">extdiff</literal> extension is bundled with "
 "Mercurial, so it's easy to set up.  In the <literal role=\"rc-extensions"
@@ -19116,7 +19033,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:280
+#: ../en/ch14-hgext.xml:213
 msgid ""
 "This introduces a command named <command role=\"hg-ext-extdiff\">extdiff</"
 "command>, which by default uses your system's <command>diff</command> command "
@@ -19125,7 +19042,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:288
+#: ../en/ch14-hgext.xml:221
 msgid ""
 "The result won't be exactly the same as with the built-in <command role=\"hg-"
 "cmd\">hg diff</command> variations, because the output of <command>diff</"
@@ -19133,7 +19050,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:293
+#: ../en/ch14-hgext.xml:226
 msgid ""
 "As the <quote><literal>making snapshot</literal></quote> lines of output "
 "above imply, the <command role=\"hg-ext-extdiff\">extdiff</command> command "
@@ -19147,7 +19064,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:306
+#: ../en/ch14-hgext.xml:239
 msgid ""
 "Snapshot directory names have the same base name as your repository. If your "
 "repository path is <filename class=\"directory\">/quux/bar/foo</filename>, "
@@ -19164,7 +19081,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:322
+#: ../en/ch14-hgext.xml:255
 msgid ""
 "The <command role=\"hg-ext-extdiff\">extdiff</command> command accepts two "
 "important options. The <option role=\"hg-ext-extdiff-cmd-extdiff-opt\">hg -p</"
@@ -19182,7 +19099,7 @@ msgstr ""
 
 #
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:339
+#: ../en/ch14-hgext.xml:272
 msgid ""
 "As an example, here's how to run the normal system <command>diff</command> "
 "command, getting it to generate context diffs (using the <option role=\"cmd-"
@@ -19192,14 +19109,14 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:348
+#: ../en/ch14-hgext.xml:281
 msgid ""
 "Launching a visual diff tool is just as easy.  Here's how to launch the "
 "<command>kdiff3</command> viewer."
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:352
+#: ../en/ch14-hgext.xml:285
 msgid ""
 "If your diff viewing command can't deal with directories, you can easily work "
 "around this with a little scripting.  For an example of such scripting in "
@@ -19209,12 +19126,12 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
-#: ../en/ch14-hgext.xml:360
+#: ../en/ch14-hgext.xml:293
 msgid "Defining command aliases"
 msgstr "定义命令的别名"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
-#: ../en/ch14-hgext.xml:362
+#: ../en/ch14-hgext.xml:295
 msgid ""
 "It can be cumbersome to remember the options to both the <command role=\"hg-"
 "ext-extdiff\">extdiff</command> command and the diff viewer you want to use, "
@@ -19224,7 +19141,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
-#: ../en/ch14-hgext.xml:369
+#: ../en/ch14-hgext.xml:302
 msgid ""
 "All you need to do is edit your <filename role=\"special\">~/.hgrc</"
 "filename>, and add a section named <literal role=\"rc-extdiff\">extdiff</"
@@ -19236,7 +19153,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
-#: ../en/ch14-hgext.xml:379
+#: ../en/ch14-hgext.xml:312
 msgid ""
 "If you leave the right hand side of the definition empty, as above, the "
 "<literal role=\"hg-ext\">extdiff</literal> extension uses the name of the "
@@ -19247,7 +19164,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
-#: ../en/ch14-hgext.xml:389
+#: ../en/ch14-hgext.xml:322
 msgid ""
 "You can also specify the default options that you want to invoke your diff "
 "viewing program with.  The prefix to use is <quote><literal>opts.</literal></"
@@ -19257,19 +19174,19 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><title>
-#: ../en/ch14-hgext.xml:403
+#: ../en/ch14-hgext.xml:336
 msgid ""
 "Cherrypicking changes with the <literal role=\"hg-ext\">transplant</literal> "
 "extension"
 msgstr "使用扩展 <literal role=\"hg-ext\">transplant</literal> 以挑选修改"
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:406
+#: ../en/ch14-hgext.xml:339
 msgid "Need to have a long chat with Brendan about this."
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><title>
-#: ../en/ch14-hgext.xml:410
+#: ../en/ch14-hgext.xml:343
 msgid ""
 "Send changes via email with the <literal role=\"hg-ext\">patchbomb</literal> "
 "extension"
@@ -19277,7 +19194,7 @@ msgstr ""
 "使用扩展 <literal role=\"hg-ext\">patchbomb</literal> 通过 email 发送修改"
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:413
+#: ../en/ch14-hgext.xml:346
 msgid ""
 "Many projects have a culture of <quote>change review</quote>, in which people "
 "send their modifications to a mailing list for others to read and comment on "
@@ -19287,7 +19204,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:421
+#: ../en/ch14-hgext.xml:354
 msgid ""
 "Mercurial makes it easy to send changes over email for review or application, "
 "via its <literal role=\"hg-ext\">patchbomb</literal> extension.  The "
@@ -19298,7 +19215,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:429
+#: ../en/ch14-hgext.xml:362
 msgid ""
 "As usual, the basic configuration of the <literal role=\"hg-ext\">patchbomb</"
 "literal> extension takes just one or two lines in your <filename role="
@@ -19306,14 +19223,14 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:435
+#: ../en/ch14-hgext.xml:368
 msgid ""
 "Once you've enabled the extension, you will have a new command available, "
 "named <command role=\"hg-ext-patchbomb\">email</command>."
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:439
+#: ../en/ch14-hgext.xml:372
 msgid ""
 "The safest and best way to invoke the <command role=\"hg-ext-patchbomb"
 "\">email</command> command is to <emphasis>always</emphasis> run it first "
@@ -19326,7 +19243,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:450
+#: ../en/ch14-hgext.xml:383
 msgid ""
 "The <command role=\"hg-ext-patchbomb\">email</command> command accepts the "
 "same kind of revision syntax as every other Mercurial command.  For example, "
@@ -19335,7 +19252,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:455
+#: ../en/ch14-hgext.xml:388
 msgid ""
 "You can also specify a <emphasis>repository</emphasis> to compare with.  If "
 "you provide a repository but no revisions, the <command role=\"hg-ext-"
@@ -19347,7 +19264,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:464
+#: ../en/ch14-hgext.xml:397
 msgid ""
 "It's perfectly safe to run the <command role=\"hg-ext-patchbomb\">email</"
 "command> command without the names of the people you want to send to: if you "
@@ -19358,7 +19275,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:472
+#: ../en/ch14-hgext.xml:405
 msgid ""
 "When you are sending just one revision, the <command role=\"hg-ext-patchbomb"
 "\">email</command> command will by default use the first line of the "
@@ -19366,7 +19283,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><para>
-#: ../en/ch14-hgext.xml:477
+#: ../en/ch14-hgext.xml:410
 msgid ""
 "If you send multiple revisions, the <command role=\"hg-ext-patchbomb\">email</"
 "command> command will usually send one message per changeset.  It will "
@@ -19375,12 +19292,12 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><title>
-#: ../en/ch14-hgext.xml:484
+#: ../en/ch14-hgext.xml:417
 msgid "Changing the behavior of patchbombs"
 msgstr "修改 patchbomb 的行为"
 
 #. type: Content of: <book><chapter><sect1><sect2><para>
-#: ../en/ch14-hgext.xml:486
+#: ../en/ch14-hgext.xml:419
 msgid ""
 "Not every project has exactly the same conventions for sending changes in "
 "email; the <literal role=\"hg-ext\">patchbomb</literal> extension tries to "
@@ -19388,7 +19305,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:492
+#: ../en/ch14-hgext.xml:425
 msgid ""
 "You can write a subject for the introductory message on the command line "
 "using the <option role=\"hg-ext-patchbomb-cmd-email-opt\">hg -s</option> "
@@ -19396,7 +19313,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:498
+#: ../en/ch14-hgext.xml:431
 msgid ""
 "To change the email address from which the messages originate, use the "
 "<option role=\"hg-ext-patchbomb-cmd-email-opt\">hg -f</option> option.  This "
@@ -19404,7 +19321,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:504
+#: ../en/ch14-hgext.xml:437
 msgid ""
 "The default behavior is to send unified diffs (see <xref linkend=\"sec:mq:"
 "patch\"/> for a description of the format), one per message.  You can send a "
@@ -19413,7 +19330,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:512
+#: ../en/ch14-hgext.xml:445
 msgid ""
 "Unified diffs are normally prefaced with a metadata header.  You can omit "
 "this, and send unadorned diffs, with the <option role=\"hg-ext-patchbomb-cmd-"
@@ -19421,7 +19338,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:518
+#: ../en/ch14-hgext.xml:451
 msgid ""
 "Diffs are normally sent <quote>inline</quote>, in the same body part as the "
 "description of a patch.  This makes it easiest for the largest number of "
@@ -19432,7 +19349,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:528
+#: ../en/ch14-hgext.xml:461
 msgid ""
 "Instead of sending mail messages, you can write them to an <literal>mbox</"
 "literal>-format mail folder using the <option role=\"hg-ext-patchbomb-cmd-"
@@ -19441,7 +19358,7 @@ msgid ""
 msgstr ""
 
 #. type: Content of: <book><chapter><sect1><sect2><itemizedlist><listitem><para>
-#: ../en/ch14-hgext.xml:535
+#: ../en/ch14-hgext.xml:468
 msgid ""
 "If you would like to add a <command>diffstat</command>-format summary to each "
 "patch, and one to the introductory message, use the <option role=\"hg-ext-"

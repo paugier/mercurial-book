@@ -1,0 +1,451 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:names">
+  <?dbhtml filename="file-names-and-pattern-matching.html"?>
+  <title>File names and pattern matching</title>
+
+  <para id="x_543">Mercurial provides mechanisms that let you work with file
+    names in a consistent and expressive way.</para>
+
+  <sect1>
+    <title>Simple file naming</title>
+
+    <para id="x_544">Mercurial uses a unified piece of machinery <quote>under the
+	hood</quote> to handle file names.  Every command behaves
+      uniformly with respect to file names.  The way in which commands
+      work with file names is as follows.</para>
+
+    <para id="x_545">If you explicitly name real files on the command line,
+      Mercurial works with exactly those files, as you would expect.
+      &interaction.filenames.files;</para>
+
+    <para id="x_546">When you provide a directory name, Mercurial will interpret
+      this as <quote>operate on every file in this directory and its
+	subdirectories</quote>. Mercurial traverses the files and
+      subdirectories in a directory in alphabetical order.  When it
+      encounters a subdirectory, it will traverse that subdirectory
+      before continuing with the current directory.</para>
+
+      &interaction.filenames.dirs;
+  </sect1>
+
+  <sect1>
+    <title>Running commands without any file names</title>
+
+    <para id="x_547">Mercurial's commands that work with file names have useful
+      default behaviors when you invoke them without providing any
+      file names or patterns.  What kind of behavior you should
+      expect depends on what the command does.  Here are a few rules
+      of thumb you can use to predict what a command is likely to do
+      if you don't give it any names to work with.</para>
+    <itemizedlist>
+      <listitem><para id="x_548">Most commands will operate on the entire working
+	  directory. This is what the <command role="hg-cmd">hg
+	    add</command> command does, for example.</para>
+      </listitem>
+      <listitem><para id="x_549">If the command has effects that are difficult or
+	  impossible to reverse, it will force you to explicitly
+	  provide at least one name or pattern (see below).  This
+	  protects you from accidentally deleting files by running
+	  <command role="hg-cmd">hg remove</command> with no
+	  arguments, for example.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_54a">It's easy to work around these default behaviors if they
+      don't suit you.  If a command normally operates on the whole
+      working directory, you can invoke it on just the current
+      directory and its subdirectories by giving it the name
+      <quote><filename class="directory">.</filename></quote>.</para>
+
+    &interaction.filenames.wdir-subdir;
+
+    <para id="x_54b">Along the same lines, some commands normally print file
+      names relative to the root of the repository, even if you're
+      invoking them from a subdirectory.  Such a command will print
+      file names relative to your subdirectory if you give it explicit
+      names.  Here, we're going to run <command role="hg-cmd">hg
+	status</command> from a subdirectory, and get it to operate on
+      the entire working directory while printing file names relative
+      to our subdirectory, by passing it the output of the <command
+	role="hg-cmd">hg root</command> command.</para>
+
+      &interaction.filenames.wdir-relname;
+  </sect1>
+
+  <sect1>
+    <title>Telling you what's going on</title>
+
+    <para id="x_54c">The <command role="hg-cmd">hg add</command> example in the
+      preceding section illustrates something else that's helpful
+      about Mercurial commands.  If a command operates on a file that
+      you didn't name explicitly on the command line, it will usually
+      print the name of the file, so that you will not be surprised
+      what's going on.</para>
+
+    <para id="x_54d">The principle here is of <emphasis>least
+	surprise</emphasis>.  If you've exactly named a file on the
+      command line, there's no point in repeating it back at you.  If
+      Mercurial is acting on a file <emphasis>implicitly</emphasis>, e.g.
+      because you provided no names, or a directory, or a pattern (see
+      below), it is safest to tell you what files it's operating on.</para>
+
+    <para id="x_54e">For commands that behave this way, you can silence them
+      using the <option role="hg-opt-global">-q</option> option.  You
+      can also get them to print the name of every file, even those
+      you've named explicitly, using the <option
+	role="hg-opt-global">-v</option> option.</para>
+  </sect1>
+
+  <sect1>
+    <title>Using patterns to identify files</title>
+
+    <para id="x_54f">In addition to working with file and directory names,
+      Mercurial lets you use <emphasis>patterns</emphasis> to identify
+      files.  Mercurial's pattern handling is expressive.</para>
+
+    <para id="x_550">On Unix-like systems (Linux, MacOS, etc.), the job of
+      matching file names to patterns normally falls to the shell.  On
+      these systems, you must explicitly tell Mercurial that a name is
+      a pattern.  On Windows, the shell does not expand patterns, so
+      Mercurial will automatically identify names that are patterns,
+      and expand them for you.</para>
+
+    <para id="x_551">To provide a pattern in place of a regular name on the
+      command line, the mechanism is simple:</para>
+    <programlisting>syntax:patternbody</programlisting>
+    <para id="x_552">That is, a pattern is identified by a short text string that
+      says what kind of pattern this is, followed by a colon, followed
+      by the actual pattern.</para>
+
+    <para id="x_553">Mercurial supports two kinds of pattern syntax.  The most
+      frequently used is called <literal>glob</literal>; this is the
+      same kind of pattern matching used by the Unix shell, and should
+      be familiar to Windows command prompt users, too.</para>
+
+    <para id="x_554">When Mercurial does automatic pattern matching on Windows,
+      it uses <literal>glob</literal> syntax.  You can thus omit the
+      <quote><literal>glob:</literal></quote> prefix on Windows, but
+      it's safe to use it, too.</para>
+
+    <para id="x_555">The <literal>re</literal> syntax is more powerful; it lets
+      you specify patterns using regular expressions, also known as
+      regexps.</para>
+
+    <para id="x_556">By the way, in the examples that follow, notice that I'm
+      careful to wrap all of my patterns in quote characters, so that
+      they won't get expanded by the shell before Mercurial sees
+      them.</para>
+
+    <sect2>
+      <title>Shell-style <literal>glob</literal> patterns</title>
+
+      <para id="x_557">This is an overview of the kinds of patterns you can use
+	when you're matching on glob patterns.</para>
+
+      <para id="x_558">The <quote><literal>*</literal></quote> character matches
+	any string, within a single directory.</para>
+
+      &interaction.filenames.glob.star;
+
+      <para id="x_559">The <quote><literal>**</literal></quote> pattern matches
+	any string, and crosses directory boundaries.  It's not a
+	standard Unix glob token, but it's accepted by several popular
+	Unix shells, and is very useful.</para>
+
+      &interaction.filenames.glob.starstar;
+
+      <para id="x_55a">The <quote><literal>?</literal></quote> pattern matches
+	any single character.</para>
+
+      &interaction.filenames.glob.question;
+
+      <para id="x_55b">The <quote><literal>[</literal></quote> character begins a
+	<emphasis>character class</emphasis>.  This matches any single
+	character within the class.  The class ends with a
+	<quote><literal>]</literal></quote> character.  A class may
+	contain multiple <emphasis>range</emphasis>s of the form
+	<quote><literal>a-f</literal></quote>, which is shorthand for
+	<quote><literal>abcdef</literal></quote>.</para>
+
+	&interaction.filenames.glob.range;
+
+      <para id="x_55c">If the first character after the
+	<quote><literal>[</literal></quote> in a character class is a
+	<quote><literal>!</literal></quote>, it
+	<emphasis>negates</emphasis> the class, making it match any
+	single character not in the class.</para>
+
+      <para id="x_55d">A <quote><literal>{</literal></quote> begins a group of
+	subpatterns, where the whole group matches if any subpattern
+	in the group matches.  The <quote><literal>,</literal></quote>
+	character separates subpatterns, and
+	<quote><literal>}</literal></quote> ends the group.</para>
+
+      &interaction.filenames.glob.group;
+
+      <sect3>
+	<title>Watch out!</title>
+
+	<para id="x_55e">Don't forget that if you want to match a pattern in any
+	  directory, you should not be using the
+	  <quote><literal>*</literal></quote> match-any token, as this
+	  will only match within one directory.  Instead, use the
+	  <quote><literal>**</literal></quote> token.  This small
+	  example illustrates the difference between the two.</para>
+
+	  &interaction.filenames.glob.star-starstar;
+      </sect3>
+    </sect2>
+
+    <sect2>
+      <title>Regular expression matching with <literal>re</literal>
+	patterns</title>
+
+      <para id="x_55f">Mercurial accepts the same regular expression syntax as
+	the Python programming language (it uses Python's regexp
+	engine internally). This is based on the Perl language's
+	regexp syntax, which is the most popular dialect in use (it's
+	also used in Java, for example).</para>
+
+      <para id="x_560">I won't discuss Mercurial's regexp dialect in any detail
+	here, as regexps are not often used.  Perl-style regexps are
+	in any case already exhaustively documented on a multitude of
+	web sites, and in many books.  Instead, I will focus here on a
+	few things you should know if you find yourself needing to use
+	regexps with Mercurial.</para>
+
+      <para id="x_561">A regexp is matched against an entire file name, relative
+	to the root of the repository.  In other words, even if you're
+	already in subbdirectory <filename
+	  class="directory">foo</filename>, if you want to match files
+	under this directory, your pattern must start with
+	<quote><literal>foo/</literal></quote>.</para>
+
+      <para id="x_562">One thing to note, if you're familiar with Perl-style
+	regexps, is that Mercurial's are <emphasis>rooted</emphasis>.
+	That is, a regexp starts matching against the beginning of a
+	string; it doesn't look for a match anywhere within the
+	string.  To match anywhere in a string, start your pattern
+	with <quote><literal>.*</literal></quote>.</para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Filtering files</title>
+
+    <para id="x_563">Not only does Mercurial give you a variety of ways to
+      specify files; it lets you further winnow those files using
+      <emphasis>filters</emphasis>.  Commands that work with file
+      names accept two filtering options.</para>
+    <itemizedlist>
+      <listitem><para id="x_564"><option role="hg-opt-global">-I</option>, or
+	  <option role="hg-opt-global">--include</option>, lets you
+	  specify a pattern that file names must match in order to be
+	  processed.</para>
+      </listitem>
+      <listitem><para id="x_565"><option role="hg-opt-global">-X</option>, or
+	  <option role="hg-opt-global">--exclude</option>, gives you a
+	  way to <emphasis>avoid</emphasis> processing files, if they
+	  match this pattern.</para>
+      </listitem></itemizedlist>
+    <para id="x_566">You can provide multiple <option
+	role="hg-opt-global">-I</option> and <option
+	role="hg-opt-global">-X</option> options on the command line,
+      and intermix them as you please.  Mercurial interprets the
+      patterns you provide using glob syntax by default (but you can
+      use regexps if you need to).</para>
+
+    <para id="x_567">You can read a <option role="hg-opt-global">-I</option>
+      filter as <quote>process only the files that match this
+	filter</quote>.</para>
+
+    &interaction.filenames.filter.include;
+
+    <para id="x_568">The <option role="hg-opt-global">-X</option> filter is best
+      read as <quote>process only the files that don't match this
+	pattern</quote>.</para>
+
+    &interaction.filenames.filter.exclude;
+  </sect1>
+
+  <sect1>
+    <title>Permanently ignoring unwanted files and directories</title>
+
+    <para id="x_569">When you create a new repository, the chances are
+      that over time it will grow to contain files that ought to
+      <emphasis>not</emphasis> be managed by Mercurial, but which you
+      don't want to see listed every time you run <command>hg
+	status</command>.  For instance, <quote>build products</quote>
+      are files that are created as part of a build but which should
+      not be managed by a revision control system.  The most common
+      build products are output files produced by software tools such
+      as compilers.  As another example, many text editors litter a
+      directory with lock files, temporary working files, and backup
+      files, which it also makes no sense to manage.</para>
+
+    <para id="x_6b4">To have Mercurial permanently ignore such files, create a
+      file named <filename>.hgignore</filename> in the root of your
+      repository.  You <emphasis>should</emphasis> <command>hg
+      add</command> this file so that it gets tracked with the rest of
+      your repository contents, since your collaborators will probably
+      find it useful too.</para>
+
+    <para id="x_6b5">By default, the <filename>.hgignore</filename> file should
+      contain a list of regular expressions, one per line.  Empty
+      lines are skipped. Most people prefer to describe the files they
+      want to ignore using the <quote>glob</quote> syntax that we
+      described above, so a typical <filename>.hgignore</filename>
+      file will start with this directive:</para>
+
+    <programlisting>syntax: glob</programlisting>
+
+    <para id="x_6b6">This tells Mercurial to interpret the lines that follow as
+      glob patterns, not regular expressions.</para>
+
+    <para id="x_6b7">Here is a typical-looking <filename>.hgignore</filename>
+      file.</para>
+
+    <programlisting>syntax: glob
+# This line is a comment, and will be skipped.
+# Empty lines are skipped too.
+
+# Backup files left behind by the Emacs editor.
+*~
+
+# Lock files used by the Emacs editor.
+# Notice that the "#" character is quoted with a backslash.
+# This prevents it from being interpreted as starting a comment.
+.\#*
+
+# Temporary files used by the vim editor.
+.*.swp
+
+# A hidden file created by the Mac OS X Finder.
+.DS_Store
+</programlisting>
+  </sect1>
+
+  <sect1 id="sec:names:case">
+    <title>Case sensitivity</title>
+
+    <para id="x_56a">If you're working in a mixed development environment that
+      contains both Linux (or other Unix) systems and Macs or Windows
+      systems, you should keep in the back of your mind the knowledge
+      that they treat the case (<quote>N</quote> versus
+      <quote>n</quote>) of file names in incompatible ways.  This is
+      not very likely to affect you, and it's easy to deal with if it
+      does, but it could surprise you if you don't know about
+      it.</para>
+
+    <para id="x_56b">Operating systems and filesystems differ in the way they
+      handle the <emphasis>case</emphasis> of characters in file and
+      directory names.  There are three common ways to handle case in
+      names.</para>
+    <itemizedlist>
+      <listitem><para id="x_56c">Completely case insensitive.  Uppercase and
+	  lowercase versions of a letter are treated as identical,
+	  both when creating a file and during subsequent accesses.
+	  This is common on older DOS-based systems.</para>
+      </listitem>
+      <listitem><para id="x_56d">Case preserving, but insensitive.  When a file
+	  or directory is created, the case of its name is stored, and
+	  can be retrieved and displayed by the operating system.
+	  When an existing file is being looked up, its case is
+	  ignored.  This is the standard arrangement on Windows and
+	  MacOS.  The names <filename>foo</filename> and
+	  <filename>FoO</filename> identify the same file.  This
+	  treatment of uppercase and lowercase letters as
+	  interchangeable is also referred to as <emphasis>case
+	    folding</emphasis>.</para>
+      </listitem>
+      <listitem><para id="x_56e">Case sensitive.  The case of a name
+	  is significant at all times. The names
+	  <filename>foo</filename> and <filename>FoO</filename>
+	  identify different files.  This is the way Linux and Unix
+	  systems normally work.</para>
+      </listitem></itemizedlist>
+
+    <para id="x_56f">On Unix-like systems, it is possible to have any or all of
+      the above ways of handling case in action at once.  For example,
+      if you use a USB thumb drive formatted with a FAT32 filesystem
+      on a Linux system, Linux will handle names on that filesystem in
+      a case preserving, but insensitive, way.</para>
+
+    <sect2>
+      <title>Safe, portable repository storage</title>
+
+      <para id="x_570">Mercurial's repository storage mechanism is <emphasis>case
+	  safe</emphasis>.  It translates file names so that they can
+	be safely stored on both case sensitive and case insensitive
+	filesystems.  This means that you can use normal file copying
+	tools to transfer a Mercurial repository onto, for example, a
+	USB thumb drive, and safely move that drive and repository
+	back and forth between a Mac, a PC running Windows, and a
+	Linux box.</para>
+
+    </sect2>
+    <sect2>
+      <title>Detecting case conflicts</title>
+
+      <para id="x_571">When operating in the working directory, Mercurial honours
+	the naming policy of the filesystem where the working
+	directory is located.  If the filesystem is case preserving,
+	but insensitive, Mercurial will treat names that differ only
+	in case as the same.</para>
+
+      <para id="x_572">An important aspect of this approach is that it is
+	possible to commit a changeset on a case sensitive (typically
+	Linux or Unix) filesystem that will cause trouble for users on
+	case insensitive (usually Windows and MacOS) users.  If a
+	Linux user commits changes to two files, one named
+	<filename>myfile.c</filename> and the other named
+	<filename>MyFile.C</filename>, they will be stored correctly
+	in the repository.  And in the working directories of other
+	Linux users, they will be correctly represented as separate
+	files.</para>
+
+      <para id="x_573">If a Windows or Mac user pulls this change, they will not
+	initially have a problem, because Mercurial's repository
+	storage mechanism is case safe.  However, once they try to
+	<command role="hg-cmd">hg update</command> the working
+	directory to that changeset, or <command role="hg-cmd">hg
+	  merge</command> with that changeset, Mercurial will spot the
+	conflict between the two file names that the filesystem would
+	treat as the same, and forbid the update or merge from
+	occurring.</para>
+    </sect2>
+
+    <sect2>
+      <title>Fixing a case conflict</title>
+
+      <para id="x_574">If you are using Windows or a Mac in a mixed environment
+	where some of your collaborators are using Linux or Unix, and
+	Mercurial reports a case folding conflict when you try to
+	<command role="hg-cmd">hg update</command> or <command
+	  role="hg-cmd">hg merge</command>, the procedure to fix the
+	problem is simple.</para>
+
+      <para id="x_575">Just find a nearby Linux or Unix box, clone the problem
+	repository onto it, and use Mercurial's <command
+	  role="hg-cmd">hg rename</command> command to change the
+	names of any offending files or directories so that they will
+	no longer cause case folding conflicts.  Commit this change,
+	<command role="hg-cmd">hg pull</command> or <command
+	  role="hg-cmd">hg push</command> it across to your Windows or
+	MacOS system, and <command role="hg-cmd">hg update</command>
+	to the revision with the non-conflicting names.</para>
+
+      <para id="x_576">The changeset with case-conflicting names will remain in
+	your project's history, and you still won't be able to
+	<command role="hg-cmd">hg update</command> your working
+	directory to that changeset on a Windows or MacOS system, but
+	you can continue development unimpeded.</para>
+    </sect2>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->
