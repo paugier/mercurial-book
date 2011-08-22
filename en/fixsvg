@@ -6,7 +6,7 @@ set -e
 
 for i in 0 1 2 3 4
 do
-  export REV$i=$(hg --cwd hello log -r $i --template '{node|short}' | cut -c1-4)
+  export REV$i=$(hg --cwd hello log -r $i --template '{node|short}' | head  -1 | cut -c1-4)
 done
 export REV_my_hello=$(cat /tmp/REV5.my-hello)
 export REV_my_new_hello=$(cat /tmp/REV5.my-new-hello)

@@ -6,7 +6,7 @@ include Makefile.vars
 FORMATS=html html-single pdf epub
 
 PO_LANGUAGES := zh
-DBK_LANGUAGES := en it fr
+DBK_LANGUAGES := en fr it
 LANGUAGES := $(DBK_LANGUAGES) $(PO_LANGUAGES)
 
 UPDATEPO = PERLLIB=$(PO4A_LIB) $(PO4A_HOME)/po4a-updatepo -M UTF-8 \
@@ -37,14 +37,14 @@ images-gen += $(images-svg:svg=png)
 images-gen += $(wildcard en/figs/*-tmp.svg)
 
 help:
-	@echo "  make epub         [LINGUA=en|it|zh|...]"
-	@echo "  make html         [LINGUA=en|it|zh|...]"
-	@echo "  make html-single  [LINGUA=en|it|zh|...]"
-	@echo "  make pdf          [LINGUA=en|it|zh|...]"
-	@echo "  make validate     [LINGUA=en|it|zh|...] # always before commit!"
+	@echo "  make epub         [LINGUA=en|fr|it|zh|...]"
+	@echo "  make html         [LINGUA=en|fr|it|zh|...]"
+	@echo "  make html-single  [LINGUA=en|fr|it|zh|...]"
+	@echo "  make pdf          [LINGUA=en|fr|it|zh|...]"
+	@echo "  make validate     [LINGUA=en|fr|it|zh|...] # always before commit!"
 	@echo "  make tidypo       [LINGUA=zh|...]    # always before commit!"
 	@echo "  make updatepo     [LINGUA=zh|...]    # update po files."
-	@echo "  make all          [LINGUA=en|it|zh|...]"
+	@echo "  make all          [LINGUA=en|fr|it|zh|...]"
 	@echo "  make stat         # print statistics about po files."
 	@echo "  make clean        # Remove the build files."
 
@@ -215,12 +215,14 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 
 	if test -r $(FOP_HOME)/conf/userconfig.xml ; then \
 		FOP_CONFIG=" -c $(FOP_HOME)/conf/userconfig.xml"; \
-	fi 
+    else \
+        echo "Waring: file $(FOP_HOME)/conf/userconfig.xml does not exist"; \
+    fi
 
 	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh ${FOP_CONFIG} hgbook.fo ../pdf/hgbook.pdf)
 endif
 
-$(LINGUA)/figs/%.png: $(LINGUA)/figs/%.svg 
+$(LINGUA)/figs/%.png: $(LINGUA)/figs/%.svg
 	if test -x $(LINGUA)/fixsvg; then \
 	  $(LINGUA)/fixsvg $<; \
 	  inkscape -D -d 120 -e $@ $<-tmp.svg; \

@@ -132,7 +132,10 @@
     <xsl:attribute name="border-style">solid</xsl:attribute>
     <xsl:attribute name="font-size">8pt</xsl:attribute>
     <xsl:attribute name="wrap-option">wrap</xsl:attribute>
-    <xsl:attribute name="hyphenation-character">&#x25BA;</xsl:attribute>
+    <xsl:attribute name="hyphenation-character">&#x002D;</xsl:attribute>
+    <!--xsl:attribute name="hyphenation-character">&#x002D;</xsl:attribute-->
+    <!--xsl:attribute name="hyphenation-character">&#x2011;</xsl:attribute-->
+    <!--xsl:attribute name="hyphenation-character">&#x25BA;</xsl:attribute-->
     <!--xsl:attribute name="hyphenation-character">&#x27A4;</xsl:attribute-->
   </xsl:attribute-set>
 
