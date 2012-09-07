@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#$ name: diff
+
+echo 'this is my first line' > oldfile
+echo 'my first line is here' > newfile
+
+diff -u oldfile newfile > tiny.patch
+
+cat tiny.patch
+
+patch < tiny.patch
+
+cat oldfile

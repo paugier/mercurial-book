@@ -1,0 +1,17 @@
+<!-- BEGIN ch10/bugzilla-config.lst -->
+<programlisting>[bugzilla]
+host = bugzilla.example.com
+password = miapassword
+version = 2.16
+# i repository sul lato server si trovano in /home/hg/repos, quindi devono
+# essere eliminati 4 separatori iniziali
+strip = 4
+hgweb = http://hg.example.com/
+usermap = /home/hg/repos/notify/bugzilla.conf
+template = Changeset {node|short}, creato da {author} nel repository {webroot}
+  fa riferimento a questo bug.\n
+  Per i dettagli completi, si veda
+  {hgweb}{webroot}?cmd=changeset;node={node|short}\n
+  Descrizione del changeset:\n
+  \t{desc|tabindent}</programlisting>
+<!-- END ch10/bugzilla-config.lst -->

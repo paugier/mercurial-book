@@ -1,0 +1,14 @@
+<!-- BEGIN hook.simple.init -->
+<screen><prompt>$</prompt> <userinput>hg init hook-di-test</userinput>
+<prompt>$</prompt> <userinput>cd hook-di-test</userinput>
+<prompt>$</prompt> <userinput>echo '[hooks]' &gt;&gt; .hg/hgrc</userinput>
+<prompt>$</prompt> <userinput>echo 'commit = echo inserito $HG_NODE' &gt;&gt; .hg/hgrc</userinput>
+<prompt>$</prompt> <userinput>cat .hg/hgrc</userinput>
+[hooks]
+commit = echo inserito $HG_NODE
+<prompt>$</prompt> <userinput>echo a &gt; a</userinput>
+<prompt>$</prompt> <userinput>hg add a</userinput>
+<prompt>$</prompt> <userinput>hg commit -m "Collaudo l'hook di commit."</userinput>
+inserito 35ce7b98906996dea87740158ba6c3d7bcfa2448
+</screen>
+<!-- END hook.simple.init -->

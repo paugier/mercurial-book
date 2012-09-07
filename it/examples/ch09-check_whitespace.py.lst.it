@@ -1,0 +1,49 @@
+<!-- BEGIN ch09/check_whitespace.py.lst -->
+<programlisting>#!/usr/bin/env python
+#
+# salvate il file come .hg/controllo_spazio_bianco.py e rendetelo eseguibile
+
+import re
+
+def spazio_bianco_in_coda(righe_di_diff):
+    # 
+    numriga, intestazione = 0, False
+
+    for riga in righe_di_diff:
+        if intestazione:
+            # ricorda il nome del file coinvolto in questo diff
+            m = re.match(r'(?:---|\+\+\+) ([^\t]+)', riga)
+            if m and m.group(1) != '/dev/null':
+                nomefile = m.group(1).split('/', 1)[-1]
+            if riga.startswith('+++ '):
+                intestazione = False
+            continue
+        if riga.startswith('diff '):
+            intestazione = True
+            continue
+        # intestazione - salva il numero di riga
+        m = re.match(r'@@ -\d+,\d+ \+(\d+),', riga)
+        if m:
+            numriga = int(m.group(1))
+            continue
+        # corpo - cerca una riga aggiunta con spazio bianco in coda
+        m = re.match(r'\+.*[ \t]$', riga)
+        if m:
+            yield nomefile, numriga
+        if riga and riga[0] in ' +':
+            numriga += 1
+
+if __name__ == '__main__':
+    import os, sys
+    
+    aggiunte = 0
+    for nomefile, numriga in spazio_bianco_in_coda(os.popen('hg export tip')):
+        print &gt;&gt; sys.stderr, ('%s, riga %d: aggiunto spazio bianco in coda' %
+                              (nomefile, numriga))
+        aggiunte += 1
+    if aggiunte:
+        # salva il messaggio di commit in modo da non doverlo digitare di nuovo
+        os.system('hg tip --template "{desc}" &gt; .hg/commit.save')
+        print &gt;&gt; sys.stderr, 'messaggio di commit salvato nel file .hg/commit.save'
+        sys.exit(1)</programlisting>
+<!-- END ch09/check_whitespace.py.lst -->

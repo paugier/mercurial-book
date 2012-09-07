@@ -8,6 +8,13 @@
   <xsl:param name="l10n.gentext.language" select="'zh'"/>
 
   <!-- Chinese font related settings -->
+  <xsl:param name="title.font.family">Calibri,sans-serif,SimHei</xsl:param>
+  <xsl:param name="body.font.family">Cambria,Cambria Math,serif,SimSun</xsl:param>
+  <xsl:param name="sans.font.family">Calibri,sans-serif,SimHei</xsl:param>
+  <xsl:param name="dingbat.font.family">Cambria,Cambria Math,serif,SimSun</xsl:param>
+  <xsl:param name="monospace.font.family">Courier New,monospace,FangSong,SimSun</xsl:param>
+
+  <!-- Chinese para related settings -->
   <xsl:param name="body.font.master">12</xsl:param>
 
   <xsl:attribute-set name="standard.para.spacing" use-attribute-sets="normal.para.spacing">

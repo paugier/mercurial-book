@@ -1,0 +1,30 @@
+#!/bin/bash
+
+hg init a
+cd a
+echo a > a
+hg ci -Ama
+
+#$ name: rename.basic
+
+hg rename a b
+hg diff
+
+#$ name: rename.git
+
+hg diff -g
+
+#$ name:
+
+hg revert -a
+rm b
+
+#$ name: chmod
+
+chmod +x a
+hg st
+hg diff
+
+#$ name: chmod.git
+
+hg diff -g

@@ -1,0 +1,75 @@
+\chapter{Installing Mercurial from source}
+\label{chap:srcinstall}
+
+\section{On a Unix-like system}
+\label{sec:srcinstall:unixlike}
+
+（2.3 ないしそれ以後の）新しい版の Python が利用可能な
+Unix 的なシステムを利用している場合は、
+Mercurial をソースファイルからインストールするのは簡単です。
+
+\begin{enumerate}
+\item 最新版の tar アーカイブ（tarball）を
+  \url{http://www.selenic.com/mercurial/download}
+  からダウンロード。
+
+\item tar アーカイブを展開:
+  \begin{codesample4}
+    gzip -dc mercurial-\emph{version}.tar.gz | tar xf -
+  \end{codesample4}
+
+\item ソースディレクトリに移動して、インストール用スクリプトを実行。
+  以下の手順は、
+  ビルドした Mercurial をホームディレクトリ配下にインストールします。
+
+  \begin{codesample4}
+    cd mercurial-\emph{version}
+    python setup.py install --force --home=\$HOME
+  \end{codesample4}
+
+\end{enumerate}
+
+インストールが完了したなら、
+ホームディレクトリ直下の
+\texttt{bin} ディレクトリに
+Mercurial がインストールされます。
+シェルのコマンド検索パスへの
+\texttt{bin} ディレクトリの追加を忘れないようにしてください。
+
+Mercurial の実行に必要な Mercurial パッケージを探し出せるように、
+\envar{PYTHONPATH} 環境変数の設定も必要となるでしょう。
+例えば著者のラップトップでは、
+\envar{PYTHONPATH} 環境変数に
+\texttt{/home/bos/lib/python}
+を設定しています。
+実際に \envar{PYTHONPATH} 環境変数に設定する値は、
+各自の環境で Python がどのように設定されているかに依存しますが、
+設定すべき値を得るのは簡単です。
+設定値に確信が持てない場合、
+上記のインストール用スクリプトの出力を見て、
+\texttt{mercurial} 
+ディレクトリの内容がインストールされる先を確認してください。
+
+\section{On Windows}
+
+Windows 上で Mercurial をソースからビルドするには、
+様々なツール、相当な技術的知識に加えて、
+少なからぬ忍耐が要求されます。
+``気軽に使ってみたい''場合には、
+ソースからのビルドは\emph{全くお薦めできません}。
+Mercurial そのものをハックするので無い限り、
+バイナリ版の利用をお薦めします\footnote{訳注:
+どうしても最新の Mercurial ソースを利用したい場合、
+Windows ネイティブな振る舞いは期待できませんが、
+Cygwin 上で Mercurial をビルドするという手もあります。}。
+
+Windows 上で Mercurial をソースからビルドする場合、
+多くの厄介事が起きることを覚悟した上で、
+Mercurial の Wiki 上にある
+\url{http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall}
+に示されている``苦難の道''を辿ってください。
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

@@ -1,0 +1,14 @@
+<!-- BEGIN ch09/hook.ws.simple -->
+<screen><prompt>$</prompt> <userinput>cat .hg/hgrc</userinput>
+[hooks]
+pretxncommit.spazio_bianco = hg export tip | (! egrep -q '^\+.*[ \t]$')
+<prompt>$</prompt> <userinput>echo 'a ' &gt; a</userinput>
+<prompt>$</prompt> <userinput>hg commit -A -m "Collaudo con spazio bianco in coda."</userinput>
+aggiungo a
+transazione abortita!
+ripristino completato
+fallimento: l'hook pretxncommit.spazio_bianco è terminato con codice di stato 1
+<prompt>$</prompt> <userinput>echo 'a' &gt; a</userinput>
+<prompt>$</prompt> <userinput>hg commit -A -m "Elimina lo spazio bianco in coda e riprova."</userinput>
+</screen>
+<!-- END ch09/hook.ws.simple -->

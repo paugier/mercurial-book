@@ -1,0 +1,533 @@
+\chapter{Mercurial in daily use}
+\label{chap:daily}
+
+\section{Telling Mercurial which files to track}
+
+ファイルの管理を指示しない限り、
+リポジトリ中のファイルに対して Mercurial は何も行いません。
+\hgcmd{status} コマンドは、
+Mercurial の管理下に無いファイルを
+``\texttt{?}'' を表示することで知らせてくれます
+
+Mercurial による構成管理を指示するには、
+\hgcmd{add} コマンドを使用します。
+ファイルの構成管理を指示したファイルの
+\hgcmd{status} による表示は、
+``\texttt{?}'' から ``\texttt{A}'' へと変化します。
+
+\interaction{daily.files.add}
+
+\hgcmd{commit} を実行した直後は、
+コミット前に追加したファイルが
+\hgcmd{status} により表示されることはありません。
+これは、
+``興味深い''ファイル---
+変更したり、Mercurial に何らかの操作を要求したファイル
+---について表示するのが
+\hgcmd{status} の役割だからです。
+数千のファイルから成るリポジトリがある場合、
+構成管理されてはいても特に変更されていないファイルの一覧
+（後述するように、そのようなファイル一覧の情報を得ることもできます）
+を欲しいと思うことは稀です。
+
+一旦ファイルを追加したとしても、
+そのファイルに対して Mercurial はすぐには何も行いません。
+その代わり、
+次にコミットを行った際にファイル状態のスナップショットを作成します。
+Mercurial はそれ以降、
+構成管理下から除外するまで、
+コミットの際には常に当該ファイルの変更状況を確認します。
+
+\subsection{Explicit versus implicit file naming}
+
+Mercurial の有用な振る舞いとして、
+Mercurial のコマンドにディレクトリ名を指定した場合、
+その指定を
+``当該ディレクトリ配下の全てのファイル\footnote{訳注:
+当該ディレクトリ直下のファイルならびに、
+サブディレクトリ以下のファイル全て}に対する操作の実施''
+が要求されたものとみなします。
+
+\interaction{daily.files.add-dir}
+
+先の例で \filename{a} 
+ファイルを構成管理対象に追加した際には、
+Mercurial は追加されたファイルのファイル名を表示していませんが、
+この例では
+構成管理対象に追加されたファイルを表示している点に注意してください。
+
+先の例では、
+追加するファイル名をコマンドラインで明示的に指定しましたので、
+そのような場合は利用者自身が自分の振る舞いを理解しているものとみなし、
+Mercurial は何も表示しません。
+
+しかし、
+ディレクトリ名を指定することでファイル名を\emph{暗示}した場合、
+Mercurial は特別に操作対象となった個々のファイル名を表示します。
+こうすることで何が実施されたのかが明確になるため、
+ひっそりとやっかいな問題が発生する可能性を低減します。
+この振る舞いは殆どの
+Mercurial コマンドに共通しています。
+
+\subsection{Aside: Mercurial tracks files, not directories}
+
+ディレクトリは Mercurial による構成管理の対象にはなりません。
+その代わり、
+Mercurial はファイルのパスを構成管理します。
+ファイルの生成の際には、
+それに先立ってパスに含まれる存在しないディレクトリを全て作成します。
+ファイルの削除の際には、
+削除されたファイルへのパスに含まれる空ディレクトリを全て削除します。
+たわいも無いことに聞こえるかもしれませんが、
+Mercurial が完全に空っぽのディレクトリを取り扱えない、
+という小さいながらも実用上重大な性質を示しています。
+
+空のディレクトリが有用なことは滅多に無いですし、
+妥当な効果を得るための控えめな回避方法があります。
+Empty directories are rarely useful, and there are unintrusive
+workarounds that you can use to achieve an appropriate effect.  
+それ故に、
+空のディレクトリを扱うことによる限定的な有益性が、
+それに必要とされる複雑さに見合うものではない、
+と Mercurial の開発陣は判断しました。
+
+空のディレクトリをリポジトリで管理したい場合、
+複数の実現方法があります。
+１つは当該ディレクトリ直下の``隠し''ファイルを 
+\hgcmd{add} することです。
+UNIX ライクなシステムでは、
+ピリオド（``\texttt{.}''）で始まる名前のファイルは、
+殆どのコマンドや GUI ツールから隠しファイルとして扱われます。
+この手法を図~\ref{ex:daily:hidden}に示します。
+
+\begin{figure}[ht]
+  \interaction{daily.files.hidden}
+  \caption{Simulating an empty directory using a hidden file}
+  \label{ex:daily:hidden}
+\end{figure}
+
+空ディレクトリを必要とする場合のもう一つの解決方法は、
+自動化されたビルドスクリプトで必要になる都度作成する、
+というものです。
+
+\section{How to stop tracking a file}
+
+リポジトリにとって不要になった\footnote{訳注:
+構成管理の必要性がなくなった}ファイルがある場合は、
+\hgcmd{remove} コマンドを使用ます。
+このコマンドはファイルを削除しつつ、
+Mercurial に構成管理対象からファイルを除外する旨を通知します。
+削除されたファイルは、
+\hgcmd{status} の出力では
+``\texttt{R}'' 付きで表示されます。
+
+\interaction{daily.files.remove}
+
+\hgcmd{remove} によるファイルの削除を行うと、
+作業領域ディレクトリに同名のファイルを再度作成したとしても、
+Mercurial はそのファイルを構成管理対象から除外します。
+同名ファイルを再生成し Mercurial による構成管理を行う場合には、
+単純にそのファイルを \hgcmd{add} してください。
+Mercurial は新規に管理対象に加えられたファイルが、
+以前管理していた同名のファイルとは無関係であるとみなします。
+
+\subsection{Removing a file does not affect its history}
+
+重要な事ですので、
+\hgcmd{remove} コマンドによる操作が持つ影響は２つだけである、
+と理解してください。
+
+\begin{itemize}
+\item 作業領域ディレクトリから、現時点のファイルを削除します
+
+\item Mercurial に対して、次回のコミット以降、
+  当該ファイルを構成管理対象から除外するように通知します
+
+\end{itemize}
+
+\hgcmd{remove} コマンドによる操作は、
+ファイルの\emph{変更履歴}には一切変更を加え\emph{ません}。
+
+作業領域ディレクトリを
+\hgcmd{remove} 
+で削除したファイルがまだ構成管理されていた時点のチェンジセットで更新した場合、
+そのチェンジセットがコミットされた時点の内容で、
+作業領域ディレクトリに当該ファイルが再生成されます。
+その後で、
+当該ファイルが \hgcmd{remove} 
+で削除された時点のチェンジセットで更新すると、
+Mercurial は再び当該ファイルを作業領域から削除します。
+
+\subsection{Missing files}
+
+\hgcmd{remove} 
+コマンドを使用せずに作業領域ディレクトリから削除したファイルを、
+Mercurial は\emph{行方不明}とみなします。
+行方不明のファイルは、
+\hgcmd{status} の出力では
+``\texttt{!}'' 付きで表示されます。
+Mercurial のコマンド群全般は、
+行方不明のファイルに関しては何も行いません。
+
+\interaction{daily.files.missing}
+
+\hgcmd{status} 
+が行方不明として表示するファイルがリポジトリ中にある場合\footnote{訳注:
+つまり手動でファイルを削除した場合}、
+ファイル削除後の任意の時点で
+\hgcmdargs{remove}{\hgopt{remove}{--after}} を実行することで
+当該ファイルを構成管理対象から除外する意思があることを
+Mercurial に通知することができます。
+
+\interaction{daily.files.remove-after}
+
+その一方で、
+行方不明とされているファイルが意図せずに削除してしまったものなら、
+\hgcmd{revert} に当該ファイル名を指定することで、
+変更されていない状態にファイルを復旧することができます。
+
+\interaction{daily.files.recover-missing}
+
+\subsection{Aside: why tell Mercurial explicitly to remove a file?}
+
+ファイル削除の意思表示を一々 Mercurial に示す必要性について、
+疑問に思われるかもしれません。
+Mercurial の開発初期における削除方法は、
+そのように思う人にとっては望ましいものかもしれません。
+Mercurial は \hgcmd{commit} コマンド実行時にファイルの不在を自動的に検知し、
+当該ファイルを構成管理対象から除外していたのです。
+実際問題、この削除方法では、
+不慮の事態で通知も無くファイルが削除される事態が容易に起こり得ます。
+
+\subsection{Useful shorthand---adding and removing files in one step}
+
+Mercurial は、
+構成管理対象へのファイルの追加と除外を行う、
+組み合わせコマンドである \hgcmd{addremove} を提供しています。
+
+\interaction{daily.files.addremove}
+
+\hgcmd{commit} コマンドも、
+コミット実施の直前に
+\hgcmd{addremove} と同じ方針で構成管理対象への追加／除外を行う
+\hgopt{commit}{-A} オプションを提供しています。
+
+\interaction{daily.files.commit-addremove}
+
+\section{Copying files}
+
+Mercurial はファイルの複製を行う
+\hgcmd{copy} コマンドを提供しています。
+このコマンドでファイルを複製した場合、
+Mercurial はそのファイルが元ファイルの複製であることを記録します。
+チェンジセットのマージの際には、
+Mercurial はこの複製ファイルを特別扱いします。
+
+\subsection{The results of copying during a merge}
+
+複製ファイルのマージの際には、
+変更内容が複製ファイルまで``追従''してきます。
+このことが持つ意味を上手く説明するために、
+簡単な例を作成しましょう。
+これまでの例と同様に、
+１つだけファイルを持つ簡易的なリポジトリを作成します。
+
+\interaction{daily.copy.init}
+
+マージを行うためには、
+別々の作業を平行して行う必要がありますので、
+リポジトリを複製しましょう。
+
+\interaction{daily.copy.clone}
+
+最初のリポジトリに戻り、
+\hgcmd{copy} コマンドで最初に作成したファイルを複製します。
+
+\interaction{daily.copy.copy}
+
+複製後の \hgcmd{status} コマンドの出力では、
+複製されたファイルは単に追加された普通のファイルと同じように見えます。
+
+\interaction{daily.copy.status}
+
+しかし
+\hgopt{status}{-C} オプション付きで
+\hgcmd{status} を実行することで、
+別な行が表示されます。
+この行は、新たに追加されたファイルの複製\emph{元}であることを意味します。
+
+\interaction{daily.copy.status-copy}
+
+複製したリポジトリに戻り、
+平行して変更作業を行います。
+複製元になったファイルに対して行を追加します。
+
+\interaction{daily.copy.other}
+
+このリポジトリでは複製元の \filename{file} が変更されました。
+最初のリポジトリから変更内容を 
+\hgcmd{pull} して２つの head をマージする際に Mercurial は、
+\filename{file} に対してだけ行った変更内容を、
+その複製である \filename{new-file} にまで伝播させます。
+
+\interaction{daily.copy.merge}
+
+\subsection{Why should changes follow copies?}
+\label{sec:daily:why-copy}
+
+ファイルの複製に対してる変更が伝播される挙動は、
+難解に思えるかもしれませんが、
+多くの場合は非常に好ましい振る舞いとなります。
+
+まずは、
+この伝播がマージの時\emph{だけ}に行われる、
+ということに注意してください。
+ファイルを \hgcmd{copy} で複製し、
+それに引き続き複製元ファイルを変更する、
+という通所の作業においては何も特別なことは行われません。
+
+もう一点、
+変更を取り込んだリポジトリが、
+ファイルを複製したことを\emph{知らなかった}場合に限り、
+変更内容が複製先ファイルに伝播する、
+ということにも注意してください。
+
+Mercurial がこのように振舞うのは以下のような理由のためです。
+例えば筆者が、
+ソースファイルに対して重要なバグ修正を行い、
+変更内容をコミットしたとします。
+その変更作業が行われている間に、
+バグの顕在化やその修正を待つ事無く、
+当該ファイルを \hgcmd{copy} で複製し、
+その複製先ファイルの変更を読者が始めてしまうかもしれません。
+
+読者が筆者の変更を取り込んでマージした際に、
+Mercurial が複製への変更の反映を\emph{行わない}場合、
+読者の複製先ファイルはバグを含んでいるため、
+手動でバグ修正を反映させる必要性を思い出さない限り、
+バグは複製先ファイルに\emph{残り続ける}でしょう。
+
+バグ修正に関する変更内容の、
+複製元から複製先への自動反映により、
+Mercurial はこの手の問題を回避しています。
+筆者の知る限り Mercurial は、
+複製ファイルに対するこのような変更伝播を行う\emph{唯一の}構成管理システムです。
+
+ファイルの複製とそれに続くマージの実施が一旦変更履歴に記録されたなら、
+複製元ファイルから複製先ファイルへのそれ以上の変更反映は通常は不要なので、
+Mercurial はマージ時点までは複製へ変更を伝播させますが、
+それ以上は行いません。
+
+\subsection{How to make changes \emph{not} follow a copy}
+
+仮に、何らかの理由により、
+複製ファイルへの自動的な変更反映が必要ないと判断したなら、
+システムの通常の方法
+（Unix 的なシステムの場合なら \command{cp}）
+でファイルを複製し、
+\hgcmd{add} により手動で複製ファイルを構成管理対象に追加してください。
+ですが、その前に\ref{sec:daily:why-copy}節を読み直して、
+Mercurial による自動変更反映の適切性を十分に検討してください。
+
+\subsection{Behaviour of the \hgcmd{copy} command}
+
+\hgcmd{copy} コマンドを使用した場合、
+Mercurial は即座に作業領域ディレクトリに個々のファイルの複製を作成します。
+そのため、
+ファイルに修正を加えた後で、
+その変更をチェンジセットとしてコミットすることなく
+\hgcmd{copy} を行った場合、
+複製先ファイルはその時点までの変更内容も含んでいることになります
+（この振る舞いについてここで述べたのは、
+少々直感に反するように感じられたからです）。
+
+\hgcmd{copy} は
+Unix の \command{cp} コマンドと同様に振舞います
+（\hgcmd{cp} という別名方が好みであれば、こちらも使用できます）。
+末尾の引数は\emph{複製先}を、
+それ以外の先行する引数は\emph{複製元}を意味します。
+複製元に単一のファイルを、
+複製先に存在しないパスを指定した場合、
+Mercurial は複製先に指定した名前で新たなファイルを生成します。
+
+\interaction{daily.copy.simple}
+
+複製先がディレクトリの場合、
+Mercurial は複製元ファイルを当該ディレクトリに複製します。
+
+\interaction{daily.copy.dir-dest}
+
+ディレクトリの複製の場合は、
+再帰的且つディレクトリ構成を保持しつつ複製されます。
+
+\interaction{daily.copy.dir-src}
+
+複製元と複製先の両方がディレクトリの場合\footnote{訳注:
+先の「ディレクトリの複製の場合」は、
+「複製先ディレクトリが存在しない場合」を指します。}、
+複製元のディレクトリ構造は、
+複製先ディレクトリ配下で再構築されます。
+
+\interaction{daily.copy.dir-src-dest}
+
+手動でファイルを複製した後で、
+当該ファイルが複製であることを Mercurial に通知するには、
+\hgcmd{remove} の場合と同様に、
+\hgopt{copy}{--after} 付きで \hgcmd{copy} コマンドを使用します。
+
+\interaction{daily.copy.after}
+
+\section{Renaming files}
+
+ファイルを複製するよりも、
+むしろ改名の方が必要とされるのではないでしょうか。
+ファイルの改名よりも
+\hgcmd{copy} コマンドの方を先に説明したのは、
+Mercurial が複製と改名を本質的には同等に扱っているためです。
+そのため、
+ファイルの複製における Mercurial の挙動を知ることで、
+ファイルの改名で期待される振る舞いを知ることができます。
+
+\hgcmd{rename} コマンドを使用した場合、
+Mercurial は個々の改名元ファイルの複製を作成し、
+その上で改名元ファイルを削除し、
+それらを構成管理対象から除外します。
+
+\interaction{daily.rename.rename}
+
+\hgcmd{status} コマンドの出力から、
+新たに複製されたファイルが構成管理対象に追加され、
+改名元ファイルが除外されていることが読み取れます。
+
+\interaction{daily.rename.status}
+
+\hgcmd{copy} 実行の場合と同様に、
+\hgopt{status}{-C} オプション付きで \hgcmd{status} コマンドを実行することで、
+構成管理対象に追加されたファイルが実際には、
+今は削除されてしまったファイルの複製ファイル、
+と Mercurial にみなされていることがわかります。
+
+\interaction{daily.rename.status-copy}
+
+\hgcmd{remove} および \hgcmd{copy} と同様に、
+\hgopt{rename}{--after} オプションを指定することで、
+実際に改名した後で Mercurial にその旨を通知することができます。
+それ以外の殆どの点で、
+\hgcmd{rename} コマンドの振る舞い並びに指定可能なオプションは、
+\hgcmd{copy} コマンドと同じです。
+
+\subsection{Renaming files and merging changes}
+
+Mercurial の改名が「複製と削除」として実装されているため、
+複製の後でのマージの場合と同様に、
+改名の後でマージをした場合には変更が伝播されます。
+
+あるユーザがファイルを修正し、
+別のユーザがそのファイルを別なファイルに改名した場合、
+両者がお互いの変更をマージすると、
+一方が行った改名元ファイルへの修正は改名先ファイルへと伝播します
+（この振る舞いは``普通の作業''で期待するであろう類のものですが、
+全ての構成管理システムがこのように振舞うわけではありません）。
+
+複製先に対する変更の伝播が、
+利用者にとっておそらく有用と思われる機能ですから、
+ファイルの改名においても変更の伝播が重要であろうことは、
+明らかといえるでしょう。
+変更伝播機能が無い場合、
+ファイルの改名によって変更は簡単に行く先を失ってしまうことでしょう。
+
+\subsection{Divergent renames and merging}
+
+名前の広がり（diverging names）は、
+二人の開発者がとあるファイル---
+これを \filename{foo} と呼びます---
+を各自のリポジトリで扱うことで発生します。
+
+\interaction{rename.divergent.clone}
+
+Anne がファイルを \filename{bar} に改名します。
+
+\interaction{rename.divergent.rename.anne}
+
+その一方で、Bob がファイルを \filename{quux} に改名します。
+
+\interaction{rename.divergent.rename.bob}
+
+個々の開発者がファイルの命名に関する異なる意向を表明したわけですから、
+筆者はこの事態を衝突と捉えるのが良いと思います。
+
+この場合のマージはどのように振舞うべきだと思いますか？
+改名による枝分かれが生じるチェンジセットのマージの場合、
+Merging は常に\emph{両方}の改名先ファイルを維持します。
+
+\interaction{rename.divergent.merge}
+
+筆者個人にとってこの振る舞いは大変意外であり、
+それがここでこの振る舞いを説明している理由でもあります。
+筆者は Mercurial に、
+\filename{bar} を残すか、
+\filename{quux} を残すか、
+あるいは両方を残すか、
+という選択肢による確認を行うことを期待していたのです。
+
+実際には、
+ファイルの改名を行った場合、
+改名元ファイルを使用したビルドを行う他のファイル
+（例えば makefile）の修正が行われるであろうことを意味します。
+そのため、
+Anne がファイルを改名し、
+改名後のファイルでビルドが実施されるように
+\filename{Makefile} を修正した場合、
+一方で Bob が同様の修正を別な名前で行っていますから、
+マージの際には作業領域ディレクトリに異なる名前のファイルのコピーが存在し、
+\emph{且つ} Anne と Bob の
+\filename{Makefile} への修正箇所が衝突している筈です。
+
+他の利用者もこの振る舞いに意外性を感じているようです。
+詳細は \bug{455} を参照してください。
+
+\subsection{Convergent renames and merging}
+
+異なる\emph{複製元}ファイルが同じファイルを\emph{複製先}とした際に、
+改名による別な種類の衝突が発生します。
+この場合、Mercurial は通常のマージ機構を使用し、
+適切な解決への誘導を要求してきます。
+
+\subsection{Other name-related corner cases}
+
+Mercurial は、
+一方がファイルに使用した名前を他方がディレクトリに使用した場合に、
+マージが失敗するバグが長い間残っています。
+この問題は \bug{29} に詳細があります。
+
+\interaction{issue29.go}
+
+\section{Recovering from mistakes}
+
+幾つかのありがちな間違いから復旧するために、
+Mercurial は有用なコマンドを幾つか提供しています。
+
+\hgcmd{revert} コマンドは、
+作業領域ディレクトリに対する変更を取り消します。
+例えば、うっかりファイルを \hgcmd{add} してしまった場合に、
+追加してしまったファイル名を指定して
+\hgcmd{revert} を実行することで、
+ファイルには一切変更を加える事無く
+Mercurial による構成管理対象から除外することができます。
+ファイルへの間違った変更を取り消すのにも
+\hgcmd{revert} が利用できます。
+
+\hgcmd{revert} コマンドは未コミットな変更に対して有効である、
+ということは憶えておきましょう。
+但し、
+一旦変更をコミットした後で変更内容が間違いであることに気が付いた場合でも、
+選択肢は限られてはいますが対処することはできます。
+
+\hgcmd{revert} コマンドに関する詳細と、
+コミット済みの変更に関する対処の詳細に関しては、
+\ref{chap:undo}~章を参照してください。
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

@@ -1,0 +1,13 @@
+<!-- BEGIN bisect.commits -->
+<screen><prompt>$</prompt> <userinput>cambiamento_difettoso=22</userinput>
+<prompt>$</prompt> <userinput>for (( i = 0; i &lt; 35; i++ )); do</userinput>
+<prompt>></prompt> <userinput>  if [[ $i = $cambiamento_difettoso ]]; then</userinput>
+<prompt>></prompt> <userinput>    echo 'ho un gub' &gt; miofile$i</userinput>
+<prompt>></prompt> <userinput>    hg commit -q -A -m "Changeset difettoso."</userinput>
+<prompt>></prompt> <userinput>  else</userinput>
+<prompt>></prompt> <userinput>    echo 'niente da vedere, circolate' &gt; miofile$i</userinput>
+<prompt>></prompt> <userinput>    hg commit -q -A -m "Changeset normale."</userinput>
+<prompt>></prompt> <userinput>  fi</userinput>
+<prompt>></prompt> <userinput>done</userinput>
+</screen>
+<!-- END bisect.commits -->

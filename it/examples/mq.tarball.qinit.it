@@ -1,0 +1,31 @@
+<!-- BEGIN mq.tarball.qinit -->
+<screen><prompt>$</prompt> <userinput>cd netplug</userinput>
+<prompt>$</prompt> <userinput>hg qinit</userinput>
+<prompt>$</prompt> <userinput>hg qnew -m 'corregge un problema di assemblaggio con gcc 4' correzione-assemblaggio.patch</userinput>
+<prompt>$</prompt> <userinput>perl -pi -e 's/int addr_len/socklen_t addr_len/' netlink.c</userinput>
+<prompt>$</prompt> <userinput>hg qrefresh</userinput>
+<prompt>$</prompt> <userinput>hg tip -p</userinput>
+changeset:   1:5227ba4b6a8b
+etichetta:   qtip
+etichetta:   correzione-assemblaggio.patch
+etichetta:   tip
+etichetta:   qbase
+utente:      Bryan O'Sullivan &lt;bos@serpentine.com&gt;
+data:        Fri Jun 05 15:50:51 2009 +0000
+sommario:    corregge un problema di assemblaggio con gcc 4
+
+diff -r e709896f2959 -r 5227ba4b6a8b netlink.c
+--- a/netlink.c	Fri Jun 05 15:50:49 2009 +0000
++++ b/netlink.c	Fri Jun 05 15:50:51 2009 +0000
+@@ -275,7 +275,7 @@
+         exit(1);
+     }
+ 
+-    int addr_len = sizeof(addr);
++    socklen_t addr_len = sizeof(addr);
+ 
+     if (getsockname(fd, (struct sockaddr *) &amp;addr, &amp;addr_len) == -1) {
+         do_log(LOG_ERR, "Could not get socket details: %m");
+
+</screen>
+<!-- END mq.tarball.qinit -->

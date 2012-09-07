@@ -1,0 +1,794 @@
+<chapter id="chap:hook">
+  <?dbhtml filename="usare-gli-hook-per-gestire-gli-eventi-nei-repository.html"?>
+  <title>Usare gli hook per gestire gli eventi nei repository</title>
+
+  <para id="x_1e6">Mercurial vi offre un potente meccanismo per effettuare azioni automatiche in risposta agli eventi che accadono in un repository. In alcuni casi, potete persino controllare la risposta di Mercurial a questi eventi.</para>
+
+  <para id="x_1e7">Il nome che Mercurial usa per indicare una di queste azioni è <emphasis>hook</emphasis> (letteralmente, gancio). In alcuni sistemi di controllo di revisione, gli hook vengono chiamati <quote>trigger</quote> (letteralmente, grilletto), ma i due nomi si riferiscono alla stessa idea.</para>
+
+  <sect1>
+    <title>Un&rsquo;introduzione agli hook di Mercurial</title>
+
+    <para id="x_1e8">Qui di seguito troverete una breve lista degli hook supportati da Mercurial. Rivisiteremo ognuno di questi hook in maggior dettaglio più avanti, nella <xref linkend="sec:hook:ref"/>.</para>
+
+    <para id="x_1f6">Ognuno degli hook che viene indicato come <quote>hook di controllo</quote> nella propria descrizione ha l&rsquo;abilità di determinare se un&rsquo;attività può procedere. Se l&rsquo;hook ha successo, l&rsquo;attività può procedere; se fallisce, l&rsquo;attività non viene permessa oppure viene annullata, a seconda dell&rsquo;hook.</para>
+
+    <itemizedlist>
+      <listitem><para id="x_1e9"><literal role="hook">changegroup</literal>: viene eseguito dopo che un gruppo di changeset proveniente da qualche altra parte è stato propagato nel repository.</para>
+      </listitem>
+      <listitem><para id="x_1ea"><literal role="hook">commit</literal>: viene eseguito dopo la creazione di un nuovo changeset nel repository locale.</para>
+      </listitem>
+      <listitem><para id="x_1eb"><literal role="hook">incoming</literal>: viene eseguito una volta per ogni nuovo changeset proveniente da qualche altra parte che è stato propagato nel repository. Notate la differenza con <literal role="hook">changegroup</literal>, che viene eseguito una volta per ogni <emphasis>gruppo</emphasis> di changeset propagato nel repository.</para>
+      </listitem>
+      <listitem><para id="x_1ec"><literal role="hook">outgoing</literal>: viene eseguito dopo che un gruppo di changeset è stato trasmesso da questo repository.</para>
+      </listitem>
+      <listitem><para id="x_1ed"><literal role="hook">prechangegroup</literal>: viene eseguito prima di cominciare a propagare un gruppo di changeset nel repository.</para>
+      </listitem>
+      <listitem><para id="x_1ee"><literal role="hook">precommit</literal>:
+	  hook di controllo. Viene eseguito prima di cominciare un inserimento.</para>
+      </listitem>
+      <listitem><para id="x_1ef"><literal role="hook">preoutgoing</literal>: hook di controllo. Viene eseguito prima di cominciare a trasmettere un gruppo di changeset da questo repository.</para>
+      </listitem>
+      <listitem><para id="x_1f0"><literal role="hook">pretag</literal>: hook di controllo. Viene eseguito prima di creare un&rsquo;etichetta.</para>
+      </listitem>
+      <listitem><para id="x_1f1"><literal role="hook">pretxnchangegroup</literal>: hook di controllo. Viene eseguito dopo che un gruppo di changeset proveniente da un altro repository è stato propagato nel repository locale, ma prima di completare la transazione che renderebbe permanenti i cambiamenti nel repository.</para>
+      </listitem>
+      <listitem><para id="x_1f2"><literal role="hook">pretxncommit</literal>: hook di controllo. Viene eseguito dopo la creazione di un nuovo changeset nel repository locale, ma prima di completare la transazione che lo renderebbe permanente.</para>
+      </listitem>
+      <listitem><para id="x_1f3"><literal role="hook">preupdate</literal>: hook di controllo. Viene eseguito prima di cominciare un aggiornamento o un&rsquo;unione della directory di lavoro.</para>
+      </listitem>
+      <listitem><para id="x_1f4"><literal role="hook">tag</literal>: viene eseguito dopo la creazione di un&rsquo;etichetta.</para>
+      </listitem>
+      <listitem><para id="x_1f5"><literal role="hook">update</literal>: viene eseguito dopo che un&rsquo;operazione di aggiornamento o di unione della directory di lavoro è stata completata.</para>
+      </listitem></itemizedlist>
+
+  </sect1>
+  <sect1>
+    <title>Hook e sicurezza</title>
+
+    <sect2>
+      <title>Gli hook vengono eseguiti con i vostri privilegi</title>
+
+      <para id="x_1f7">Quando invocate un comando Mercurial in un repository e quel comando causa l&rsquo;esecuzione di un hook, quell&rsquo;hook viene eseguito sul <emphasis>vostro</emphasis> sistema, con il <emphasis>vostro</emphasis> account utente, al <emphasis>vostro</emphasis> livello di privilegio. Dato che gli hook sono frammenti di codice eseguibile, dovreste trattarli in maniera adeguatamente sospettosa. Non installate un hook a meno che non confidiate di sapere chi lo ha creato e che cosa fa.</para>
+
+      <para id="x_1f8">In alcuni casi, potreste essere esposti a hook che non avete installato voi. Se lavorate con Mercurial su un sistema che non vi è familiare, sappiate che Mercurial eseguirà gli hook definiti nel file <filename role="special">hgrc</filename> globale per quel sistema.</para>
+
+      <para id="x_1f9">Se state lavorando con un repository posseduto da un altro utente, Mercurial può eseguire gli hook definiti nel repository di quell&rsquo;utente, ma li eseguirà ancora sotto la <quote>vostra identità</quote>. Per esempio, se estraete i cambiamenti da quel repository tramite <command role="hg-cmd">hg pull</command>, e il suo file <filename role="special">.hg/hgrc</filename> definisce un hook <literal role="hook">outgoing</literal> locale, quell&rsquo;hook verrà eseguito con il vostro account utente anche se non siete il proprietario di quel repository.</para>
+
+      <note>
+	<para id="x_1fa">Questo avviene solo se estraete cambiamenti da un repository operando su un file system locale o di rete. Se state effettuando l&rsquo;estrazione via HTTP o ssh, qualsiasi hook <literal role="hook">outgoing</literal> verrà eseguito sul server con l&rsquo;account utente che è stato usato per eseguire il processo server.</para>
+      </note>
+
+      <para id="x_1fb">Per vedere quali hook sono definiti in un repository, usate il comando <command role="hg-cmd">hg showconfig hooks</command>. Se state lavorando in un repository, ma state comunicando con un repository di cui non siete i proprietari (per esempio, usando <command role="hg-cmd">hg pull</command> o <command role="hg-cmd">hg incoming</command>), ricordate che sono gli hook dell&rsquo;altro repository che dovreste controllare, non i vostri.</para>
+    </sect2>
+
+    <sect2>
+      <title>Gli hook non si propagano</title>
+
+      <para id="x_1fc">In Mercurial, gli hook non sono soggetti a controllo di revisione e non si propagano quando clonate un repository o ne estraete i cambiamenti. La ragione è semplice: un hook è un frammento di codice eseguibile completamente arbitrario. Viene eseguito sotto l&rsquo;identità del vostro utente, al vostro livello di privilegio, sulla vostra macchina.</para>
+
+      <para id="x_1fd">Sarebbe estremamente avventato per qualsiasi sistema distribuito di controllo di revisione implementare hook soggetti al controllo di revisione, dato che questo offrirebbe un modo facilmente sfruttabile per alterare gli account degli utenti del sistema di controllo di revisione.</para>
+
+      <para id="x_1fe">Dato che Mercurial non propaga gli hook, se state collaborando con altre persone su un progetto comune, non dovreste presumere che gli altri stiano usando gli stessi hook Mercurial che state usando voi, o che i loro siano correttamente configurati. Dovreste documentare quali sono gli hook che vi aspettate siano usati dalle altre persone.</para>
+
+      <para id="x_1ff">In una intranet aziendale, questo aspetto è in qualche modo più facile da controllare, dato che per esempio potete fornire un&rsquo;installazione <quote>standard</quote> di Mercurial su un file system NFS e usare un file <filename role="special">hgrc</filename> globale per definire hook che verranno visti da tutti gli utenti. Tuttavia, come constateremo nella prossima sezione, anche questo approccio ha dei limiti.</para>
+    </sect2>
+
+    <sect2>
+      <title>Gli hook possono essere sostituiti</title>
+
+      <para id="x_200">Mercurial vi consente di sostituire una definizione di hook attraverso la sua ridefinizione. Potete disabilitare un hook impostando il suo valore alla stringa vuota, o cambiare il suo comportamento come desiderate.</para>
+
+      <para id="x_201">Se fate ricorso a un file <filename role="special">hgrc</filename> di sistema o globale che definisce alcuni hook, dovreste quindi tenere presente che i vostri utenti sono in grado di disabilitare o sostituire quegli hook.</para>
+    </sect2>
+
+    <sect2>
+      <title>Assicurarsi che gli hook critici vengano eseguiti</title>
+
+      <para id="x_202">Talvolta potreste voler imporre il rispetto di una politica in modo che gli altri non siano in grado di aggirarla. Per esempio, potreste richiedere a ogni changeset di passare una rigorosa serie di test. La definizione di questo requisito attraverso un hook in un file <filename role="special">hgrc</filename> globale non avrà effetto sui computer portatili degli utenti remoti, e naturalmente gli utenti locali potranno alterarla a piacimento ridefinendo quell&rsquo;hook.</para>
+
+      <para id="x_203">Invece, potete istituire le vostre politiche sull&rsquo;uso di Mercurial in modo che le persone siano tenute a propagare i cambiamenti attraverso un server <quote>ufficiale</quote> ben noto che avete messo in sicurezza e configurato adeguatamente.</para>
+
+      <para id="x_204">Questo risultato si può ottenere attraverso una combinazione di ingegneria sociale e tecnologia. Se impostate un account con accesso ristretto, gli utenti potranno trasmettere i cambiamenti attraverso la rete ai repository gestiti da questo account, ma non potranno usare l&rsquo;account per entrare sul server ed eseguire i normali comandi di shell. In questo scenario, un utente può effettuare il commit di un changeset che contiene tutte le porcherie che desidera.</para>
+
+      <para id="x_205">Quando qualcuno trasmette un changeset al server da cui tutti estraggono i cambiamenti, il server verificherà il changeset prima di accettarlo come permanente e lo rifiuterà se non riesce a passare i test. Se le persone si limitano a estrarre i cambiamenti da questo server di filtraggio, questo servirà ad assicurare che tutti i cambiamenti estratti dalle persone siano stati automaticamente controllati.</para>
+
+    </sect2>
+  </sect1>
+
+  <sect1 id="sec:hook:simple">
+    <title>Una breve guida all&rsquo;uso degli hook</title>
+
+    <para id="x_212">Scrivere un hook Mercurial è facile. Cominciamo con un hook che viene invocato al termine dell&rsquo;esecuzione di <command role="hg-cmd">hg commit</command> e che stampa semplicemente l&rsquo;hash del changeset appena creato. L&rsquo;hook è chiamato <literal role="hook">commit</literal>.
+    </para>
+
+    <para id="x_213">Tutti gli hook seguono lo schema presentato in questo esempio.</para>
+
+    &interaction.hook.simple.init;
+
+    <para id="x_214">Aggiungete una voce alla sezione <literal role="rc-hooks">hooks</literal> del vostro file <filename role="special">~/.hgrc</filename>. Sulla sinistra si trova il nome dell&rsquo;evento in risposta al quale attivarsi, sulla destra si trova l&rsquo;azione da intraprendere. Come vedete, è possibile eseguire comandi di shell arbitrari in un hook. Mercurial passa informazioni aggiuntive all&rsquo;hook usando le variabili d&rsquo;ambiente (cercate <envar>HG_NODE</envar> nell&rsquo;esempio).</para>
+
+    <sect2>
+      <title>Effettuare molteplici azioni per evento</title>
+
+      <para id="x_215">Vi capiterà piuttosto spesso di voler definire più di un hook per un particolare tipo di evento, come mostrato qui sotto.</para>
+
+      &interaction.hook.simple.ext;
+
+      <para id="x_216">Mercurial vi permette di fare questo aggiungendo un&rsquo;<emphasis>estensione</emphasis> alla fine del nome di un hook. Il nome di un hook si estende scrivendo il nome dell&rsquo;hook, seguito da un punto (il carattere <quote><literal>.</literal></quote>), seguito da altro testo di vostra scelta. Per esempio, Mercurial eseguirà sia <literal>commit.foo</literal> che <literal>commit.bar</literal> all&rsquo;occorrenza dell&rsquo;evento <literal>commit</literal>.</para>
+
+      <para id="x_217">Per stabilire un ordine di esecuzione ben definito quando più hook corrispondono allo stesso evento, Mercurial ordina gli hook secondo l&rsquo;estensione ed esegue i comandi di hook in questo ordine. Nell&rsquo;esempio precedente, eseguirà <literal>commit.bar</literal> prima di <literal>commit.foo</literal>, e <literal>commit</literal> prima di entrambi.</para>
+
+      <para id="x_218">Per aiutarvi a ricordare lo scopo di un hook, è buona norma usare un&rsquo;estensione abbastanza descrittiva quando ne definite uno nuovo. Se l&rsquo;hook fallisce, otterrete un messaggio di errore che contiene il nome dell&rsquo;hook e l&rsquo;estensione, quindi l&rsquo;impiego di un&rsquo;estensione descrittiva potrebbe darvi un suggerimento immediato sul motivo per cui l&rsquo;hook è fallito (si veda la <xref linkend="sec:hook:perm"/> per un esempio).</para>
+
+    </sect2>
+    <sect2 id="sec:hook:perm">
+      <title>Controllare se un&rsquo;attività può procedere</title>
+
+      <para id="x_219">Nei nostri primi esempi, abbiamo usato l&rsquo;hook <literal role="hook">commit</literal>, che viene invocato al termine di un commit ed è uno dei vari hook Mercurial che vengono eseguiti dopo la conclusione di un&rsquo;attività. Questi hook non hanno alcun modo di influenzare l&rsquo;attività stessa.</para>
+
+      <para id="x_21a">Mercurial definisce un certo numero di eventi che accadono prima che un&rsquo;attività cominci, o dopo che è cominciata ma prima che termini. Gli hook attivati da questi eventi hanno l&rsquo;ulteriore capacità di determinare se l&rsquo;attività può continuare o se verrà abortita.</para>
+
+      <para id="x_21b">L&rsquo;hook <literal role="hook">pretxncommit</literal> viene invocato dopo che un commit è stato completamente eseguito ma non si è ancora concluso. In altre parole, i metadati che rappresentano il changeset sono stati scritti su disco, ma la transazione non ha ancora avuto il permesso di completarsi. L&rsquo;hook <literal role="hook">pretxncommit</literal> ha la capacità di decidere se la transazione può completarsi oppure se deve essere abortita.</para>
+
+      <para id="x_21c">Se l&rsquo;hook <literal role="hook">pretxncommit</literal> termina con un codice di stato uguale a zero, la transazione può completare, il commit si conclude e l&rsquo;hook <literal role="hook">commit</literal> viene eseguito. Se l&rsquo;hook <literal role="hook">pretxncommit</literal> termina con un codice di stato diverso da zero, la transazione viene abortita, i metadati che rappresentano il changeset vengono cancellati e l&rsquo;hook <literal role="hook">commit</literal> non viene eseguito.</para>
+
+      &interaction.hook.simple.pretxncommit;
+
+      <para id="x_21d">In questo esempio, l&rsquo;hook controlla che il messaggio di commit contenga un identificatore di bug. Se lo contiene, il commit può completare, altrimenti il commit viene abortito.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Implementare i vostri hook</title>
+
+    <para id="x_21e">Quando state scrivendo un hook, potreste trovare utile eseguire Mercurial con l&rsquo;opzione <option role="hg-opt-global">-v</option> oppure con l&rsquo;elemento di configurazione <envar role="rc-item-ui">verbose</envar> impostato a <quote>vero</quote>, in modo che Mercurial stampi un messaggio prima di invocare qualsiasi hook.</para>
+
+    <sect2 id="sec:hook:lang">
+      <title>Scegliere la modalità di esecuzione del vostro hook</title>
+
+      <para id="x_21f">Potete implementare un hook come un normale programma&emdash;tipicamente uno script di shell&emdash;o come una funzione Python che viene eseguita nell&rsquo;ambito del processo Mercurial.</para>
+
+      <para id="x_220">Implementare un hook come programma esterno ha il vantaggio di non richiedere alcuna conoscenza del funzionamento interno di Mercurial. Potete invocare i normali comandi Mercurial per ottenere tutte le informazioni aggiuntive di cui avete bisogno. Lo svantaggio è che gli hook esterni sono più lenti rispetto agli hook interni.</para>
+
+      <para id="x_221">Un hook Python interno ha accesso completo alla API di Mercurial e non deve <quote>pagare</quote> la creazione di un altro processo, quindi è intrinsecamente più veloce rispetto a un hook esterno. Per ottenere la maggior parte delle informazioni richieste da un hook è anche più facile usare la API di Mercurial che eseguire i comandi Mercurial.</para>
+
+      <para id="x_222">Se siete a vostro agio con Python, o avete bisogno di prestazioni elevate, implementare i vostri hook in Python potrebbe essere una buona scelta. Tuttavia, quando il vostro hook è semplice da scrivere e le prestazioni non vi interessano (cose che probabilmente capitano per la maggior parte degli hook), uno script di shell è perfettamente adeguato.</para>
+
+    </sect2>
+    <sect2 id="sec:hook:param">
+      <title>I parametri di hook</title>
+
+      <para id="x_223">Mercurial invoca ogni hook con un insieme di parametri ben definito. In Python, un parametro viene passato come un argomento con nome alla vostra funzione di hook. Per un programma esterno, un parametro viene passato come una variabile d&rsquo;ambiente.</para>
+
+      <para id="x_224">I nomi e i valori dei parametri specifici di un hook saranno gli stessi sia per gli hook implementati in Python sia per quelli realizzati come script di shell. Un parametro booleano sarà rappresentato come un valore booleano in Python, ma come una variabile d&rsquo;ambiente con valore numerico 1 (per <quote>vero</quote>) o 0 (per <quote>falso</quote>) per un hook esterno. Se il nome di un parametro di hook è <literal>foo</literal>, anche l&rsquo;argomento con nome per un hook Python sarà chiamato <literal>foo</literal>, mentre la variabile d&rsquo;ambiente per un hook esterno sarà chiamata <literal>HG_FOO</literal>.</para>
+    </sect2>
+
+    <sect2>
+      <title>I valori di ritorno degli hook e il controllo delle attività</title>
+
+      <para id="x_225">Un hook che viene eseguito con successo deve terminare con uno stato uguale a zero se è esterno, o restituire il valore booleano <quote>falso</quote> se è interno. Il fallimento viene indicato con uno stato di terminazione diverso da zero per un hook esterno, o dal valore booleano <quote>vero</quote> per un hook interno. Se un hook interno solleva un&rsquo;eccezione, l&rsquo;hook si considera fallito.</para>
+
+      <para id="x_226">Per un hook che controlla se un&rsquo;attività può procedere, zero o falso significano <quote>concesso</quote>, mentre un numero diverso da zero, vero, o un&rsquo;eccezione significano <quote>negato</quote>.</para>
+    </sect2>
+
+    <sect2>
+      <title>Scrivere un hook esterno</title>
+
+      <para id="x_227">Quando definite un hook esterno nel vostro file <filename role="special">~/.hgrc</filename> e l&rsquo;hook viene invocato, il suo valore viene passato alla vostra shell, che lo interpreta. Questo significa che potete usare i normali costrutti di shell nel corpo dell&rsquo;hook.</para>
+
+      <para id="x_228">Un hook eseguibile viene sempre eseguito con la sua directory corrente impostata alla directory radice del repository.</para>
+
+      <para id="x_229">Ogni parametro di hook viene passato come una variabile d&rsquo;ambiente con il nome in maiuscolo preceduto dalla stringa <quote><literal>HG_</literal></quote>.</para>
+
+      <para id="x_22a">Con l&rsquo;eccezione dei parametri di hook, Mercurial non imposta o modifica alcuna variabile d&rsquo;ambiente quando esegue un hook. Questo è utile da ricordare se state scrivendo un hook globale che potrebbe venire invocato da un certo numero di utenti differenti con differenti variabili d&rsquo;ambiente impostate. In ambienti multi-utente, non dovreste fare affidamento sul fatto che le variabili d&rsquo;ambiente abbiano i valori che avete impostato nel vostro ambiente di lavoro durante il collaudo dell&rsquo;hook.</para>
+    </sect2>
+
+    <sect2>
+      <title>Dire a Mercurial di usare un hook interno</title>
+
+      <para id="x_22b">La sintassi del file <filename role="special">~/.hgrc</filename> per definire un hook interno è leggermente differente da quella per un hook eseguibile. Il valore dell&rsquo;hook deve cominciare con il testo <quote><literal>python:</literal></quote> e proseguire con il nome completamente qualificato dell&rsquo;oggetto invocabile da usare come valore dell&rsquo;hook.</para>
+
+      <para id="x_22c">Il modulo in cui si trova l&rsquo;hook viene automaticamente importato quando l&rsquo;hook viene invocato. Purché il nome del modulo e il valore di <envar>PYTHONPATH</envar> siano corretti, l&rsquo;importazione dovrebbe <quote>funzionare e basta</quote>.</para>
+
+      <para id="x_22d">Il seguente frammento di un file <filename role="special">~/.hgrc</filename> di esempio illustra la sintassi e il significato delle nozioni appena descritte.</para>
+      <programlisting>[hooks]
+commit.esempio = python:miomodulo.sottomodulo.miohook</programlisting>
+      <para id="x_22e">Quando Mercurial esegue l&rsquo;hook <literal>commit.esempio</literal>, importa <literal>miomodulo.sottomodulo</literal>, cerca l&rsquo;oggetto invocabile chiamato <literal>miohook</literal> e lo invoca.</para>
+    </sect2>
+
+    <sect2>
+      <title>Implementare un hook interno</title>
+
+      <para id="x_22f">Il più semplice hook interno non fa nulla, ma illustra la forma base della API degli hook:</para>
+      <programlisting>def miohook(ui, repo, **kwargs):
+    pass</programlisting>
+      <para id="x_230">Il primo argomento di un hook Python è sempre un oggetto <literal role="py-mod-mercurial.ui">mercurial.ui.ui</literal>. Il secondo è un oggetto repository, al momento sempre un&rsquo;istanza di <literal role="py-mod-mercurial.localrepo">mercurial.localrepo.localrepository</literal>. Gli altri argomenti con nome seguono questi due argomenti. Quali argomenti con nome vengono passati dipende dall&rsquo;hook che viene invocato, ma un hook può ignorare gli argomenti di cui non ha bisogno depositandoli in un dizionario di argomenti con nome, come succede con <literal>**kwargs</literal> qui sopra.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Alcuni hook di esempio</title>
+
+    <sect2>
+      <title>Scrivere messaggi di commit significativi</title>
+
+      <para id="x_231">&Egrave; difficile immaginare un messaggio di commit utile che sia anche molto breve. Il semplice hook <literal role="hook">pretxncommit</literal> dell&rsquo;esempio seguente vi impedirà di esguire il commit di un changeset con un messaggio più piccolo di quindici byte.</para>
+
+      &interaction.hook.msglen.go;
+    </sect2>
+
+    <sect2>
+      <title>Controllare lo spazio bianco in coda</title>
+
+      <para id="x_232">Un uso interessante per un hook relativo ai commit è quello di aiutarvi a scrivere codice più pulito. Un semplice esempio di <quote>codice più pulito</quote> è la regola per cui un cambiamento non dovrebbe aggiungere nessuna nuova riga di testo contenente <quote>spazio bianco in coda</quote>. Lo spazio bianco in coda è composto da una serie di spazi e caratteri di tabulazione alla fine di una riga di testo. Nella maggior parte dei casi, lo spazio bianco in coda non è altro che rumore invisibile e superfluo, ma si rivela occasionalmente problematico e in genere le persone preferiscono sbarazzarsene.</para>
+
+      <para id="x_233">Potete usare l&rsquo;hook <literal role="hook">precommit</literal> o l&rsquo;hook <literal role="hook">pretxncommit</literal> per scoprire se avete un problema di spazio bianco in coda. Se usate <literal role="hook">precommit</literal>, l&rsquo;hook non saprà quali file state inserendo, quindi dovrà controllare ogni file modificato nel repository alla ricerca di spazio bianco in coda. Se volete inserire un cambiamento al solo file <filename>foo</filename>, ma il flie <filename>bar</filename> contiene spazio bianco in coda, effettuare un controllo tramite l&rsquo;hook <literal role="hook">precommit</literal> vi impedirà di eseguire il commit di <filename>foo</filename> a causa dei problemi con <filename>bar</filename>. Questo comportamento non sembra corretto.</para>
+
+      <para id="x_234">Se doveste scegliere l&rsquo;hook <literal role="hook">pretxncommit</literal>, il controllo non avverrà fino al momento appena precedente il completamento della transazione di commit. Questo vi consentirà di controllare il problema solo sui file che verranno registrati. Tuttavia, se avete inserito il messaggio di commit interattivamente e l&rsquo;hook fallisce, la transazione verrà abortita e dovrete riscrivere il messaggio di commit dopo aver corretto lo spazio bianco in coda e invocato ancora <command role="hg-cmd">hg commit</command>.</para>
+
+      &interaction.ch09-hook.ws.simple;
+
+      <para id="x_235">In questo esempio, abbiamo introdotto un semplice hook <literal role="hook">pretxncommit</literal> che controlla lo spazio bianco in coda. Questo hook è breve, ma non molto utile: termina con uno stato di errore se un changeset aggiunge una riga con spazio bianco in coda a un file qualsiasi, ma non stampa alcuna informazione che potrebbe aiutarci a individuare il file o la riga che contiene il problema. L&rsquo;hook ha anche la piacevole proprietà di non prestare attenzione alle righe non modificate, in quanto solo le righe che introducono nuovo spazio bianco in coda causano problemi.</para>
+
+      &ch09-check_whitespace.py.lst;
+
+      <para id="x_236">Questa versione è molto più complessa, ma anche molto più utile. Analizza un diff unificato per vedere se una qualsiasi riga aggiunge spazio bianco in coda e stampa il nome del file e il numero della riga di ogni occorrenza di questo tipo. In più, se il cambiamento aggiunge spazio bianco in coda, questo hook salva il messaggio di commit e stampa il nome del file salvato prima di uscire e dire a Mercurial di abortire la transazione, in modo che, dopo aver corretto il problema, possiate usare l&rsquo;opzione <option role="hg-opt-commit">-l nomefile</option> del comando <command role="hg-cmd">hg commit</command> per riutilizzare il messaggio di commit salvato.</para>
+
+      &interaction.ch09-hook.ws.better;
+
+      <para id="x_237">Come ultima nota a margine, osservate in questo esempio l&rsquo;uso della funzione di modifica sul posto di <command>sed</command> per eliminare lo spazio bianco in coda da un file. Questo impiego è sufficientemente conciso e utile che lo riprodurrò qui di seguito (usando <command>perl</command> per sicurezza).</para>
+      <programlisting>perl -pi -e 's,[ \t]+$,,' nomefile</programlisting>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Hook inclusi</title>
+
+    <para id="x_238">Mercurial viene distribuito con diversi hook inclusi che potete trovare nella directory <filename class="directory">hgext</filename> dell&rsquo;albero dei sorgenti di Mercurial. Se state usando un pacchetto precompilato di Mercurial, gli hook si trovano nella directory <filename class="directory">hgext</filename> posizionata ovunque il vostro pacchetto abbia installato Mercurial.</para>
+
+    <sect2>
+      <title><literal role="hg-ext">acl</literal>&emdash;controllo di accesso per parti di un repository</title>
+
+      <para id="x_239">L&rsquo;estensione <literal role="hg-ext">acl</literal> vi permette di controllare quali utenti remoti hanno il permesso di trasmettere changeset verso un server attraverso la rete. Potete proteggere qualsiasi porzione di un repository (compreso l&rsquo;intero repository) in modo che uno specifico utente remoto possa trasmettere solo cambiamenti che non influenzano le parti protette.</para>
+
+      <para id="x_23a">Questa estensione implementa il controllo di accesso sulla base dell&rsquo;identità dell&rsquo;utente che effettua la trasmissione, <emphasis>non</emphasis> di chi ha eseguito il commit dei changeset che vengono trasferiti. Ha senso usare questo hook solo se avete un ambiente server protetto che autentica gli utenti remoti e volete essere sicuri che solo specifici utenti possano trasmettere cambiamenti a quel server.</para>
+
+      <sect3>
+	<title>Configurare l&rsquo;hook <literal role="hook">acl</literal></title>
+
+	<para id="x_23b">Per gestire i cambiamenti in entrata, l&rsquo;hook <literal role="hg-ext">acl</literal> deve essere usato come un hook <literal role="hook">pretxnchangegroup</literal>. Questo vi permette di vedere quali file vengono modificati da ogni changeset in entrata e di abortire un gruppo di changeset se modifica qualche file <quote>proibito</quote>. Ecco un esempio di come attivare l&rsquo;hook:</para>
+	<programlisting>[hooks]
+pretxnchangegroup.acl = python:hgext.acl.hook</programlisting>
+
+	<para id="x_23c">L&rsquo;estensione <literal role="hg-ext">acl</literal> si configura usando tre sezioni.</para>
+
+	<para id="x_23d">La sezione <literal role="rc-acl">acl</literal> contiene solo la voce <envar role="rc-item-acl">sources</envar>, che elenca le modalità di provenienza dei cambiamenti in entrata a cui l&rsquo;hook deve fare attenzione. Di solito, non avrete bisogno di configurare questa sezione.</para>
+	<itemizedlist>
+	  <listitem><para id="x_23e"><envar role="rc-item-acl">serve</envar>: controlla i changeset in entrata che arrivano da un repository remoto via HTTP o ssh. Questo è il valore predefinito di <envar role="rc-item-acl">sources</envar> e di solito è l&rsquo;unica impostazione di cui avrete bisogno per questo elemento di configurazione.</para>
+	  </listitem>
+	  <listitem><para id="x_23f"><envar role="rc-item-acl">pull</envar>: controlla i changeset in entrata che arrivano attraverso un&rsquo;estrazione da un repository locale.</para>
+	  </listitem>
+	  <listitem><para id="x_240"><envar role="rc-item-acl">push</envar>: controlla i cambiamenti in entrata che arrivano attraverso una trasmissione da un repository locale.</para>
+	  </listitem>
+	  <listitem><para id="x_241"><envar role="rc-item-acl">bundle</envar>: controlla i changeset in entrata che arrivano da un altro repository attraverso un bundle.<footnote><para id="x_fff">[NdT] Un bundle contiene dati binari di changeset in forma compressa. Usate il sistema di aiuto di Mercurial invocando <command role="hg-cmd">hg help bundle</command> o <command role="hg-cmd">hg help unbundle</command> per ottenere maggiori informazioni.</para></footnote></para>
+	  </listitem></itemizedlist>
+
+	<para id="x_242">La sezione <literal role="rc-acl.allow">acl.allow</literal> controlla gli utenti a cui è permesso aggiungere changeset al repository. Se questa sezione non è presente, il permesso viene concesso a tutti gli utenti a cui non viene esplicitamente negato. Se questa sezione è presente, il permesso viene negato a tutti gli utenti a cui non viene esplicitamente concesso (quindi una sezione vuota significa che il permesso viene negato a tutti gli utenti).</para>
+
+	<para id="x_243">La sezione <literal role="rc-acl.deny">acl.deny</literal> determina quali sono gli utenti a cui viene impedito di aggiungere changeset al repository. Se questa sezione non è presente o è vuota, tutti gli utenti hanno il permesso di aggiungere modifiche.</para>
+
+	<para id="x_244">La sintassi per le sezioni <literal role="rc-acl.allow">acl.allow</literal> e <literal role="rc-acl.deny">acl.deny</literal> è la stessa. Sulla sinistra di ogni voce si trova un pattern di tipo glob che corrisponde a file e directory relativi alla radice del repository, sulla destra si trova un nome utente.</para>
+
+	<para id="x_245">Nell&rsquo;esempio seguente, l&rsquo;utente <literal>manualista</literal> può trasmettere cambiamenti solo al sottoalbero <filename class="directory">doc</filename> del repository, mentre l&rsquo;utente <literal>stagista</literal> può trasmettere cambiamenti a qualsiasi file o directory tranne <filename class="directory">sorgenti/sensibili</filename>.
+	</para>
+	<programlisting>[acl.allow]
+doc/** = manualista
+[acl.deny]
+sorgenti/sensibili/** = stagista</programlisting>
+
+      </sect3>
+      <sect3>
+	<title>Collaudo e risoluzione dei problemi</title>
+
+	<para id="x_246">Se volete collaudare l&rsquo;hook <literal role="hg-ext">acl</literal>, eseguitelo abilitando le informazioni di debug di Mercurial. Dato che probabilmente lo eseguirete su un server dove non è conveniente (e talvolta nemmeno possibile) passare l&rsquo;opzione <option role="hg-opt-global">--debug</option>, non dimenticatevi che potete abilitare le informazioni di debug nel vostro file <filename role="special">~/.hgrc</filename>:
+	</para>
+	<programlisting>[ui]
+debug = true</programlisting>
+	<para id="x_247">Con questa opzione abilitata, l&rsquo;hook <literal role="hg-ext">acl</literal> stamperà abbastanza informazioni da permettervi di capire perché sta consentendo o vietando le trasmissioni da specifici utenti.</para>
+
+      </sect3>    
+    </sect2>
+
+    <sect2>
+      <title><literal
+	  role="hg-ext">bugzilla</literal>&emdash;integrazione con Bugzilla</title>
+
+      <para id="x_248">L&rsquo;estensione <literal role="hg-ext">bugzilla</literal> aggiunge un commento a un bug su Bugzilla ogni volta che trova un riferimento all&rsquo;identificatore di quel bug in un messaggio di commit. Potete installare questo hook su un server condiviso, in modo che l&rsquo;hook venga eseguito ogni volta che un utente remoto trasmette i cambiamenti a quel server.</para>
+
+      <para id="x_249">L&rsquo;hook aggiunge al bug un commento che somiglia a questo (potete configurare i contenuti del commento, come vedrete fra un attimo):</para>
+      <programlisting>Changeset aad8b264143a, creato da Mario Rossi &lt;mario.rossi@example.com&gt; nel repository vattelapesca,
+    fa riferimento a questo bug.
+    Per i dettagli completi, si veda
+    http://hg.example.com/vattelapesca?cmd=changeset;node=aad8b264143a
+    Descrizione del changeset: risolto bug 10483 proteggendo il codice da alcuni puntatori NULL.</programlisting>
+      <para id="x_24a">Il valore di questo hook è che automatizza il processo di aggiornamento di un bug ogni volta che un changeset vi fa riferimento. Se lo configurate in maniera adeguata, l&rsquo;hook faciliterà la navigazione diretta da un bug su Bugzilla a un changeset che si riferisce a quel bug.</para>
+
+      <para id="x_24b">Potete usare il codice di questo hook come un punto di partenza per ricette più esotiche di integrazione con Bugzilla. Ecco alcune possibilità.</para>
+      <itemizedlist>
+	<listitem><para id="x_24c">Richiedere che ogni changeset trasmesso al server abbia un identificatore di bug valido nel proprio messaggio di commit. In questo caso, vorrete configurare l&rsquo;hook come un hook <literal role="hook">pretxncommit</literal> per consentirgli di rifiutare i cambiamenti che non contengono identificatori di bug.</para>
+	</listitem>
+	<listitem><para id="x_24d">Permettere ai changeset in entrata di modificare automaticamente lo <emphasis>stato</emphasis> di un bug, come pure di aggiungere semplicemente un commento. Per esempio, l&rsquo;hook potrebbe riconoscere la stringa <quote>risolto bug 31337</quote> come il segnale che indica la necessità di aggiornare lo stato del bug 31337 a <quote>richiede un collaudo</quote>.</para>
+	</listitem></itemizedlist>
+
+      <sect3 id="sec:hook:bugzilla:config">
+	<title>Configurare l&rsquo;hook <literal role="hook">bugzilla</literal></title>
+
+	<para id="x_24e">Dovreste configurare questo hook nel file <filename role="special">hgrc</filename> del vostro server come un hook <literal role="hook">incoming</literal>, per esempio nel modo seguente:</para>
+	<programlisting>[hooks]
+incoming.bugzilla = python:hgext.bugzilla.hook</programlisting>
+
+	<para id="x_24f">A causa della natura specializzata dell&rsquo;hook e dato che Bugzilla non è stato implementato con questo tipo di integrazioni in mente, configurare questo hook è un processo piuttosto complicato.</para>
+
+	<para id="x_250">Prima di cominciare, dovete installare la libreria di interfaccia Python per MySQL sulla macchina (o le macchine) dove intendete eseguire l&rsquo;hook. Se non è disponibile sotto forma di pacchetto precompilato per il vostro sistema, potete scaricarla da <citation><xref linkend="bib:mysql"/></citation>.
+	</para>
+
+	<para id="x_251">Le informazioni di configurazione per questo hook si trovano nella sezione <literal role="rc-bugzilla">bugzilla</literal> del vostro file <filename role="special">hgrc</filename>.
+	</para>
+	<itemizedlist>
+	  <listitem><para id="x_252"><envar role="rc-item-bugzilla">version</envar>: la versione di Bugzilla installata sul server. Lo schema di database usato da Bugzilla cambia occasionalmente, quindi questo hook deve sapere esattamente quale schema usare.</para>
+	  </listitem>
+	  <listitem><para id="x_253"><envar role="rc-item-bugzilla">host</envar>: il nome della macchina del server MySQL che memorizza i vostri dati per Bugzilla. Il database deve essere configurato per consentire le connessioni da qualunque macchina stia eseguendo l&rsquo;hook <literal role="hook">bugzilla</literal>.
+	    </para>
+	  </listitem>
+	  <listitem><para id="x_254"><envar role="rc-item-bugzilla">user</envar>: il nome utente con il quale connettersi al server MySQL. Il database deve essere configurato per consentire a questo utente di connettersi da qualunque macchina stia eseguendo l&rsquo;hook <literal role="hook">bugzilla</literal>. Questo utente deve essere in grado di modificare le tabelle di Bugzilla. Il valore predefinito di questo elemento è <literal>bugs</literal>, che è il nome standard dell&rsquo;utente Bugzilla in un database MySQL.</para>
+	  </listitem>
+	  <listitem><para id="x_255"><envar role="rc-item-bugzilla">password</envar>: la password MySQL per l&rsquo;utente che avete configurato alla voce precedente. Il testo della password viene memorizzato in chiaro, quindi dovreste assicurarvi che utenti non autorizzati non possano leggere il file <filename role="special">~/.hgrc</filename> dove avete inserito questa informazione.</para>
+	  </listitem>
+	  <listitem><para id="x_256"><envar role="rc-item-bugzilla">db</envar>: il nome del database Bugzilla sul server MySQL. Il valore predefinito di questo elemento è <literal>bugs</literal>, che è il nome standard del database MySQL dove Bugzilla memorizza i propri dati.</para>
+	  </listitem>
+	  <listitem><para id="x_257"><envar role="rc-item-bugzilla">notify</envar>: se volete che Bugzilla spedisca un&rsquo;email di notifica agli interessati dopo che questo hook ha aggiunto un commento a un bug, è necessario che questo hook esegua un comando ogni volta che aggiorna il database. Il comando da eseguire dipende da dove avete installato Bugzilla, ma tipicamente somiglierà al seguente, se avete installato Bugzilla in <filename class="directory">/var/www/html/bugzilla</filename>:</para>
+	    <programlisting>cd /var/www/html/bugzilla &amp;&amp;
+	      ./processmail %s nessuno@example.com</programlisting>
+	  <para id="x_258">Il programma <literal>processmail</literal> di Bugzilla si aspetta che gli vengano passati un identificatore di bug (l&rsquo;hook sostituisce <quote><literal>%s</literal></quote> con l&rsquo;identificatore di bug) e un indirizzo email. Si aspetta anche di essere in grado di scrivere su alcuni file nella directory in cui viene eseguito. Se Bugzilla e questo hook non sono installati sulla stessa macchina, dovrete trovare un modo per eseguire <literal>processmail</literal> sul server dove Bugzilla è installato.</para>
+	  </listitem></itemizedlist>
+
+      </sect3>
+      <sect3>
+	<title>Correlare i nomi utente Mercurial ai nomi utente Bugzilla</title>
+
+	<para id="x_259">Per default, l&rsquo;hook <literal role="hg-ext">bugzilla</literal> prova a utilizzare l&rsquo;indirizzo email di chi ha eseguito il commit del changeset come il nome utente Bugzilla con cui aggiornare un bug. Se questa impostazione non vi soddisfa, potete correlare gli indirizzi email degli utenti Mercurial ai nomi utente Bugzilla tramite una sezione <literal role="rc-usermap">usermap</literal>.</para>
+
+	<para id="x_25a">Ogni elemento nella sezione <literal role="rc-usermap">usermap</literal> contiene un indirizzo email sulla sinistra e un nome utente Bugzilla sulla destra.</para>
+	<programlisting>[usermap]
+maria.bianchi@example.com = maria</programlisting>
+	<para id="x_25b">Potete tenere i dati della sezione <literal role="rc-usermap">usermap</literal> in un normale file <filename role="special">hgrc</filename>, oppure dire all&rsquo;hook <literal role="hg-ext">bugzilla</literal> di leggere le informazioni da un file <filename>usermap</filename> esterno. In quest&rsquo;ultimo caso, potete memorizzare i dati del file <filename>usermap</filename> separatamente in un repository modificabile dall&rsquo;utente, per esempio. Questo vi permette di dare ai vostri utenti la possibilità di mantenere le proprie voci nella sezione <envar role="rc-item-bugzilla">usermap</envar>. Il file <filename role="special">hgrc</filename> principale potrebbe somigliare a questo:</para>
+	<programlisting># il normale file hgrc fa riferimento a un file di correlazioni esterno
+[bugzilla]
+usermap = /home/hg/repos/datiutente/bugzilla-usermap.conf</programlisting>
+	<para id="x_25c">Mentre il file <filename>usermap</filename> a cui fa riferimento potrebbe somigliare a questo:</para>
+	<programlisting># bugzilla-usermap.conf - all'interno di un repository Mercurial
+[usermap]
+stefania@example.com = stef</programlisting>
+
+      </sect3>
+      <sect3>
+	<title>Configurare il testo che viene aggiunto a un bug</title>
+
+	<para id="x_25d">Potete configurare il testo che questo hook aggiunge come commento specificandolo sotto forma di template Mercurial. Diverse voci del file <filename role="special">hgrc</filename> (sempre nella sezione <literal role="rc-bugzilla">bugzilla</literal>) controllano questo comportamento.</para>
+	<itemizedlist>
+	  <listitem><para id="x_25e"><literal>strip</literal>: il numero di parti iniziali da eliminare dal percorso di un repository per costruire un percorso parziale da usare in un URL. Per esempio, se i repository sul vostro server si trovano nella directory <filename class="directory">/home/hg/repos</filename>, e voi avete un repository il cui percorso è <filename class="directory">/home/hg/repos/app/test</filename>, allora impostando <literal>strip</literal> a <literal>4</literal> otterrete il percorso parziale <filename class="directory">app/test</filename>. L&rsquo;hook renderà disponibile questo percorso parziale con il nome <literal>webroot</literal> durante l&rsquo;espansione di un template.</para>
+	  </listitem>
+	  <listitem><para id="x_25f"><literal>template</literal>: il testo del template da usare. In aggiunta alle solite variabili relative ai changeset, questo template può usare <literal>hgweb</literal> (il valore dell&rsquo;elemento di configurazione <literal>hgweb</literal> menzionato in precedenza) e <literal>webroot</literal> (il percorso costruito usando l&rsquo;elemento <literal>strip</literal> appena descritto).</para>
+	  </listitem></itemizedlist>
+
+	<para id="x_260">In più, potete aggiungere un elemento <envar role="rc-item-web">baseurl</envar> alla sezione <literal role="rc-web">web</literal> del vostro file <filename role="special">hgrc</filename>. L&rsquo;hook <literal role="hg-ext">bugzilla</literal> lo renderà disponibile durante l&rsquo;espansione di un template, come la stringa di base da usare nel costruire un URL che permetterà agli utenti di navigare da un commento Bugzilla verso un changeset correlato. Ecco un esempio di come usare questo elemento:</para>
+	<programlisting>[web]
+baseurl = http://hg.example.com/</programlisting>
+
+	<para id="x_261">Ecco un esempio dell&rsquo;insieme di informazioni di configurazione da usare per l&rsquo;hook <literal role="hg-ext">bugzilla</literal>.</para>
+
+	&ch10-bugzilla-config.lst;
+
+      </sect3>
+      <sect3>
+	<title>Collaudo e risoluzione dei problemi</title>
+
+	<para id="x_262">I problemi più comuni con la configurazione dell&rsquo;hook <literal role="hg-ext">bugzilla</literal> sono relativi all&rsquo;esecuzione dello script <filename>processmail</filename> di Bugzilla e alla correlazione tra nomi utente Mercurial e nomi utente Bugzilla.</para>
+
+	<para id="x_263">Se ricordate quanto detto nella <xref linkend="sec:hook:bugzilla:config"/>, l&rsquo;utente che esegue il processo Mercurial sul server è anche quello che eseguirà lo script <filename>processmail</filename>. Questo script talvolta chiederà a Bugzilla di modificare i file nella sua directory di configurazione, e di solito i file di configurazione di Bugzilla sono proprietà dell&rsquo;utente che esegue il processo del vostro server web.</para>
+
+	<para id="x_264">Potete far eseguire <filename>processmail</filename> con un&rsquo;identità utente appropriata tramite il comando <command>sudo</command>. Ecco una voce di esempio da un file <filename>sudoers</filename>.</para>
+	<programlisting>hg_user = (httpd_user)
+NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s</programlisting>
+	<para id="x_265">Questo consente all&rsquo;utente <literal>hg_user</literal> di eseguire il programma <filename>processmail-wrapper</filename> sotto l&rsquo;identità dell&rsquo;utente <literal>httpd_user</literal>.</para>
+
+	<para id="x_266">Questa invocazione indiretta attraverso uno script che funge da involucro è necessaria, perché <filename>processmail</filename> si aspetta di venire eseguito con la propria directory corrente impostata al percorso di installazione di Bugzilla, ma non è possibile specificare questo vincolo in un file <filename>sudoers</filename>. Il contenuto dello script involucro è semplice:</para>
+	<programlisting>#!/bin/sh
+cd `dirname $0` &amp;&amp; ./processmail "$1" nessuno@example.com</programlisting>
+	<para id="x_267">Non sembra che l&rsquo;indirizzo email passato a <filename>processmail</filename> abbia importanza.</para>
+
+	<para id="x_268">Se la vostra sezione <literal role="rc-usermap">usermap</literal> non è impostata correttamente, gli utenti vedranno un messaggio di errore stampato dall&rsquo;hook <literal role="hg-ext">bugzilla</literal> al momento di trasmettere i cambiamenti al server. Il messaggio di errore somiglierà al seguente:</para>
+	<programlisting>impossibile trovare un nome utente bugzilla per mario.rossi@example.com</programlisting>
+	<para id="x_269">Questo significa che l&rsquo;indirizzo email dell&rsquo;utente Mercurial, <literal>mario.rossi@example.com</literal>, non è un nome utente Bugzilla valido, né possiede una voce nella vostra sezione <literal role="rc-usermap">usermap</literal> che lo metta in relazione con un nome utente Bugzilla valido.</para>
+
+      </sect3>    
+    </sect2>
+
+    <sect2>
+      <title><literal role="hg-ext">notify</literal>&emdash;inviare notifiche via email</title>
+
+      <para id="x_26a">Sebbene il server web predefinito di Mercurial fornisca i feed RSS dei cambiamenti per ogni repository, molte persone preferiscono ricevere le notifiche dei cambiamenti via email. L&rsquo;hook <literal role="hg-ext">notify</literal> vi permette di inviare notifiche a un insieme di indirizzi email ogni volta che arrivano changeset a cui quelle persone sono interessate.</para>
+
+      <para id="x_26b">Come l&rsquo;hook <literal role="hg-ext">bugzilla</literal>, anche l&rsquo;hook <literal role="hg-ext">notify</literal> è guidato da un template, in modo che possiate personalizzare il contenuto dei messaggi di notifica inviati.</para>
+
+      <para id="x_26c">Per default, l&rsquo;hook <literal role="hg-ext">notify</literal> include un diff di ogni changeset che spedisce, ma potete limitare le dimensioni del diff oppure disattivarlo interamente. L&rsquo;inclusione del diff è utile per consentire agli interessati di revisionare i cambiamenti immediatamente piuttosto che obbligarli a cliccare per seguire un URL.</para>
+
+      <sect3>
+	<title>Configurare l&rsquo;hook <literal role="hg-ext">notify</literal></title>
+
+	<para id="x_26d">Potete impostare l&rsquo;hook <literal role="hg-ext">notify</literal> in modo che spedisca un messaggio email per ogni changeset in entrata, o uno per ogni gruppo di changeset in entrata (tutti quelli che sono arrivati in una singola estrazione o trasmissione).</para>
+	<programlisting>[hooks]
+# spedisci un'email per gruppo di cambiamenti
+changegroup.notify = python:hgext.notify.hook
+# spedisci un'email per cambiamento
+incoming.notify = python:hgext.notify.hook</programlisting>
+
+	<para id="x_26e">Le informazioni di configurazione per questo hook si trovano nella sezione <literal role="rc-notify">notify</literal> del file <filename role="special">hgrc</filename>.</para>
+	<itemizedlist>
+	  <listitem><para id="x_26f"><envar role="rc-item-notify">test</envar>: per default, questo hook non spedisce alcuna email, ma stampa il messaggio che <emphasis>verrebbe</emphasis> inviato. Impostate questo elemento a <literal>false</literal> per consentire la spedizione delle email. La ragione per cui la spedizione delle email è disabilitata per default è che ci vogliono diverse prove per configurare questa estensione esattamente come vorreste, e non starebbe bene infastidire gli interessati con un certo numero di notifiche <quote>sbagliate</quote> mentre correggete la vostra configurazione.</para>
+	  </listitem>
+	  <listitem><para id="x_270"><envar role="rc-item-notify">config</envar>: il percorso di un file di configurazione che contiene le informazioni di iscrizione. Questo viene tenuto separato dal file <filename role="special">hgrc</filename> principale in modo che possiate mantenerlo in un proprio repository. Le persone possono poi clonare quel repository, aggiornare le proprie iscrizioni e trasmettere i cambiamenti al vostro server.</para>
+	  </listitem>
+	  <listitem><para id="x_271"><envar role="rc-item-notify">strip</envar>: il numero di parti iniziali da eliminare dal percorso di un repository quando state decidendo se è possibile iscriversi al servizio di notifica per un repository. Per esempio, se i repository sul vostro server si trovano in <filename class="directory">/home/hg/repos</filename>, e <literal role="hg-ext">notify</literal> sta considerando un repository chiamato <filename class="directory">/home/hg/repos/condivisi/test</filename>, impostare <envar role="rc-item-notify">strip</envar> a <literal>4</literal> farà in modo che <literal role="hg-ext">notify</literal> restringa il percorso da considerare a <filename class="directory">condivisi/test</filename> e associ le iscrizioni a questo percorso.</para>
+	  </listitem>
+	  <listitem><para id="x_272"><envar role="rc-item-notify">template</envar>: il testo del template da usare per inviare i messaggi. Questo specifica i contenuti sia delle intestazioni che del corpo del messaggio.</para>
+	  </listitem>
+	  <listitem><para id="x_273"><envar role="rc-item-notify">maxdiff</envar>: il massimo numero di righe di dati di diff da aggiungere alla fine di un messaggio. Se un diff è più lungo di questo limite, viene troncato. Per default, questo valore è impostato a 300. Impostate questo valore a <literal>0</literal> per omettere i diff dalle email di notifica.</para>
+	  </listitem>
+	  <listitem><para id="x_274"><envar role="rc-item-notify">sources</envar>: una lista di modalità di provenienza dei changeset da considerare. Questo vi permette di limitare <literal role="hg-ext">notify</literal> in modo che spedisca email riguardanti solo utenti remoti che hanno trasmesso modifiche a questo repository attraverso un server, per esempio. Leggete la <xref linkend="sec:hook:sources"/> per sapere quali modalità potete specificare qui.</para>
+	  </listitem></itemizedlist>
+
+	<para id="x_275">Se impostate l&rsquo;elemento <envar role="rc-item-web">baseurl</envar> nella sezione <literal role="rc-web">web</literal>, potete usarlo in un template, dove sarà disponibile con il nome <literal>webroot</literal>.</para>
+
+	<para id="x_276">Ecco un esempio dell&rsquo;insieme di informazioni di configurazione da usare per l&rsquo;hook <literal role="hg-ext">notify</literal>.</para>
+
+	&ch10-notify-config.lst;
+
+	<para id="x_277">Questo produrrà un messaggio che somiglierà al seguente:</para>
+
+	&ch10-notify-config-mail.lst;
+
+      </sect3>
+      <sect3>
+	<title>Collaudo e risoluzione dei problemi</title>
+
+	<para id="x_278">Non dimenticate che il comportamento predefinito dell&rsquo;estensione <literal role="hg-ext">notify</literal> è quello di <emphasis>non spedire alcuna mail</emphasis> fino a quando non lo avete esplicitamente configurato per farlo, impostando <envar role="rc-item-notify">test</envar> a <literal>false</literal>. Fino a quel momento, si limiterà a stampare il messaggio che <emphasis>verrebbe</emphasis> inviato.</para>
+
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1 id="sec:hook:ref">
+    <title>Informazioni per gli implementatori di hook</title>
+
+    <sect2>
+      <title>Esecuzione degli hook interni</title>
+
+      <para id="x_279">Un hook interno viene invocato con argomenti della forma seguente:</para>
+      <programlisting>def miohook(ui, repo, **kwargs):
+    pass</programlisting>
+      <para id="x_27a">Il parametro <literal>ui</literal> è un oggetto di tipo <literal role="py-mod-mercurial.ui">mercurial.ui.ui</literal>. Il parametro <literal>repo</literal> è un oggetto di tipo <literal role="py-mod-mercurial.localrepo">mercurial.localrepo.localrepository</literal>. I nomi e i valori dei parametri <literal>**kwargs</literal> dipendono dall&rsquo;hook coinvolto, ma hanno le seguenti caratteristiche comuni:</para>
+      <itemizedlist>
+	<listitem><para id="x_27b">Se un parametro si chiama <literal>node</literal> o <literal>parentN</literal>, conterrà un identificatore esadecimale di changeset. Per rappresentare l&rsquo;identificatore di changeset <quote>nullo</quote>, viene usata una stringa vuota invece di una stringa di zeri.</para>
+	</listitem>
+	<listitem><para id="x_27c">Se un parametro si chiama <literal>url</literal>, conterrà l&rsquo;URL di un repository remoto, nel caso possa essere determinato.</para>
+	</listitem>
+	<listitem><para id="x_27d">I parametri con valore booleano vengono rappresentati come oggetti Python di tipo <literal>bool</literal>.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_27e">Un hook interno viene invocato senza cambiare la directory di lavoro del processo (a differenza degli hook esterni, che vengono eseguiti nella radice del repository). L&rsquo;hook non deve mai cambiare questa directory, altrimenti causerà il fallimento di tutte le proprie invocazioni alla API di Mercurial.</para>
+
+      <para id="x_27f">Se un hook restituisce il valore booleano <quote>falso</quote>, si considera terminato con successo. Se restituisce il valore booleano <quote>vero</quote> oppure solleva un&rsquo;eccezione, si considera fallito. Un modo utile di pensare a questa convenzione di esecuzione è <quote>dimmi se hai fallito</quote>.</para>
+
+      <para id="x_280">Notate che gli identificatori di changeset vengono passati agli hook Python sotto forma di stringhe esadecimali, non degli hash binari che la API Mercurial usa normalmente. Per convertire un hash da esadecimale a binario, usate la funzione <literal>mercurial.node.bin</literal>.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Esecuzione degli hook esterni</title>
+
+      <para id="x_281">Un hook esterno viene passato alla shell dell&rsquo;utente che sta eseguendo Mercurial e può disporre delle funzionalità di quella shell, come la sostituzione delle variabili e la redirezione dei comandi. L&rsquo;hook viene eseguito nella directory radice del repository (a differenza degli hook interni, che vengono eseguiti nella stessa directory in cui è stato eseguito Mercurial).</para>
+
+      <para id="x_282">I parametri di hook sono passati all&rsquo;hook sotto forma di variabili d&rsquo;ambiente. Il nome di ogni variabile d&rsquo;ambiente viene convertito in maiuscolo e fatto precedere dalla stringa <quote><literal>HG_</literal></quote>. Per esempio, se il nome di un parametro è <quote><literal>node</literal></quote>, il nome della variabile d&rsquo;ambiente che rappresenta quel parametro sarà <quote><literal>HG_NODE</literal></quote>.</para>
+
+      <para id="x_283">Un parametro booleano è rappresentato come la stringa <quote><literal>1</literal></quote> se è <quote>vero</quote> o <quote><literal>0</literal></quote> se è <quote>falso</quote>. Se una variabile d&rsquo;ambiente è chiamata <envar>HG_NODE</envar>, <envar>HG_PARENT1</envar>, o <envar>HG_PARENT2</envar>, conterrà un identificatore di changeset rappresentato come una stringa esadecimale. Per rappresentare l&rsquo;identificatore di changeset <quote>nullo</quote>, viene usata una stringa vuota invece di una stringa di zeri. Se una variabile d&rsquo;ambiente è chiamata <envar>HG_URL</envar>, conterrà l&rsquo;URL di un repository remoto, nel caso possa essere determinato.</para>
+
+      <para id="x_284">Se un hook termina con uno stato uguale a zero, si considera terminato con successo. Se termina con uno stato diverso da zero, si considera fallito.</para>
+    </sect2>
+
+    <sect2>
+      <title>Scoprire da dove vengono i changeset</title>
+
+      <para id="x_285">Un hook che coinvolge il trasferimento di changeset tra un repository locale e un altro potrebbe essere in grado di trovare informazioni sul <quote>lato opposto</quote>. Mercurial conosce il <emphasis>modo</emphasis> in cui i cambiamenti vengono trasferiti e in molti casi conosce anche l&rsquo;ubicazione del <emphasis>luogo</emphasis> da cui o verso cui vengono trasferiti.</para>
+
+      <sect3 id="sec:hook:sources">
+	<title>Le fonti dei changeset</title>
+
+	<para id="x_286">Mercurial dirà a un hook quali sono, o sono stati, i mezzi usati per trasferire i changeset tra repository, fornendo questa informazione in un parametro Python chiamato <literal>source</literal> o in una variabile d&rsquo;ambiente chiamata <envar>HG_SOURCE</envar>.</para>
+
+	<itemizedlist>
+	  <listitem><para id="x_287"><literal>serve</literal>: i changeset sono trasferiti da o verso un repository remoto via HTTP o ssh.</para>
+	  </listitem>
+	  <listitem><para id="x_288"><literal>pull</literal>: i changeset sono trasferiti attraverso un&rsquo;estrazione da un repository a un altro.</para>
+	  </listitem>
+	  <listitem><para id="x_289"><literal>push</literal>: i changeset sono trasferiti attraverso una trasmissione da un repository a un altro.</para>
+	  </listitem>
+	  <listitem><para id="x_28a"><literal>bundle</literal>: i changeset sono trasferiti da o verso un bundle.</para>
+	  </listitem></itemizedlist>
+      </sect3>
+
+      <sect3 id="sec:hook:url">
+	<title>La destinazione dei cambiamenti&emdash;gli URL dei repository remoti</title>
+
+	<para id="x_28b">Quando è possibile, Mercurial dirà a un hook l&rsquo;ubicazione del <quote>lato opposto</quote> di un&rsquo;attività che trasferisce i dati dei changeset tra repository, fornendo questa informazione in un parametro Python chiamato <literal>url</literal> o in una variabile d&rsquo;ambiente chiamata <envar>HG_URL</envar>.</para>
+
+	<para id="x_28c">Questa informazione non è sempre nota. Se un hook viene invocato in un repository condiviso via HTTP o ssh, Mercurial non è in grado di dire dove si trova il repository, ma potrebbe sapere da dove si sta connettendo il client. In questi casi, l&rsquo;URL prenderà una delle seguenti forme:</para>
+	<itemizedlist>
+	  <listitem><para id="x_28d"><literal>remote:ssh:1.2.3.4</literal>&emdash;client ssh remoto, all&rsquo;indirizzo IP <literal>1.2.3.4</literal>.</para>
+	  </listitem>
+	  <listitem><para id="x_28e"><literal>remote:http:1.2.3.4</literal>&emdash;client HTTP remoto, all&rsquo;indirizzo IP <literal>1.2.3.4</literal>. Se il client sta usando SSL, questo URL sarà nella forma <literal>remote:https:1.2.3.4</literal>.</para>
+	  </listitem>
+	  <listitem><para id="x_28f">Vuoto&emdash;Mercurial non è riuscito a scoprire nessuna informazione sul client remoto.</para>
+	  </listitem></itemizedlist>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Guida di riferimento agli hook</title>
+
+    <sect2 id="sec:hook:changegroup">
+      <title><literal role="hook">changegroup</literal>&emdash;dopo l&rsquo;aggiunta di changeset remoti</title>
+
+      <para id="x_290">Questo hook viene eseguito dopo che un gruppo di changeset preesistenti è stato aggiunto al repository, per esempio tramite <command role="hg-cmd">hg pull</command> o <command role="hg-cmd">hg unbundle</command>. Questo hook viene eseguito una volta per ogni operazione che aggiunge uno o più changeset, a differenza dell&rsquo;hook <literal role="hook">incoming</literal>, che viene eseguito una volta per ogni changeset a prescindere dal fatto che il changeset sia arrivato in un gruppo.</para>
+
+      <para id="x_291">Alcuni possibili usi di questo hook includono l&rsquo;avvio di un assemblaggio o di un collaudo automatico dei changeset aggiunti, l&rsquo;aggiornamento di un database di bug, o la notifica che un repository contiene nuovi cambiamenti.</para>
+
+      <para id="x_292">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_293"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del primo changeset nel gruppo che è stato aggiunto. Tutti i changeset tra questo e <literal role="tag">tip</literal> compresi sono stati aggiunti da una singola invocazione di <command role="hg-cmd">hg pull</command>, <command role="hg-cmd">hg push</command>, o <command role="hg-cmd">hg unbundle</command>.</para>
+	</listitem>
+	<listitem><para id="x_294"><literal>source</literal>: una stringa. La fonte di questi cambiamenti. Si veda la <xref linkend="sec:hook:sources"/> per i dettagli.</para>
+	</listitem>
+	<listitem><para id="x_295"><literal>url</literal>: un URL. L&rsquo;ubicazione del repository remoto, nel caso sia nota. Si veda la <xref linkend="sec:hook:url"/> per maggiori informazioni.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_296">Si vedano anche gli hook <literal role="hook">incoming</literal> (<xref linkend="sec:hook:incoming"/>), <literal role="hook">prechangegroup</literal> (<xref linkend="sec:hook:prechangegroup"/>) e <literal role="hook">pretxnchangegroup</literal> (<xref linkend="sec:hook:pretxnchangegroup"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:commit">
+      <title><literal role="hook">commit</literal>&emdash;dopo la creazione di un nuovo changeset</title>
+
+      <para id="x_297">Questo hook viene eseguito dopo che un nuovo changeset è stato creato.</para>
+
+      <para id="x_298">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_299"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del changeset appena inserito.</para>
+	</listitem>
+	<listitem><para id="x_29a"><literal>parent1</literal>: un identificatore di changeset. L&rsquo;identificatore di changeset del primo genitore del changeset appena inserito.</para>
+	</listitem>
+	<listitem><para id="x_29b"><literal>parent2</literal>: un identificatore di changeset. L&rsquo;identificatore di changeset del secondo genitore del changeset appena inserito.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_29c">Si vedano anche gli hook <literal role="hook">precommit</literal> (<xref linkend="sec:hook:precommit"/>) e <literal role="hook">pretxncommit</literal> (<xref linkend="sec:hook:pretxncommit"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:incoming">
+      <title><literal role="hook">incoming</literal>&emdash;dopo l&rsquo;aggiunta di un changeset remoto</title>
+
+      <para id="x_29d">Questo hook viene eseguito dopo che un changeset preesistente è stato aggiunto al repository, per esempio attraverso l&rsquo;invocazione di <command role="hg-cmd">hg push</command>. Se un gruppo di changeset è stato aggiunto in una singola operazione, questo hook viene eseguito una volta per ogni changeset aggiunto.</para>
+
+      <para id="x_29e">Potete usare questo hook per gli stessi scopi dell&rsquo;hook <literal role="hook">changegroup</literal> (<xref linkend="sec:hook:changegroup"/>). A volte è semplicemente più comodo eseguire un hook per ogni gruppo di changeset, mentre altre volte è più conveniente eseguirlo per ogni changeset.</para>
+
+      <para id="x_29f">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2a0"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del changeset appena aggiunto.</para>
+	</listitem>
+	<listitem><para id="x_2a1"><literal>source</literal>: una stringa. La fonte di questi cambiamenti. Si veda la <xref linkend="sec:hook:sources"/> per i dettagli.</para>
+	</listitem>
+	<listitem><para id="x_2a2"><literal>url</literal>: un URL. L&rsquo;ubicazione del repository remoto, nel caso sia nota. Si veda la <xref linkend="sec:hook:url"/> per maggiori informazioni.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2a3">Si vedano anche gli hook <literal role="hook">changegroup</literal> (<xref linkend="sec:hook:changegroup"/>), <literal role="hook">prechangegroup</literal> (<xref linkend="sec:hook:prechangegroup"/>) e <literal role="hook">pretxnchangegroup</literal> (<xref linkend="sec:hook:pretxnchangegroup"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:outgoing">
+      <title><literal role="hook">outgoing</literal>&emdash;dopo la propagazione dei changeset</title>
+
+      <para id="x_2a4">Questo hook viene eseguito dopo che un gruppo di changeset è stato propagato al di fuori di questo repository, per esempio attraverso l&rsquo;invocazione dei comandi <command role="hg-cmd">hg push</command> o <command role="hg-cmd">hg bundle</command>.</para>
+
+      <para id="x_2a5">Un possibile impiego di questo hook è quello di notificare gli amministratori di un repository che alcuni cambiamenti sono stati estratti.</para>
+
+      <para id="x_2a6">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2a7"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del primo changeset del gruppo che è stato propagato.</para>
+	</listitem>
+	<listitem><para id="x_2a8"><literal>source</literal>: una stringa. La fonte dell&rsquo;operazione (si veda la <xref linkend="sec:hook:sources"/>). Se un client remoto ha estratto i cambiamenti da questo repository, il valore di <literal>source</literal> sarà <literal>serve</literal>. Se il client che ha ottenuto i cambiamenti di questo repository era locale, il valore di <literal>source</literal> sarà <literal>bundle</literal>, <literal>pull</literal>, o <literal>push</literal>, a seconda dell&rsquo;operazione effettuata dal client.</para>
+	</listitem>
+	<listitem><para id="x_2a9"><literal>url</literal>: un URL. L&rsquo;ubicazione del repository remoto, nel caso sia nota. Si veda la <xref linkend="sec:hook:url"/> per maggiori informazioni.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2aa">Si veda anche l&rsquo;hook <literal role="hook">preoutgoing</literal> (<xref linkend="sec:hook:preoutgoing"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:prechangegroup">
+      <title><literal role="hook">prechangegroup</literal>&emdash;prima di cominciare ad aggiungere changeset remoti</title>
+
+      <para id="x_2ab">Questo hook di controllo viene eseguito prima che Mercurial cominci ad aggiungere un gruppo di changeset proveniente da un altro repository.</para>
+
+      <para id="x_2ac">Questo hook non possiede alcuna informazione sui changeset che verranno aggiunti, perché viene eseguito prima che la trasmissione di quei changeset possa cominciare. Se questo hook fallisce, i changeset non verranno trasmessi.</para>
+
+      <para id="x_2ad">Un possibile impiego di questo hook è quello di evitare che i cambiamenti vengano aggiunti a un repository. Per esempio, potreste usarlo per <quote>congelare</quote> temporaneamente o permanentemente un ramo ospitato su un server in modo che gli utenti non possano trasmettervi alcuna modifica, consentendo comunque a un amministratore locale di modificare il repository.</para>
+
+      <para id="x_2ae">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2af"><literal>source</literal>: una stringa. La fonte di questi cambiamenti. Si veda la <xref linkend="sec:hook:sources"/> per i dettagli.</para>
+	</listitem>
+	<listitem><para id="x_2b0"><literal>url</literal>: un URL. L&rsquo;ubicazione del repository remoto, nel caso sia nota. Si veda la <xref linkend="sec:hook:url"/> per maggiori informazioni.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2b1">Si vedano anche gli hook <literal role="hook">changegroup</literal> (<xref linkend="sec:hook:changegroup"/>), <literal role="hook">incoming</literal> (<xref linkend="sec:hook:incoming"/>) e <literal role="hook">pretxnchangegroup</literal> (<xref linkend="sec:hook:pretxnchangegroup"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:precommit">
+      <title><literal role="hook">precommit</literal>&emdash;prima di cominciare l&rsquo;inserimento di un changeset</title>
+
+      <para id="x_2b2">Questo hook viene eseguito prima che Mercurial cominci l&rsquo;inserimento di un nuovo changeset, quindi prima che Mercurial conosca i metadati dell&rsquo;inserimento come i file da inserire, il messaggio e la data di commit.</para>
+
+      <para id="x_2b3">Questo hook può essere usato per disabilitare la possibilità di inserire nuovi changeset, pur permettendo la trasmissione di changeset in entrata. Un&rsquo;altra possibilità è quella di eseguire l&rsquo;assemblaggio o il collaudo e consentire l&rsquo;avvio dell&rsquo;inserimento solo se l&rsquo;assemblaggio o il collaudo hanno successo.</para>
+
+      <para id="x_2b4">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2b5"><literal>parent1</literal>: un identificatore di changeset. L&rsquo;identificatore di changeset del primo genitore della directory di lavoro.</para>
+	</listitem>
+	<listitem><para id="x_2b6"><literal>parent2</literal>: un identificatore di changeset. L&rsquo;identificatore di changeset del secondo genitore della directory di lavoro.</para>
+	</listitem></itemizedlist>
+      <para id="x_2b7">Se l&rsquo;inserimento procede, i genitori della directory di lavoro diventeranno i genitori del nuovo changeset.</para>
+
+      <para id="x_2b8">Si vedano anche gli hook <literal role="hook">commit</literal> (<xref linkend="sec:hook:commit"/>) e <literal role="hook">pretxncommit</literal> (<xref linkend="sec:hook:pretxncommit"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:preoutgoing">
+      <title><literal role="hook">preoutgoing</literal>&emdash;prima di cominciare la propagazione dei changeset</title>
+
+      <para id="x_2b9">Questo hook viene invocato prima che Mercurial conosca le identità dei changeset da trasmettere.</para>
+
+      <para id="x_2ba">Un possibile impiego di questo hook è quello di evitare che i changeset vengano trasmessi a un altro repository.</para>
+
+      <para id="x_2bb">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2bc"><literal>source</literal>: una stringa. La fonte dell&rsquo;operazione che sta tentando di ottenere i cambiamenti da questo repository (si veda la <xref linkend="sec:hook:sources"/>). Leggete la documentazione del parametro <literal>source</literal> dell&rsquo;hook <literal role="hook">outgoing</literal> nella <xref linkend="sec:hook:outgoing"/> per conoscere i possibili valori di questo parametro.</para>
+	</listitem>
+	<listitem><para id="x_2bd"><literal>url</literal>: un URL. L&rsquo;ubicazione del repository remoto, nel caso sia nota. Si veda la <xref linkend="sec:hook:url"/> per maggiori informazioni.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2be">Si veda anche l&rsquo;hook <literal role="hook">outgoing</literal> (<xref linkend="sec:hook:outgoing"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:pretag">
+      <title><literal role="hook">pretag</literal>&emdash;prima di etichettare un changeset</title>
+
+      <para id="x_2bf">Questo hook di controllo viene eseguito prima della creazione di un&rsquo;etichetta. Se l&rsquo;hook ha successo, la creazione dell&rsquo;etichetta procede. Se l&rsquo;hook fallisce, l&rsquo;etichetta non viene creata.</para>
+
+      <para id="x_2c0">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2c1"><literal>local</literal>: un booleano. Indica se l&rsquo;etichetta è locale a questa istanza del repository (cioè memorizzata nel file <filename role="special">.hg/localtags</filename>) o se è gestita da Mercurial (memorizzata nel file <filename role="special">.hgtags</filename>).</para>
+	</listitem>
+	<listitem><para id="x_2c2"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del changeset da etichettare.</para>
+	</listitem>
+	<listitem><para id="x_2c3"><literal>tag</literal>: una stringa. Il nome dell&rsquo;etichetta da creare.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2c4">Se l&rsquo;etichetta da creare è soggetta a controllo di revisione, verranno eseguiti anche gli hook <literal role="hook">precommit</literal> e <literal role="hook">pretxncommit</literal> (<xref linkend="sec:hook:commit"/> e <xref linkend="sec:hook:pretxncommit"/>).</para>
+
+      <para id="x_2c5">Si veda anche l&rsquo;hook <literal role="hook">tag</literal> (<xref linkend="sec:hook:tag"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:pretxnchangegroup">
+      <title><literal
+	  role="hook">pretxnchangegroup</literal>&emdash;prima di completare l&rsquo;aggiunta di changeset remoti</title>
+
+      <para id="x_2c6">Questo hook di controllo viene eseguito prima di completare la transazione che gestisce l&rsquo;aggiunta di un gruppo di nuovi changeset provenienti dall&rsquo;esterno del repository. Se l&rsquo;hook ha successo, la transazione viene completata e tutti i changeset diventano permanenti all&rsquo;interno di questo repository. Se l&rsquo;hook fallisce, la transazione viene abortita e i dati relativi ai changeset vengono cancellati.</para>
+
+      <para id="x_2c7">Questo hook può accedere ai metadati associati ai changeset in procinto di essere aggiunti, ma dovrebbe evitare di modificarli in maniera permanente. L&rsquo;hook deve anche evitare di modificare la directory di lavoro.</para>
+
+      <para id="x_2c8">Se altri processi Mercurial accedono al repository mentre questo hook è in esecuzione, saranno in grado di vedere i changeset quasi aggiunti come se fossero permanenti. Questo potrebbe portare a condizioni di corsa critica se non eseguite i passi necessari per evitarle.</para>
+
+      <para id="x_2c9">Questo hook può essere usato per esaminare automaticamente un gruppo di changeset. Se l&rsquo;hook fallisce, tutti i changeset vengono <quote>respinti</quote> quando la transazione viene abortita.</para>
+
+      <para id="x_2ca">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2cb"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del primo changeset nel gruppo che è stato aggiunto. Tutti i changeset tra questo e <literal role="tag">tip</literal> compresi sono stati aggiunti da una singola invocazione di <command role="hg-cmd">hg pull</command>, <command role="hg-cmd">hg push</command>, o <command role="hg-cmd">hg unbundle</command>.</para>
+	</listitem>
+	<listitem><para id="x_2cc"><literal>source</literal>: una stringa. La fonte di questi cambiamenti. Si veda la <xref linkend="sec:hook:sources"/> per i dettagli.</para>
+	</listitem>
+	<listitem><para id="x_2cd"><literal>url</literal>: un URL. L&rsquo;ubicazione del repository remoto, nel caso sia nota. Si veda la <xref linkend="sec:hook:url"/> per maggiori informazioni.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2ce">Si vedano anche gli hook <literal role="hook">changegroup</literal> (<xref linkend="sec:hook:changegroup"/>), <literal role="hook">incoming</literal> (<xref linkend="sec:hook:incoming"/>) e <literal role="hook">prechangegroup</literal> (<xref linkend="sec:hook:prechangegroup"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:pretxncommit">
+      <title><literal role="hook">pretxncommit</literal>&emdash;prima di completare l&rsquo;inserimento di un nuovo changeset</title>
+
+      <para id="x_2cf">Questo hook di controllo viene eseguito prima di completare la transazione che gestisce un nuovo inserimento. Se l&rsquo;hook ha successo, la transazione viene completata e il changeset diventa permanente all&rsquo;interno di questo repository. Se l&rsquo;hook fallisce, la transazione viene abortita e i dati dell&rsquo;inserimento vengono cancellati.</para>
+
+      <para id="x_2d0">Questo hook può accedere ai metadati associati al changeset in procinto di essere inserito, ma dovrebbe evitare di modificarli in maniera permanente. L&rsquo;hook deve anche evitare di modificare la directory di lavoro.</para>
+
+      <para id="x_2d1">Se altri processi Mercurial accedono al repository mentre questo hook è in esecuzione, saranno in grado di vedere i changeset quasi aggiunti come se fossero permanenti. Questo potrebbe portare a condizioni di corsa critica se non eseguite i passi necessari per evitarle.</para>
+
+      <para id="x_2d2">I parametri di questo hook sono i seguenti.</para>
+
+      <itemizedlist>
+    <listitem><para id="x_2d3"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del changeset sul punto di essere inserito.</para>
+	</listitem>
+	<listitem><para id="x_2d4"><literal>parent1</literal>: un identificatore di changeset. L&rsquo;identificatore di changeset del primo genitore del changeset sul punto di essere inserito.</para>
+	</listitem>
+	<listitem><para id="x_2d5"><literal>parent2</literal>: un identificatore di changeset. L&rsquo;identificatore di changeset del secondo genitore del changeset sul punto di essere inserito.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2d6">Si veda anche l&rsquo;hook <literal role="hook">precommit</literal> (<xref linkend="sec:hook:precommit"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:preupdate">
+      <title><literal role="hook">preupdate</literal>&emdash;prima di eseguire un aggiornamento o un&rsquo;unione della directory di lavoro</title>
+
+      <para id="x_2d7">Questo hook viene eseguito prima di cominciare un aggiornamento o un&rsquo;unione della directory di lavoro. Viene eseguito solo se i normali controlli effettuati da Mercurial prima di un aggiornamento determinano che l&rsquo;aggiornamento o l&rsquo;unione possono procedere. Se l&rsquo;hook ha successo, l&rsquo;aggiornamento o l&rsquo;unione possono procedere, ma se fallisce, l&rsquo;aggiornamento o l&rsquo;unione non vengono cominciati.</para>
+
+      <para id="x_2d8">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2d9"><literal>parent1</literal>: un identificatore di changeset. L&rsquo;identificatore del genitore a cui la directory di lavoro sta per essere aggiornata. Se si sta per effettuare un&rsquo;unione, questo genitore non verrà modificato.</para>
+	</listitem>
+	<listitem><para id="x_2da"><literal>parent2</literal>: un identificatore di changeset. Il suo valore viene impostato solo se si sta eseguendo un&rsquo;unione. Contiene l&rsquo;identificatore della revisione con cui la directory di lavoro viene unita.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2db">Si veda anche l&rsquo;hook <literal role="hook">update</literal> (<xref linkend="sec:hook:update"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:tag">
+      <title><literal role="hook">tag</literal>&emdash;dopo aver etichettato un changeset</title>
+
+      <para id="x_2dc">Questo hook viene eseguito dopo la creazione di un&rsquo;etichetta.</para>
+
+      <para id="x_2dd">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+    <listitem><para id="x_2de"><literal>local</literal>: un booleano. Indica se l&rsquo;etichetta è locale a questa istanza del repository (cioè memorizzata nel file <filename role="special">.hg/localtags</filename>) o se è gestita da Mercurial (memorizzata nel file <filename role="special">.hgtags</filename>).</para>
+	</listitem>
+	<listitem><para id="x_2df"><literal>node</literal>: un identificatore di changeset. L&rsquo;identificatore del changeset che è stato etichettato.</para>
+	</listitem>
+	<listitem><para id="x_2e0"><literal>tag</literal>: una stringa. Il nome dell&rsquo;etichetta creata.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2e1">Se l&rsquo;etichetta creata è soggetta a controllo di revisione, l&rsquo;hook <literal role="hook">commit</literal> (<xref linkend="sec:hook:commit"/>) verrà eseguito prima di questo hook.</para>
+
+      <para id="x_2e2">Si veda anche l&rsquo;hook <literal role="hook">pretag</literal> (<xref linkend="sec:hook:pretag"/>).</para>
+    </sect2>
+
+    <sect2 id="sec:hook:update">
+      <title><literal role="hook">update</literal>&emdash;dopo aver eseguito un aggiornamento o un&rsquo;unione della directory di lavoro</title>
+
+      <para id="x_2e3">Questo hook viene eseguito dopo il completamento di un aggiornamento o di un&rsquo;unione della directory di lavoro. Dato che un&rsquo;unione può fallire (nel caso il comando esterno <command>hgmerge</command> non sia in grado di risolvere i conflitti in un file), questo hook comunica se l&rsquo;aggiornamento o l&rsquo;unione sono stati completati in maniera pulita.</para>
+
+      <para id="x_ffe">I parametri di questo hook sono i seguenti.</para>
+      <itemizedlist>
+	<listitem><para id="x_2e4"><literal>error</literal>: un booleano. Indica se l&rsquo;aggiornamento o l&rsquo;unione sono stati completati con successo.</para>
+	</listitem>
+	<listitem><para id="x_2e5"><literal>parent1</literal>: un identificatore di changeset. L&rsquo;identificatore del genitore a cui la directory di lavoro è stata aggiornata. Se è stata effettuata un&rsquo;unione, questo genitore non viene modificato.</para>
+	</listitem>
+	<listitem><para id="x_2e6"><literal>parent2</literal>: un identificatore di changeset. Il suo valore viene impostato solo se è stata eseguita un&rsquo;unione. Contiene l&rsquo;identificatore della revisione con cui la directory di lavoro è stata unita.</para>
+	</listitem></itemizedlist>
+
+      <para id="x_2e7">Si veda anche l&rsquo;hook <literal role="hook">preupdate</literal> (<xref linkend="sec:hook:preupdate"/>).</para>
+
+    </sect2>
+  </sect1>
+</chapter>

@@ -1,0 +1,600 @@
+\chapter{Customising the output of Mercurial}
+\label{chap:template}
+
+Mercurial は、
+情報表示の体裁を制御する強力な仕組みを提供しています。
+この仕組みはテンプレートに基づいており、
+テンプレートを使用することで、
+単発のコマンド出力の固有化も、
+Mercurial 組み込みのウェブインタフェースの見かけ全体のカスタマイズもできます。
+
+\section{Using precanned output styles}
+\label{sec:style}
+
+Mercurial には即使用できる出力「様式」の幾つかが同梱されています。
+「様式」とは、
+誰かによって書かれて、
+Mercurial が探し出せる何処かにインストールされた、
+事前に用意されたテンプレートのことです。
+
+Mercurial に同梱された「様式」を見る前に、
+Mercurial の標準的な出力を見てみましょう。
+
+\interaction{template.simple.normal}
+
+この出力は有益ではありますが、
+チェンジセット毎に５行という多くの表示領域が必要です
+\texttt{compact} 様式は、
+表題等を省くことで、
+この出力を３行に低減します。
+
+\interaction{template.simple.compact}
+
+\texttt{changelog} 様式からは、
+Mercurial のテンプレートエンジンの持つ表現力を垣間見ることができます。
+この様式は、
+GNU プロジェクトの 
+changelog ガイドライン\cite{web:changelog}に沿った出力を行います。
+
+\interaction{template.simple.changelog}
+
+Mercurial の既定出力様式が
+\texttt{default} という名前であることを知っても驚くほどのことは無いでしょう。
+
+\subsection{Setting a default style}
+
+好みの様式の名前を \hgrc\ ファイルで指定することで、
+Mercurial がコマンド実行の際に使用する出力様式を変える事ができます。
+
+\begin{codesample2}
+  [ui]
+  style = compact
+\end{codesample2}
+
+自分自身で様式を定義した場合、
+自分の様式ファイルへのパスを指定する方法と、
+自分の様式ファイルを Mercurial が探し出せる場所へコピーする方法
+（一般には Mercurial がインストールされたディレクトリ直下の
+\texttt{templates} ディレクトリ）のどちらででも、
+自分の様式ファイルを使うことができます。
+
+\section{Commands that support styles and templates}
+
+``\texttt{log}的な'' 全ての Mercurial コマンドに対して、
+様式やテンプレートを適用できます。
+例えば、\hgcmd{incoming}、\hgcmd{log}、\hgcmd{outgoing}
+および \hgcmd{tip} がそうです\footnote{訳注:
+Mercurial 0.9.5 版時点では、これ以外に
+\hgcmd{heads} および \hgcmd{parents} 
+がテンプレートをサポートしています。}。
+
+筆者がこのマニュアルを執筆している時点では、
+様式やテンプレートに対応しているコマンドは、
+それ程多くありません。
+しかし、対応済みのコマンドは、
+出力のカスタマイズが必要性が非常に高いコマンド群でしたので、
+Mercurial ユーザのコミュニティからは、
+他のコマンドにおける様式やテンプレートへの対応の要望は、
+今のところあまりありません。
+
+\section{The basics of templating}
+
+Mercurial で言うテンプレートとは、
+大雑把に言うなら一片のテキストです。
+決して変更されない部分がある一方で、
+必要に応じて\emph{展開}や新たなテキストでの置換が実施されます。
+
+詳細を説明する前に、
+Mercurial の通常出力の簡単な例をもう一度見てみましょう。
+
+\interaction{template.simple.normal}
+
+それでは、
+出力を変えるためのテンプレートを指定して、
+同じコマンドを実行してみましょう。
+
+\interaction{template.simple.simplest}
+
+上記の例は、可能な限り最も簡単なテンプレートとして、
+チェンジセット毎に表示される静的なテキストを指定するだけの例です。
+\hgcmd{log} コマンドに対する
+\hgopt{log}{--template} オプション指定は、
+チェンジセット毎の表示の際に使用するテンプレートとして、
+指定されたテキストを使用することを Mercurial に指示します。
+
+上記のテンプレート文字列は、``\Verb+\n+'' で終了している点に注意してください。
+これは\emph{エスケープシーケンス}と呼ばれるもので、
+個々のテンプレート要素の終端で改行を表示することを
+Mercurial に指示します。
+この改行を省略した場合、
+Mercurial は個々の出力要素を単一行で出力します。
+エスケープシーケンスに関する詳細は、
+\ref{sec:template:escape}~節を参照してください。
+
+常に固定された文字列を表示するテンプレートは、あまり有用とは言えませんので、
+もう少し複雑なものに挑戦してみましょう。
+
+\interaction{template.simple.simplesub}
+
+ご覧の通り、
+テンプレート中の ``\Verb+{desc}+'' 文字列は、
+チェンジセット毎のログメッセージで置換されて出力されます。
+波括弧（``\texttt{\{}'' 及び ``\texttt{\}}''）
+で囲まれたテキストが検出された際には、
+どんなテキストが囲まれていた場合でも常に、
+括弧およびテキスト部分の展開が Mercurial により試みられます。
+波括弧そのものを表示したい場合は、
+\ref{sec:template:escape}~節で述べる方法で、
+波括弧をエスケープしなければなりません。
+
+\section{Common template keywords}
+\label{sec:template:keyword}
+
+以下のキーワードを使用することで、
+すぐにでも簡単なテンプレートを書くことができます。
+
+\begin{description}
+
+\item[\tplkword{author}] 文字列。
+  チェンジセットの作成者。
+  チェンジセット作成後は変更されません。
+
+\item[\tplkword{branches}] 文字列。
+  チェンジセットがコミットされたブランチの名前。
+  ブランチ名が \texttt{default} の場合は空です。
+
+\item[\tplkword{date}] 日付情報。
+  チェンジセットがコミットされた日時。
+  この値は可読性が\emph{ありません}ので、
+  適切に文字列化するフィルタに渡す必要があります。
+  フィルタに関する詳細は\ref{sec:template:filter}~節を参照してください。
+  日時は数値の対として表されます。
+  最初の数値は Unix UTC タイムスタンプ（1970 年 1 月 1 日からの経過秒）で、
+  ２つ目の数値はコミットの際の UTC からのタイムゾーンオフセット秒数です。
+
+\item[\tplkword{desc}] 文字列。
+  チェンジセットのログメッセージ。
+
+\item[\tplkword{files}] 文字列リスト。
+  当該チェンジセットで変更・追加ないし削除された全てのファイル。
+
+\item[\tplkword{file\_adds}] 文字列リスト。
+  当該チェンジセットで追加されたファイル。
+
+\item[\tplkword{file\_dels}] 文字列リスト。
+  当該チェンジセットで削除されたファイル。
+
+\item[\tplkword{node}] 文字列。
+  チェンジセット識別用ハッシュ値を４０文字の１６進数文字列化したもの。
+
+\item[\tplkword{parents}] 文字列リスト。
+  チェンジセットの親。
+
+\item[\tplkword{rev}] 整数値。
+  リポジトリローカルなチェンジセットのリビジョン番号。
+
+\item[\tplkword{tags}] 文字列リスト。
+  当該チェンジセットに関連付けられたタグ。
+
+\end{description}
+
+幾つか実験してみることで、
+これらのキーワードを使用した際に期待される動作を見ることができます。
+図~\ref{fig:template:keywords}を参照してください。
+
+\begin{figure}
+  \interaction{template.simple.keywords}
+  \caption{Template keywords in use}
+  \label{fig:template:keywords}
+\end{figure}
+
+前述したように、
+\tplkword{date} キーワードは可読性のある出力を生成しませんので、
+特別扱いする必要があります。
+そのためには \emph{filter} を使う必要がありますが、
+詳細は \ref{sec:template:filter}~節を参照してください。
+
+\interaction{template.simple.datekeyword}
+
+\section{Escape sequences}
+\label{sec:template:escape}
+
+Mercurial のテンプレートエンジンは、
+最も広く使われている文字列エスケープシーケンスを認識します。
+バックスラッシュ（``\Verb+\+''）を検知した際には、
+それに続く文字を見て、
+それら２つの文字を以下に示すような単独の文字に置換します。
+
+\begin{description}
+\item[\Verb+\textbackslash\textbackslash+] バックスラッシュ（``\Verb+\+''）
+  ／ASCII~134。
+\item[\Verb+\textbackslash n+] 改行／ASCII~12.
+\item[\Verb+\textbackslash r+] 行頭／ASCII~15.
+\item[\Verb+\textbackslash t+] タブ／ASCII~11.
+\item[\Verb+\textbackslash v+] 垂直タブ／ASCII~13.
+\item[\Verb+\textbackslash \{+] 開き波括弧（``\Verb+{+''）／ASCII~173.
+\item[\Verb+\textbackslash \}+] 閉じ波括弧（``\Verb+}+''）／ASCII~175.
+\end{description}
+
+上記のように、
+``\Verb+\+''、``\Verb+{+'' ないし ``\Verb+{+'' 
+そのものを含むテンプレートを使用したい場合、
+これらはエスケープされなければなりません。
+
+\section{Filtering keywords to change their results}
+\label{sec:template:filter}
+
+テンプレート展開における結果のうちの幾つかは、
+直ちに使えるほど簡便なものではありません。
+Mercurial は、
+キーワードの展開結果を変更するために、
+任意の\emph{フィルタ}の連鎖を指定することを求めてきます。
+上記の実行例において既に、
+一般的なフィルタである \tplkwfilt{date}{isodate} を、
+日付を読めるようにするために使用しています。
+
+Mercurial がサポートする最も一般的に使用されるフィルタのリストを、
+以下に示します。
+任意のテキストに適用できるフィルタもあれば、
+特定の状況下でのみ適用可能なものもあります。
+個々のフィルタの説明は、名前に続いて利用可能な状況を提示し、
+それに効果の説明が続く形式となっています。
+
+\begin{description}
+\item[\tplfilter{addbreaks}] 任意のテキストに適用可能。
+  XHTML の ``\Verb+<br/>+'' タグを、最終行を除く各行の末尾に付与します。
+  例えば ``\Verb+foo\nbar+'' は ``\Verb+foo<br/>\nbar+'' となります。
+
+\item[\tplkwfilt{date}{age}] \tplkword{date} キーワードに適用可能。
+  現在時刻に対する日付の年齢を描画します。
+  ``\Verb+10 minutes+'' のような文字列を生成します。
+
+\item[\tplfilter{basename}] 任意のテキストに適用可能ですが、
+  \tplkword{files} キーワードやその相対値に対して適用するのが最も有用です。
+  テキストをパスとして扱い、そのベースネームを返します。
+  例えば ``\Verb+foo/bar/baz+'' は ``\Verb+baz+'' となります。
+
+\item[\tplkwfilt{date}{date}] \tplkword{date} キーワードに適用可能。
+  Unix の \tplkword{date} コマンドと同等のフォーマットで日付を描画しますが、
+  タイムゾーンを含みます。
+  ``\Verb+Mon Sep 04 15:13:13 2006 -0700+'' のような文字列を生成します。
+
+\item[\tplkwfilt{author}{domain}] 任意のテキストに適用可能ですが、
+  \tplkword{author} キーワードに対して適用するのが最も有用です。
+  電子メールアドレスと思しき最初の文字列を見つけ出し、
+  ドメイン部分のみを取り出します。
+  例えば ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' は
+  ``\Verb+serpentine.com+'' となります。
+
+\item[\tplkwfilt{author}{email}] 任意のテキストに適用可能ですが、
+  \tplkword{author} キーワードに対して適用するのが最も有用です。
+  電子メールアドレスと思しき最初の文字列を見つけ出します。
+  例えば ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' は
+  ``\Verb+bos@serpentine.com+'' となります。
+
+\item[\tplfilter{escape}] 任意のテキストに適用可能。
+  XML/XHTML の特殊文字である
+  ``\Verb+&+''、``\Verb+<+'' および ``\Verb+>+'' を、
+  XML の実体参照形式で置き換えます。
+
+\item[\tplfilter{fill68}] 任意のテキストに適用可能。
+  テキストを 68 桁に収まるように行を折り返します。
+  \tplfilter{tabindent} フィルタ実施後も 
+  80 桁の固定フォント幅の画面に収めたい場合、
+  \tplfilter{tabindent} フィルタに渡す前のテキストに適用するのが良いでしょう。
+
+\item[\tplfilter{fill76}] 任意のテキストに適用可能。
+  76 桁に収まるように行を折り返します。
+
+\item[\tplfilter{firstline}] 任意のテキストに適用可能。
+  テキストの最初の行を、改行等を含まない形式で取り出します。
+
+\item[\tplkwfilt{date}{hgdate}] \tplkword{date} キーワードに適用可能。
+  可読性のある数値の組として日付を描画します。
+  ``\Verb+1157407993 25200+'' のような文字列を生成します。
+
+\item[\tplkwfilt{date}{isodate}] \tplkword{date} キーワードに適用可能。
+  ISO~8601 形式の文字列として日付を描画します。
+  ``\Verb+2006-09-04 15:13:13 -0700+'' のような文字列を生成します。
+
+\item[\tplfilter{obfuscate}] 任意のテキストに適用可能ですが、
+  \tplkword{author} キーワードに対して適用するのが最も有用です。
+  入力テキストに対応する XML 実体参照シーケンスを生成します。
+  典型的な電子メールアドレス収集を行うスパムボット
+  （spambot）に対する対抗策の１つとして利用可能です。
+
+\item[\tplkwfilt{author}{person}] 任意の文字列に適用可能ですが、
+  \tplkword{author} キーワードに対して適用するのが最も有用です。
+  電子メールアドレスより前の部分を取り出します。
+  例えば ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' は
+  ``\Verb+Bryan O'Sullivan+'' となります。
+
+\item[\tplkwfilt{date}{rfc822date}] \tplkword{date} キーワードに適用可能。
+  電子メールヘッダと同じ形式で日付を描画します。
+  ``\Verb+Mon, 04 Sep 2006 15:13:13 -0700+'' のような文字列を生成します。
+
+\item[\tplkwfilt{node}{short}] チェンジセットハッシュ値に適用可能です。
+  チェンジセットハッシュの短縮形式、即ち 12 桁の 16 進文字列を生成します。
+
+\item[\tplkwfilt{date}{shortdate}] \tplkword{date} キーワードに適用可能。
+  年月日形式で日付を描画します。
+  ``\Verb+2006-09-04+'' のような文字列を生成します。
+
+\item[\tplfilter{strip}] 任意のテキストに適用可能。
+  冒頭ならびに末尾の空白文字を全て除外します。
+
+\item[\tplfilter{tabindent}] 任意のテキストに適用可能。
+  最初の行を除く全ての行がタブ文字で始まるようにします。
+
+\item[\tplfilter{urlescape}] 任意のテキストに適用可能。
+  URL 解析の際に``特殊文字''とされる文字をエスケープします。
+  例えば \Verb+foo bar+ は \Verb+foo%20bar+ になります。
+
+\item[\tplkwfilt{author}{user}] 任意の文字列に適用可能ですが、
+  \tplkword{author} キーワードに対して適用するのが最も有用です。
+  電子メールアドレスから``ユーザ''部分を取り出します。
+  例えば ``\Verb+Bryan O'Sullivan <bos@serpentine.com>+'' は
+  ``\Verb+bos+'' となります。
+
+\end{description}
+
+\begin{figure}
+  \interaction{template.simple.manyfilters}
+  \caption{Template filters in action}
+  \label{fig:template:filters}
+\end{figure}
+
+\begin{note}
+  適用対象外のデータに対してフィルタの適用を試みた場合、
+  Mercurial は実行に失敗して Python の例外を表示します。
+  例えば、\tplkword{desc} キーワードに
+  \tplkwfilt{date}{isodate} フィルタを適用するのはよろしくありません。
+\end{note}
+
+\subsection{Combining filters}
+
+所定の形式での出力を得るために、
+簡単にフィルタを組み合わせることができます。
+以下の例では、ログメッセージの冒頭・末尾の空白を除外し、
+68 桁に収まるように改行した後で、
+さらに８文字分（タブ文字が慣習的に８文字として扱われる
+Unix 的な環境では）の字下げが、
+フィルタ連鎖により実施されます。
+
+\interaction{template.simple.combine}
+
+テンプレートにおける``\Verb+\t+''（タブ文字）の利用は、
+最初の行の強制的な字下げを行うためのものであることに注意してください。
+\tplkword{tabindent} が最初の行\emph{以外の}全ての行を字下げするために、
+このタブ文字が必要です。
+
+連鎖におけるフィルタの順序が重要である点に留意してください。
+最初のフィルタがキーワードの置換結果に適用され、
+２つ目のフィルタが最初のフィルタの適用結果に適用される、
+という具合です。
+例えば、
+\Verb+fill68|tabindent+ という記述は
+\Verb+tabindent|fill68+ とは全く違った結果となります。
+
+\section{From templates to styles}
+
+コマンド行でのテンプレート指定は、
+手早く簡単に出力を整形する手段を提供します。
+しかし、テンプレートは冗長に成りがちですから、
+テンプレートに名前付けできれば便利になります。
+様式（sytle）ファイルは、名前が付けられ、
+ファイルに保存されたテンプレートのことです。
+
+それ以上に、
+コマンド行での \hgopt{log}{--template} オプション使用では引き出せなかった
+Mercurial のテンプレートエンジンの能力を、
+様式ファイルを用いることで引き出すことができます。
+
+\subsection{The simplest of style files}
+
+以下に示す簡単な様式ファイルは、
+１行だけのものです。
+
+\interaction{template.simple.rev}
+
+この様式記述は、
+``チェンジセットを表示する際には、
+右辺のテキストをテンプレートとして使用せよ''
+と Mercurial に指示します。
+
+\subsection{Style file syntax}
+
+様式ファイルの文法は簡単です。
+
+\begin{itemize}
+\item ファイルは一行づつ処理されます。
+
+\item 行頭および行末の空白は無視されます。
+
+\item 空行は読み飛ばされます。
+
+\item ``\texttt{\#}'' ないし ``\texttt{;}'' のいずれかで始まる行は、
+  行全体がコメントとみなされ、空行と同様に読み飛ばされます。
+
+\item 行はキーワードで開始されます。
+  キーワードは英字ないし下線（underscore）で開始され、
+  任意個数の英数字ないし下線が続きます
+  （正規表現で書くなら、
+  キーワードは ``\Verb+[A-Za-z_][A-Za-z0-9_]*+.'' 
+  に合致しなければなりません）。
+
+\item キーワードに続く要素は文字 ``\texttt{=}'' でなければなりませんが、
+  前後に任意個の空白文字があっても構いません。
+
+\item 行の残り部分が引用符（シングルクォートないしダブルクォート）
+  で囲まれている場合、
+  その部分はテンプレートの本体とみなされます。
+
+\item 行の乗り部分が引用符で囲まれて\emph{いない}場合、
+  その部分は、
+  テンプレート本体を内容として持つファイルのファイル名とみなされます。
+
+\end{itemize}
+
+\section{Style files by example}
+
+様式ファイルの記述を説明するために、
+幾つかの例を示します。
+様式ファイル一式を通して読むよりも、
+非所に簡単な例から始めて、
+幾つかの複雑な例を通し読みすることで、
+通常の様式ファイル作成手順を示そうと思います。
+
+\subsection{Identifying mistakes in style files}
+
+様式ファイル中に問題があった場合、
+Mercurial はそっけないエラーメッセージを表示しますが、
+意味するところがわかってしまえば、
+そのメッセージは非常に有用です。
+
+\interaction{template.svnstyle.syntax.input}
+
+\filename{broken.style} は、
+\texttt{changeset} キーワードを定義しようとしているものの、
+その内容が記述されていない点に注目してください。
+このような様式ファイルが指定された場合、
+Mercurial は即座にメッセージを表示します。
+
+\interaction{template.svnstyle.syntax.error}
+
+このメッセージは威圧的に見えますが、
+読み解くのはそれほど難しくありません。
+
+\begin{itemize}
+\item 最初の要素は、単に Mercurial が``実行をあきらめました''
+  と通知しています。
+  \begin{codesample4}
+    \textbf{abort:} broken.style:1: parse error
+  \end{codesample4}
+
+\item 次の要素は、エラーの要因が格納された様式ファイルの名前です。
+  \begin{codesample4}
+    abort: \textbf{broken.style}:1: parse error
+  \end{codesample4}
+
+\item ファイル名の次は、エラーが発生した行番号になります。
+  \begin{codesample4}
+    abort: broken.style:\textbf{1}: parse error
+  \end{codesample4}
+
+\item 最後に、問題の説明が記述されます。
+  \begin{codesample4}
+    abort: broken.style:1: \textbf{parse error}
+  \end{codesample4}
+  問題の説明は（この例のように）常に明確であるとは限りませんが、
+  暗号めいたものであったとしても、
+  様式ファイル中の問題となる行を目視確認して間違いを見つける上では、
+  殆どの場合は取るに足らない説明です。
+
+\end{itemize}
+
+\subsection{Uniquely identifying a repository}
+
+短い文字列を識別子として
+Mercurial リポジトリを``概ね一意に''識別\footnote{訳注:
+ここで言う「リポジトリの識別」は、
+むしろ「プロジェクトの識別」に近いニュアンスと思われます。
+}したい場合、
+リポジトリの最初のリビジョンを使用するのが良いでしょう。
+
+\interaction{template.svnstyle.id} 
+
+この値は一意であることが保証されていませんが、
+それでも多くの場合において有用です。
+
+\begin{itemize}
+\item 完全に空のリポジトリではリビジョン~0が存在しないため、
+  この方法は機能しません。
+
+\item 以前は別々だった複数のリポジトリをマージしたものと、
+  マージ前のリポジトリを併用している場合
+  （このような事態は非常に稀ではありますが）、
+  それらのリポジトリの間では、
+  この方法による識別は機能しません。
+
+\end{itemize}
+
+リポジトリ識別子の利用例を以下に示します。
+
+\begin{itemize}
+\item サーバ上のリポジトリを管理しているデータベースでの、
+  テーブルにおけるキーとしての使用
+
+\item \{\emph{リポジトリ識別子}, \emph{リビジョン識別子}\} 
+  というタプルの一部としての使用。
+  ビルドや他の自動化された処理を実施する際に、
+  このタプル情報を保存しておくことで、
+  後に処理を``再現''することが可能です。
+
+\end{itemize}
+
+\subsection{Mimicking Subversion's output}
+
+例えば Subversion のような、
+他の構成管理ツールのデフォルト出力形式をまねてみましょう。
+
+\interaction{template.svnstyle.short}
+
+Subversion の出力様式はかなり単純ですので、
+出力内容をファイルに保存し、
+出力テキスト中で Subversion により（動的に）生成される部分を、
+展開されるテンプレート値\footnote{訳注： キーワードのこと？
+}で置き換えるのは容易でしょう。
+
+\interaction{template.svnstyle.template}
+
+このテンプレートによる出力が、
+Subversion により生成される出力様式から逸脱する場合\footnote{
+訳注： ``a few small ways'' よりは ``a few small point'' で、
+「逸脱する箇所」の方が良くないか？}が幾つかあります。
+
+\begin{itemize}
+\item Subversion は、``可読性のある''日付
+  （上記の出力例における ``\texttt{Wed, 27 Sep 2006}''）
+  を丸括弧の中に表示します。
+  Mercurial のテンプレートエンジンは、
+  時刻とタイムゾーンの無いこの形式で日付を表示する手段を提供していません。
+
+\item テンプレート末尾に
+  ``\texttt{-}''文字を一杯に使った行の表示を配置することで
+  Subversion の``分離''線をまねています。
+  Subversion の出力に似せるため、
+  出力の最初の分離線表示には、
+  テンプレートエンジンの
+  \tplkword{header} キーワードを使用しています（後述します）。\footnote{
+  訳注：これは deviate な点ではない気が… }
+
+\item Subversion の出力は、
+  ヘッダ部にコミットメッセージの行数が表示されます。
+  Mercurial ではこれに相当する情報を表示することができません。
+  処理対象となるデータの行数を数え上げるフィルタを、
+  テンプレートエンジンが現時点では提供していないためです。
+
+\end{itemize}
+
+Subversion の出力例を元に、
+上記テンプレートのようなキーワード・フィルタへの置き換えを行う作業は、
+せいぜいが１〜２分で済む作業です。
+様式ファイルは、単にこのテンプレートを参照すれば良いのです。
+
+\interaction{template.svnstyle.style}
+
+テンプレートファイルテキストを様式ファイルで直接設定するには、
+引用符で囲み、改行文字を ``\texttt{\\n}'' で置き換えれば良いのですが、
+様式ファイルを非常に読み難くしてしまいます。
+テンプレートを様式ファイルに直接記述するか、
+テンプレートファイルに記述したものを様式ファイルから参照するかを決める際には、
+可読性を基準とするのが良いでしょう。
+様式ファイルの大きさや複雑さが高まる場合は、
+テンプレートテキストを記述するのではなく、
+外部ファイルに出してしまいましょう。
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

@@ -1,0 +1,67 @@
+\newlength\kanjicharwidth
+\settowidth{\kanjicharwidth}{あ}
+
+\newlength\kanjicharheight
+\settoheight{\kanjicharheight}{あ}
+
+% in 10pt/jbook environment:
+% kanjicharwidth=9.62216pt(= Cwd)
+% kanjicharheight=7.77588pt
+
+\setlength{\intextsep}{3.0\kanjicharheight}
+\setlength{\textfloatsep}{3.0\kanjicharheight}
+
+\newlength\defaultleftmargin
+\setlength{\defaultleftmargin}{2.0\kanjicharwidth}
+
+\newlength\defaultrightmargin
+\setlength{\defaultrightmargin}{2.0\kanjicharwidth}
+
+\newlength\defaulttopsep
+\setlength{\defaulttopsep}{2.0\kanjicharheight}
+
+\setlength{\voffset}{-20mm}
+\addtolength{\textheight}{30mm} %
+\setlength{\hoffset}{-10mm}
+\setlength{\oddsidemargin}{-8mm}
+\setlength{\evensidemargin}{-8mm}
+\addtolength{\textwidth}{16mm}
+
+%%%%%%%%%%%%%%%%%%%%
+
+\renewenvironment{itemize}{
+  \ifnum \@itemdepth >\thr@@\@toodeep\else
+    \advance\@itemdepth\@ne
+    \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}
+    \list{
+      \csname \@itemitem\endcsname
+    }{
+      \def\makelabel##1{\hss\llap{##1}}
+      \setlength{\leftmargin}{\defaultleftmargin}
+      \setlength{\rightmargin}{\defaultrightmargin}
+      \setlength{\topsep}{\defaulttopsep}
+    }
+  \fi
+}{
+  \endlist
+}
+
+\renewenvironment{enumerate}{
+  \ifnum \@enumdepth >\thr@@\@toodeep\else
+    \advance\@enumdepth\@ne
+    \edef\@enumctr{enum\romannumeral\the\@enumdepth}
+    \list{
+      \csname label\@enumctr\endcsname
+    }{
+      \usecounter{\@enumctr}
+      \def\makelabel##1{\hss\llap{##1}}
+      \setlength{\leftmargin}{\defaultleftmargin}
+      \setlength{\rightmargin}{\defaultrightmargin}
+      \setlength{\topsep}{\defaulttopsep}
+    }
+  \fi
+}{
+  \endlist
+}
+
+%%%%%%%%%%%%%%%%%%%%

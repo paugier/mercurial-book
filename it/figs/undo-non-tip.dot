@@ -1,0 +1,9 @@
+digraph undo_non_tip {
+	"prima modifica" -> "seconda modifica";
+	"seconda modifica" -> "terza modifica";
+	backout [label="ritira la\nseconda modifica", shape=box];
+	"seconda modifica" -> backout;
+	merge [label="unione\nautomatica", shape=box];
+	"terza modifica" -> merge;
+	backout -> merge;
+}

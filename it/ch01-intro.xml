@@ -1,0 +1,267 @@
+<chapter id="chap:intro">
+  <?dbhtml filename="come-siamo-arrivati-qui.html"?>
+  <title>Come siamo arrivati qui?</title>
+
+  <sect1>
+    <title>Perché il controllo di revisione? Perché Mercurial?</title>
+
+    <para id="x_6d">Il controllo di revisione è il processo tramite il quale si gestiscono molteplici versioni di una qualsiasi unità di informazione. Molte persone eseguono a mano questo processo nella sua forma più semplice, ogni volta che modificano un file e lo salvano con un nuovo nome che contiene un numero più alto del numero della versione precedente.</para>
+
+    <para id="x_6e">Tuttavia, gestire più versioni anche solo di un singolo file è un&rsquo;operazione soggetta a errori, quindi gli strumenti software per automatizzare questo processo sono stati disponibili per molto tempo. I primi strumenti automatizzati per il controllo di revisione erano deputati ad assistere un singolo utente nella gestione delle revisioni di un singolo file. Nel corso delle ultime decadi, il campo d&rsquo;azione degli strumenti di controllo di revisione si è ampiamente esteso, e ora sono in grado di gestire un grande numero di file e di aiutare più persone a lavorare insieme. I migliori strumenti moderni di controllo di revisione non hanno alcun problema a fronteggiare gruppi di migliaia di persone che lavorano insieme su progetti composti da centinaia di migliaia di file.</para>
+
+    <para id="x_6f">La comparsa del controllo di revisione distribuito è relativamente recente, e finora questo nuovo campo si è sviluppato grazie alla propensione umana per l&rsquo;esplorazione di territori sconosciuti.</para>
+
+    <para id="x_70">Sto scrivendo un libro sul controllo di revisione distribuito perché credo che sia una materia importante che merita una guida sul campo. Ho scelto di trattare Mercurial perché è lo strumento più facile con cui saggiare il terreno, e tuttavia è in grado di scalare fino a soddisfare le richieste di ambienti reali e impegnativi dove molti altri strumenti di controllo di revisione si sono dovuti arrendere.</para>
+
+    <sect2>
+      <title>Perché usare il controllo di revisione?</title>
+
+      <para id="x_71">Esiste un certo numero di ragioni per le quali voi o il vostro gruppo potreste voler usare uno strumento automatico per il controllo di revisione su un progetto.</para>
+
+      <itemizedlist>
+	<listitem><para id="x_72">Lo strumento terrà traccia della storia e dell&rsquo;evoluzione del vostro progetto, così voi non dovete farlo. Per ogni modifica, registrerà informazioni riguardanti <emphasis>chi</emphasis> l&rsquo;ha fatta, <emphasis>perché</emphasis> l&rsquo;ha fatta, <emphasis>quando</emphasis> è stata fatta e <emphasis>cosa</emphasis> è stato modificato.</para></listitem>
+	<listitem><para id="x_73">Quando state lavorando con altre persone, il software di controllo di revisione facilita la collaborazione. Per esempio, quando due persone effettuano cambiamenti incompatibili più o meno simultaneamente, il software vi aiuterà a identificare e risolvere questi conflitti.</para></listitem>
+	<listitem><para id="x_74">Lo strumento può aiutarvi a rettificare i vostri errori. Se fate una modifica che più tardi si rivela essere un errore, potete ritornare a una versione precedente di uno o più file. In effetti, uno strumento di controllo di revisione <emphasis>davvero</emphasis> buono vi aiuterà a calcolare efficientemente il momento esatto in cui un problema è stato introdotto (si veda la <xref linkend="sec:undo:bisect"/> per i dettagli).</para></listitem>
+	<listitem><para id="x_75">Il software vi aiuterà a lavorare simultaneamente su molteplici versioni del vostro progetto e a gestire gli spostamenti tra una versione e l&rsquo;altra.</para></listitem>
+      </itemizedlist>
+
+      <para id="x_76">La maggior parte di queste ragioni sono altrettanto valide&emdash;almeno in teoria&emdash;sia che lavoriate su un progetto da soli sia che collaboriate insieme a un centianio di altre persone.</para>
+
+      <para id="x_77">Un aspetto chiave della praticità del controllo di revisione a queste due dimensioni di sviluppo differenti (<quote>programmatore solitario</quote> e <quote>gruppo gigantesco</quote>) è il confronto tra i suoi <emphasis>benefici</emphasis> e i suoi <emphasis>costi</emphasis>. Uno strumento di controllo di revisione che sia difficile da capire e usare finirà per imporre un costo piuttosto alto.</para>
+
+      <para id="x_78">&Egrave; probabile che un progetto di cinquecento persone collassi quasi immediatamente sotto il proprio peso senza un processo e uno strumento di controllo di revisione. In questo caso, il costo di usare il controllo di revisione potrebbe sembrare difficilmente meritevole di considerazione, dato che <emphasis>senza</emphasis> di esso il fallimento del progetto è quasi garantito.</para>
+
+      <para id="x_79">D&rsquo;altra parte, il <quote>lavoretto veloce</quote> di una singola persona potrebbe sembrare il contesto meno adatto per impiegare uno strumento di controllo di revisione, perché sicuramente il costo di usarne uno deve essere vicino al costo complessivo del progetto. Giusto?</para>
+
+      <para id="x_7a">Mercurial supporta in maniera unica <emphasis>entrambe</emphasis> queste dimensioni di sviluppo. Potete impararne le basi in pochi minuti appena, e grazie al suo basso costo di gestione potete applicare il controllo di revisione al più piccolo dei progetti con facilità. La sua semplicità vi permetterà di concentrarvi su qualunque cosa stiate <emphasis>davvero</emphasis> cercando di fare senza distrarvi con schiere di concetti astrusi o lunghe sequenze di comandi. Allo stesso tempo, le elevate prestazioni e la natura peer-to-peer di Mercurial vi permetteranno di scalare in maniera indolore per gestire grandi progetti.</para>
+
+      <para id="x_7b">Nessuno strumento di controllo di revisione può salvare un progetto gestito male, ma la scelta degli strumenti adeguati può fare una notevole differenza nella facilità con cui potete lavorare su un progetto.</para>
+
+    </sect2>
+
+    <sect2>
+      <title>I molti nomi del controllo di revisione</title>
+
+      <para id="x_7c">Il controllo di revisione è un campo talmente vario che vi si fa spesso riferimento attraverso diversi nomi e acronimi. Ecco alcune delle variazioni più comuni che incontrerete:</para>
+      <itemizedlist>
+	<listitem><para id="x_7d">controllo di revisione (RCS);</para></listitem>
+	<listitem><para id="x_7e">gestione della configurazione del software (SCM), o gestione della configurazione;</para></listitem>
+	<listitem><para id="x_7f">gestione del codice sorgente;</para></listitem>
+	<listitem><para id="x_80">controllo del codice sorgente, o controllo dei sorgenti;</para></listitem>
+	<listitem><para id="x_81">controllo di versione (VCS).</para></listitem>
+      </itemizedlist>
+      <para id="x_82">Alcune persone affermano che questi termini in realtà abbiano significati differenti, ma in pratica essi si sovrappongono così tanto che non c&rsquo;è alcun modo concordato o persino utile di distinguerli.</para>
+
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>A proposito degli esempi in questo libro</title>
+
+    <para id="x_84">Questo libro tratta gli esempi di codice in maniera inusuale. Tutti gli esempi sono <quote>vivi</quote>&emdash;ognuno di essi è in effetti il risultato di uno script di shell che esegue i comandi Mercurial che vedete. Ogni volta che un&rsquo;immagine del libro viene assemblata dai suoi sorgenti, tutti gli script di esempio vengono automaticamente eseguiti e i loro risultati correnti vengono confrontati con i loro risultati attesi.</para>
+
+    <para id="x_85">Il vantaggio di questo approccio è che gli esempi sono sempre accurati, in quanto descrivono <emphasis>esattamente</emphasis> il comportamento della versione di Mercurial menzionata sulla copertina del libro. Se aggiorno la versione di Mercurial che sto documentando e il risultato di qualche comando cambia, il processo di assemblaggio del libro fallisce.</para>
+
+    <para id="x_86">C&rsquo;è un piccolo svantaggio in questo approccio: le date e gli orari che vedete negli esempi tendono a venire <quote>compressi</quote> insieme in modo anomalo, diversamente da quanto accadrebbe se gli stessi comandi fossero digitati da un essere umano. Laddove un essere umano non può inviare più di un comando ogni pochi secondi, le cui marcature temporali sarebbero analogamente intervallate, i miei script d&rsquo;esempio automatizzati sono in grado di eseguire molti comandi in un secondo.</para>
+
+    <para id="x_87">Come conseguenza di questo fatto, potrebbe sembrare che molti inserimenti (in inglese, commit) consecutivi vengano eseguiti durante lo stesso secondo. Potete osservare la presenza di questa anomalia nell&rsquo;esempio di <literal role="hg-ext">bisect</literal> nella <xref linkend="sec:undo:bisect"/>, tanto per farvi un&rsquo;idea.</para>
+
+    <para id="x_88">Quindi, mentre leggete gli esempi, non date troppo peso alle date e agli orari che vedete nei risultati dei comandi, ma fate <emphasis>decisamente</emphasis> affidamento sulla consistenza e riproducibilità del comportamento illustrato.</para>
+
+  </sect1>
+
+  <sect1>
+    <title>Le tendenze nel campo</title>
+
+    <para id="x_89">Ci sono state alcune inconfondibili tendenze nello sviluppo e nell&rsquo;utilizzo degli strumenti di controllo di revisione nel corso delle ultime quattro decadi, man mano che le persone acquisivano familiarità con le capacità dei loro strumenti e venivano vincolate dai loro limiti.</para>
+
+    <para id="x_8a">La prima generazione ha cominciato col gestire singoli file su singoli computer. Sebbene questi strumenti rappresentassero un enorme progresso rispetto al controllo di revisione manuale effettuato ad hoc, il loro modello di bloccaggio (in inglese, locking) e la restrizione a un singolo computer limitarono il loro impiego a piccoli gruppi strettamente uniti.</para>
+
+    <para id="x_8b">La seconda generazione ha rilassato questi vincoli spostandosi su architetture di rete e gestendo interi progetti alla volta. Con l&rsquo;aumentare delle dimensioni dei progetti, gli strumenti incontrarono nuovi problemi. A causa della frequenza elevata con cui i client avevano bisogno di parlare con i server, la scalabilità dei server divenne un problema per progetti di grandi dimensioni. Una connessione di rete inaffidabile poteva completamente impedire agli utenti remoti di parlare con il server. Man mano che i progetti open source cominciarono a rendere l&rsquo;accesso in sola lettura disponibile a chiunque in forma anonima, persone senza privilegi di inserimento scoprivano di non poter usare gli strumenti per interagire con un progetto in modo naturale, in quanto non erano in grado di registrare le modifiche da loro effettuate.</para>
+
+    <para id="x_8c">La generazione attuale degli strumenti di controllo di revisione è di natura peer-to-peer. Tutti questi sistemi hanno abbandonato la dipendenza da un singolo server centrale e permettono alle persone di distribuire i propri dati di controllo di revisione laddove sono effettivamente necessari. La collaborazione attraverso Internet non è più vincolata dalla tecnologia, ma è diventata una questione di scelta e consenso. Gli strumenti moderni possono operare offline indefinitamente e autonomamente, utilizzando una connessione di rete solo quando è necessario sincronizzare i cambiamenti con un altro repository.</para>
+
+  </sect1>
+  <sect1>
+    <title>Alcuni vantaggi del controllo di revisione distribuito</title>
+
+    <para id="x_8d">Sebbene per diversi anni gli stumenti per il controllo di revisione distribuito si siano mantenuti robusti e usabili tanto quanto le loro controparti delle generazioni precedenti, questo non vuol dire che le persone che utilizzavano strumenti più vecchi si siano necessariamente accorte dei loro vantaggi. Ci sono diversi modi in cui gli strumenti distribuiti brillano rispetto a quelli centralizzati.</para>
+
+    <para id="x_8e">Per un singolo sviluppatore, gli strumenti distribuiti sono quasi sempre più veloci di quelli centralizzati. Questo avviene per una semplice ragione: uno strumento centralizzato ha bisogno di utilizzare la rete per molte operazioni comuni, perché la maggior parte dei metadati sono memorizzati in una singola copia sul server centrale. Uno strumento distribuito memorizza tutti i suoi metadati localmente. A parità di altre condizioni, utilizzare la rete aggiunge un costo supplementare a uno strumento centralizzato. Non sottovalutate l&rsquo;importanza di uno strumento veloce e reattivo: vi troverete a passare molto tempo interagendo con il vostro software di controllo di revisione.</para>
+
+    <para id="x_8f">Gli strumenti distribuiti sono indifferenti alle stravaganze dell&rsquo;infrastruttura dei vostri server, sempre perché replicano i metadati in così tanti luoghi. Se usate un sistema centralizzato e il vostro server si guasta, fareste meglio a sperare che il vostro sistema di backup sia affidabile e che il vostro ultimo backup sia recente ed effettivamente funzionante. Con uno strumento distribuito, avete molti backup disponibili sui computer di ogni singolo collaboratore.</para>
+
+    <para id="x_90">L&rsquo;affidabilità della vostra rete influenzerà gli strumenti distribuiti in misura molto minore rispetto a quelli centralizzati. Non potete nemmeno usare uno strumento centralizzato senza una connessione di rete, a parte alcuni comandi estremamente limitati. Con uno strumento distribuito, potreste persino non notare se la vostra connessione di rete cade mentre state lavorando. L&rsquo;unica cosa che non sarete in grado di fare è comunicare con i repository su altri computer, qualcosa che è relativamente raro rispetto alle operazioni locali. Questo potrebbe essere significativo solo se avete un gruppo di collaboratori sparpagliati in giro per il mondo.</para>
+
+    <sect2>
+      <title>Vantaggi per i progetti open source</title>
+
+      <para id="x_91">Se siete affascinati da un progetto open source e decidete che vi piacerebbe cominciare a lavorarci sopra, e quel progetto usa uno strumento distribuito di controllo di revisione, potete immediatamente operare su un piano di parità con il gruppo di persone che si considerano il <quote>cuore</quote> di quel progetto. Se il gruppo pubblica il proprio repository, potete immediatamente copiare la cronologia del progetto, cominciare a effettuare modifiche e registrare il vostro lavoro utilizzando gli stessi strumenti allo stesso modo dei membri del gruppo. Al contrario, con uno strumento centralizzato, siete costretti a usare il software in modalità di <quote>sola lettura</quote> a meno che qualcuno non vi conceda il permesso di inserire i vostri cambiamenti sul server centrale. Fino a quel momento non sarete in grado di registrare i cambiamenti, e le vostre modifiche rischieranno di venire rovinate ogni volta che provate ad aggiornare la vista del repository dal vostro client.</para>
+
+      <sect3>
+	<title>Il falso problema dei fork</title>
+
+	<para id="x_92">&Egrave; stato suggerito che gli strumenti per il controllo di revisione distribuito espongano i progetti open source a un certo tipo di rischio in quanto rendono estremamente facile <quote>biforcare</quote> (in inglese, fork) lo sviluppo di un progetto. Un fork avviene quando le differenze di opinione o di atteggiamento tra sviluppatori di uno stesso gruppo li portano a decidere di non poter lavorare più a lungo insieme. Ogni parte prende una copia più o meno completa del codice sorgente del progetto e prosegue per la propria strada.</para>
+
+	<para id="x_93">Talvolta le parti di un fork decidono di riconciliare le loro differenze. Con uno strumento centralizzato di controllo di revisione, il processo <emphasis>tecnico</emphasis> di riconciliazione è doloroso e deve essere in gran parte effettuato a mano. Dovete decidere quale cronologia delle revisioni dovrà <quote>prevalere</quote> e introdurvi in qualche modo i cambiamenti dell&rsquo;altro gruppo. Di solito, questo risulta nella perdita parziale o completa della cronologia delle revisioni di una delle due parti.</para>
+
+	<para id="x_94">Gli strumenti distribuiti rendono la biforcazione <emphasis>l&rsquo;unico</emphasis> modo per sviluppare un progetto. Ogni singolo cambiamento apportato è un potenziale punto di biforcazione. La grande forza di questo approccio è che uno strumento per il controllo di revisione distribuito deve essere davvero bravo a <emphasis>unire</emphasis> (in inglese, merge) due fork, perché i fork sono assolutamente fondamentali: vengono effettuati in ogni momento.</para>
+
+	<para id="x_95">Se tutte le attività che ogni sviluppatore svolge in ogni momento vengono concepite in termini di biforcazioni e unioni, allora ciò che il mondo open source chiama <quote>fork</quote> diventa un problema <emphasis>puramente</emphasis> sociale. Gli strumenti distribuiti in realtà non fanno altro che <emphasis>ridurre</emphasis> la probabilità di un vero e proprio fork:</para>
+	<itemizedlist>
+	  <listitem><para id="x_96">eliminano la distinzione sociale imposta dagli strumenti centralizzati, cioè quella tra le persone all&rsquo;interno del gruppo con i permessi di inserimento e le persone che si trovano all&rsquo;esterno del gruppo e non hanno questi permessi;</para></listitem>
+	  <listitem><para id="x_97">rendono più facile riconciliarsi dopo un fork sociale, perché l&rsquo;unica operazione che viene coinvolta dal punto di vista del software di controllo di revisione è semplicemente un&rsquo;altra unione.</para></listitem>
+    </itemizedlist>
+
+	<para id="x_98">Alcune persone oppongono resistenza agli strumenti distribuiti perché vogliono mantenere uno stretto controllo sui propri progetti e credono che gli strumenti centralizzati diano loro questo controllo. Tuttavia, se siete tra quelli che hanno questa convinzione, e il vostro repository CVS o Subversion è disponibile pubblicamente, sappiate che esistono numerosi strumenti in grado di estrarre l&rsquo;intera cronologia del vostro progetto (anche se lentamente) e ricrearla da qualche altra parte al di là del vostro controllo. Quindi non solo il vostro controllo in questo caso è illusorio, ma state anche rinunciando alla possibilità di collaborare facilmente con chiunque si senta in dovere di duplicare la cronologia del vostro progetto.</para>
+
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>Vantaggi per i progetti commerciali</title>
+
+      <para id="x_99">Molti progetti commerciali vengono intrapresi da gruppi i cui membri sono sparpagliati attraverso il globo. I collaboratori lontani da un server centrale soffriranno un maggiore lentezza nell&rsquo;esecuzione dei comandi e forse una minore affidabilità. I sistemi commerciali di controllo di revisione tentano di mitigare questi problemi tramite componenti aggiuntivi per la replicazione di siti remoti che sono tipicamente costosi da acquistare e complicati da amministrare. Un sistema distribuito non soffre di questi problemi in prima istanza. Ancora meglio, potete facilmente configurare molteplici server autoritativi, diciamo uno per ogni sito, in modo che non ci siano comunicazioni ridondanti tra i repository durante i costosi collegamenti di rete a grande distanza.</para>
+
+      <para id="x_9a">I sistemi centralizzati di controllo di revisione tendono ad avere una scalabilità relativamente bassa. Non è inusuale che un costoso sistema centralizzato cada sotto il carico combinato di una sola dozzina di utenti concorrenti. Ancora una volta, la tipica contromisura tende a essere un dispositivo di replicazione costoso e macchinoso. Dato che con uno strumento distribuito il carico su un server centrale&emdash;sempre che ne abbiate uno&emdash;è molto più basso (perché tutti i dati sono replicati ovunque), un singolo server economico può gestire i bisogni di un gruppo di lavoro molto più grande, e la replicazione per il bilancio del carico diventa una semplice questione di programmazione.</para>
+
+      <para id="x_9b">I vostri impiegati potranno beneficiare del controllo di versione distribuito anche quando si trovano nella sede di un cliente per risolvere un problema in loco. Gli strumenti permetteranno loro di generare versioni personalizzate del software nel repository, provare soluzioni differenti isolandole l&rsquo;una dall&rsquo;altra e cercare in maniera efficiente attraverso la cronologia delle revisioni le sorgenti di bug e regressioni nell&rsquo;ambiente del cliente, il tutto senza aver bisogno di collegarsi alla rete della vostra azienda.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Perché scegliere Mercurial?</title>
+
+    <para id="x_9c">Mercurial possiede un insieme di caratteristiche unico che lo rende una scelta particolarmente valida come sistema di controllo di revisione.</para>
+    <itemizedlist>
+      <listitem><para id="x_9d">&Egrave; facile da imparare e usare.</para></listitem>
+      <listitem><para id="x_9e">&Egrave; leggero.</para></listitem>
+      <listitem><para id="x_9f">Scala in maniera eccellente.</para></listitem>
+      <listitem><para id="x_a0">&Egrave; facile da personalizzare.</para></listitem>
+    </itemizedlist>
+
+    <para id="x_a1">Se avete una vaga familiarità con i sistemi di controllo di revisione, dovreste essere in grado di cominciare a usare Mercurial in meno di cinque minuti. Anche se non è così, non vi ci vorrà più di qualche altro minuto. L&rsquo;insieme di comandi e caratteristiche di Mercurial è generalmente uniforme e consistente, così potete tenere a mente poche regole generali piuttosto che una nutrita schiera di eccezioni.</para>
+
+    <para id="x_a2">Potete cominciare a lavorare con Mercurial su un piccolo progetto in pochi minuti, creando nuove modifiche e rami di sviluppo, trasferendo cambiamenti sia localmente che attraverso la rete, sfruttando la velocità di tutte le operazioni di stato e cronologia. Mercurial cerca di essere agile e di non starvi tra i piedi combinando un basso costo cognitivo con operazioni estremamente veloci.</para>
+
+    <para id="x_a3">L&rsquo;utilità di Mercurial non si limita ai piccoli progetti: è usato da progetti contenenti decine di migliaia di file e centinaia di megabyte di codice sorgente su cui collaborano centinaia di migliaia di sviluppatori.</para>
+
+    <para id="x_a4">Se le funzioni principali di Mercurial non sono sufficienti per voi, è facile aggiungerne di nuove. Mercurial è particolarmente adatto alla programmazione delle proprie operazioni, e il codice pulito della sua implementazione in Python facilita l&rsquo;aggiunta di funzioni sotto forma di estensioni. Esistono già un certo numero di estensioni utili e popolari, che spaziano dal supporto all&rsquo;identificazione dei bug fino al miglioramento delle prestazioni.</para>
+
+  </sect1>
+  <sect1>
+    <title>Un confronto tra Mercurial e altri strumenti</title>
+
+    <para id="x_a5">Prima di proseguire, vi prego di tenere a mente che questa sezione riflette necessariamente la mia esperienza, i miei interessi e (oserei dire) i miei pregiudizi. Ho usato tutti i sistemi di controllo di revisione qui elencati, in più casi per diversi anni alla volta.</para>
+
+    <sect2>
+      <title>Subversion</title>
+
+      <para id="x_a6">Subversion è un sistema di controllo di revisione piuttosto popolare, sviluppato per sostituire CVS. Ha un&rsquo;architettura client/server centralizzata.</para>
+
+      <para id="x_a7">Subversion e Mercurial hanno comandi con nomi simili per effettuare le stesse operazioni, così se avete familiarità con uno dei due è facile imparare a usare l&rsquo;altro. Entrambi gli strumenti sono portabili su tutti i sistemi operativi più popolari.</para>
+
+      <para id="x_a8">Prima della versione 1.5, Subversion non aveva alcun supporto efficace per le unioni. Al momento della scrittura, la sua funzione per la gestione delle unioni è nuova e nota per essere <ulink
+	  url="http://svnbook.red-bean.com/nightly/en/svn.branchmerge.advanced.html#svn.branchmerge.advanced.finalword">complicata e difettosa</ulink>.</para>
+
+      <para id="x_a9">Mercurial ha un sostanzioso vantaggio in termini di prestazioni rispetto a Subversion per tutte le operazioni di controllo di revisione di cui ho effettuato il benchmark. Il suo vantaggio si misura in un intervallo che va da un fattore due a un fattore sei quando lo si confronta con il modulo <emphasis>ra_local</emphasis> di Subversion 1.4.3, che lavora con repository locali ed è quindi il metodo di accesso più veloce disponibile. In situazioni più realistiche che coinvolgono un accesso al repository attraverso la rete, Subversion sconterà uno svantaggio sostanzialmente più consistente. Dato che molti comandi di Subversion devono comunicare con il server e Subversion non è dotato di meccanismi di replicazione efficaci, la capacità del server e la banda di rete diventano colli di bottiglia già per progetti di dimensioni moderate.</para>
+
+      <para id="x_aa">In più, Subversion si espone a un sostanziale utilizzo aggiuntivo di spazio su disco per evitare transazioni di rete durante l&rsquo;esecuzione di alcune operazioni comuni, come trovare i file modificati (<literal>status</literal>) e visualizzare le modifiche rispetto alla revisione corrente (<literal>diff</literal>). Come risultato, la copia di lavoro di un repository Subversion è spesso delle stesse dimensioni, se non più grande, di un intero repository Mercurial più la sua directory di lavoro, anche nel caso in cui il repository Mercurial contenga la cronologia completa del progetto.</para>
+
+      <para id="x_ab">Subversion è ampiamente supportato da strumenti di terze parti. Mercurial è considerevolmente indietro in quest&rsquo;area. Il divario si sta assottigliando, tuttavia, e in effetti alcuni degli strumenti di interfaccia grafica di Mercurial attualmente offuscano i loro equivalenti per Subversion. Come Mercurial, Subversion è dotato di un eccellente manuale d&rsquo;uso.</para>
+
+      <para id="x_ac">Dato che Subversion non memorizza la cronologia di revisione sul client, è molto adatto a gestire progetti che hanno a che fare con numerosi file binari di grandi dimensioni. Se aggiungete cinquanta revisioni di un file incomprimibile di 10MB a un repository, l&rsquo;utilizzo di spazio sul lato client da parte di Subversion rimarrà costante. Lo spazio usato da qualunque SCM distribuito crescerà rapidamente in proporzione al numero delle revisioni, perché le differenze tra una revisione e l&rsquo;altra sono grandi.</para>
+
+      <para id="x_ad">In più, è spesso difficile, o più tipicamente impossibile, unire differenti versioni di un file binario. L&rsquo;abilità di Subversion di permettere a un utente di bloccare un file, in modo da ottenere temporaneamente i diritti esclusivi per modificarlo, può essere un vantaggio significativo in progetti dove i file binari vengono largamente utilizzati.</para>
+
+      <para id="x_ae">Mercurial può importare la cronologia delle revisioni da un repository Subversion. Può anche esportare la propria cronologia delle revisioni verso un repository Subversion. Questa caratteristica vi permette di <quote>sentire l&rsquo;acqua</quote> utilizzando Mercurial e Subverison in parallelo prima di decidere di cambiare. La conversione della cronologia è incrementale, così potete effettuare una conversione iniziale, poi piccole conversioni aggiuntive per introdurre successivamente nuovi cambiamenti.</para>
+
+    </sect2>
+    <sect2>
+      <title>Git</title>
+
+      <para id="x_af">Git è uno strumento per il controllo di revisione distribuito che è stato sviluppato per gestire l&rsquo;albero dei sorgenti del kernel di Linux. Come Mercurial, il suo design iniziale è stato in qualche modo influenzato da Monotone.</para>
+
+      <para id="x_b0">Git possiede un insieme di comandi piuttosto ampio, con la versione 1.5.0 che fornisce 139 singoli comandi. Si è fatto una certa reputazione di essere difficile da imparare. Rispetto a Git, Mercurial pone una maggiore attenzione alla semplicità.</para>
+
+      <para id="x_b1">In termini di prestazioni, Git è estremamente veloce. In molti casi, è più veloce di Mercurial, almeno sotto Linux, mentre Mercurial è più prestante per altre operazioni. Tuttavia, sotto Windows, le prestazioni e il livello generale di supporto offerto da Git sono, al momento della scrittura, molto più indietro rispetto a Mercurial.</para>
+
+      <para id="x_b2">Mentre un repository Mercurial non ha bisogno di alcuna manutenzione, un repository Git richiede frequenti <quote>reimpacchettamenti</quote> manuali dei propri metadati. Senza questi, le prestazioni degradano e l&rsquo;utilizzo di spazio cresce rapidamente. Le prestazioni di un server che contiene molti repository Git che non vengono rigorosamente e frequentemente reimpacchettati diventeranno pesantemente legate all&rsquo;utilizzo del disco durante i backup, risultando in istanze di backup giornalieri che impiegano molto più di 24 ore per terminare. Un repository Git appena impacchettato è leggermente più piccolo di un repository Mercurial, ma un repository non impacchettato ha dimensioni maggiori di diversi ordini di grandezza.</para>
+
+      <para id="x_b3">Il cuore di Git è scritto in C. Molti comandi di Git sono implementati come script di shell o in linguaggio Perl la cui qualità è notevolmente variabile. Ho incontrato diversi casi in cui gli script proseguivano ciecamente la propria esecuzione in presenza di errori che avrebbero dovuto essere fatali.</para>
+
+      <para id="x_b4">Mercurial può importare la cronologia di revisione da un repository Git.</para>
+
+
+    </sect2>
+    <sect2>
+      <title>CVS</title>
+
+      <para id="x_b5">CVS è probabilmente lo strumento di controllo di revisione più usato nel mondo. A causa della sua età e della sporcizia interna, è stato mantenuto solo superficialmente per diversi anni.</para>
+
+      <para id="x_b6">Ha un&rsquo;architettura client/server centralizzata. Non raggruppa cambiamenti di file correlati in inserimenti atomici, esponendo gli utenti al rischio di <quote>guastare il software</quote>: una persona può inserire con successo parte di un cambiamento e poi essere bloccata dalla necessità di un&rsquo;unione, vincolando altre persone a vedere solo una porzione del lavoro che intendeva fare. Questo influisce anche sul modo di lavorare con la cronologia del progetto. Se volete vedere tutte le modifiche che qualcuno ha effettuato come parte di un&rsquo;attività, dovrete ispezionare manualmente le descrizioni e le marcature temporali dei cambiamenti fatti a ogni file coinvolto (sempre che sappiate quali fossero quei file).</para>
+
+      <para id="x_b7">CVS ha una nozione confusa di etichette e rami di lavoro che non cercherò nemmeno di descrivere. Non gestisce per bene il cambiamento dei nomi di file o directory, esponendo il repository al rischio di danneggiamenti. Non ha quasi alcuna funzionalità per il controllo della consistenza interna, quindi tipicamente non è nemmeno possibile dire se un repository è danneggiato. Non raccomanderei CVS per nessun progetto, nuovo o esistente.</para>
+
+      <para id="x_b8">Mercurial può importare la cronologia di revisione da un repository CVS. Tuttavia, ci sono alcune avvertenze da considerare, valide anche per qualsiasi altro strumento di controllo di revisione che importi dati da CVS. A causa della mancanza di inserimenti atomici in CVS e della mancanza di versioni per la gerarchia dei file, non è possibile ricostruire la cronologia di CVS in maniera completa e accurata, bensì devono essere fatte alcune supposizioni, e le modifiche ai nomi dei file di solito non verranno mostrate. Dato che buona parte dell&rsquo;amministrazione avanzata di CVS deve essere fatta a mano e quindi è soggetta a errori, i programmi che importano dati da CVS incorrono comunemente in molteplici problemi dovuti a repository danneggiati (marcature temporali completamente fasulle per le revisioni e file che sono rimasti bloccati per più di un decennio sono solo due dei problemi meno interessanti che posso ricordare dalla mia esperienza personale).</para>
+<!--
+      <para id="x_b9">Mercurial può importare la cronologia di revisione da un repository CVS.</para>
+-->
+    </sect2>
+    <sect2>
+      <title>Strumenti commerciali</title>
+
+      <para id="x_ba">Perforce ha un&rsquo;architettura client/server centralizzata in cui nessun dato viene memorizzato sul lato client. A differenza degli strumenti di controllo di revisione moderni, Perforce richiede che l&rsquo;utente esegua un comando per comunicare al server di voler modificare un qualsiasi file.</para>
+
+      <para id="x_bb">Le prestazioni di Perforce sono piuttosto buone per piccoli gruppi di lavoro, ma decadono rapidamente man mano che il numero di utenti cresce oltre le poche dozzine. Installazioni di Perforce di modeste dimensioni richiedono l&rsquo;utilizzo di proxy per fronteggiare il carico generato dai propri utenti.</para>
+
+    </sect2>
+    <sect2>
+      <title>Scegliere uno strumento di controllo di revisione</title>
+
+      <para id="x_bc">Con l&rsquo;eccezione di CVS, tutti gli strumenti appena elencati hanno qualità uniche che li rendono adatti a particolari stili di lavoro. Non esiste un singolo strumento di controllo di revisione che sia il migliore in tutte le situazioni.</para>
+
+      <para id="x_bd">Per fare un esempio, Subversion è una buona scelta per chi lavora con file binari frequentemente modificati, a causa della sua natura centralizzata e del supporto per il bloccaggio dei file.</para>
+
+      <para id="x_be">Personalmente trovo che le caratteristiche di Mercurial, come la semplicità, le prestazioni e un buon supporto per le unioni, siano una combinazione irresistibile che mi ha servito bene per diversi anni.</para>
+
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Passare da un altro strumento a Mercurial</title>
+
+    <para id="x_bf">Mercurial viene distribuito con un&rsquo;estensione chiamata <literal role="hg-ext">convert</literal> che può importare in maniera incrementale la cronologia delle revisioni da diversi altri strumenti di controllo di revisione. Con <quote>incrementale</quote> voglio dire che potete convertire tutta la cronologia di un progetto in un&rsquo;unica seduta, poi rieseguire la conversione più tardi per ottenere i nuovi cambiamenti che sono avvenuti dopo la conversione iniziale.</para>
+
+    <para id="x_c0">Gli strumenti di controllo di revisione supportati da <literal role="hg-ext">convert</literal> sono i seguenti:</para>
+    <itemizedlist>
+      <listitem><para id="x_c1">Subversion</para></listitem>
+      <listitem><para id="x_c2">CVS</para></listitem>
+      <listitem><para id="x_c3">Git</para></listitem>
+      <listitem><para id="x_c4">Darcs</para></listitem></itemizedlist>
+
+    <para id="x_c5">In più, <literal role="hg-ext">convert</literal> può esportare i cambiamenti da Mercurial a Subversion. Questo rende possibile provare Subversion e Mercurial in parallelo senza rischiare di perdere il proprio lavoro prima di impegnarsi nel definitivo passaggio dall&rsquo;uno all&rsquo;altro.</para>
+
+    <para id="x_c6">Il comando <command role="hg-ext-convert">convert</command> è facile da usare. Vi basta puntarlo al percorso o all&rsquo;URL di un repository sorgente, dandogli opzionalmente il nome di un repository destinazione, e comincerà a lavorare. Dopo la conversione iniziale, sarà sufficiente eseguire ancora lo stesso comando per importare i nuovi cambiamenti.</para>
+  </sect1>
+
+  <sect1>
+    <title>Una breve storia del controllo di revisione</title>
+
+    <para id="x_c7">Il più noto tra i vecchi strumenti per il controllo di revisione è SCCS (acronimo di Source Code Control System, sistema per il controllo del codice sorgente), che Marc Rochkind scrisse mentre lavorava ai laboratori Bell nei primi anni &rsquo;70. SCCS operava su singoli file e obbligava ogni persona che lavorasse su un progetto ad avere accesso a uno spazio di lavoro condiviso su un singolo sistema. Solo una persona alla volta poteva modificare un file e l&rsquo;arbitraggio per l&rsquo;accesso ai file era realizzato attraverso i blocchi (in inglese, lock). Capitava spesso che le persone bloccassero i file e si dimenticassero di sbloccarli più tardi, impedendo a chiunque altro di modificare quei file senza l&rsquo;aiuto di un amministratore.</para>
+
+    <para id="x_c8">Walter Tichy sviluppò un&rsquo;alternativa libera a SCCS nei primi anni &rsquo;80, chiamando il suo programma RCS (acronimo di Revision Control System, sistema per il controllo di revisione). Come SCCS, RCS obbligava gli sviluppatori a lavorare in un singolo spazio di lavoro condiviso e a bloccare i file per prevenire cambiamenti simultanei da parte di più persone.</para>
+
+    <para id="x_c9">Più tardi nel corso degli anni &rsquo;80, Dick Grune usò RCS come componente di base per un insieme di script di shell che chiamò inizialmente cmt, ma che poi ribattezzò CVS (acronimo di Concurrent Versions System, sistema di versioni concorrenti). La grande innovazione di CVS fu che permetteva agli sviluppatori di lavorare simultaneamente e in qualche modo indipendentemente nel loro spazio di lavoro personale. Gli spazi di lavoro personali evitavano agli sviluppatori di pestarsi i piedi tutte le volte, come capitava comunemente con SCCS e RCS. Ogni sviluppatore aveva la copia di ogni file contenuto nel progetto e poteva modificare le proprie copie indipendentemente. Era necessario combinare le singole modifiche prima di introdurre i cambiamenti nel repository centrale.</para>
+
+    <para id="x_ca">Brian Berliner prese gli script originali di Grune e li riscrisse in C, rilasciando nel 1989 il codice che fin da allora è stato sviluppato come la moderna versione di CVS. CVS successivamente acquisì l&rsquo;abilità di operare attraverso una connessione di rete, caratteristica che gli conferì la propria architettura client/server. L&rsquo;architettura di CVS è centralizzata: solo il server ha la copia della cronologia del progetto, mentre gli spazi di lavoro sui client contengono solamente una copia delle versioni recenti dei file del progetto e i metadati che servono per conoscere l&rsquo;ubicazione del server. CVS ha avuto un enorme successo e probabilmente è il sistema di controllo di revisione più diffuso al mondo.</para>
+
+    <para id="x_cb">All&rsquo;inizio degli anni &rsquo;90, Sun Microsystems sviluppò un primo sistema per il controllo di revisione distribuito chiamato TeamWare. Uno spazio di lavoro in TeamWare contiene una copia completa della cronologia del progetto. TeamWare non possiede alcuna nozione di un repository centrale. (CVS si basava su RCS per la memorizzazione della cronologia, TeamWare usava SCCS.)</para>
+
+    <para id="x_cc">Durante gli anni &rsquo;90 crebbe la consapevolezza dei numerosi problemi di CVS. CVS registra individualmente cambiamenti simultanei a più di un file, invece di raggrupparli insieme come una singola operazione logicamente atomica, inoltre non gestisce bene la propria gerarchia di file, ed è facile danneggiare un repository cambiando i nomi di file e directory. Le difficoltà di lettura e manutenzione del suo codice sorgente resero proibitiva la <quote>soglia del dolore</quote> da oltrepassare per correggere questi problemi architetturali.</para>
+
+    <para id="x_cd">Nel 2001, Jim Blandy e Karl Fogel, due sviluppatori che avevano lavorato su CVS, diedero vita a un progetto per sostituirlo con uno strumento che avrebbe avuto un&rsquo;architettura migliore e un codice più pulito. Il risultato, Subversion, non si allontana dal modello client/server centralizzato di CVS, ma aggiunge inserimenti atomici per più file alla volta, una miglior gestione degli spazi di nomi e un certo numero di altre caratteristiche che lo rendono uno strumento generalmente migliore di CVS. Dal suo rilascio iniziale, la sua popolarità è rapidamente cresciuta.</para>
+
+    <para id="x_ce">Più o meno simultaneamente, Graydon Hoare cominciò a lavorare su un ambizioso sistema distribuito di controllo di revisione che chiamò Monotone. Monotone non si limita a risolvere molti dei problemi di progettazione di CVS e a possedere un&rsquo;architettura peer-to-peer, ma va oltre i primi (e i successivi) strumenti di controllo di revisione in un certo numero di modi innovativi, usando hash crittografici come identificatori e adottando una nozione integrale di <quote>fiducia</quote> per autenticare il codice che proviene da sorgenti differenti.</para>
+
+    <para id="x_cf">Mercurial nacque nel 2005. Mentre alcuni aspetti della sua progettazione sono stati influenzati da Monotone, Mercurial si concentra su facilità d&rsquo;uso, prestazioni elevate e scalabilità verso progetti molto grandi.</para>
+  </sect1>
+</chapter>

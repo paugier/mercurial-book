@@ -1,0 +1,13 @@
+#!/bin/sh
+
+hg init
+echo a > test.c
+hg ci -Am'First commit'
+
+#$ name: go
+
+cat > multiline << EOF
+changeset = "Changed in {node|short}:\n{files}"
+file = "  {file}\n"
+EOF
+hg log --style multiline

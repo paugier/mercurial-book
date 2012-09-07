@@ -1,0 +1,16 @@
+<!-- BEGIN mq.dodiff.diff -->
+<screen><prompt>$</prompt> <userinput>echo 'questo è il mio primo pensiero' &gt; vecchiofile</userinput>
+<prompt>$</prompt> <userinput>echo 'ho cambiato idea' &gt; nuovofile</userinput>
+<prompt>$</prompt> <userinput>diff -u vecchiofile nuovofile &gt; piccola.patch</userinput>
+<prompt>$</prompt> <userinput>cat piccola.patch</userinput>
+--- vecchiofile	2009-06-05 15:50:32.000000000 +0000
++++ nuovofile	2009-06-05 15:50:32.000000000 +0000
+@@ -1 +1 @@
+-questo è il mio primo pensiero
++ho cambiato idea
+<prompt>$</prompt> <userinput>patch &lt; piccola.patch</userinput>
+correggo il file vecchiofile
+<prompt>$</prompt> <userinput>cat vecchiofile</userinput>
+ho cambiato idea
+</screen>
+<!-- END mq.dodiff.diff -->

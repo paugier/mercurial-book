@@ -1,0 +1,35 @@
+<!-- BEGIN mq.id.output -->
+<screen><prompt>$</prompt> <userinput>hg qapplied</userinput>
+prima.patch
+seconda.patch
+<prompt>$</prompt> <userinput>hg log -r qbase:qtip</userinput>
+changeset:   1:32b3cae9e753
+etichetta:   prima.patch
+etichetta:   qbase
+utente:      Bryan O'Sullivan &lt;bos@serpentine.com&gt;
+data:        Fri Jun 05 15:50:45 2009 +0000
+sommario:    [mq]: prima.patch
+
+changeset:   2:dee839d89dc6
+etichetta:   qtip
+etichetta:   seconda.patch
+etichetta:   tip
+utente:      Bryan O'Sullivan &lt;bos@serpentine.com&gt;
+data:        Fri Jun 05 15:50:46 2009 +0000
+sommario:    [mq]: seconda.patch
+
+<prompt>$</prompt> <userinput>hg export seconda.patch</userinput>
+# HG changeset di patch
+# Utente Bryan O'Sullivan &lt;bos@serpentine.com&gt;
+# Data 1244217046 0
+# ID di nodo dee839d89dc6e420682b02551b31e8375929aa7c
+# Genitore 32b3cae9e753537be60bb2fbfefe0de3e19ec4a3
+[mq]: seconda.patch
+
+diff -r 32b3cae9e753 -r dee839d89dc6 altro.c
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/altro.c	Fri Jun 05 15:50:46 2009 +0000
+@@ -0,0 +1,1 @@
++double u;
+</screen>
+<!-- END mq.id.output -->

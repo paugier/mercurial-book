@@ -1,0 +1,398 @@
+\chapter{A tour of Mercurial: merging work}
+\label{chap:tour-merge}
+
+前章においては、
+リポジトリの複製、
+リポジトリでのチェンジセットの生成、
+ならびに \hgcmd{push} および \hgcmd{pull} 
+によるリポジトリ間でのチェンジセットの授受を見てきました。
+次の段階として、別々のリポジトリにおける変更の\emph{マージ}
+（merge）について見てみましょう。
+
+\section{Merging streams of work}
+
+分散構成管理ツールにおいて、マージは作業の基本です。
+
+\begin{itemize}
+\item Alice と Bob が、
+  共同作業しているプロジェクトのリポジトリから複製した、
+  個人的なリポジトリを持っているものとします。
+  Alice は自分のリポジトリにおいてバグを修正しました。
+  Bob は自分のリポジトリにおいて機能を追加しました。
+  二人は、
+  バグフィックスと新機能の両方を含むリポジトリを共有したいと思うでしょう。
+
+\item 筆者は、
+  個別のリポジトリによって、
+  お互いが安全に隔離された複数の異なる作業を、
+  同一プロジェクトにおいて同時に実施することが頻繁にあります。
+  この形式での作業では、
+  あるリポジトリにおける成果を、
+  他のリポジトリに対して頻繁にマージする必要があります。
+
+\end{itemize}
+
+マージは必要に応じて実施するありふれた作業ですので、
+Mercurial では簡単に行えるようになっています。
+それでは、マージ手順を見て行きましょう。
+もう一度リポジトリの複製を行い（もう何度も複製しましたよね？）、
+そのリポジトリにおいて変更を行います。
+
+\interaction{tour.merge.clone}
+
+この時点で、
+内容の異なる２つの \filename{hello.c} のコピーが存在するはずです。
+２つのリポジトリの履歴は、
+図~\ref{fig:tour-merge:sep-repos} に示すように、
+枝分かれしています。
+
+\interaction{tour.merge.cat}
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-sep-repos}
+  \caption{Divergent recent histories of the \dirname{my-hello} and
+    \dirname{my-new-hello} repositories}
+  \label{fig:tour-merge:sep-repos}
+\end{figure}
+
+\hgcmd{pull} を行っても、
+作業領域ディレクトリには影響を及ぼさないことは既に説明したとおりですので、
+\dirname{my-hello} から \hgcmd{pull} してみましょう。
+
+\interaction{tour.merge.pull}
+
+作業領域ディレクトリには影響を及ぼしていませんが、
+\hgcmd{pull} コマンドは ``heads'' について何か警告しています。
+
+\subsection{Head changesets}
+
+``head'' とは、
+リポジトリ中において、
+子孫（ないし子供）となるチェンジセットが存在しないチェンジセットのことです。
+リポジトリにおける最も最新のリビジョンは、
+一切の子チェンジセットを持ちませんから、
+従って tip リビジョンは head となりますが、
+１つのリポジトリには複数の head が存在しえます。
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-pull}
+  \caption{Repository contents after pulling from \dirname{my-hello} into
+    \dirname{my-new-hello}}
+  \label{fig:tour-merge:pull}
+\end{figure}
+
+\dirname{my-hello} から \dirname{my-new-hello} への
+\hgcmd{pull} による影響を、
+図~\ref{fig:tour-merge:pull} で見ることができます。
+既に \dirname{my-new-hello} に存在していた履歴には手が付けられていませんが、
+新しいリビジョンが追加されています。
+図~\ref{fig:tour-merge:pull} からは、
+新しいリポジトリ（\dirname{my-new-hello}）において、
+\emph{チェンジセット識別子}は同じままでも、
+\emph{リビジョン番号}が異なる様が読み取れます
+（そして、図らずも、チェンジセットについて話をする際に、
+リビジョン番号を使用するのが良くない、という好例になっています）。
+\hgcmd{heads} コマンドにより、
+リポジトリの head を見ることができます。
+
+\interaction{tour.merge.heads}
+
+\subsection{Performing the merge}
+
+作業領域ディレクトリを、
+（\dirname{my-hello} から取り込んだ）新たな tip リビジョンに更新するために、
+いつものように \hgcmd{update} コマンドを実行すると、
+どうなるでしょう？
+
+\interaction{tour.merge.update}
+
+Mercurial から、
+\hgcmd{update} コマンドではマージが行われない旨が通達されます。
+マージの実施が必要と思われる場合、
+強制的な実行をしない限りは 
+\hgcmd{update} コマンドによる作業領域ディレクトリの更新は行われません。
+\hgcmd{update} コマンドの代わりに、
+\hgcmd{merge} コマンドを用いて２つの head をマージします。
+
+\interaction{tour.merge.merge}
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-merge}
+  \caption{Working directory and repository during merge, and
+    following commit}
+  \label{fig:tour-merge:merge}
+\end{figure}
+
+\hgcmd{merge} コマンドによって、
+\hgcmd{parents} コマンドの出力、
+および \filename{hello.c} の内容の変更という形で、
+\emph{両方}の head の変更内容が作業領域ディレクトリに反映されます。
+
+\interaction{tour.merge.parents}
+
+\subsection{Committing the results of the merge}
+
+結果を \hgcmd{commit} するまでは、
+\hgcmd{parents} はマージの際には常に２つの親（チェンジセット）を表示します。
+
+\interaction{tour.merge.commit}
+
+これで、新しい tip リビジョンが作成されました。
+先述した２つの head の\emph{両方}を親に持つ点に注意してください。
+これらは、先に \hgcmd{parents} で表示したリビジョンと一致します。
+
+\interaction{tour.merge.tip}
+
+作業領域ディレクトリがマージの際にどのようになっているのか、
+そしてコミットによってどのようにリポジトリに作用するのかを、
+図~\ref{fig:tour-merge:merge} から読み取ることができます。
+マージの際に作業領域ディレクトリの親であった２つのチェンジセットは、
+コミットの際には新たなチェンジセットにとっての親チェンジセットとなります。
+
+\section{Merging conflicting changes}
+
+殆どのマージ作業は簡単に済みますが、
+時にはマージ対象のチェンジセット同士が、
+同じファイルの同じ部位を変更している場合があります。
+両者の変更内容が同一で無ければ、
+マージは\emph{衝突}（conflict）を生じるため、
+両者の異なる変更内容を両立させて
+何らかの一貫性の取れた状態にするための決断が必要です。
+
+\begin{figure}[ht]
+  \centering
+  \grafix{tour-merge-conflict}
+  \caption{Conflicting changes to a document}
+  \label{fig:tour-merge:conflict}
+\end{figure}
+
+文書に対する２つの変更の衝突の例を、
+図~\ref{fig:tour-merge:conflict} が図示しています。
+両者はファイルの同じ版を元にしていますが、
+一方が変更を行う傍ら、
+他方が同じ段落に対して異なる変更をしてしまいます。
+変更の衝突を解消する作業とは、
+そのファイルがどのようになっているべきかを決定することに他なりません。
+
+Mercurial には衝突を扱う機能が組み込まれていません。
+その代わりに、
+\command{hgmerge} と呼ばれる外部プログラムを実行します。
+このプログラムは、
+Mercurial に添付されるシェルスクリプト\footnote{訳注:
+\command{/bin/sh} 向けだから、ということなのでしょうが、
+Windows のバイナリ版には添付されていません。}ですが、
+別なプログラムを起動させることもできます。
+\command{hgmerge} の基底動作では、
+幾つかの著名なマージツールのうち、
+稼働環境においてインストールされていると思われるものを探します。
+まず始めに、
+非対話的マージツール\footnote{訳注:
+\command{diff3} や \command{merge} など}を実行してみますが、
+（人手によって解決する必要性があるために）それが失敗した場合や、
+そもそもそれらのツールが提供されていない場合、
+他のグラフィカルなマージツールの起動を試みます
+\footnote{訳注: 例えば、
+\command{diff3} によるマージを行い、
+衝突が検出された場合はそのファイルごとに、
+\envar{EDITOR} 環境変数で定義されるエディタ（ないし \command{vi}）
+を起動して、
+それぞれのチェンジセットに由来する変更の間での調停を要求してきます。
+}。
+
+\envar{HGMERGE} 
+環境変数に起動対象プログラムないしスクリプト名を設定することで、
+Mercurial に \command{hgmerge} 以外を起動させる事もできます
+
+\subsection{Using a graphical merge tool}
+
+著者のお薦めのグラフィカルなマージツールは \command{kdiff3} なので、
+グラフィカルなファイルマージツールに求められる機能について、
+これを題材に説明しようと思います。
+作業中の画面イメージが図~\ref{fig:tour-merge:kdiff3}にあります。
+着目している１つのファイルに対して、
+３つの異なるリビジョンが存在することから、
+マージ方法は\emph{３方向マージ}（three-way merge）と呼ばれています。
+それゆえ、マージツールはウィンドウ上部を３つの区画に分割しています。
+
+\begin{itemize}
+\item 左端に表示されているのは、
+  ファイルの\emph{元}（base）の版、
+  つまりマージ対象としている２つの版にとって、
+  最も新しい分岐元となっている版です。
+
+\item 中央に表示されているのは、
+  マージ``先''の版\footnote{訳注: 原文では「``our'' version」}ですので、
+  作業領域ディレクトリにおける変更内容が表示されます。
+
+\item 右端に表示されているのは、
+  マージ``元''\footnote{訳注: 原文では「``their'' version」}ですので、
+  マージしようとしているチェンジセットに由来する内容が表示されます。
+
+\end{itemize}
+
+これらの区画の下方に表示されているのは、
+現時点でのマージ\emph{結果}です。
+マージにおける作業とは、
+画面上に赤字で表示された\footnote{訳注:
+\command{diff3} が行単位での衝突表示であるのに比べて、
+GUI である利点が生きています。}、
+慎重なファイルのマージが必要とされる未解決の衝突を、
+妥当な内容で置き換えることです。
+
+これら４つの区画は\emph{互いに固定}されているので、
+いずれかの区画をスクロールさせた場合には、
+他の区画も相応の場所を表示するように更新されます。
+
+\begin{figure}[ht]
+  \centering
+  \grafixL{kdiff3}
+  \label{fig:tour-merge:kdiff3}
+  \caption{Using \command{kdiff3} to merge versions of a file}
+\end{figure}
+
+ファイル中の個々の衝突箇所において、
+衝突を解消するために、
+元版／マージ先版／マージ元版のテキストを
+（それらの組み合わせも含めて）任意に選択することができます。
+また、更なる変更を行うために、
+マージ結果を直接手で入力することもできます。
+
+ここで紹介し切れないほど\emph{多くの}ファイルマージツールが存在します。
+これらはそれぞれ、稼動可能プラットホームや、
+特徴的な得手不得手などの点で異なります。
+殆どのツールはテキストファイルのマージに特化していますが、
+中には特定のファイルフォーマット（一般には XML）
+に特化したものもあります。
+
+\subsection{A worked example}
+
+本節での例では、
+前述の図~\ref{fig:tour-merge:conflict} 
+におけるファイル更新の履歴を再現します。
+元となる版のファイルを格納したリポジトリを作成することから始めましょう
+\footnote{訳注: 実行例では、
+新規のリポジトリである \dirname{scam} の \hgcmd{init} が抜けています。}。
+
+\interaction{tour-merge-conflict.wife}
+
+次に、リポジトリを複製し、ファイルを変更します。
+
+\interaction{tour-merge-conflict.cousin}
+
+もう一つリポジトリを複製し、
+他の利用者によるファイルへの変更を模擬的に再現します
+（この模擬的な実行は、
+タスクごとに隔離したリポジトリの間でのマージどころか、
+それらのマージの際の衝突を解消することですら、
+決して珍しいことではない、
+ということを暗示しています）。
+
+\interaction{tour-merge-conflict.son}
+
+同一ファイルに２つの異なる版ができたので、
+マージ実施の環境が整いました。
+
+\interaction{tour-merge-conflict.pull}
+
+マージにおける対話的な処理の部分が、
+本書における実行例の自動実行機構~ref{sec:automated-example-running
+}を損ねるため、
+この例では Mercurial の \command{hgmerge} を使用しません。
+その代わりに、
+\envar{HGMERGE} を設定することで、
+Mercurial に非対話的な \command{merge} コマンドを実行させます。
+このコマンドは多くの Unix 的なシステムに同梱されています。
+以下の例を実際に試す際には、
+\envar{HGMERGE} をわざわざ設定する必要はありません。
+
+\interaction{tour-merge-conflict.merge}
+
+\command{merge} コマンドは衝突を解消せずに、
+どの行における変更が衝突していて、
+その変更がどのチェンジセットに由来するのかを示す\emph{マージマーク}を、
+衝突が検出されたファイルに書き込みます。
+
+Mercurial は、
+\command{merge} の終了コードがマージ処理\footnote{訳注:
+より正確には「マージにおける衝突の解消」}失敗を示す場合、
+マージ処理を再実行する手順を表示します。
+ここで提示される手順は、
+マージ作業の途中で混乱してしまったり、
+間違ってしまったことに気付いて、
+グラフィカルなマージツールを中途終了させた場合などに役立ちます。
+
+自動ないし手動のマージが失敗した場合であっても、
+関連の有るファイルを直接``修正''した上で、
+マージ結果をコミットすることも可能です。
+
+\interaction{tour-merge-conflict.commit}
+
+\section{Simplifying the pull-merge-commit sequence}
+\label{sec:tour-merge:fetch}
+
+ここまでに述べてきた変更マージの手順は単純なものですが、
+３つのコマンドを順に実行する必要があります。
+
+\begin{codesample2}
+  hg pull
+  hg merge
+  hg commit -m 'Merged remote changes'
+\end{codesample2}
+
+最後のコミットの際には、
+通常は面白くも無い``決まりきった''内容にならざるを得ませんが、
+コミットメッセージを入力する必要があります。
+
+可能であれば、必要とされる手順を低減させたいものです。
+実際に Mercurial は、これを可能とする \hgext{fetch} 
+と呼ばれるイクステンションが同梱されています。
+
+Mercurial は、
+取り扱いの利便性上から中核機能を小さく簡潔に保つ一方で、
+機能追加を可能にするための柔軟な拡張（イクステンション）機構を提供しています。
+コマンドラインから利用できる 
+Mercurial コマンドを追加するイクステンションもあれば、
+例えばサーバ機能を拡張するような、
+``舞台裏''で機能するイクステンションもあります。
+
+\hgext{fetch} イクステンションは、
+予想したこととは思いますが、
+\hgcmd{fetch} と呼ばれる新しいコマンドを追加します。
+\hgcmd{fetch} コマンドは、
+\hgcmd{pull}／\hgcmd{update}／\hgcmd{merge}／\hgcmd{commit}
+の組み合わせのように振舞います。
+まずは他のリポジトリから作業中のリポジトリへ変更を取り込みます。
+取り込んだチェンジセットによる新たな head の追加が検知\footnote{訳注:
+他のリポジトリからの取り込みにより、
+３つ以上の head がリポジトリに存在するようになった場合は、
+マージ対象の特定ができないため、
+取り込みのみで処理を中断します。}された場合、
+マージを開始し、
+自動的に生成されたコミットメッセージを使ってコミットを行います。
+新たな head の追加が無かった場合、
+\hgcmd{fetch} コマンドは作業領域ディレクトリを
+tip リビジョンで更新します。
+
+\hgext{fetch} イクステンションは簡単に有効化できます。
+\sfilename{.hgrc} ファイルを編集し、
+\rcsection{extensions} セクション
+（無い場合は作成してください）に移動し、
+``\Verb+fetch +'' で始まる行を追加します。
+
+\begin{codesample2}
+  [extensions]
+  fetch =
+\end{codesample2}
+
+（通常は、
+``\texttt{=}'' の右辺にイクステンションの位置を指定しますが、
+\hgext{fetch} イクステンションは標準の配布物に同梱されているので、
+Mercurial は \hgext{fetch} を探し出すことができます）
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

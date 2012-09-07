@@ -1,0 +1,1910 @@
+\chapter{Handling repository events with hooks}
+\label{chap:hook}
+
+Mercurial は、リポジトリに発生したイベントに応じて、
+自動的な処理を実行する強力な仕組みを提供しています。
+幾つかの状況では、
+イベントに対する Mercurial の応答結果を制御することもできます。
+
+Mercurial が利用するこれらの処理は、
+\emph{フック}（hook）と呼ばれています。
+構成管理システムによってはフックを``トリガ''と呼ぶこともありますが、
+これらは共に同じ考え方を指します。
+
+\section{An overview of hooks in Mercurial}
+
+Mercurial が提供するフックの簡単なリストを示します。
+これらのフックに関する詳細は \ref{sec:hook:ref}~節で説明します。
+
+\begin{description}
+
+\item[\small\hook{changegroup}]
+  外部リポジトリからチェンジセット群が持ち込まれた後に実行されます。
+
+\item[\small\hook{commit}] 
+  ローカルリポジトリにおいて新たなチェンジセットが作成された後に実行されます。
+
+\item[\small\hook{incoming}] 
+  外部リポジトリから持ち込まれた新たなチェンジセット毎に１回づつ実行されます。
+  持ち込まれたチェンジセットの\emph{まとまり}の単位で起動される
+  \hook{changegroup} との違いに注意してください。
+
+\item[\small\hook{outgoing}] 
+  外部リポジトリへチェンジセット群が転送された後に実行されます。
+
+\item[\small\hook{prechangegroup}] 
+  外部リポジトリからチェンジセット群が持ち込まれる前に実行されます。
+
+\item[\small\hook{precommit}] 
+  制御用。
+  ローカルリポジトリへのコミット前に実行されます。
+
+\item[\small\hook{preoutgoing}] 
+  制御用。
+  外部リポジトリへチェンジセット群が転送される前に実行されます。
+
+\item[\small\hook{pretag}] 
+  制御用。タグ生成前に実行されます。
+
+\item[\small\hook{pretxnchangegroup}] 
+  制御用。
+  外部からローカルリポジトリへとチェンジセット群が持ち込まれた際に、
+  変更を恒久的なものにするトランザクションが完了する前に実行されます。
+
+\item[\small\hook{pretxncommit}] 
+  制御用。
+  ローカルリポジトリにおいて新たなチェンジセットが作成された際に、
+  変更を恒久的なものにするトランザクションが完了する前に実行されます。
+
+\item[\small\hook{preupdate}] 
+  制御用。
+  作業領域ディレクトリの更新・マージが実施される前に実行されます。
+
+\item[\small\hook{tag}] 
+  タグが生成された後に実行されます。
+
+\item[\small\hook{update}] 
+  作業領域ディレクトリの更新・マージが完了した後に実行されます。
+
+\end{description}
+
+``制御用''と書かれているフックは、
+処理の継続性の可否を判定する機能を持っています。
+フックの実行が成功した場合、
+フックに対応する処理は継続されますが、
+フックの実行が失敗した場合、
+対応する処理は許可されないか実行しなかったことになります
+（どちらになるかはフックに応じて決まります）。
+
+\section{Hooks and security}
+
+\subsection{Hooks are run with your privileges}
+
+リポジトリにおいて Mercurial のコマンドを実行し、
+そのコマンドがフックを起動することになった場合、
+\emph{コマンド実行者の}システム上において、
+\emph{コマンド実行者の}ユーザアカウントにより、
+\emph{コマンド実行者の}権限レベルで実行されます。
+フックは任意の実行コードですから、
+十分な配慮を持って扱う必要があります。
+誰が作成して何をするフックなのかを熟知している確信無しに、
+フックをインストールしないでください。
+
+時には、
+自分でインストールしたのではないフックに晒されるかもしれません。
+馴染みの無いシステム上で Mercurial を使用する際には、
+Mercurial がシステム共通の \hgrc\ 
+ファイルで定義されたフックを実行するかもしれません。
+
+他のユーザが所有するリポジトリで作業する場合、
+Mercurial はそのユーザのリポジトリで定義されたフックを実行できますが、
+それは``あなたの''権限で実行されます。
+例えば、あるリポジトリから \hgcmd{pull} した際に、
+そのリポジトリの \sfilename{.hg/hgrc} ファイルが
+\hook{outgoing} フックを定義していた場合、
+リモートリポジトリの所有者で無かったとしても、
+フックはあなたのアカウントで実行されます。
+
+\begin{note}
+  この原則は、
+  ローカルファイルシステムかネットワークファイルシステム上のリポジトリから
+  pull した場合にのみ適用されます。
+  http や ssh 経由で pull した場合、
+  フックが実行される際のアカウントは、
+  サーバ上でサーバプロセスを実行するアカウントです。
+\end{note}
+
+リポジトリにおけるフックの定義状況を見るには、
+\hgcmdargs{showconfig}{hooks} コマンドが利用できます。
+あるリポジトリで作業中に、
+自分の所有していない別なリポジトリ
+との連携（例： \hgcmd{pull} ないし \hgcmd{incoming}）が必要になった場合、
+リポジトリのフック定義状況を確認すべきです\footnote{訳注:
+``XXX'' が付与されていることから原文未完？}。
+
+\subsection{Hooks do not propagate}
+
+Mercurial では、フック設定の構成管理は行われないため、
+リポジトリの clone ないし pull の際に、
+フック設定は伝播しません。
+その理由は簡単で、フックは完全に任意の実行コードだからです。
+フックは、
+コマンド実行者のマシン上において、
+コマンド実行者のユーザアカウントにより、
+コマンド実行者の権限レベルで実行されます。
+
+フックの構成管理の実装は、
+構成管理システム利用者のアカウントを弱体化させる上で、
+容易に悪用可能な方法を提供してしまうため、
+あらゆる分散構成管理システムにとって極めて無謀と言えます。
+
+Mercurial はフックを伝播しないため、
+共通のプロジェクトでの他のメンバーとの連携の際には、
+彼らが自分と同じ Mercurial のフックを利用していることや、
+彼らがフックを正しく設定していることを仮定してはいけません。
+彼らにフックの使用を期待するのであれば、
+それを文書化すべきです。
+
+企業のイントラネットの場合、
+例えば Mercurial の``標準的な''インストールを NFS 上で行い、
+組織で共通の \hgrc\ ファイルで全てのユーザが使用すべきフックを定義する、
+といったことが可能であるため、
+フックの管理は幾分容易になります。
+しかし、それでも後述するような制限が生じます。
+
+\subsection{Hooks can be overridden}
+
+Mercurial は、再定義によるフックの上書きを許しています。
+フック指定に空文字列を設定することでフック設定を無効にすることもできますし、
+希望通りに振る舞いを変えることもできます。
+
+幾つかのフックを定義した、
+マシンないし組織共通の \hgrc\ ファイルを配備したとしても、
+利用者によるフックの無効化や上書きが行われる可能性があることを、
+理解しておく必要があります。
+
+\subsection{Ensuring that critical hooks are run}
+
+他のメンバーに実施して欲しくない事柄について纏めた方針を、
+強制したいことも時にはあるかもしれません。
+例えば、全てのチェンジセットには必ず厳密なテスト一式に通っていて欲しい、
+と思うかもしれません。
+この要望を実現するために、
+組織共通の \hgrc\ ファイルでフックを定義したとしても、
+モバイル PC からアクセスする遠隔ユーザ等には機能しませんし、
+勿論ローカルユーザにとってもフックの上書きによって無効化が可能です。
+
+（プロジェクトにおける）Mercurial の利用方針として、
+メンバーが変更伝播する際には、
+関門の機能を果たすように適切に設定された周知の``正規''サーバを通す、
+と策定することで、
+フックによる利用方針の強制を代替することが可能です。
+
+実現方法の一つとして、
+ソーシャルエンジニアリングと技術の組み合わせによるものがあります。
+アクセス制限付きアカウントを用意し、
+当該アカウントで管理されたリポジトリに、
+各メンバーはネットワーク経由で変更を push できるようにしますが、
+そのアカウントでログインしたり、
+通常のシェルコマンドを実行したりできないようにします。
+このままでは、
+メンバーは「ゴミ」を含むようなチェンジセットのコミットも可能です。
+
+メンバーが pull するサーバーへと誰かがチェンジセットを push した場合、
+そのチェンジセットが永続化される前にサーバーはテストを実施\footnote{
+訳注: テスト実施はフックで実現されますが、
+(1) フックの実行はアクセス制限付きアカウントの権限で実行され、
+(2) リモートからの push の場合はフックの上書きができない、
+ということから、セキュリティ・フック設定の問題が共に解消されます。}し、
+テスト一式に通らなければそのチェンジセットを拒否します。
+メンバーがこのフィルタサーバからしかチェンジセットの pull をしないのであれば、
+メンバーが pull する全てのチェンジセットは、
+自動的に点検されていることが保証されます。
+
+\section{Care with \texttt{pretxn} hooks in a shared-access repository}
+\label{sec:hook:carepretxn}
+
+多くの人により共有されているリポジトリに対して、
+フックによる自動実行を設定する場合、
+実施方式には注意が必要です。
+
+Mercurial がリポジトリにロックを掛けるのは、
+リポジトリに書き込みを行う時だけであり、
+且つロックに対して注意を払うのは、
+Mercurial の書き込み処理の部分的な箇所だけです。
+書き込みロックは、
+複数の処理の同時書き込みによるリポジトリ破損を防ぐことで、
+お互いの書き込み内容を保護します。
+
+Mercurial はデータの読み込み書き出し順序に注意を払っていますから、
+リポジトリからのデータ読み込みの際にロックは必要ありません。
+Mercurial がリポジトリからデータを読み込む際には、
+ロックに対して注意を払いません。
+ロックを必要としないこの仕組みは、
+性能と平行性を大きく向上させています。
+
+しかしながら、
+「ロックされない」ということは、
+それを知らないと、
+大きな性能向上と引き換えにトラブル発生の潜在的な危険性を持っています。
+この危険性について説明するには、
+リポジトリへのチェンジセットの追加、
+およびそれらチェンジセットの読み出しを、
+Mercurial がどういった手順で行うかについて、
+幾分詳細な知識が必要となります。
+
+Mercurial がメタデータを\emph{書き出す}際には、
+対象ファイルにメタデータを直接書き出します。
+最初に filelog にメタデータを書き出し、
+次に manifest のデータ（これには、
+filelog に書き出した新しいデータへのポインタが含まれます）、
+そしてchangelogのデータ（これには、
+manifest に書き出した新しいデータへのポインタが含まれます）が書き出されます。
+個々のファイルへの最初の書き出しの前に、
+Mercurial は個々のファイルの終端位置情報をトランザクションログに記録します。
+Mercurial によりトランザクションが巻き戻される際には、
+トランザクション開始時点のサイズにまで個々のファイルが切り詰められます。
+
+Mercurial がメタデータを\emph{読み込む}際には、
+changelog を読み込んだ後でその他のファイルの読み込みを行います。
+データ読み込みの際には、
+先に読み込んだ changelog から到達可能な
+manifest や filelog の部分にしかアクセスしないので、
+不十分な書き出し中のデータを読むことはありません。
+
+幾つかの制御用フックの（\hook{pretxncommit} や \hook{pretxnchangegroup}）
+は、トランザクションの完了直前に実行されます。
+この時点で全てのメタデータは書き出し済みですが、
+Mercurial はトランザクションを巻き戻すことで、
+新たに書き出されたデータを破棄することができます。
+
+トランザクション完了前のチェンジセットは永続性が確定しておらず、
+そのため``本当に存在する''とみなすことができないことから、
+トランザクション完了前に実行される制御用フックが終了までに長時間を要する場合、
+永続性が確定していないチェンジセットのメタデータが、
+平行して動作している他の処理により読み出される時間帯が発生します。
+フックの実行時間が長くなる程、この時間帯が長くなります。
+
+\subsection{The problem illustrated}
+
+原則的に \hook{pretxnchangegroup} フックは、
+集約用リポジトリでの受け入れ前に、
+新規チェンジセットのビルドやテストを自動化するのに適しています。
+この用法は
+``ビルドを失敗させる''変更が集約用リポジトリに反映されないことを保証します。
+しかし、
+\hook{pretxnchangegroup} フックによるテスト途上の変更を、
+他の利用者が pull できてしまうようでは、
+テストの有用性が無くなってしまいます。
+リポジトリ内容の整合性に疑いを持たない利用者は、
+ビルドを失敗させる潜在的な可能性を持つテスト未実施の変更を、
+自身のリポジトリへと反映してしまうからです。
+
+このような難題への最も安全な技術的解法は、
+``門番''リポジトリの利用を\emph{単方向}に限定してしまうことです。
+門番リポジトリは、
+外部からのチェンジセットの push は許しても、
+pull はできないようにします
+（\hook{preoutgoing} フックでそのような行為を禁止します）。
+新しいチェンジセットにおけるビルドないしテストが成功したならば、
+そのチェンジセットを別なリポジトリへと push するように
+\hook{changegroup} フックを設定し、
+利用者はそちらのリポジトリから pull \emph{できる}ようにしましょう。
+
+実際問題、
+このような集約されたボトルネックを設けることは、
+あまり良いアイディアではなく(XXXX ?)、
+In practice, putting a centralised bottleneck like this in place is
+not often a good idea
+トランザクションの漏洩\footnote{訳注: 
+永続化未確定のチェンジセットが見えてしまうこと}は問題になりません。
+チェンジセットを取り扱う時間よりもそれをテストするのに時間を要する状況では、
+プロジェクトの大きさ---およびビルド・テストに要する時間
+---が増加するほど、
+``購入前の試用''手法により壁の内側に素早く走りこめます。XXXXX ????
+As the size of a project---and the time it takes to
+build and test---grows, you rapidly run into a wall with this ``try
+before you buy'' approach, where you have more changesets to test than
+time in which to deal with them.  
+避けられない結果は、
+すべてが巻き込まれた部分におけるフラストレーションです。XXXXXXX ????
+The inevitable result is frustration
+on the part of all involved.
+
+より大規模化可能な手法は、
+push 前に各自でビルド・テストを実施してもらい、
+push の \emph{後}に中央で自動的にビルド・テストを行うことで、
+全てのチェンジセットが良好であることを確認する、というものです。
+この手法の利点は、
+リポジトリにおけるチェンジセットの受理進度に関して、
+制限が課されることが無い点にあります。
+
+\section{A short tutorial on using hooks}
+\label{sec:hook:simple}
+
+Mercurial のフックは簡単に書けます。
+\hgcmd{commit} が完了した際に実行され、
+作成したばかりのチェンジセットのハッシュ値を表示するだけの、
+簡単なフックを書いてみましょう。
+
+\begin{figure}[ht]
+  \interaction{hook.simple.init}
+  \caption{A simple hook that runs when a changeset is committed}
+  \label{ex:hook:init}
+\end{figure}
+
+全てのフックは、\ref{ex:hook:init} の例における形式を踏襲します。
+ \hgrc\ ファイルの
+\rcsection{hooks} セクションにエントリを追加します。
+左辺は実行契機になるイベントの名前で、
+右辺は実行される処理です。
+見てわかるように、
+フックにおいては任意のシェルコマンドを実行できます。
+環境変数
+（例における \envar{HG\_NODE} を参照してください）を用いて、
+Mercurial はフックに付加情報を渡します。
+
+\subsection{Performing multiple actions per event}
+
+\ref{ex:hook:ext} の例に示すような、
+特定の種類のイベントに対して１つ以上のフックを定義したい状況が、
+しばしば発生することでしょう。
+Mercurial では、
+フック名の末尾に\emph{拡張子}を付与することで、
+同一イベントへの複数フックの定義が可能になります。
+拡張子の付与は、
+フック名に、
+ピリオド（``\texttt{.}'' 文字）と任意に選んだ文字列を続けることで行います。
+例えば、
+\texttt{commit} が発生した場合、
+Mercurial は 
+\texttt{commit.foo} および
+\texttt{commit.bar} フックを実行します。
+
+\begin{figure}[ht]
+  \interaction{hook.simple.ext}
+  \label{ex:hook:ext}
+  \caption{Defining a second \hook{commit} hook}
+\end{figure}
+
+あるイベントに複数のフックが定義されている際に、
+その実行順序を明確に定義するために、
+Mercurial はフックを拡張子で整列させ、
+フックコマンドをこの整列された順序で実行します。
+上記の例では、
+\texttt{commit.foo}
+の前に
+\texttt{commit.bar} を、
+これらの前に
+\texttt{commit} を実行します。
+
+新しいフックを定義する際に、
+何らかの説明的な拡張子を使用するのは良いアイディアです。
+そうすることで、
+そのフックが何をするためのものかを思い出しやすくなります。
+フックの実行が失敗した場合、
+フック名と拡張子を含むエラーメッセージが表示されますから、
+フックが失敗した理由に関して、
+説明的な拡張子から即製のヒントを得ることができます
+（例に関しては、\ref{sec:hook:perm}~節を参照してください）。
+
+\subsection{Controlling whether an activity can proceed}
+\label{sec:hook:perm}
+
+先の例では、
+コミット操作が完了した後で実行される
+\hook{commit} フックを使用しました。
+このフックは、
+操作が完了した後で実行される Mercurial のフックの１つです。
+これらのフックは、操作そのものに影響を及ぼすことはありません。
+
+Mercurial では、
+操作が開始される前や、
+操作が完了するまでの間に発生するイベントが定義されています。
+これらのイベントの際に起動されるフックは、
+操作を継続可能か中断すべきかを判断することができます。
+
+\hook{pretxncommit} フックは、
+コミット操作が概ね終了した後、コミットが完了する前の段階で起動されます。
+言い換えるなら、
+チェンジセットを表すメタデータがディスクに書き込まれてはいるものの、
+トランザクションが未だ完了していない状況で起動されます。
+\hook{pretxncommit} フックは、
+トランザクションを完了させるのか、
+あるいは巻き戻すべきかを決定することができます。
+
+\hook{pretxncommit} フックが終了状態値として０を返却した場合、
+トランザクションは完了し、コミット操作は終了しますので、
+\hook{commit} フックが実行されます。
+\hook{pretxncommit} フックが終了状態として非０を返却した場合、
+トランザクションは巻き戻され、
+チェンジセットを表すメタデータは削除され、
+\hook{commit} フックは実行されません。
+
+\begin{figure}[ht]
+  \interaction{hook.simple.pretxncommit}
+  \label{ex:hook:pretxncommit}
+  \caption{Using the \hook{pretxncommit} hook to control commits}
+\end{figure}
+
+例~\ref{ex:hook:pretxncommit} 中のフックは、
+コミット時のコメントがバグIDを含んでいることを確認しています。
+コメントがバグIDを含んでいる場合、コミットは完了します。
+そうでなければ、コミット操作は巻き戻されます。
+
+\section{Writing your own hooks}
+
+\hggopt{-v} オプション付き、
+あるいは\rcitem{ui}{verbose} 設定項目を``true''にして
+Mercurial を実行するのが、
+フック実装の際には有用であることに気付くかもしれません。
+このようにして Mercurial を実行することで、
+それぞれのフックを起動する際に事前にメッセージを表示します。
+
+\subsection{Choosing how your hook should run}
+\label{sec:hook:lang}
+
+フックを実装する際には、通常のプログラム---典型的にはシェルスクリプト---
+としても実装できますが、
+Python 関数としても実装でき、
+その場合は Mercurial プロセス内で実行されます。
+
+外部プログラムとしてフックを実装する利点は、
+Mercurial の内部事情に関して知る必要が無い点にあります。
+付加的な情報の取得のために、
+通常の Mercurial コマンドを起動することもできます。
+その利点と引き換えに、外部（プログラムとしての）フックは、
+プロセス内フックよりも低速\footnote{訳注:
+後述されますが、
+外部プログラムによるフックが「低速」であるのは、
+(1)外部プロセスとしてのフック起動と、
+(2)Mercurial リポジトリへのアクセスに関する部分で、
+外部プロセスの実行そのものが低速なわけではありません。}です。
+
+Python 関数によるプロセス内フックは、
+全ての Mercurial API にアクセスでき、
+他のプロセスを``生成''する必要はありませんので、
+基本的に外部フックよりも高速です。
+フックが必要とする多くの情報の入手も、
+Mercurial コマンドから得るよりも、
+Mercurial API から得る方が容易です。
+
+Python の利用が苦にならないか、
+高い実行性能が要求される場合、
+Python でのフック実装を選択すべきです。
+しかしながら、
+簡単なフックで、
+性能を気にする必要が無い（おそらく多くのフックがそうです）のであれば、
+シェルスクリプトでの実装で十分です。
+
+\subsection{Hook parameters}
+\label{sec:hook:param}
+
+Mercurial がフックを起動する際には、
+明確に定義されたパラメータがフックに渡されます。
+Python でのフック実装の場合、
+パラメータはキーワード引数としてフック関数に渡されます。
+外部プログラムでのフック実装の場合、
+パラメータは環境変数として渡されます。
+
+フック実装が Python ・シェルスクリプトのいずれであるかで、
+フック固有のパラメータ名とその値が決まります\footnote{訳注:
+原文は
+「Whether your hook is written in Python or as a shell script, the
+hook-specific parameter names and values will be the ``same''」}
+真偽値パラメータは、Python フックでは真偽値型として表現されますが、
+外部フックに対しては ``1''（``true'' 値として）ないし 
+``0''（``false'' 値として）を持つ環境変数で表現されます。
+フックパラメータが \texttt{foo} という名前である場合、
+Python フックのキーワード引数の名前も \texttt{foo} ですが、
+外部フックの環境変数名は \texttt{HG\_FOO} となります。
+
+\subsection{Hook return values and activity control}
+
+実行が成功したフックは、外部フックの場合は終了コード０で、
+プロセス内フックの場合は真偽値``False''で終了しなければなりません
+\footnote{訳注:Mercurial の配布物に含まれる hgext 配下のフックは、
+結構な確率で、
+False 無しの return や、
+明示的な return 無しの実装ですが、
+Python の言語仕様上、
+これらは False と``ほぼ等価''な None とみなされます。}。
+フックの実行失敗は、
+外部フックの場合は非０の終了コードで、
+プロセス内フックの場合は真偽値``true''で表されます。
+プロセス内ふっくが例外を浮揚した場合、
+フック実行は失敗したと見做されます。
+
+操作の継続性を制御できるフックの場合、
+０／false は継続の``許可''を、
+非０／true／例外は``拒否''を意味します。
+
+\subsection{Writing an external hook}
+
+\hgrc\ ファイルに外部フックを記述した場合、
+\hgrc\ ファイルに記述したフックの内容は、
+シェルプロセスに渡され、
+そのシェルプロセスによって解釈されます。
+これは、フック記述の本体に、
+通常のシェルコマンドラインと同様の構造を用いることができる、
+ということを意味しています。
+
+実行可能なフックは、
+常にリポジトリのルートディレクトリ直下で実行されます。
+
+個々のフックパラメータは環境変数経由で渡されますが、
+環境変数名には、
+大文字化され、接頭辞として``\texttt{HG\_}''が付与された名前が用いられます。
+
+フックパラメータを例外とすれば、
+Mercurial はフック実行時に環境変数の改変を行いません。
+それぞれに異なる環境変数設定をしている多くのユーザによって実行される、
+組織全体で共用されるフックを実装する際には、
+この知識が役に立つでしょう。
+複数ユーザにより実行される状況下では、
+フックの試験環境で設定されていた環境変数が、
+実行時に設定されていることを期待してはいけません。
+
+\subsection{Telling Mercurial to use an in-process hook}
+
+プロセス内フックを \hgrc\ ファイルで設定する際の文法は、
+実行可能フック\footnote{訳注: 「外部フック」の意
+}設定の際のそれとは少々異なります
+フック設定は、
+接頭辞``\texttt{python:}''に続き、
+フックとして使用する呼び出し可能オブジェクト\footnote{訳注: 
+callable object}の完全修飾された名前が記述されていなければなりません。
+
+フック定義が存在するモジュールは、
+フック実行時に自動的に import されます。
+モジュール名と \envar{PYTHONPATH} 設定が正しければ、
+きっと動作する筈です\footnote{訳注: ``just work'' のニュアンスは？}。
+
+以下に示す \hgrc\ ファイルの引用例は、
+前述した表記に関する文法と意味を例示しています。
+
+\begin{codesample2}
+  [hooks]
+  commit.example = python:mymodule.submodule.myhook
+\end{codesample2}
+
+Mercurial が \texttt{commit.example} フックを起動する際には、
+\texttt{mymodule.submodule} を import し、
+\texttt{myhook} という名前の呼び出し可能オブジェクトを探し出して起動します。
+
+\subsection{Writing an in-process hook}
+
+以下に示す最も単純なプロセス内フックは、
+フックとしては何もしませんが、
+フック API の基本的な概要を例示できます。
+
+\begin{codesample2}
+  def myhook(ui, repo, **kwargs):
+      pass
+\end{codesample2}
+
+Python フック\footnote{訳注：プロセス内フックの意}の最初の引数は、
+常に \pymodclass{mercurial.ui}{ui} オブジェクトです。
+第２引数はリポジトリオブジェクトですが、
+現在の Mercurial の実装では、
+そのインスタンスは常に \pymodclass{mercurial.localrepo}{localrepository} です。
+これらに続くその他の引数はキーワード引数として渡されます。
+渡される内容は起動されるフック（の種類）に依存しますが、
+上記例における \texttt{**kwargs} のように、
+キーワード引数辞書に落とし込む\footnote{XXXXX:
+Python 固有の訳語を確認}ことで、
+興味の無い引数を無視することができます。
+
+\section{Some hook examples}
+
+\subsection{Writing meaningful commit messages}
+
+有用なコミットメッセージが非常に短い、
+という状況は想像し難いものがあります。
+図~\ref{ex:hook:msglen.go} に示す単純な
+\hook{pretxncommit} フックは、
+１０バイトよりも短いメッセージでのチェンジセットのコミットを妨げます。
+
+\begin{figure}[ht]
+  \interaction{hook.msglen.go}
+  \caption{A hook that forbids overly short commit messages}
+  \label{ex:hook:msglen.go}
+\end{figure}
+
+\subsection{Checking for trailing whitespace}
+
+コミットに関する興味深いフックの利用は、
+綺麗なコードでの実装を補助するというものです。
+簡単な``綺麗なコード''の例としては、
+変更が追加する新しい行には``末尾空白''が含まれていてはならない、
+という格言があります。
+末尾空白とは、
+空白文字およびタブ（tab）文字の連続が行末にあることを意味します。
+多くの場合、
+末尾空白は必要の無い不可視の雑音みたいなものですが、
+時には問題を含むことから、
+それらが取り除かれることを望みます。
+
+\hook{precommit} と \hook{pretxncommit} のいずれのフックでも、
+末尾空白問題を通知することが可能です。
+\hook{precommit} フックを使用した場合、
+フックはコミット対象ファイルを知ることができないので、
+リポジトリ中の変更されたファイル全てに対して末尾空白を確認してしまいます。
+そうすると、
+ファイル \filename{foo} の変更のみをコミットしたい場合でも、
+\filename{bar} ファイルが末尾空白を含んでいたなら、
+\hook{precommit} フックでのチェックは、
+\filename{bar} の問題を理由に \filename{foo} のコミットを妨げてしまいます。
+これではいけません。
+
+\hook{pretxncommit} フックで実現する場合、
+コミットのトランザクションが完了する直前までチェックが行われません。
+このため、末尾空白問題の確認を、
+厳密にコミット対象のファイルだけに行うことができます。
+しかし、
+コミットメッセージを対話的に入力した後であっても、
+フックの実行が失敗\footnote{
+訳注: 末尾空白が検出されることでの「失敗」}した場合、
+トランザクションは巻き戻されてしまいますので、
+末尾空白を取り除いた後で再び \hgcmd{commit} コマンド実行した際には、
+もう一度コミットメッセージを入力する必要があります。
+
+\begin{figure}[ht]
+  \interaction{hook.ws.simple}
+  \caption{A simple hook that checks for trailing whitespace}
+  \label{ex:hook:ws.simple}
+\end{figure}
+
+図~\ref{ex:hook:ws.simple} では、
+末尾空白をチェックする簡単な
+\hook{pretxncommit} フックを紹介しています。
+このフックは短いですが、非常に有用です。
+変更により何れかのファイルに対して末尾空白を含む行が追加された場合、
+このフックはエラーステータスで終了しますが、
+不愉快なファイルや行の特定を補助する情報を何ら表示しません\footnote{訳注：
+フック実行のコマンドラインからわかるように、
+export 出力（＝ patch 形式）に対して (e)grep を適用していますから、
+ファイル名や行番号に対しては何ら認識されていません。}。
+このフックは、
+改変されていない行には注意を払わず、
+末尾空白問題を持ち込む行にのみ注意を払う、
+という優れた特質も持っています。
+
+\begin{figure}[ht]
+  \interaction{hook.ws.better}
+  \caption{A better trailing whitespace hook}
+  \label{ex:hook:ws.better}
+\end{figure}
+
+図~\ref{ex:hook:ws.better} は先の例よりは複雑ですが、
+より有用なフックの例を示しています\footnote{訳注:
+check\_whitespace.py の内容が不明。
+図中でソースを cat すべき XXXX}。
+このフックは unified diff 形式を解析して、
+末尾空白を追加する行の有無を判定し、
+そのようなファイルの名前と行番号を表示します。
+それに加えてこのフックは、
+チェンジセットが末尾空白を追加することを検知した場合、
+実行を終了して Mercurial にトランザクションの巻き戻しを伝える前に、
+コミットメッセージを保存してそのファイル名を表示しますので、
+問題点を修正した後のコミットの際には、
+\hgcmdargs{commit}{\hgopt{commit}{-l}~\emph{filename}}
+を使ってコミットメッセージを再利用することができます。
+
+図~\ref{ex:hook:ws.better}
+ファイルから末尾空白を取り除く
+\command{perl} の一行記述の用法を示します。
+この方法はここに再掲するに足るだけの、
+簡潔さと有用性を持っています\footnote{訳注: 
+コードの表示が（HTML 形式だと）２行に分割されている XXXX}。
+
+\begin{codesample2}
+  perl -pi -e 's,\\s+\$,,' filename
+\end{codesample2}
+
+\section{Bundled hooks}
+
+Mercurial の配布版には、幾つかのフックが添付されています。
+添付フックは Mercurial ソースツリーの
+\dirname{hgext} ディレクトリに格納されています。
+Mercurial のバイナリ配布版を使用している場合には、
+パッケージのインストーラーが
+Mercurial をインストールした位置にある
+\dirname{hgext} ディレクトリに格納されています。
+
+\subsection{\hgext{acl}---access control for parts of a repository}
+
+\hgext{acl} 拡張により、
+ネットワーク上のサーバに対してチェンジセットを
+push 可能な遠隔ユーザを制限することができます。
+リポジトリの一部（勿論全体も）を保護することができますので、
+特定のユーザに対しては、
+保護された部分に影響を及ぼさないチェンジセットのみの push が可能です。
+
+この拡張は
+push 対象のチェンジセットをコミットしたユーザ\emph{ではなく}、
+push を実施するユーザの身元情報を元にアクセス制御を行います。
+遠隔ユーザを認証する監禁（lock-downed）サーバが存在する環境で、
+特定のユーザだけが監禁サーバへのチェンジセットの
+push が許されることを確実にしたい場合でなければ、
+このフックの使用は意味がありません。
+
+\subsubsection{Configuring the \hook{acl} hook}
+
+持ち込まれるチェンジセットを管理するために、
+\hgext{acl} フックは
+\hook{pretxnchangegroup} フックとして用います。
+\hook{pretxnchangegroup} フックとして用いられることで、
+外来のチェンジセットにより変更されるファイルを知ることができるため、
+``禁止されている''ファイルへの変更を行うチェンジセット群に対しては、
+トランザクションの巻き戻しが行われます。
+
+\begin{codesample2}
+  [hooks]
+  pretxnchangegroup.acl = python:hgext.acl.hook
+\end{codesample2}
+
+\hgext{acl} 拡張は３つのセクションで設定されます。
+
+\rcsection{acl} セクションには、
+フックが注意を払うべき外来チェンジセットの出所を列挙する
+\rcitem{acl}{sources} エントリだけが記述されます。
+通常はこのセクションを設定する必要はありません。
+
+\begin{description}
+\item[\rcitem{acl}{serve}] リモートリポジトリからの http ないし ssh 
+  経由のチェンジセットに対して制御を行います。
+  これは \rcitem{acl}{sources} の既定値で、
+  通常はこの設定項目に対して行う唯一の設定です。
+
+\item[\rcitem{acl}{pull}] ローカルリポジトリからの
+  pull 経由のチェンジセットに対して制御を行います。
+
+\item[\rcitem{acl}{push}] ローカルリポジトリからの
+  push 経由のチェンジセットに対して制御を行います。
+
+\item[\rcitem{acl}{bundle}] 他のリポジトリからの
+  bundle 経由のチェンジセットに対して制御を行います。
+
+\end{description}
+
+\rcsection{acl.allow} セクションは、
+リポジトリへのチェンジセット追加を許可されているユーザを決定します。
+このセクションが存在しない場合、
+明示的に禁止されていないユーザは、
+誰でもチェンジセットの追加をできます。
+このセクションが存在する場合、
+明示的に許可されていないユーザは、
+誰もチェンジセットの追加ができません（
+ですので、このセクションを空にした場合、
+全てのユーザがチェンジセットの追加を禁止されます）。
+
+\rcsection{acl.deny} セクションは、
+リポジトリへのチェンジセット追加を禁止されているユーザを決定します。
+このセクションが記述されない場合、
+全てのユーザはチェンジセットの追加を許可されます\footnote{訳注： 
+原文は「no users are denied」ですが、
+acl.py の実装上は「禁止しない」と「許可」は等価です。}。
+
+\rcsection{acl.allow} および \rcsection{acl.deny} 
+セクションの文法は同一です。
+各エントリの左辺は、
+リポジトリルート相対でのファイルないしディレクトリのマッチングパターンで、
+右辺はユーザ名となっています。
+
+以下の例では、
+ユーザ \texttt{docwriter} がリポジトリの
+\dirname{docs} 配下に対する変更の 
+push のみが許可されている一方で、
+ユーザ \texttt{intern} は
+\dirname{source/sensitive} 
+以外の任意のディレクトリ・ファイルに対する変更を
+push 可能です
+\footnote{訳注：
+設定の判定順序は (1) 禁止 (2) 許可の順序で行われ、
+(1) 禁止設定があり、当該ユーザのアクセスが明示的に禁止されている場合と、
+(2) 許可設定があり、当該ユーザのアクセスが明示的に許可されて「いない」場合に、
+不正アクセスとみなされ、
+それ以外の場合はアクセスが許可されます。}。
+
+\begin{codesample2}
+  [acl.allow]
+  docs/** = docwriter
+
+  [acl.deny]
+  source/sensitive/** = intern
+\end{codesample2}
+
+\subsubsection{Testing and troubleshooting}
+
+\hgext{acl} フックを試してみたい場合、
+Mercurial のデバッグ出力を有効にして実行しましょう。
+\hggopt{--debug} オプションを指定し難い（あるいは不可能な）
+サーバ上で実行することもあるでしょうから、
+サーバ側の \hgrc ファイルでデバッグ出力を有効化できることをお忘れなく。
+
+\begin{codesample2}
+  [ui]
+  debug = true
+\end{codesample2}
+
+これを有効にすることで、
+当該ユーザによる push 
+を許可・禁止する理由を判断するに足る情報を表示することでしょう。
+
+\subsection{\hgext{bugzilla}---integration with Bugzilla}
+
+\hgext{bugzilla} 拡張は、
+コミットメッセージにバグIDを検知した際に
+Bugzilla バグへのコメント追加を行います。
+このフックを共有サーバに設定することで、
+このサーバへのリモートからの変更伝播の際には、
+常にこのフックが実行されます。
+
+このフックは Bugzilla バグに、
+以下のようなコメントを追加します
+（方法は後述しますが、コメント内容は変更できます）。
+
+\begin{codesample2}
+  Changeset aad8b264143a, made by Joe User <joe.user@domain.com> in
+  the frobnitz repository, refers to this bug.
+
+  For complete details, see
+  http://hg.domain.com/frobnitz?cmd=changeset;node=aad8b264143a
+
+  Changeset description:
+        Fix bug 10483 by guarding against some NULL pointers
+\end{codesample2}
+
+このフックの価値は、
+チェンジセット（のコミットメッセージ）がバグを参照している際に、
+バグ情報を更新する手順を自動化する点にあります。
+フックの設定を適切に行うことで、
+Bugzilla バグから参照元チェンジセットへと、
+一直線に到達することが容易になります。
+
+このフックの実装を足掛りにして、
+より高度な Bugzilla との統合を図ることも可能です。
+例えば:
+
+\begin{itemize}
+\item サーバに push される全てのチェンジセットには、
+  コミットメッセージに適切なバグ~IDが含まれていることを要求:
+  この場合、\hook{pretxncommit} 
+  フックに当該条件を検証するフックを設定するのが良いでしょう。
+  コミットメッセージがバグ~IDを含まないチェンジセットは、
+  フックによって拒否されるようになります。
+
+\item 新規のチェンジセットに対して、
+  簡単なコメントの付与と同様に、
+  バグの\emph{状態}の自動的な変更を許可:
+  例えば、``fixed bug 31337'' というコミットメッセージの文字列を、
+  バグ 31337 の状態の ``requires testing'' への更新、
+  と認識させる、といった拡張も考えられます。
+
+\end{itemize}
+
+\subsubsection{Configuring the \hook{bugzilla} hook}
+\label{sec:hook:bugzilla:config}
+
+\hook{bugzilla} フックは、
+サーバ側の  \hgrc\ 中で \hook{incoming} フックとして設定しなければなりません。
+
+\begin{codesample2}
+  [hooks]
+  incoming.bugzilla = python:hgext.bugzilla.hook
+\end{codesample2}
+
+機能特化されたフックの性質と、
+Bugzilla が元々この種の統合を念頭に置いていないことから、
+このフックの設定は何かと複雑になります。
+
+フックの設定に先立って、
+フックが実行されるホスト（群）に対して、
+MySQL の Python バインディングをインストールしてください。
+対象ホストにおいてバイナリパッケージが見当たらない場合、
+\cite{web:mysql-python} からダウンロードできます。
+
+フックの設定は、
+ \hgrc\ ファイルの
+\rcsection{bugzilla} セクションに記述されます。
+
+\begin{description}
+
+\item[\rcitem{bugzilla}{version}] サーバにインストールされている
+  Bugzilla のバージョン。
+  Bugzilla のデータベーススキーマは時折変更されますので、
+  どのスキーマが使用されているのかを厳密に知っている必要があります。
+  今のところ、サポート対象は \texttt{2.16} のみです。
+
+\item[\rcitem{bugzilla}{host}] Bugzilla のデータが格納されている
+  MySQL サーバが稼動しているホスト名。
+  MySQL サーバは、\hook{bugzilla} フックが実行される全てのホストに対して、
+  接続を許可している必要があります。
+
+\item[\rcitem{bugzilla}{user}] MySQL サーバへの接続時に使用するユーザ名。
+  MySQL サーバは、\hook{bugzilla} フックが実行される全てのホストに対して、
+  このユーザ名での接続を許可している必要があります。
+  このユーザは、
+  Bugzilla が使用するテーブルに対して読み取り・変更の両方の権限が必要です。
+  この項目の既定値は、
+  MySQL サーバにおける Bugzilla の標準的なユーザ名である
+ \texttt{bugs} です。
+
+\item[\rcitem{bugzilla}{password}] 上記ユーザの 
+  MySQL サーバにおけるパスワード。
+  この値は平文で格納されるため、
+  権限を持たないユーザがこの情報の書かれた \hgrc 
+  ファイルを覗くことが無いようにしなければなりません。
+
+\item[\rcitem{bugzilla}{db}] MySQL サーバにおける
+  Bugzilla データベースの名前。
+  この項目の既定値は、
+  MySQL サーバにおける Bugzilla の標準的なデータベース名である
+ \texttt{bugs} です。
+
+\item[\rcitem{bugzilla}{notify}] フックによるバグへのコメント付与時に、
+  Bugzilla による購読者への電子メール通知を実施したい場合、
+  データベースを更新する毎にコマンドを実行させる必要があります。
+  実行するコマンドは Bugzilla のインストール場所に依存しますが、
+  \dirname{/var/www/html/bugzilla} にインストールしたとすると、
+  通常は以下のようになります。
+
+  \begin{codesample4}
+    cd /var/www/html/bugzilla && ./processmail %s nobody@nowhere.com
+  \end{codesample4}
+
+  Bugzilla の \texttt{processmail} プログラムは、
+  バグ~ID（フックにより ``\texttt{\%s}'' が バグ~ID に置換されます）と、
+  電子メールアドレスを必要とします。
+  このプログラムは、
+  実行時ディレクトリへのファイル書き出しの権限も必要とします。
+  Bugzilla とフックが同じサーバ上にインストールされていない場合、
+  Bugzilla がインストールされているサーバ上で 
+  \texttt{processmail} を起動する方法を見つけ出す必要があります。
+
+\end{description}
+
+\subsubsection{Mapping committer names to Bugzilla user names}
+
+既定状態の \hgext{bugzilla} フックは、
+チェンジセットをコミットしたユーザの電子メールアドレスを、
+バグの更新を行う Bugzilla ユーザ名として使用することを試みます。
+この挙動が状況に即さない場合、
+\rcsection{usermap} セクションを使用して、
+チェンジセットをコミットしたユーザの電子メールアドレスを
+Bugzilla のユーザ名に変換することができます。
+
+\rcsection{usermap} セクションの個々の要素は、
+左辺に電子メールアドレス、
+右辺に Bugzilla ユーザ名を保持します。
+
+\begin{codesample2}
+  [usermap]
+  jane.user@example.com = jane
+\end{codesample2}
+
+通常の \hgrc ファイルに
+\rcsection{usermap} データを直接保持することもできますが、
+\hgext{bugzilla} フックに外部の 
+\filename{usermap} ファイルから情報を読み込むように指示することもできます。
+後者の場合、例えば \filename{usermap} データそのものを、
+利用者が改変可能なリポジトリに格納することもできます。
+そうすることで、
+利用者自身が
+\rcitem{bugzilla}{usermap} 中の各自の要素を保守することができます。
+この場合の \hgrc\ ファイルは以下のように記述されます。
+
+\begin{codesample2}
+  # 通常の hgrc ファイルは usermap 外部ファイルを参照
+  [bugzilla]
+  usermap = /home/hg/repos/userdata/bugzilla-usermap.conf
+\end{codesample2}
+
+\filename{usermap} が参照するファイルの内容は、
+以下のようになります。
+
+\begin{codesample2}
+  # bugzilla-usermap.conf は hg リポジトリ内に配置
+  [usermap]
+  stephanie@example.com = steph
+\end{codesample2}
+
+\subsubsection{Configuring the text that gets added to a bug}
+
+Mercurial のテンプレート形式で記述することで、
+\hgext{bugzilla} フックが追加するコメントの内容を設定することが可能です。
+幾つかの（\rcsection{bugzilla} セクションにおける） \hgrc\ 要素により、
+（テンプレートの？）振る舞いを制御することができます。
+
+\begin{description}
+\item[\texttt{strip}] URL における部分パス名（a
+  partial path for a URL）を生成する際に、
+  リポジトリにおけるパス名から取り除くパス要素の数を指定します。
+  例えば、サーバにおけるリポジトリ群が \dirname{/home/hg/repos} 配下にあり、
+  \dirname{/home/hg/repos/app/tests} のリポジトリを対象とする場合、
+  \texttt{strip} を \texttt{4} とすることで、
+  \dirname{app/tests} という部分パスを得ることができます。
+  \hgext{bugzilla} フックはこの部分パス名を、
+  テンプレートの適用の際に \texttt{webroot} という名前で利用可能にします。
+
+\item[\texttt{template}] 使用するテンプレートテキストを指定します。
+  通常のチェンジセット関連の置換に加えて、
+  このテンプレートでは \texttt{hgweb}（後述例にあるように
+  \texttt{hgweb} 項目で設定します）
+  および \texttt{webroot}（前述のように
+  \texttt{strip} によって生成されるパスです）が使用できます。
+
+\end{description}
+
+これらに加えて、
+ \hgrc\ ファイルの \rcsection{web} セクションに
+\rcitem{web}{baseurl} 項目を追加することができます。
+Bugzilla コメントからのチェンジセット参照に使用するリンクの
+URL を構築する際の基底文字列として
+\hgext{bugzilla} フックはテンプレート展開の際にこの値を使用します。
+例えば：
+
+\begin{codesample2}
+  [web]
+  baseurl = http://hg.domain.com/
+\end{codesample2}
+
+\hgext{bugzilla} フックの設定例を以下に示します\footnote{訳注:
+原文の ``\\n'' が正しく機能していないため、
+例示のレイアウトが乱れている}。
+
+\begin{codesample2}
+  [bugzilla]
+  host = bugzilla.example.com
+  password = mypassword
+  version = 2.16
+  # サーバ側リポジトリは /home/hg/repos にあるため、
+  # 冒頭の 4 つのセパレータ\footnote{訳注: パス区切り ``/''}を除外
+  strip = 4
+  hgweb = http://hg.example.com/
+  usermap = /home/hg/repos/notify/bugzilla.conf
+  template = Changeset \{node|short\}, made by \{author\} in the \{webroot\}
+    repo, refers to this bug.\\nFor complete details, see 
+    \{hgweb\}\{webroot\}?cmd=changeset;node=\{node|short\}\\nChangeset
+    description:\\n\\t\{desc|tabindent\}
+\end{codesample2}
+
+\subsubsection{Testing and troubleshooting}
+
+\hgext{bugzilla} フック設定において最も良くある問題は、
+Bugzilla の \filename{processmail} スクリプト実行に関するものと、
+コミットユーザ名から Bugzilla ユーザ名への変換に関するものです。
+
+先の \ref{sec:hook:bugzilla:config}~節からの説明で述べたように、
+Mercurial プロセスをサーバで実行するユーザが、
+\filename{processmail} スクリプトを実行するユーザでもあります。
+\filename{processmail} スクリプトは
+Bugzilla が設定ディレクトリ中のファイルに何らかの情報を書き出す契機となるため、
+通常 Bugzilla の設定ファイルは
+Bugzilla が動作するウェブサーバの実行者の権限下にあります。
+
+\filename{processmail} 実行の際には、
+\command{sudo} コマンドを利用するなどして適切なユーザ権限で実行しましょう。
+\filename{sudoers} フィルの設定例を以下に示します。
+
+\begin{codesample2}
+  hg_user = (httpd_user) NOPASSWD: /var/www/html/bugzilla/processmail-wrapper %s
+\end{codesample2}
+
+この例では、\texttt{hg\_user} ユーザは、
+\filename{processmail-wrapper} プログラムを
+\texttt{httpd\_user} ユーザの権限下で実行することができます。
+
+\filename{processmail} プログラムは
+Bugzilla をインストールしたディレクトリ直下での実行が必要ですが、
+\filename{sudoers} ファイルにはそのような制約を記述することができないので、
+このような間接実行のためのラッパースクリプトが必要となります。
+ラッパースクリプトの内容は以下のように簡単なものです。
+
+\begin{codesample2}
+  #!/bin/sh
+  cd `dirname $0` && ./processmail "$1" nobody@example.com
+\end{codesample2}
+
+\filename{processmail} 
+に指定する電子メールアドレスは、
+どのようなものでも構いません。
+
+\rcsection{usermap} が正しく設定されていない場合、
+チェンジセットをサーバに push した際に
+\hgext{bugzilla} フックによりエラーメッセージが表示されます。
+エラーメッセージは以下のようなものです。
+
+\begin{codesample2}
+  cannot find bugzilla user id for john.q.public@example.com
+\end{codesample2}
+
+このメッセージは、
+コミットしたユーザの電子メールアドレス
+\texttt{john.q.public@example.com} 
+が有効な Bugzilla ユーザ名ではないか、
+\texttt{john.q.public@example.com} 
+を有効な Bugzilla ユーザ名に変換するエントリが
+rcsection{usermap} に記述されていないことを意味します。
+
+\subsection{\hgext{notify}---send email notifications}
+
+Mercurial の組み込みウェブサーバにより、
+全てのリポジトリに対してチェンジセット情報の RSS 配信機能が提供されますが、
+電子メールによる変更通知が選択される場合が多いです。
+\hgext{notify} フックは、
+購読者が興味を持つ新たなチェンジセットごとに、
+電子メールアドレス（群）に宛てて通知を行います。
+
+\hgext{notify} はテンプレート駆動型のフックですので、
+\hgext{bugzilla} フックと同様に、
+送信される通知の内容をカスタマイズすることができます。
+
+既定状態では
+\hgext{notify} フックはチェンジセットごとの差分情報を取り込みますが、
+差分情報の量を制限したり、
+この機能を完全に停止することもできます。
+購読者による変更の即時レビューを想定する場合、
+指定された URL をクリックするよりも、
+差分情報を取り込むほうが有用です。
+
+\subsubsection{Configuring the \hgext{notify} hook}
+
+\hgext{notify} フックは、
+新たなチェンジセットごとに１通の電子メールを送信することもできれば、
+（単独の \hgcmd{pull} ないし \hgcmd{push} によりリポジトリに追加される
+）新たなチェンジセット群ごとに送信することもできます。
+
+\begin{codesample2}
+  [hooks]
+  # チェンジセット群ごとに１通のメールを送信
+  changegroup.notify = python:hgext.notify.hook
+  # チェンジセットごとに１通のメールを送信
+  incoming.notify = python:hgext.notify.hook
+\end{codesample2}
+
+このフックの設定情報は、
+ \hgrc\ ファイルの
+\rcsection{notify} セクションに記述されます。
+
+\begin{description}
+\item[\rcitem{notify}{test}] 既定状態では、
+  このフックは全くメールを送信しません。
+  その替わり、送信する\emph{であろう}メッセージを表示します。
+  この項目を \texttt{false} にすることで電子メールが送信されるようになります。
+  基底状態で電子メールの送信が停止されているのは、
+  この拡張（／フック）をきちんと設定するのには幾分かの試行錯誤が必要なので、
+  設定試行中に``壊れた''通知を購読者に送信してしまうためです。
+
+\item[\rcitem{notify}{config}] 購読情報を保持している設定ファイルへのパス。
+  この情報は \hgrc\ とは分離されているので、
+  このファイルそのものを対象リポジトリで管理することも可能です。
+  こうすることで、
+  対象リポジトリを複製し、購読設定を更新した上で、
+  変更をサーバに \hgcmd{push} で戻すことができます。
+
+\item[\rcitem{notify}{strip}] リポジトリに対する購読者の有無を判定する際に、
+  リポジトリのパス冒頭から取り除くパス区切りの数\footnote{訳注:
+  ここでは strip 対象を
+  ``leading path separator characters'' と表現しているが、
+  \rcsection{bugzilla} の説明では
+  ``leading path elements'' と表現している。
+  統一的な表現が必要と思われる。}。
+  例えば、
+  サーバ上のリポジトリが \dirname{/home/hg/repos} 配下にあり、
+  \hgext{notify} が
+  \dirname{/home/hg/repos/shared/test} というリポジトリを認識している場合、
+  \rcitem{notify}{strip} を \texttt{4} に設定することで
+  \hgext{notify} による購読者とのパターンマッチングは、
+  パスを \dirname{shared/test} と認識した上で行われます。
+
+\item[\rcitem{notify}{template}] 
+  メッセージ送信の際に使用されるテンプレートテキスト。
+  このテンプレートは、メッセージのヘッダとボディの両方の内容を指定します。
+
+\item[\rcitem{notify}{maxdiff}] 
+  メッセージ末尾に付与される差分データの最大行数。
+  この行数よりも大きい場合、差分データは切り詰められます。
+  この値の既定値は 300 に設定されています。
+  この値を \texttt{0} にした場合、
+  通知の電子メールに差分データは付与されません。
+
+\item[\rcitem{notify}{sources}] 配慮すべきチェンジセットの由来元の一覧。
+  この設定により例えば、
+  遠隔ユーザがサーバを経由して当該リポジトリへ
+  \hgcmd{push} したチェンジセットに対してのみ
+  \hgext{notify} が電子メールで通知する、
+  といった設定をすることができます。
+  ここで記述可能な由来元の一覧は、\ref{sec:hook:sources}~節を参照してください。
+
+\end{description}
+
+\rcsection{web} セクションで
+\rcitem{web}{baseurl} 項目を設定している場合、
+テンプレート中で \texttt{webroot} として使用することができます。
+
+\hgext{notify} 設定情報の一式を以下に示します。
+
+\begin{codesample2}
+  [notify]
+  # 実際に電子メールを送るか否か
+  test = false
+  # 通知を行うリポジトリ自身の中に置かれている購読者情報
+  config = /home/hg/repos/notify/notify.conf
+  # リポジトリが /home/hg/repos 配下にあるので "/" 文字を4つ除去
+  strip = 4
+  template = X-Hg-Repo: \{webroot\}\\n\\\\
+    Subject: \{webroot\}: \{desc|firstline|strip\}\\n\\\\
+    From: \{author\}\\n\\\\
+    \\n\\\\
+    changeset \{node|short\} in \{root\}\\n\\\\
+    details: \{baseurl\}\{webroot\}?cmd=changeset;node=\{node|short\}\\n\\\\
+    description:\\n\\\\
+    \\t\{desc|tabindent|strip\}
+
+  [web]
+  baseurl = http://hg.example.com/
+\end{codesample2}
+
+この設定により、
+以下のようなメッセージが生成されます。
+
+\begin{codesample2}
+  X-Hg-Repo: tests/slave
+  Subject: tests/slave: Handle error case when slave has no buffers
+  Date: Wed,  2 Aug 2006 15:25:46 -0700 (PDT)
+
+  changeset 3cba9bfe74b5 in /home/hg/repos/tests/slave
+  details: http://hg.example.com/tests/slave?cmd=changeset;node=3cba9bfe74b5
+  description:
+          Handle error case when slave has no buffers
+  diffs (54 lines):
+
+  diff -r 9d95df7cf2ad -r 3cba9bfe74b5 include/tests.h
+  --- a/include/tests.h      Wed Aug 02 15:19:52 2006 -0700
+  +++ b/include/tests.h      Wed Aug 02 15:25:26 2006 -0700
+  @@ -212,6 +212,15 @@ static __inline__ void test_headers(void *h)
+  [...snip...]
+\end{codesample2}
+
+\subsubsection{Testing and troubleshooting}
+
+既定値のままでは \hgext{notify} 拡張は
+\emph{一切のメールを送信しません}ので、
+\rcitem{notify}{test} 項目を明示的に
+\texttt{false} で設定することを忘れないでください。
+この設定を行うまでは、
+\hgext{notify} 拡張は送信する\emph{であろう}メッセージを表示します。
+
+\section{Information for writers of hooks}
+\label{sec:hook:ref}
+
+\subsection{In-process hook execution}
+
+プロセス内フックは、以下の引数形式で起動されます。
+
+\begin{codesample2}
+  def myhook(ui, repo, **kwargs):
+      pass
+\end{codesample2}
+
+\texttt{ui} 引数は
+\pymodclass{mercurial.ui}{ui} オブジェクト、
+\texttt{repo} 引数は
+\pymodclass{mercurial.localrepo}{localrepository} オブジェクトです。
+\texttt{**kwargs} パラメータの持つ名前と値は、
+起動されるフックの種類に依存し、
+以下の共通の特徴を持っています。
+
+\begin{itemize}
+\item \texttt{node} ないし \texttt{parent\emph{N}} という名前の引数は、
+  16進数のチェンジセットIDを保持しています。
+  空の文字列は、
+  0 続きの文字列の代わりに ``null チェンジセットID'' を意味します。
+
+\item \texttt{url} という名前の引数は、
+  それが特定可能であれば、遠隔リポジトリの URL を表します。
+
+\item 真偽値引数は、Python の \texttt{bool} オブジェクトで表されます。
+
+\end{itemize}
+
+プロセス内フックは、
+（外部フックがリポジトリ直下で実行されるのと違い）
+プロセスの作業ディレクトリを変更せずに起動されます。
+プロセスの作業ディレクトリを移動させると、
+Mercurial API の呼び出しが失敗する要因と成りえますので、
+プロセス内フックは作業ディレクトリを変更してはいけません。
+
+（プロセス内）フックが真偽値 ``false'' を返却した場合、
+フック呼び出しは成功したものとみなされます。
+真偽値 ``true'' が返却されるか、
+例外が浮揚された場合、
+フック呼び出しは失敗したものとみなされます。
+起動の慣習を理解するには、
+``失敗したか否かを通知する''と覚えるのが良いでしょう。
+
+チェンジセットIDは、
+Mercurial API が常用しているバイナリハッシュ形式ではなく、
+Python フックに16進文字列の形式で渡される点に注意してください。
+16進ハッシュ値をバイナリハッシュ値形式に変換するには、
+\pymodfunc{mercurial.node}{bin} 関数を使用してください。
+
+\subsection{External hook execution}
+
+プロセス外フック（の起動文字列）は、
+Mercurial を実行しているシェルに渡されます。
+そのため、
+変数置換やコマンド出力のリダイレクトといった、
+シェルの機能が利用可能です。
+プロセス外フックは、
+（プロセス内フックが Mercurial が起動されたディレクトリで実行されるのと違い）
+リポジトリルート直下で実行されます。
+
+フック引数は、環境変数を経由して渡されます。
+個々の環境変数の名前は、
+大文字で且つ ``\texttt{HG\_}'' 接頭辞が付与された形式に変換されます。
+例えば、
+引数名が ``\texttt{node}'' の場合、
+当該引数を表す環境変数の名前は ``\texttt{HG\_NODE}'' となります。
+
+真偽値引数は、
+``true'' が文字列 ``\texttt{1}'' で、
+``false'' が文字列 ``\texttt{0}'' で表されます。
+環境変数
+\envar{HG\_NODE}、\envar{HG\_PARENT1} ないし \envar{HG\_PARENT2} は、
+チェンジセットIDを16進文字列で保持します。
+``空のチェンジセットID''は、
+``0'' の連続ではなく空の文字列として表現されます。
+環境変数 \envar{HG\_URL} は、
+それが特定可能な場合に限り、遠隔リポジトリの URL を保持します。
+
+プロセス外フックが終了コード0で終了した場合、
+フックの実行は成功したものとみなされます。
+終了コードが0以外の場合、
+フックの実行は失敗したものとみなされます。
+
+\subsection{Finding out where changesets come from}
+
+ローカルリポジトリと他のリポジトリの間のチェンジセットの転送に関わるフックは、
+``向こう側''の情報を知ることができる場合があります。
+Mercurial は、
+チェンジセットが\emph{どのようにして}転送されたのかと、
+多くの場合、
+\emph{どのリポジトリ}との間でチェンジセットが転送されるのかも知っています。
+
+\subsubsection{Sources of changesets}
+\label{sec:hook:sources}
+
+Mercurial はリポジトリ間でチェンジセットを転送する意図を、
+フックに対して事前（ないし事後に）通知します。
+この情報は、
+Python によるプロセス内フックの場合は \texttt{source} という名前の引数で、
+外部フックの場合は \envar{HG\_SOURCE} という名前の環境変数で、
+Mercurial からフックに渡されます。
+
+\begin{description}
+\item[\texttt{serve}] 遠隔リポジトリとの間を、
+  http ないし ssh 経由でチェンジセットが転送されます。
+
+\item[\texttt{pull}] あるリポジトリから他のリポジトリへ、
+  \hgcmd{pull} によりチェンジセットが転送されます。
+
+\item[\texttt{push}] あるリポジトリから他のリポジトリへ、
+  \hgcmd{push} によりチェンジセットが転送されます。
+
+\item[\texttt{bundle}] あるリポジトリから他のリポジトリへ、
+  \hgcmd{bundle} によりチェンジセットが転送されます。
+
+\end{description}
+
+\subsubsection{Where changes are going---remote repository URLs}
+\label{sec:hook:url}
+
+Mercurial は、
+リポジトリ間でのチェンジセット転送処理における``向こう側''の位置を、
+可能であればフックに知らせます。
+この情報は、
+Python によるプロセス内フックの場合は \texttt{url} という名前の引数で、
+外部フックの場合は \envar{HG\_URL} という名前の環境変数で、
+Mercurial からフックに渡されます。
+
+この情報は常にわかるというわけではありません。
+http ないし ssh 
+経由でサービスを提供しているリポジトリにおいてフックが起動された場合、
+Mercurial は遠隔リポジトリを特定することはできませんが、
+クライアントがどのアドレスから接続しているのかは特定することができます。
+このような場合、URL は以下のいずれかの形式になります。
+
+\begin{itemize}
+\item \texttt{remote:ssh:\emph{ip-address}}---与えられた IP アドレスからの
+  ssh 遠隔接続。
+
+\item \texttt{remote:http:\emph{ip-address}}---与えられた IP アドレスからの
+  http 遠隔接続。
+  クライアントが SSL を使用した場合、
+  \texttt{remote:https:\emph{ip-address}} 形式になります。
+
+\item Empty---遠隔接続に関する情報を取得できなかった場合。
+
+\end{itemize}
+
+\section{Hook reference}
+
+\subsection{\hook{changegroup}---after remote changesets added}
+\label{sec:hook:changegroup}
+
+このフックは、
+例えば \hgcmd{pull} ないし \hgcmd{unbundle} によって、
+あらかじめ存在しているチェンジセットの一群が、
+リポジトリに追加された後に実行されます。
+これらの操作は任意個のチェンジセットを追加できますが、
+このフックは各操作毎に１回づつ実行されます。
+このことは、
+チェンジセットがまとまって追加されるか否かに関わらず、
+\hook{incoming} フックの実行がチェンジセット毎に実行されるのと対照的です。
+
+追加されたチェンジセットに対する自動化されたビルド・テストの開始契機としたり、
+バグデータベースの更新、
+リポジトリが新たなチェンジセットを取り込んだことの購読者への通知、
+といったものが、
+このフックに想定される用途の一部です。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{node}] チェンジセットID。
+  追加される一群の中の最初のチェンジセットのID。
+  このチェンジセットから
+  \index{tags!\texttt{tip}}\texttt{tip} 
+  まで（\texttt{tip} 自身も含む）の全てのチェンジセットが、
+  単独の \hgcmd{pull}、\hgcmd{push} ないし \hgcmd{unbundle}
+  操作により追加されたことになります。
+
+\item[\texttt{source}] 文字列。
+  チェンジセットの由来元を表します。
+  詳細は\ref{sec:hook:sources}~節を参照してください。
+
+\item[\texttt{url}] URL。
+  特定できる場合に限り、遠隔リポジトリの場所を表します。
+  詳細は\ref{sec:hook:url}~節を参照してください。
+
+\end{description}
+
+要別途参照:
+\hook{incoming} （\ref{sec:hook:incoming}~節）、
+\hook{prechangegroup} （\ref{sec:hook:prechangegroup}~節）、
+\hook{pretxnchangegroup} （\ref{sec:hook:pretxnchangegroup}~節）
+
+\subsection{\hook{commit}---after a new changeset is created}
+\label{sec:hook:commit}
+
+このフックは、新しいチェンジセットが作成された後で実行されます。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{node}] チェンジセットID。
+  新しくコミットされたチェンジセットのID。
+
+\item[\texttt{parent1}] チェンジセットID。
+  新しくコミットされたチェンジセットにとって、
+  第１親となるチェンジセットのID。
+
+\item[\texttt{parent2}] チェンジセットID。
+  新しくコミットされたチェンジセットにとって、
+  第２親となるチェンジセットのID。
+
+\end{description}
+
+要別途参照: \hook{precommit} （\ref{sec:hook:precommit}~節）、
+\hook{pretxncommit} （\ref{sec:hook:pretxncommit}~節）
+
+\subsection{\hook{incoming}---after one remote changeset is added}
+\label{sec:hook:incoming}
+
+このフックは、
+例えば \hgcmd{push} によって、
+あらかじめ存在しているチェンジセットが、
+リポジトリに追加された後に実行されます。
+複数のチェンジセットが単一の操作で追加された場合でも、
+このフックは追加された個々のチェンジセット毎に実行されます。
+
+このフックを \hook{changegroup} フック（\ref{sec:hook:changegroup}~節参照）
+と同様の目的に使用することができます。
+一群のチェンジセット毎のフック起動の方が便利な場合もありますが、
+時にはチェンジセットごとのフック起動も便利です。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{node}] チェンジセットID。
+  新しく追加されたチェンジセットのID。
+
+\item[\texttt{source}] 文字列。
+  チェンジセットの由来元を表します。
+  詳細は\ref{sec:hook:sources}~節を参照してください。
+
+\item[\texttt{url}] URL。
+  特定できる場合に限り、遠隔リポジトリの場所を表します。
+  詳細は\ref{sec:hook:url}~節を参照してください。
+
+\end{description}
+
+要別途参照: 
+\hook{changegroup} （\ref{sec:hook:changegroup}~節）、
+\hook{prechangegroup} （\ref{sec:hook:prechangegroup}~節）、
+\hook{pretxnchangegroup} （\ref{sec:hook:pretxnchangegroup}~節）
+
+\subsection{\hook{outgoing}---after changesets are propagated}
+\label{sec:hook:outgoing}
+
+このフックは、
+例えば \hgcmd{push} ないし \hgcmd{bundle} によって、
+他のリポジトリへとチェンジセットの一群が伝播した後に実行されます。
+
+チェンジセットが外部に伝播したことの管理者への通知などは、
+このフックに想定される用途の１つです。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{node}] チェンジセットID。
+  他のリポジトリへと伝播する一群の中の最初のチェンジセットのID。
+
+\item[\texttt{source}] 文字列。
+  伝播操作の発行由来を表します（\ref{sec:hook:sources}~節を参照してください）。
+  遠隔クライアントからの \hgcmd{pull} 要求の場合、
+  \texttt{source} は \texttt{serve} となります。
+  チェンジセット群を取得しようとするクライアントがローカルホスト上に居る場合、
+  クライアントの操作種別に応じて、
+  \texttt{source} の値は
+  \texttt{bundle}、\texttt{pull} ないし \texttt{push} のいずれかになります。
+
+\item[\texttt{url}] URL。
+  特定できる場合に限り、遠隔リポジトリの場所を表します。
+  詳細は\ref{sec:hook:url}~節を参照してください。
+
+\end{description}
+
+要別途参照：
+\hook{preoutgoing} （\ref{sec:hook:preoutgoing}~節）
+
+\subsection{\hook{prechangegroup}---before starting to add remote changesets}
+\label{sec:hook:prechangegroup}
+
+この制御用フックは、
+他のリポジトリからのチェンジセット群の追加が
+Mercurial により開始される直前に実行されます。
+
+このフックはチェンジセット群の転送開始が許可される前に実行されるため、
+フック自体は追加されるチェンジセットに関する情報を得ることができません。
+このフックの実行が失敗した場合、チェンジセット群は転送されません。
+
+このフックの用途の一つに、
+リポジトリに対する外部からのチェンジセット追加の禁止があります。
+例えば、
+ローカルホスト上の管理者がリポジトリを変更できる一方で、
+利用者がサーバ経由で変更を \hgcmd{push} できないように、
+一時的ないし永久に``凍結''することもできます。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+
+\item[\texttt{source}] 文字列。
+  チェンジセットの由来元を表します。
+  詳細は\ref{sec:hook:sources}~節を参照してください。
+
+\item[\texttt{url}] URL。
+  特定できる場合に限り、遠隔リポジトリの場所を表します。
+  詳細は\ref{sec:hook:url}~節を参照してください。
+
+\end{description}
+
+要別途参照：
+\hook{changegroup} （\ref{sec:hook:changegroup}~節）、
+\hook{incoming} （\ref{sec:hook:incoming}~節）、
+\hook{pretxnchangegroup} （\ref{sec:hook:pretxnchangegroup}~節）
+
+\subsection{\hook{precommit}---before starting to commit a changeset}
+\label{sec:hook:precommit}
+
+このフックは、
+Mercurial が新たなチェンジセットをコミットする前に実行されます。
+コミットされるファイル、コミットメッセージないし日付といった、
+コミットに関するメタデータを
+Mercurial が揃える前に実行されます。
+
+このフックの用途の一つに、
+チェンジセットの受け入れを許す一方での、
+新たなチェンジセットのコミットの禁止があります。
+他の用途ととしては、
+ビルドやテストを実施し、
+それらが成功した場合にのみコミットを許可する、
+というものもあります。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{parent1}] チェンジセットID。
+  作業領域ディレクトリにとって、
+  第１親となるチェンジセットのID。
+
+\item[\texttt{parent2}] チェンジセットID。
+  作業領域ディレクトリにとって、
+  第２親となるチェンジセットのID。
+
+\end{description}
+
+コミットが進行した場合、
+作業領域ディレクトリの（両）親が、
+新たなチェンジセットの親となります。
+
+要別途参照：
+\hook{commit} （\ref{sec:hook:commit}~節）、
+\hook{pretxncommit} （\ref{sec:hook:pretxncommit}~節）
+
+\subsection{\hook{preoutgoing}---before starting to propagate changesets}
+\label{sec:hook:preoutgoing}
+
+このフックは、
+Mercurial が外部に転送されるチェンジセットを特定する直前に実行されます。
+
+チェンジセットが他のリポジトリへ転送されるのを防ぐことは、
+このフックに想定される用途の１うです。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{source}] 文字列。
+  当該リポジトリに対するチェンジセットの取得要求の発行由来を表します
+  （\ref{sec:hook:sources}~節を参照してください）。
+  このパラメータが取り得る値に関しては、
+  \hook{outgoing} の \texttt{source} パラメータに関する
+  \ref{sec:hook:outgoing}~節の記述を参照してください。
+
+\item[\texttt{url}] URL。
+  特定できる場合に限り、遠隔リポジトリの場所を表します。
+  詳細は\ref{sec:hook:url}~節を参照してください。
+
+\end{description}
+
+要別途参照:
+\hook{outgoing} （\ref{sec:hook:outgoing}~節）
+
+\subsection{\hook{pretag}---before tagging a changeset}
+\label{sec:hook:pretag}
+
+この制御フックは、
+タグが生成される前に実行されます。
+フックの実行が成功した場合、タグの生成は継続され、
+フックの実行が失敗した場合、タグは生成されません。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{local}] 真偽値。
+  タグがリポジトリに対してローカルなもの
+  （\sfilename{.hg/localtags} に情報が格納される）なのか、
+  Mercurial に管理されるもの（\sfilename{.hgtags} に情報が格納）
+  なのかを表します。
+
+\item[\texttt{node}] チェンジセットID。
+  タグ付けされるチェンジセットのID。
+
+\item[\texttt{tag}] 文字列。
+  作成されるタグの名前。
+
+\end{description}
+
+生成されるタグが構成管理対象となる場合、
+\hook{precommit} （\ref{sec:hook:commit}~節）および
+\hook{pretxncommit} （\ref{sec:hook:pretxncommit}~節）
+フックも実行されます。
+
+要別途参照：
+\hook{tag} （\ref{sec:hook:tag}~節）
+
+\subsection{\hook{pretxnchangegroup}---before completing addition of
+  remote changesets}
+\label{sec:hook:pretxnchangegroup}
+
+この制御フックは、
+トランザクション---
+このトランザクションは、
+他のリポジトリからの一群のチェンジセットの追加を管理します
+---が完了する前に実行されます。
+フックの実行が成功した場合、トランザクションは完了し、
+全てのチェンジセットがリポジトリにおいて永続化されます。
+フックの実行が失敗した場合、
+トランザクションは巻き戻され、
+チェンジセットに関するデータは破棄されます。
+
+このフックは、
+「ほぼ追加された」チェンジセットに関するメタデータにアクセスできますが、
+永続化されるような操作\footnote{訳注:
+例えば、外部の DBMS へのデータ格納や、
+公開用ファイルへの書き出し等。}
+をこれらのデータに基づいて行うべきではありません
+作業ディレクトリも変更すべきではありません。
+
+このフックの実行中に、
+他の Mercurial プロセスが同じリポジトリにアクセスしてきた場合、
+このプロセスからは、
+「ほぼ追加された」チェンジセットが永続化されたもののように見えます。
+この状況を回避する手順を踏まないと、
+競合状態になりかねません。
+
+このフックは、チェンジセット群に対する診断に利用可能です。
+フックの実行が失敗した場合、
+トランザクションが巻き戻され、
+全てのチェンジセットが``拒否''されます。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{node}] チェンジセットID。
+  追加される一群の中の最初のチェンジセットのID。
+  このチェンジセットから
+  \index{tags!\texttt{tip}}\texttt{tip} 
+  まで（\texttt{tip} 自身も含む）の全てのチェンジセットが、
+  単独の \hgcmd{pull}、\hgcmd{push} ないし \hgcmd{unbundle}
+  操作により追加されたことになります。
+
+\item[\texttt{source}] 文字列。
+  チェンジセットの由来元を表します。
+  詳細は\ref{sec:hook:sources}~節を参照してください。
+
+\item[\texttt{url}] URL。
+  特定できる場合に限り、遠隔リポジトリの場所を表します。
+  詳細は\ref{sec:hook:url}~節を参照してください。
+
+\end{description}
+
+要別途参照：
+\hook{changegroup} （\ref{sec:hook:changegroup}）、
+\hook{incoming} （\ref{sec:hook:incoming}）、
+\hook{prechangegroup} （\ref{sec:hook:prechangegroup}）
+
+\subsection{\hook{pretxncommit}---before completing commit of new changeset}
+\label{sec:hook:pretxncommit}
+
+この制御フックは、
+トランザクション---
+このトランザクションは、
+新たなチェンジセットのコミットを管理します
+---が完了する前に実行されます。
+フックの実行が成功した場合、トランザクションは完了し、
+チェンジセットがリポジトリにおいて永続化されます。
+フックの実行が失敗した場合、
+トランザクションは巻き戻され、
+コミットに関するデータは破棄されます。
+
+このフックは、
+「ほぼ新規作成された」チェンジセットに関するメタデータにアクセスできますが、
+永続化されるような操作をこれらのデータに基づいて行うべきではありません
+作業ディレクトリも変更すべきではありません。
+
+このフックの実行中に、
+他の Mercurial プロセスが同じリポジトリにアクセスしてきた場合、
+このプロセスからは、
+「ほぼ新規作成された」チェンジセットが永続化されたもののように見えます。
+この状況を回避する手順を踏まないと、
+競合状態になりかねません。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+
+\item[\texttt{node}] チェンジセットID。
+  新しくコミットされたチェンジセットのID。
+
+\item[\texttt{parent1}] チェンジセットID。
+  新しくコミットされたチェンジセットにとって、
+  第１親となるチェンジセットのID。
+
+\item[\texttt{parent2}] チェンジセットID。
+  新しくコミットされたチェンジセットにとって、
+  第２親となるチェンジセットのID。
+
+\end{description}
+
+要別途参照：
+\hook{precommit} （\ref{sec:hook:precommit}~節）
+
+\subsection{\hook{preupdate}---before updating or merging working directory}
+\label{sec:hook:preupdate}
+
+この制御フックは、
+作業領域ディレクトリにおける \hgcmd{update} ないし \hgcmd{merge}
+の実施前に実行されます。
+このフックは、
+Mercurial の \hgcmd{update} 
+実施前確認が \hgcmd{update} ないし \hgcmd{merge} 
+を実行可能と判断した場合にしか実行されません。
+フックの実行が成功した場合、
+\hgcmd{update} ないし \hgcmd{merge} の実行は継続されますが、
+フックの実行が失敗した場合、
+\hgcmd{update} ないし \hgcmd{merge} は実行されません。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{parent1}] チェンジセットID。
+  作業領域ディレクトリが \hgcmd{update} される親チェンジセットのID。
+  作業領域ディレクトリが \hgcmd{merge} される場合は、
+  現在の親チェンジセットと同じになります。
+
+\item[\texttt{parent2}] チェンジセットID。
+  作業領域ディレクトリが \hgcmd{merge} される場合にのみ設定されます。
+  作業領域ディレクトリの \hgcmd{merge} 対象となるチェンジセットのID。
+
+\end{description}
+
+要別途参照：
+\hook{update} （\ref{sec:hook:update}~節）
+
+\subsection{\hook{tag}---after tagging a changeset}
+\label{sec:hook:tag}
+
+このフックは、タグが生成された後で実行されます。
+
+このフックに渡されるパラメータは:
+
+\begin{description}
+\item[\texttt{local}] 真偽値。
+  タグがリポジトリに対してローカルなもの
+  （\sfilename{.hg/localtags} に情報が格納される）なのか、
+  Mercurial に管理されるもの（\sfilename{.hgtags} に情報が格納）
+  なのかを表します。
+
+\item[\texttt{node}] チェンジセットID。
+  タグ付けされるチェンジセットのID。
+
+\item[\texttt{tag}] 文字列。
+  作成されるタグの名前。
+
+\end{description}
+
+生成されるタグが構成管理対象となる場合、
+このフックの実行に先立って
+\hook{commit} フック（\ref{sec:hook:commit}~節）が実行されます。
+
+要別途参照：
+\hook{pretag} （\ref{sec:hook:pretag}~節）
+
+\subsection{\hook{update}---after updating or merging working directory}
+\label{sec:hook:update}
+
+このフックは、
+作業領域ディレクトリにおける \hgcmd{update} ないし \hgcmd{merge}
+が完了した際に実行されます。
+\hgcmd{merge} は失敗し得る
+（外部コマンドの \command{hgmerge} 
+が各ファイルにおける衝突の解消に失敗した場合）ので、
+このフックには \hgcmd{update} ないし \hgcmd{merge} 
+の成否が伝えられます。
+
+\begin{description}
+\item[\texttt{error}] 真偽値。
+   \hgcmd{update} ないし \hgcmd{merge} 実行が成功したか否かを表します。
+
+\item[\texttt{parent1}] チェンジセットID。
+  新しくコミットされたチェンジセットにとって、
+  第１親となるチェンジセットのID。
+
+\item[\texttt{parent2}] チェンジセットID。
+  新しくコミットされたチェンジセットにとって、
+  第２親となるチェンジセットのID。
+
+\end{description}
+
+要別途参照：
+\hook{preupdate} （\ref{sec:hook:preupdate}節）
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "00book"
+%%% End: 

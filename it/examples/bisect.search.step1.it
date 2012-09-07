@@ -1,0 +1,14 @@
+<!-- BEGIN bisect.search.step1 -->
+<screen><prompt>$</prompt> <userinput>if grep -q 'ho un gub' *</userinput>
+<prompt>></prompt> <userinput>then</userinput>
+<prompt>></prompt> <userinput>  risultato=bad</userinput>
+<prompt>></prompt> <userinput>else</userinput>
+<prompt>></prompt> <userinput>  risultato=good</userinput>
+<prompt>></prompt> <userinput>fi</userinput>
+<prompt>$</prompt> <userinput>echo il contrassegno di questa revisione è: $risultato</userinput>
+il contrassegno di questa revisione è bad
+<prompt>$</prompt> <userinput>hg bisect --$risultato</userinput>
+Collaudo il changeset 16:e61fdddff53e (12 changeset rimanenti, ~3 test)
+0 file aggiornati, 0 file uniti, 6 file rimossi, 0 file irrisolti
+</screen>
+<!-- END bisect.search.step1 -->
