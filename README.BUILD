@@ -42,7 +42,11 @@ II. COMPILING THE DOCS
   The Makefile will actually invoke $FOP_HOME/fop.sh, you should do
   some trick, let fop's CLASSPATH include saxon.jar and docbook-xsl-saxon.jar .
 
-5. Configure XML Catalogs
+5. Install Epub support
+
+      % sudo apt-get install dbtoepub
+
+6. Configure XML Catalogs
   For non pdf output, we use xsltproc for XSLT process, xsltproc use system
   catalog files automatically, usually /etc/xml/catalog. Users do not need to
   care about it.
@@ -60,10 +64,10 @@ II. COMPILING THE DOCS
       catalog-class-name=org.apache.xml.resolver.Resolver
       verbosity=1
 
-6. Create Makefile.vars
+7. Create Makefile.vars
   Please create your Makefile.vars from Makefile.vars.tmpl .
 
-7. Make
+8. Make
   Run 'make' for more details, for example:
 
   * make all document(pdf, epub, html and html-single for all languages)
