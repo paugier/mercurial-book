@@ -26,7 +26,6 @@ images-dot := $(wildcard en/figs/*.dot)
 
 images-svg := $(wildcard en/figs/*.svg)
 images-svg :=$(filter-out %-tmp.svg, $(images-svg))
-images-svg -= $(images-dot:dot=svg)
 
 images-dst := $(wildcard en/figs/*.png)
 images-dst += $(images-dot:dot=png)
