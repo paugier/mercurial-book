@@ -46,6 +46,10 @@ II. COMPILING THE DOCS
   For non pdf output, we use xsltproc for XSLT process, xsltproc use system
   catalog files automatically, usually /etc/xml/catalog. Users do not need to
   care about it.
+  
+  Install xsltproc
+  
+      % sudo apt-get install xsltproc
 
   For pdf output, we need use the xsl extensions (docbook-xsl-saxon), so we must
   create file $JAVA_LIB/CatalogManager.properties like this:
