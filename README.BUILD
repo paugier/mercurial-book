@@ -55,6 +55,9 @@ II. COMPILING THE DOCS
   
       % sudo apt-get install xsltproc
 
+  Install saxon
+      % sudo apt-get install libsaxon-java libxml-commons-resolver1.1-java
+
   For pdf output, we need use the xsl extensions (docbook-xsl-saxon), so we must
   create file $JAVA_LIB/CatalogManager.properties like this:
 

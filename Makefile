@@ -203,7 +203,7 @@ pdf: build/$(LINGUA)/pdf/hgbook.pdf
 
 build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo.xsl stylesheets/$(LINGUA)/fo.xsl
 	mkdir -p build/$(LINGUA)/pdf
-	java -classpath $(JAVA_LIB)/saxon65.jar:$(JAVA_LIB)/saxon65-dbxsl.jar:$(JAVA_LIB)/xml-commons-resolver-1.2.jar:$(JAVA_LIB) \
+	java -classpath $(JAVA_LIB)/saxon.jar:$(JAVA_LIB)/xml-resolver.jar:$(JAVA_LIB) \
 	    com.icl.saxon.StyleSheet \
 	    -x org.apache.xml.resolver.tools.ResolvingXMLReader \
 	    -y org.apache.xml.resolver.tools.ResolvingXMLReader \
@@ -213,13 +213,7 @@ build/$(LINGUA)/pdf/hgbook.pdf: build/$(LINGUA)/source/hgbook.xml stylesheets/fo
 	    stylesheets/$(LINGUA)/fo.xsl \
 	    fop1.extensions=1
 
-	if test -r $(FOP_HOME)/conf/userconfig.xml ; then \
-		FOP_CONFIG=" -c $(FOP_HOME)/conf/userconfig.xml"; \
-    else \
-        echo "Waring: file $(FOP_HOME)/conf/userconfig.xml does not exist"; \
-    fi
-
-	(cd build/$(LINGUA)/source && $(FOP_HOME)/fop.sh ${FOP_CONFIG} hgbook.fo ../pdf/hgbook.pdf)
+	(cd build/$(LINGUA)/source && $(FOP) hgbook.fo ../pdf/hgbook.pdf)
 endif
 
 $(LINGUA)/figs/%.png: $(LINGUA)/figs/%.svg

@@ -10,11 +10,11 @@
   <xsl:param name="draft.mode" select="no"/>
 
   <!-- These extensions are required for table printing and other stuff -->
-  <xsl:param name="use.extensions">1</xsl:param>
+  <!-- <xsl:param name="use.extensions">1</xsl:param>
   <xsl:param name="callouts.extension">1</xsl:param>
   <xsl:param name="linenumbering.extension">1</xsl:param>
   <xsl:param name="tablecolumns.extension">1</xsl:param>
-  <xsl:param name="textinsert.extension">1</xsl:param>
+  <xsl:param name="textinsert.extension">1</xsl:param> -->
 
   <xsl:param name="admon.graphics" select="1" />
   <xsl:param name="admon.graphics.extension">.png</xsl:param>
