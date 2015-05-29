@@ -46,6 +46,9 @@ II. COMPILING THE DOCS
 
       % sudo apt-get install dbtoepub
 
+6. Install po translation tools
+      % sudo apt-get install po4a
+
 6. Configure XML Catalogs
   For non pdf output, we use xsltproc for XSLT process, xsltproc use system
   catalog files automatically, usually /etc/xml/catalog. Users do not need to
