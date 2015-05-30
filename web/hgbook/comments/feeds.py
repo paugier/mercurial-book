@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.feedgenerator import Atom1Feed
 from django.contrib.syndication.views import Feed
-from hgbook.comments.models import Comment, Element
+from comments.models import Comment, Element
 
 class MyAtomFeed(Atom1Feed):
     title_type = u'html'

@@ -1,7 +1,7 @@
 import django.forms as forms
 from django.db import connection
 from django.http import HttpResponse
-from hgbook.comments.models import Comment, Element
+from comments.models import Comment, Element
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import Context
 from django.template.loader import get_template

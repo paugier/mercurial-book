@@ -1,5 +1,5 @@
 from django.contrib import admin
-from hgbook.comments.models import Comment, Element
+from comments.models import Comment, Element
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['element', 'submitter_name', 'comment', 'reviewed',
