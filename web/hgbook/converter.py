@@ -3,14 +3,12 @@ from lxml import html
 from lxml.cssselect import CSSSelector
 import md5
 import sys
-
+import os
 
 args = sys.argv[1:]
 
 # django stuff
-from django.core.management import setup_environ
-import settings # Assumed to be in the same directory.
-setup_environ(settings)       # ugly django collateral effects :(
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 from comments.models import Element
 
 doc_id = 'MMSC'
