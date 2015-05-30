@@ -5,7 +5,7 @@ from hgbook.comments.models import Comment, Element
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import Context
 from django.template.loader import get_template
-from django.utils.simplejson import dumps 
+from json import dumps 
 
 def dump_queries():
     # requires settings.DEBUG to be set to True in order to work

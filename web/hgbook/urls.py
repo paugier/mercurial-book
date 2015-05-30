@@ -1,7 +1,8 @@
 import os, sys
-from django.conf.urls.defaults import *
 import hgbook.comments.feeds as feeds
 from django.contrib import admin
+from django.conf.urls import include, url
+from django.contrib.syndication.views import Feed
 
 admin.autodiscover()
 
@@ -9,20 +10,20 @@ feeds = {
     'comments': feeds.Comments,
     }
 
-urlpatterns = patterns('',
-    (r'^comments/', include('hgbook.comments.urls')),
+urlpatterns = [
+    url(r'^comments/', include('hgbook.comments.urls')),
 
-    (r'^feeds/(?P<url>.*)/$', 'django.contrib.syndication.views.feed',
+    url(r'^feeds/(?P<url>.*)/$', Feed(),
      {'feed_dict': feeds}),          
 
     # Only uncomment this for local testing without Apache.
-     (r'^html/(?P<path>.*)$', 'django.views.static.serve',
+    url(r'^html/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': os.path.realpath(os.path.dirname(
         sys.modules[__name__].__file__) + '/../html')}),
-     (r'^support/(?P<path>.*)$', 'django.views.static.serve',
+    url(r'^support/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': os.path.realpath(os.path.dirname(
         sys.modules[__name__].__file__) + '/../support')}),
 
     # Uncomment this for admin:
-    (r'^admin/(.*)', admin.site.root),
-)
+    url(r'^admin/(.*)', admin.site.urls),
+]

@@ -2,7 +2,7 @@
 
 import os, sys
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -24,7 +24,7 @@ except ImportError:
     DATABASE_PASSWORD = ''
     DATABASE_HOST = ''
     DATABASE_PORT = ''
-    SECRET_KEY = ''
+    SECRET_KEY = '123'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -68,13 +68,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
 )
 
 ROOT_URLCONF = 'hgbook.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(ROOT, 'templates')
+    os.path.join(ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
