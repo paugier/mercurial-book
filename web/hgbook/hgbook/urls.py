@@ -25,8 +25,7 @@ urlpatterns = [
     url(r'^html/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': os.path.join(settings.BASE_DIR, '..', '..', 'build', 'en', 'html')}),
     url(r'^support/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': os.path.realpath(os.path.dirname(
-        sys.modules[__name__].__file__) + '/../support')}),
+     {'document_root': os.path.join(settings.BASE_DIR, '..', 'support')}),
 
     # Uncomment this for admin:
     url(r'^admin/', include(admin.site.urls)),
