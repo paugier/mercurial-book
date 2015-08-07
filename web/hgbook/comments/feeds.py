@@ -26,10 +26,8 @@ class Comments(Feed):
     def item_pubdate(self, obj):
         return obj.date
 
-    def get_object(self, bits):
-        if len(bits) == 0:
+    def get_object(self, request, url):
+        if len(url) == 0: #Full book
             return self.items()
-        elif len(bits) > 1:
-            raise ObjectDoesNotExist
-        return self.feedfilter(Comment.objects.filter(element__chapter=bits[0],
+        return self.feedfilter(Comment.objects.filter(element__chapter=url,
                                                       hidden=False))

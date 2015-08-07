@@ -9,15 +9,17 @@ import settings
 
 admin.autodiscover()
 
-feeds = {
+feeds_dict = {
     'comments': feeds.Comments,
     }
 
 urlpatterns = [
     url(r'^comments/', include('comments.urls')),
 
-    url(r'^feeds/(?P<url>.*)/$', Feed(),
-     {'feed_dict': feeds}),          
+    url(r'^feeds/comments/', feeds.Comments(),
+     {'url': ''}),
+    url(r'^feeds/comments/(?P<url>.*)/$', feeds.Comments(),
+     {'feed_dict': feeds_dict}),          
 
     # Only uncomment this for local testing without Apache.
     url(r'^$', TemplateView.as_view(template_name='index.html')),
