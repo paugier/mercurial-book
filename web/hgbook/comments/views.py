@@ -48,13 +48,13 @@ def chapter(request, id):
             'length': len(comments),
             'query': comments,
             }))
-    return HttpResponse(dumps(resp), mimetype='application/json')
+    return HttpResponse(dumps(resp), content_type='application/json')
 
 def chapter_count(request, id):
     resp = comments_by_chapter(id)
     for elt, comments in resp.iteritems():
         resp[elt] = len(comments)
-    return HttpResponse(dumps(resp), mimetype='application/json')
+    return HttpResponse(dumps(resp), content_type='application/json')
     
 def single(request, id, form=None, newid=None):
     queryset = Comment.objects.filter(element=id, hidden=False).order_by('date')
