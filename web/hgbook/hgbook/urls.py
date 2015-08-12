@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='index.html')),
     url(r'^read/$', book.views.index),
     url(r'^read/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': os.path.join(settings.BASE_DIR, '..', '..', 'build', 'en', 'html')}),
+     {'document_root': os.path.join(settings.BASE_DIR, '..', '..', 'build', 'en', 'html-web')}),
     url(r'^support/(?P<path>.*)$', 'django.views.static.serve',
      {'document_root': os.path.join(settings.BASE_DIR, '..', 'support')}),
 

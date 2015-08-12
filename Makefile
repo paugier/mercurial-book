@@ -39,6 +39,7 @@ help:
 	@echo "  make epub         [LINGUA=en|fr|it|zh|...]"
 	@echo "  make html         [LINGUA=en|fr|it|zh|...]"
 	@echo "  make html-single  [LINGUA=en|fr|it|zh|...]"
+	@echo "  make html-web     [LINGUA=en|fr|it|zh|...]"
 	@echo "  make pdf          [LINGUA=en|fr|it|zh|...]"
 	@echo "  make validate     [LINGUA=en|fr|it|zh|...] # always before commit!"
 	@echo "  make tidypo       [LINGUA=zh|...]    # always before commit!"
@@ -175,6 +176,21 @@ build/$(LINGUA)/html/index.html: build/$(LINGUA)/source/hgbook.xml stylesheets/h
 	cp stylesheets/hgbook.css build/$(LINGUA)/html
 	xsltproc --output build/$(LINGUA)/html/ \
 	    stylesheets/$(LINGUA)/html.xsl build/$(LINGUA)/source/hgbook.xml
+endif
+
+ifndef LINGUA
+html-web:
+	for l in $(LANGUAGES); do \
+	    $(MAKE) $@ LINGUA=$$l; \
+	done
+else
+html-web: build/$(LINGUA)/html-web/index.html
+
+build/$(LINGUA)/html-web/index.html: build/$(LINGUA)/source/hgbook.xml stylesheets/html-web.xsl
+	mkdir -p build/$(LINGUA)/html-web/figs
+	cp en/figs/*.png build/$(LINGUA)/html-web/figs
+	xsltproc --output build/$(LINGUA)/html-web/ \
+	    stylesheets/html-web.xsl build/$(LINGUA)/source/hgbook.xml
 endif
 
 ifndef LINGUA
