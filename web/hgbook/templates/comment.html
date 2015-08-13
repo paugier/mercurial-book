@@ -42,7 +42,7 @@
 {% endfor %}
 <form class="comment" id="form_{{ id }}" action="/comments/submit/{{ id }}/"
     method="post" {% if not newid %} style="display: none;" {% endif %}>
-  {{ csrf_token }}
+  {% csrf_token %}
   {{ form.id }}
   <table>
     <tbody>

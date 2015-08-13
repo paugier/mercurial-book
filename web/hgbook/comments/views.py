@@ -3,7 +3,7 @@ from django.db import connection
 from django.http import HttpResponse
 from comments.models import Comment, Element
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import Context
+from django.template import Context, RequestContext
 from django.template.loader import get_template
 from json import dumps 
 
@@ -67,14 +67,14 @@ def single(request, id, form=None, newid=None):
         error = form.errors[0]
     except:
         error = ''
-    return render_to_response('comment.html', {
+    return render_to_response('comment.html', RequestContext(request, {
         'id': id,
         'form': form,
         'length': len(queryset),
         'query': queryset,
         'newid': newid or True,
         'error': error,
-        })
+        }))
 
 def submit(request, id):
     element = get_object_or_404(Element, id=id)
