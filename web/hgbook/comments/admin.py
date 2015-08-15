@@ -17,6 +17,7 @@ class CommentAdmin(admin.ModelAdmin):
     # ImproperlyConfigured error. :S
 
 class ElementAdmin(admin.ModelAdmin):
+    list_display = ['id', 'chapter', 'title']
     search_fields = ['id', 'chapter']
     list_filter = ['chapter', 'title']
 
