@@ -9,6 +9,16 @@ def convert_chapter(filename):
     with open(filename, 'r') as f:
         soup = BeautifulSoup(f, 'html.parser')
 
+        navheader = soup.new_tag("div")
+        navheader["class"] = "navheader"
+        navheader.string ="by Bryan O'Sullivan"
+        h1title = soup.new_tag("h1")
+        h1title["class"] = "booktitle"
+        h1title.string = "Mercurial: the definite guide"
+        body = soup.find("body")
+        navheader.insert(0, h1title)
+        body.insert(0, navheader)
+
         chapters = soup.find_all("div", class_="chapter")
         if not chapters:
             print "Failed to convert %s" % filename
