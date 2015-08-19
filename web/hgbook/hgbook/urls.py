@@ -26,11 +26,10 @@ urlpatterns = [
     url(r'^read/$', book.views.index),
 ]
 
-if settings.DEBUG:
-    urlpatterns += [
-        url(r'^read/(?P<path>[a-zA-Z0-9\-\.]*)$', book.views.chapter,
-         {'document_root': os.path.join(settings.BASE_DIR, '..', '..', 'build', 'en', 'html-web')}),
-    ]
+urlpatterns += [
+    url(r'^read/(?P<path>[a-zA-Z0-9\-\.]*)$', book.views.chapter,
+     {'document_root': os.path.join(settings.BASE_DIR, '..', '..', 'build', 'en', 'html-web')}),
+]
 
 urlpatterns += [
     url(r'^read/(?P<path>.*)$', 'django.views.static.serve',
