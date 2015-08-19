@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import glob, os, re
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 chapter_re = re.compile(r'<(chapter|appendix|preface)\s+id="([^"]+)">')
 filename_re = re.compile(r'<\?dbhtml filename="([^"]+)"\?>')
@@ -50,5 +50,8 @@ def index(request):
 
 def chapter(request, path, **kwargs):
     import converter
-    res = converter.convert_chapter(os.path.join(kwargs['document_root'], path))
-    return HttpResponse(res)
+    try:
+        res = converter.convert_chapter(os.path.join(kwargs['document_root'], path))
+        return HttpResponse(res)
+    except IOError:
+        raise Http404("Page does not exist")
