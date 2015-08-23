@@ -1,0 +1,171 @@
+<!-- vim: set filetype=docbkxml shiftwidth=2 autoindent expandtab tw=77 : -->
+
+<chapter id="chap:scaling">
+  <?dbhtml filename="scaling-mercurial.html"?>
+  <title>Scaling Mercurial</title>
+
+  <para>TODO: introduction about how Mercurial is pretty good at scaling
+  by itself.</para>
+
+  <para>TODO: overview of less scalable parts of Mercurial</para>
+
+  <sect1 id="sec:scaling:largefiles">
+    <title>Handle large binaries with the <literal
+	role="scaling">largefiles</literal> extension</title>
+
+    <para>Mercurial is very good at managing source code and text files.
+    It only needs to store the difference between two versions of the file,
+    rather than keeping each version completely.
+    This avoids the repository from growing quickly.
+    However, what happens if we have to deal with (large) binaries?</para>
+
+    <para>It would appear we're not so lucky: each version of the binary
+    is stored without delta compression.
+    Add a 10 MB binary to your repository and it grows by 10 MB.
+    Change a single byte in that binary and commit your new changeset:
+    another 10 MB gets added!
+    Additionally, every person that wants to clone your repository
+    will have to download every version of the binary,
+    which quickly starts to add up.</para>
+
+    <para>Luckily, Mercurial has a solution for this problem:
+    the largefiles extension. It was added to Mercurial 2.0 in 2011.
+    The extension stores large files (large binaries)
+    on a server on the network, rather than in the repository history itself.
+    The only information saved in the repository itself
+    is a 40-byte hash of the file,
+    which is placed in the '.hglf/' subdirectory.
+    Largefiles are not downloaded when you pull changes.
+    Instead, only the largefiles for a specific revision are downloaded,
+    when you update to that revision.
+    This way, if you add a new version of your 10 MB binary
+    to your repository, it only grows by a few bytes.
+    If a new user clones your code and updates to the latest revision,
+    they will only need to download one 10 MB binary,
+    rather than every single one.</para>
+
+    <para>To enable the largefiles extension,
+    simply add the following to your hgrc file:</para>
+
+	<programlisting>[extensions]
+largefiles =
+    </programlisting>
+
+    <para>If you're concerned one of your users
+    will forget to enable the extension, don't worry!
+    Upon cloning, an informative error message will show up:</para>
+
+
+    <programlisting>abort: repository requires features unknown to this Mercurial: largefiles!
+(see http://mercurial.selenic.com/wiki/MissingRequirement for more information)</programlisting>
+
+    <para>So how do we start using the largefiles extension
+    to manage our large binaries?
+    Let's setup a repository and create a large binary file:</para>
+
+    <programlisting>$ hg init foo
+$ cd foo
+$ dd if=/dev/urandom of=randomdata count=2000</programlisting>
+
+    <para>Normally, we would add the 'randomdata' file by simply executing:</para>
+
+    <programlisting>$ hg add randomdata
+$ hg commit -m 'added randomdata as regular file'</programlisting>
+
+    <para>
+However, we've enabled the largefiles extension. This allows us to execute:</para>
+
+    <programlisting>$ hg add --large randomdata
+$ hg commit -m 'added randomdata as largefile'</programlisting>
+
+    <para>Using the additional '--large' flag,
+    we've clarified that we want this file to be stored as a largefile.</para>
+    <para>The repository now not only contains the 'randomdata' file,
+    it also contains a '.hglf/' directory,
+    containing a textfile called 'randomdata'.
+    That file in turn contains a 40-byte hash
+    that allows Mercurial to know what contents should actually be placed
+    in the 'randomdata' file when updating to a specific revision.</para>
+
+    <para>Largefiles are propagated by pushing or pulling.
+    If you push new revisions to another repository,
+    all of the largefiles changed in those revisions will be pushed as well.
+    This allows you to upload all of your largefiles to a central server.</para>
+
+    <para>If you pull new revisions from another repository,
+    by default the changed largefiles will not be pulled
+    into your local repository!
+    That only happens when you update to a revision
+    containing the new version of a largefile.
+    This ensures you don't have to download huge amounts of data,
+    just to have a single version of a largefile available.</para>
+
+    <para>If you want to explicitly get all of the largefiles
+    into your repository, you can use lfpull:</para>
+
+    <programlisting>$ hg lfpull --rev relevantrevisions</programlisting>
+
+    <para>Alternatively, you can also use the '--lfrev' flag:</para>
+    <programlisting>$ hg pull --lfrev relevantrevisions</programlisting>
+
+    <para>This allows you to easily download all largefiles,
+    be it for offline access or for backup purposes.</para>
+
+    <para>Once you've added a single largefile to a repository,
+    new files over 10 MB that you add to the repository
+    will automatically be added as largefile.
+    It's possible to configure your system in a different way,
+    using two specific configuration options.</para>
+
+    <itemizedlist>
+	    <listitem>
+            <para>The largefiles.minsize option allows
+            specifying a size (in MB). All new files larger than this size
+            will automatically be added as largefile.</para>
+        </listitem>
+	    <listitem>
+            <para>The largefiles.patterns option allow specifying
+            regex or glob patterns. All files that match one of the patterns
+            will automatically be added as largefile,
+            even if they are smaller than largefiles.minsize!</para>
+        </listitem>
+    </itemizedlist>
+
+    <para>An example configuration:</para>
+
+    <programlisting>[largefiles]
+# Add all files over 3 MB as largefile
+minsize = 3
+# All files matching one of the below patterns will be added as largefile
+patterns =
+  *.jpg
+  re:.*\.(png|bmp)$
+  library.zip
+  content/audio/*</programlisting>
+
+    <para>The largefiles extension comes with a trade-off.
+    It's very useful for scalability, allowing people to use Mercurial
+    for large files and binaries
+    without letting the repository size grow enormously.
+    However, that's exactly where the downside lies as well:
+    not all file versions are downloaded automatically when pulling.
+    This means the largefiles extension
+    removes part of the distributed nature of Mercurial.</para>
+
+    <para>Suppose you are on a plane without network access.
+    Can you still update to each revision when largefiles are in use?
+    Not necessarily.
+    Suppose the disk containing your central repository crashes.
+    Can you simply clone from a user repository and carry on?
+    Not unless that user repository has all of the largefiles you need.</para>
+
+    <para>In conclusion: the largefiles extension is very useful,
+    but keep in mind its downsides before you start using it!</para>
+  </sect1>
+</chapter>
+
+<!--
+local variables: 
+sgml-parent-document: ("00book.xml" "book" "chapter")
+end:
+-->
