@@ -4,10 +4,52 @@
   <?dbhtml filename="scaling-mercurial.html"?>
   <title>Scaling Mercurial</title>
 
-  <para>TODO: introduction about how Mercurial is pretty good at scaling
-  by itself.</para>
+  <sect1>
+    <title>Scalability issues</title>
 
-  <para>TODO: overview of less scalable parts of Mercurial</para>
+    <para>Mercurial has been used in deployments containing over 100 000 files
+    and 200 000 changesets, <ulink
+	  url="https://mercurial.selenic.com/wiki/BigRepositories">
+      still working very well</ulink>.
+    It has received, release after release, improvements to scalability.</para>
+
+    <para>Even so, some repositories manage to outgrow
+    the default Mercurial setup.</para>
+
+    <para>One possible scaling issue is due to a very large amount
+    of changesets. Mercurial stores history efficiently,
+    but repository size does grow as more and more history accumulates.
+    This can result in slower clones and pulls, as the amount of data
+    to download keeps increasing.
+    We can handle this issue using so-called "shallow clones".</para>
+
+    <para>A second issue is handling binary files. Changes to binary files
+    are not stored as efficiently as changes to text files,
+    which results in the repository growing very fast.
+    This also results in slower clones and pulls.
+    This problem can be tackled with the largefiles extension.</para>
+
+    <para>Repositories with hundreds of thousands of files
+    can also pose scalability issues.
+    Some common Mercurial commands (like 'hg status') need to check
+    all of the files in the repository.
+    This is almost not noticeable on small repositories,
+    but can become an issue if you have a lot of files.
+    The hgwatchman extension automatically detects
+    and remembers repository changes, to avoid a slowdown.
+    Additionally, if you don't require all files in the repository,
+    the narrowhg extension allows you
+    to only clone the subset of files you are interested in.</para>
+
+    <para>Finally, a very branchy history can also impact performance.
+    Specifically, Mercurial by default does not efficiently store changes
+    in lots of different branches developed at the same time.
+    As a result, the size of the history can grow much faster
+    than when development is mostly linear.
+    Using generaldelta encoding, it's possible to store changes
+    more efficiently when using many branchese.</para>
+  </sect1>
+
 
   <sect1 id="sec:scaling:largefiles">
     <title>Handle large binaries with the <literal
@@ -118,17 +160,17 @@ $ hg commit -m 'added randomdata as largefile'</programlisting>
     using two specific configuration options.</para>
 
     <itemizedlist>
-	    <listitem>
-            <para>The largefiles.minsize option allows
-            specifying a size (in MB). All new files larger than this size
-            will automatically be added as largefile.</para>
-        </listitem>
-	    <listitem>
-            <para>The largefiles.patterns option allow specifying
-            regex or glob patterns. All files that match one of the patterns
-            will automatically be added as largefile,
-            even if they are smaller than largefiles.minsize!</para>
-        </listitem>
+	  <listitem>
+        <para>The largefiles.minsize option allows
+        specifying a size (in MB). All new files larger than this size
+        will automatically be added as largefile.</para>
+      </listitem>
+	  <listitem>
+        <para>The largefiles.patterns option allow specifying
+        regex or glob patterns. All files that match one of the patterns
+        will automatically be added as largefile,
+        even if they are smaller than largefiles.minsize!</para>
+      </listitem>
     </itemizedlist>
 
     <para>An example configuration:</para>
