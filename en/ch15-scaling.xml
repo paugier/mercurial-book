@@ -50,6 +50,83 @@
     more efficiently when using many branches.</para>
   </sect1>
 
+  <sect1>
+    <title>Scaling up to many changesets with <literal>remotefilelog</literal> </title>
+
+    <para>You may have wondered, especially if you've used
+    centralized version control systems before, if it's really necessary
+    to copy all of the history when you make a clone.
+    Why not download it on-the-fly?</para>
+
+    <para>Well, in many cases, the history isn't really that big,
+    and only the initial clone will take quite a bit of time.
+    Additionally, having all of the history locally
+    makes a lot of operations (like diff and log) much faster.</para>
+
+    <para>However, if you have an extremely large project
+    with lots of developers adding history and an enormous amount
+    of changesets (TODO: quantify), this can result in slow pulls
+    and a very large amount of disk space being used.
+    In this case, the benefits of local history
+    may be outweighed by its downsides.</para>
+
+    <para>Luckily, there's a solution: the remotefilelog extension.
+    This extension allows you to make 'shallow clones',
+    keeping all of the different file versions purely on the server.
+    As an example, here are the sizes of the history for
+    a large repository (mozilla-central) with and without the full history:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>with history: 2256 MB</para>
+        </listitem>
+	<listitem>
+          <para>without history: 557 MB</para>
+        </listitem>
+      </itemizedlist>
+
+    <para>In other words, this extension results in
+    downloading 4 times less data from the server on the initial clone!
+    There's still quite a bit of data downloaded,
+    but future optimizations of shallow cloning should be able
+    to get rid of that as well (TODO: verify).</para>
+
+    <para>To get started with remotefilelog, clone the extension from
+    <ulink url="https://bitbucket.org/facebook/remotefilelog">Bitbucket</ulink>
+    and add it to your hgrc:</para>
+
+    <programlisting>[extensions]
+remotefilelog = /path/to/remotefilelog/remotefilelog</programlisting>
+
+    <para>The remotefilelog extension requires configuration
+    both on the server and the client side.
+    On the server side, all you need to do
+    is enable the server functionality.
+    Additionally, you can configure the maximum time data is compressed:</para>
+
+    <programlisting>[remotefilelog]
+server = True
+#keep cached files for 10 days (default 30)
+serverexpiration = 10</programlisting>
+
+    <para>On the client side, the only _required_ option
+    is the <literal>cachepath</literal>. This specifies where file versions
+    will be cached.</para>
+
+    <para>It's enough to specify the following configuration if you want
+    to be able to make shallow clones:</para>
+
+    <programlisting>[remotefilelog]
+cachepath = /path/to/hgcache</programlisting>
+
+    <para>Once you've specified all of the configuration options,
+    you should be able to make a shallow clone, simply by entering:</para>
+
+    <programlisting>$ hg clone --shallow ssh://server/bla/bla client-repository</programlisting>
+
+    <para>You'll only be able to do so for access through ssh,
+    other protocols are not yet supported right now.</para>
+  </sect1>
 
   <sect1 id="sec:scaling:largefiles">
     <title>Handle large binaries with the <literal
