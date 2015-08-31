@@ -47,7 +47,7 @@
     As a result, the size of the history can grow much faster
     than when development is mostly linear.
     Using generaldelta encoding, it's possible to store changes
-    more efficiently when using many branchese.</para>
+    more efficiently when using many branches.</para>
   </sect1>
 
 
@@ -105,20 +105,16 @@ largefiles =
     to manage our large binaries?
     Let's setup a repository and create a large binary file:</para>
 
-    <programlisting>$ hg init foo
-$ cd foo
-$ dd if=/dev/urandom of=randomdata count=2000</programlisting>
+    &interaction.ch15-largefiles.init;
 
     <para>Normally, we would add the 'randomdata' file by simply executing:</para>
 
-    <programlisting>$ hg add randomdata
-$ hg commit -m 'added randomdata as regular file'</programlisting>
+    &interaction.ch15-largefiles.add-regular;
 
     <para>
 However, we've enabled the largefiles extension. This allows us to execute:</para>
 
-    <programlisting>$ hg add --large randomdata
-$ hg commit -m 'added randomdata as largefile'</programlisting>
+    &interaction.ch15-largefiles.add-largefile;
 
     <para>Using the additional '--large' flag,
     we've clarified that we want this file to be stored as a largefile.</para>

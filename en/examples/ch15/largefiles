@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo '[extensions]' >> $HGRC
+echo 'largefiles =' >> $HGRC
+
+#$ name: init
+hg init foo
+cd foo
+dd if=/dev/urandom of=randomdata count=2000
+
+#$ name: add-regular
+hg add randomdata
+hg commit -m 'added randomdata as regular file'
+
+#$ name: meh
+hg rollback
+hg revert --all
+
+#$ name: add-largefile
+hg add --large randomdata
+hg commit -m 'added randomdata as largefile'
