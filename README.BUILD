@@ -88,6 +88,9 @@ II. COMPILING THE DOCS
   * make Chinese pdf document
       % make LINGUA=zh pdf
 
+9. To run the web interface, install the packages required to get lxml installed in virtualenv:
+      % sudo apt-get install libxml2-dev libxslt1-dev
+
 III. HACKING ON THE DOCS
 
 In addition to everything in section II:
