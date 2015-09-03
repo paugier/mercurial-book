@@ -120,9 +120,19 @@ serverexpiration = 10</programlisting>
 cachepath = /path/to/hgcache</programlisting>
 
     <para>Once you've specified all of the configuration options,
-    you should be able to make a shallow clone, simply by entering:</para>
+    you should be able to make a shallow clone, simply by using the
+    <literal>--shallow</literal> flag:</para>
 
-    <programlisting>$ hg clone --shallow ssh://server/bla/bla client-repository</programlisting>
+    &interaction.ch15-remotefilelog.clone;
+
+    <para>How do we know it's actually a shallow clone? You can still
+    run all regular Mercurial commands, so you might not notice.
+    One way to find out is to look into the .hg directory.
+    All file history is contained inc
+    <programlisting>.hg/store/data</programlisting>, so we should see
+    a completely empty directory there:</para>
+
+    &interaction.ch15-remotefilelog.check-shallow;
 
     <para>You'll only be able to do so for access through ssh,
     other protocols are not yet supported right now.</para>

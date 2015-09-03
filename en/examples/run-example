@@ -177,7 +177,7 @@ class shell_example(example):
         else:
             return rs
             
-    timeout = 5
+    timeout = 30
 
     def read(self, hint):
         events = self.poll.poll(self.timeout * 1000)
@@ -237,8 +237,9 @@ class shell_example(example):
         print >> rcfp, 'unset HISTFILE'
         path = ['/usr/bin', '/bin']
         hg = find_path_to('hg')
-        if hg and hg not in path:
-            path.append(hg)
+        if hg:
+            #Load hg from user environment
+            path.insert(0, hg)
         def re_export(envar):
             v = os.getenv(envar)
             if v is not None:
