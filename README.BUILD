@@ -24,7 +24,7 @@ I. PRIMER
 II. COMPILING THE DOCS
 
 0. In one single command:
-      % sudo apt-get install docbook-xml docbook-xsl libxml2-utils graphviz inkscape patchutils openjdk-6-jdk docbook-xsl-saxon libsaxon-java fop dbtoepub po4a xsltproc libsaxon-java libxml-commons-resolver1.1-java
+      % sudo apt-get install docbook-xml docbook-xsl libxml2-utils graphviz inkscape patchutils openjdk-6-jdk docbook-xsl-saxon libsaxon-java fop dbtoepub po4a xsltproc libsaxon-java libxml-commons-resolver1.1-java libxml2-dev libxslt1-dev
 
 1. Install XML DTD and XSL stylesheets for DocBook
 

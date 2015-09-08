@@ -3,7 +3,7 @@
 #
 include Makefile.vars
 
-FORMATS=html html-single pdf epub
+FORMATS=html html-single html-web pdf epub
 
 PO_LANGUAGES := zh
 DBK_LANGUAGES := en fr it
