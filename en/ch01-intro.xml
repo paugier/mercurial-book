@@ -14,19 +14,19 @@
       one higher than the number of the preceding version.</para>
 
     <para id="x_6e">Manually managing multiple versions of even a single file is
-      an error-prone task, though, so software tools to help automate
-      this process have long been available.  The earliest automated
-      revision control tools were intended to help a single user to
-      manage revisions of a single file.  Over the past few decades,
-      the scope of revision control tools has expanded greatly; they
-      now manage multiple files, and help multiple people to work
+      an error-prone task. Software tools to help automate
+      this process have long been available. The earliest automated
+      revision control tools were intended to help a single user
+      manage revisions of a single file. Over the past few decades,
+      the scope of revision control tools has expanded greatly: they
+      now manage multiple files and help multiple people to work
       together.  The best modern revision control tools have no
       problem coping with thousands of people working together on
       projects that consist of hundreds of thousands of files.</para>
 
     <para id="x_6f">The arrival of distributed revision control is relatively
       recent, and so far this new field has grown due to people's
-      willingness to explore ill-charted territory.</para>
+      willingness to explore uncharted territory.</para>
 
     <para id="x_70">I am writing a book about distributed revision control
       because I believe that it is an important subject that deserves
@@ -116,13 +116,13 @@
 	referred to by many names and acronyms.  Here are a few of the
 	more common variations you'll encounter:</para>
       <itemizedlist>
-	<listitem><para id="x_7d">Revision control (RCS)</para></listitem>
-	<listitem><para id="x_7e">Software configuration management (SCM), or
+	<listitem><para id="x_7d">Revision Control System (RCS)</para></listitem>
+	<listitem><para id="x_7f">Source Code Management (SCM)</para></listitem>
+	<listitem><para id="x_7e">Software Configuration Management (SCM), or
 	    configuration management</para></listitem>
-	<listitem><para id="x_7f">Source code management</para></listitem>
 	<listitem><para id="x_80">Source code control, or source
 	    control</para></listitem>
-	<listitem><para id="x_81">Version control
+	<listitem><para id="x_81">Version Control System
 	    (VCS)</para></listitem></itemizedlist>
       <para id="x_82">Some people claim that these terms actually have different
 	meanings, but in practice they overlap so much that there's no
@@ -155,12 +155,6 @@
       can issue no more than one command every few seconds, with any
       resulting timestamps correspondingly spread out, my automated
       example scripts run many commands in one second.</para>
-
-    <para id="x_87">As an instance of this, several consecutive commits in an
-      example can show up as having occurred during the same second.
-      You can see this occur in the <literal
-	role="hg-ext">bisect</literal> example in <xref
-	linkend="sec:undo:bisect"/>, for instance.</para>
 
     <para id="x_88">So when you're reading examples, don't place too much weight
       on the dates or times you see in the output of commands.  But
@@ -210,9 +204,8 @@
     <title>A few of the advantages of distributed revision
       control</title>
 
-    <para id="x_8d">Even though distributed revision control tools have for
-      several years been as robust and usable as their
-      previous-generation counterparts, people using older tools have
+    <para id="x_8d">Distributed revision control systems have been robust
+      and usable for years. Still, people using older tools have
       not yet necessarily woken up to their advantages.  There are a
       number of ways in which distributed tools shine relative to
       centralised ones.</para>
@@ -370,7 +363,8 @@
     <itemizedlist>
       <listitem><para id="x_9d">It is easy to learn and use.</para></listitem>
       <listitem><para id="x_9e">It is lightweight.</para></listitem>
-      <listitem><para id="x_9f">It scales excellently.</para></listitem>
+      <listitem><para id="x_9f">It scales excellently. See <xref
+	      linkend="chap:scaling"/> for details if you do bump into scaling issues.</para></listitem>
       <listitem><para id="x_a0">It is easy to
 	  customise.</para></listitem></itemizedlist>
 
@@ -422,7 +416,7 @@
       <para id="x_a7">Subversion and Mercurial have similarly named commands for
 	performing the same operations, so if you're familiar with
 	one, it is easy to learn to use the other.  Both tools are
-	portable to all popular operating systems.</para>
+	available on all popular operating systems.</para>
 
       <para id="x_a8">Prior to version 1.5, Subversion had no useful support for
 	merges. At the time of writing, its merge tracking capability
@@ -454,10 +448,10 @@
 	history of the project.</para>
 
       <para id="x_ab">Subversion is widely supported by third party tools.
-	Mercurial currently lags considerably in this area.  This gap
-	is closing, however, and indeed some of Mercurial's GUI tools
-	now outshine their Subversion equivalents.  Like Mercurial,
-	Subversion has an excellent user manual.</para>
+	When the first edition of this book was published,
+	Mercurial lagged behind considerably in this area. This gap
+	has closed, however, and Mercurial now has excellent GUI tools.
+	Like Mercurial, Subversion has an excellent user manual.</para>
 
       <para id="x_ac">Because Subversion doesn't store revision history on the
 	client, it is well suited to managing projects that deal with
@@ -466,7 +460,9 @@
 	client-side space usage stays constant The space used by any
 	distributed SCM will grow rapidly in proportion to the number
 	of revisions, because the differences between each revision
-	are large.</para>
+	are large.
+	Mercurial has solved this issue using the largefiles extension. See
+	<xref linkend="sec:scaling:largefiles"/> for details.</para>
 
       <para id="x_ad">In addition, it's often difficult or, more usually,
 	impossible to merge different versions of a binary file.
