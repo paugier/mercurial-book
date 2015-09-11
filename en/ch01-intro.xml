@@ -488,7 +488,8 @@
       <para id="x_af">Git is a distributed revision control tool that was
 	developed for managing the Linux kernel source tree.  Like
 	Mercurial, its early design was somewhat influenced by
-	Monotone.</para>
+	early distributed version control tools like Monotone
+	and Bitkeeper.</para>
 
       <para id="x_b0">Git has a very large command set, with version 1.5.0
 	providing 139 individual commands.  It has something of a
@@ -497,12 +498,10 @@
 
       <para id="x_b1">In terms of performance, Git is extremely fast.  In
 	several cases, it is faster than Mercurial, at least on Linux,
-	while Mercurial performs better on other operations.  However,
-	on Windows, the performance and general level of support that
-	Git provides is, at the time of writing, far behind that of
-	Mercurial.</para>
+	while Mercurial performs better on other operations.</para>
 
-      <para id="x_b2">While a Mercurial repository needs no maintenance, a Git
+      <para id="x_b2">(TODO: fix this: this is no longer the case)
+	While a Mercurial repository needs no maintenance, a Git
 	repository requires frequent manual <quote>repacks</quote> of
 	its metadata.  Without these, performance degrades, while
 	space usage grows rapidly.  A server that contains many Git
@@ -514,21 +513,21 @@
 	repository is several orders of magnitude larger.</para>
 
       <para id="x_b3">The core of Git is written in C.  Many Git commands are
-	implemented as shell or Perl scripts, and the quality of these
-	scripts varies widely. I have encountered several instances
-	where scripts charged along blindly in the presence of errors
-	that should have been fatal.</para>
+	originally implemented as shell or Perl scripts,
+	but move to C for better performance.</para>
 
       <para id="x_b4">Mercurial can import revision history from a Git
-	repository.</para>
+	repository. Using the hg-git extension, it's even possible
+	to push and pull to and from a Git repository using Mercurial.</para>
 
 
     </sect2>
     <sect2>
       <title>CVS</title>
 
-      <para id="x_b5">CVS is probably the most widely used revision control tool
-	in the world.  Due to its age and internal untidiness, it has
+      <para id="x_b5">CVS probably used to be the most widely used
+        revision control tool in the world.
+        Due to its age and internal untidiness, it has
 	been only lightly maintained for many years.</para>
 
       <para id="x_b6">It has a centralised client/server architecture.  It does
@@ -571,20 +570,25 @@
 
     </sect2>
     <sect2>
-      <title>Commercial tools</title>
+      <title>Perforce</title>
 
-      <para id="x_ba">Perforce has a centralised client/server architecture,
+      <para id="x_ba">Perforce is a commercial tool.
+	It has a centralised client/server architecture,
 	with no client-side caching of any data.  Unlike modern
 	revision control tools, Perforce requires that a user run a
 	command to inform the server about every file they intend to
 	edit.</para>
 
-      <para id="x_bb">The performance of Perforce is quite good for small teams,
-	but it falls off rapidly as the number of users grows beyond a
-	few dozen. Modestly large Perforce installations require the
-	deployment of proxies to cope with the load their users
-	generate.</para>
+      <para id="x_bb">Perforce is used in quite a few very large organizations.
+	One of the reasons for this is because it's well suited to handling
+	a lot of binaries, and it tends to scale well if you can afford
+	a beefed-up server.
+	Using the largefiles extension, Mercurial can also handle
+	binaries very well.</para>
 
+      <para>Mercurial can import revision history from a Perforce
+	repository. It can also push and pull to and from a Perforce
+	repository using the perfarce extension.</para>
 
     </sect2>
     <sect2>
@@ -623,7 +627,12 @@
       <listitem><para id="x_c1">Subversion</para></listitem>
       <listitem><para id="x_c2">CVS</para></listitem>
       <listitem><para id="x_c3">Git</para></listitem>
-      <listitem><para id="x_c4">Darcs</para></listitem></itemizedlist>
+      <listitem><para>Perforce</para></listitem>
+      <listitem><para id="x_c4">Darcs</para></listitem>
+      <listitem><para>Monotone</para></listitem>
+      <listitem><para>GNU Arch</para></listitem>
+      <listitem><para>Bazaar</para></listitem>
+    </itemizedlist>
 
     <para id="x_c5">In addition, <literal role="hg-ext">convert</literal> can
       export changes from Mercurial to Subversion.  This makes it
