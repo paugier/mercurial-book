@@ -64,8 +64,8 @@
     makes a lot of operations (like diff and log) much faster.</para>
 
     <para>However, if you have an extremely large project
-    with lots of developers adding history and an enormous amount
-    of changesets (TODO: quantify), this can result in slow pulls
+    with hundreds of developers adding history
+    and hundreds of thousands of changesets, this can result in slow pulls
     and a very large amount of disk space being used.
     In this case, the benefits of local history
     may be outweighed by its downsides.</para>
@@ -87,9 +87,8 @@
 
     <para>In other words, this extension results in
     downloading 4 times less data from the server on the initial clone!
-    There's still quite a bit of data downloaded,
-    but future optimizations of shallow cloning should be able
-    to get rid of that as well (TODO: verify).</para>
+    We can reduce this even further by combining this change with
+    history compression (TODO: link to history compression -- generaldelta)</para>
 
     <para>To get started with remotefilelog, clone the extension from
     <ulink url="https://bitbucket.org/facebook/remotefilelog">Bitbucket</ulink>
@@ -102,7 +101,8 @@ remotefilelog = /path/to/remotefilelog/remotefilelog</programlisting>
     both on the server and the client side.
     On the server side, all you need to do
     is enable the server functionality.
-    Additionally, you can configure the maximum time data is compressed:</para>
+    Additionally, you can configure the maximum time downloaded files
+    are cached:</para>
 
     <programlisting>[remotefilelog]
 server = True
@@ -117,7 +117,10 @@ serverexpiration = 10</programlisting>
     to be able to make shallow clones:</para>
 
     <programlisting>[remotefilelog]
-cachepath = /path/to/hgcache</programlisting>
+#Path where revisions will be cached locally
+cachepath = /path/to/hgcache
+#Maximum size of the local cache in GB
+cachelimit = 10</programlisting>
 
     <para>Once you've specified all of the configuration options,
     you should be able to make a shallow clone, simply by using the
@@ -137,6 +140,18 @@ cachepath = /path/to/hgcache</programlisting>
     <para>We've successfully made a shallow clone!
     So far, you'll only be able to do so for clones over ssh,
     other protocols aren't supported yet.</para>
+
+    <para>We can configure quite a few additional client settings.
+    Most importantly, remotefilelog allows configuring a <ulink
+	  url="http://memcached.org">memcached
+    caching server</ulink>, greatly improving performance if you are on a fast network.
+    To add memcached support to your client configuration,
+    you need to configure the cacheprocess parameter.
+    The extension contains a file <literal>cacheclient.py</literal>,
+    which we can use to communicate with a memcached server.</para>
+
+    <programlisting>[remotefilelog]
+cacheprocess = /path/to/remotefilelog/remotefilelog/cacheclient.py MEMCACHEIP:MEMCACHEPORT MEMCACHEPREFIX</programlisting>
   </sect1>
 
   <sect1 id="sec:scaling:largefiles">
