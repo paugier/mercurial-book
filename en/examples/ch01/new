@@ -26,9 +26,42 @@ ls -l
 
 ls -al myproject
 
+#$ name: cat
+# ... edit edit edit ...
+cat hello.c
+
+#$ name:
+cp hello.c myproject
+cd myproject
+
+#$ name: status
+hg status
+
+#$ name: add-single
+hg add hello.c
+
+#$ name: status-added
+hg status
+
+#$ name: diff
+hg diff
+
+#$ name: commit-added
+hg commit -m 'Initial commit'
+
+#$ name:
+cp ../goodbye.c hello.c
+
+#$ name: cat-change
+# ... edit edit edit ...
+cat hello.c
+
+#$ name: changed-statusdiff
+hg status
+hg diff
+
 #$ name: add
 
-cd myproject
 cp ../hello.c .
 cp ../goodbye.c .
 hg add

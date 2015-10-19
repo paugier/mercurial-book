@@ -48,6 +48,123 @@
   </sect1>
 
   <sect1>
+    <title>Basic configuration</title>
+
+    <para>Mercurial requires very little configuration.
+      You can run quite a few commands without configuring anything.
+      However, you need to configure at least your username if you wish
+      to contribute yourself to a project that uses Mercurial.
+    </para>
+
+    <para>Mercurial has a number of ways to determine your username.
+      The advised way for most users is through a file in your home
+      directory called <filename
+      role="special">.hgrc</filename>, with a <envar
+      role="rc-item-ui">username</envar> entry, that will be
+      used next.  To see what the contents of this file should
+      look like, refer to <xref
+	  linkend="sec:tour-basic:username"/>.
+    </para>
+
+    <para>Mercurial checks quite a few additional locations to determine
+      what username to use.</para>
+
+    <orderedlist>
+      <listitem><para>If you specify a <option
+	    role="hg-opt-commit">-u</option> or
+        <option role="hg-opt-commit">--user</option> option to Mercurial commands
+        that need a username, this will be used with highest priority.</para></listitem>
+      <listitem><para id="x_44">If you have set the <envar>HGUSER</envar>
+	    environment variable, this is checked
+	    next.</para></listitem>
+      <listitem><para>The above mentioned <filename role="special">.hgrc</filename>
+        file is next to be checked.</para></listitem>
+      <listitem><para id="x_46">If you have set the <envar>EMAIL</envar>
+	    environment variable, this will be used
+	    next.</para></listitem>
+	<listitem><para id="x_47">Mercurial will query your system to find out
+	    your local user name and host name, and construct a
+	    username from these components. Since this often results
+	    in a username that is not very useful, it will print a
+	    warning if it has to do
+	    this.</para></listitem>
+      </orderedlist>
+      <para id="x_48">If all of these mechanisms fail, Mercurial will
+	  fail, printing an error message.  In this case, it will not
+	  let you commit until you set up a
+	  username.</para>
+
+      <para id="x_49">You should think of the <envar>HGUSER</envar> environment
+	variable and the <option role="hg-opt-commit">-u</option>
+	option as ways to <emphasis>override</emphasis> Mercurial's
+	default selection of username.  For normal use, the simplest
+	and most robust way to set a username for yourself is by
+	creating a <filename role="special">.hgrc</filename> file; see
+	below for details.</para>
+
+    <sect2 id="sec:tour-basic:username">
+      <title>Creating a Mercurial configuration file</title>
+
+      <para id="x_4a">To set a user name, use your favorite editor
+      to create a file called <filename
+      role="special">.hgrc</filename> in your home directory.
+      Mercurial will use this file to look up your personalised
+	  configuration settings.  The initial contents of your
+	  <filename role="special">.hgrc</filename> should look like
+	  this.</para>
+
+	  <programlisting># This is a Mercurial configuration file.
+[ui]
+username = Firstname Lastname &lt;email.address@example.net&gt;</programlisting>
+
+      <para id="x_4b">The <quote><literal>[ui]</literal></quote> line begins a
+	  <emphasis>section</emphasis> of the config file, so you can
+	  read the <quote><literal>username = ...</literal></quote>
+	  line as meaning <quote>set the value of the
+	    <literal>username</literal> item in the
+	    <literal>ui</literal> section</quote>. A section continues
+	  until a new section begins, or the end of the file.
+	  Mercurial ignores empty lines and treats any text from
+	  <quote><literal>#</literal></quote> to the end of a line as
+	  a comment.</para>
+
+	<tip>
+	  <title><quote>Home directory</quote> on Windows</title>
+
+	  <para id="x_716">When we refer to your home directory, on an English
+	    language installation of Windows this will usually be a
+	    folder named after your user name in
+	    <filename>C:\Documents and Settings</filename>.  You can
+	    find out the exact name of your home directory by opening
+	    a command prompt window and running the following
+	    command.</para>
+
+	  <screen><prompt>C:\></prompt> <userinput>echo %UserProfile%</userinput></screen>
+	</tip>
+    </sect2>
+
+    <sect2>
+      <title>Choosing a user name</title>
+
+      <para id="x_4c">You can use any text you like as the value of
+      the <literal>username</literal> config item, since this
+      information is for reading by other people, but will not be
+      interpreted by Mercurial.  The convention that most people
+      follow is to use their name and email address, as in the
+      example above.</para>
+
+      <note>
+        <para id="x_4d">Mercurial's built-in web server obfuscates
+        email addresses, to make it more difficult for the email
+        harvesting tools that spammers use. This reduces the
+        likelihood that you'll start receiving more junk email if
+        you publish a Mercurial repository on the
+        web.</para>
+      </note>
+    </sect2>
+  </sect1>
+
+  <sect1>
     <title>Getting started</title>
 
     <para>The Mercurial command-line interface can be used by calling
@@ -88,11 +205,9 @@
     <para>There are a few more options in the help system. For example,
       using the <option role="hg-opt-global">-k</option> or
       <option role="hg-opt-global">--keyword</option> option, you can
-      search through the help system for a specific word.
-      An overview of the help system can be viewed by using the command
-      <command role="hg-cmd">hg help help</command>.</para>
+      search through the help system for a specific word.</para>
 
-      &interaction.tour.help-help;
+      &interaction.tour.help-keyword;
 
     </sect2>
   </sect1>
@@ -110,6 +225,151 @@
       treats as special. You can rename or delete a repository any
       time you like, using either the command line or your file
       browser.</para>
+
+    <para>There are two major types of Mercurial commands:</para>
+
+    <itemizedlist>
+      <listitem><para>The first type allows you to work on a local repository,
+        doing a number of actions on your own. These commands are purely
+        local commands.</para></listitem>
+      <listitem><para>The second type are network operations. These
+        allow you to send changes to your code to another repository,
+        or retrieve new changes from somebody else.</para></listitem>
+    </itemizedlist>
+
+    <para>We will start our overview of Mercurial by looking
+      at how you can use Mercurial on your own repository and expand into the network
+      later on.</para>
+
+    <sect2>
+      <title>Creating your own repository</title>
+
+      <para>Creating a repository is quite simple.
+        We can use the <command>hg init</command> command to create a new
+        directory, which will be our repository.</para>
+
+      &interaction.ch01-new.init;
+
+      <para>This simply creates a repository named
+        <filename>myproject</filename> in the current directory.</para>
+
+      &interaction.ch01-new.ls;
+
+    </sect2>
+
+    <sect2>
+      <title>What's in a repository?</title>
+
+      <para id="x_18">When we take a more detailed look inside a repository, we
+	can see that it contains a directory named <filename
+	  class="directory">.hg</filename>.  This is where Mercurial
+	keeps all of its metadata for the repository.</para>
+
+      &interaction.ch01-new.ls2;
+
+      <para id="x_19">The contents of the <filename
+	  class="directory">.hg</filename> directory and its
+	subdirectories are private to Mercurial.  Every other file and
+	directory in the repository is yours to do with as you
+	please.</para>
+
+      <para id="x_1a">To introduce a little terminology, the <filename
+	  class="directory">.hg</filename> directory is the
+	<quote>real</quote> repository, and all of the files and
+	directories that coexist with it are said to live in the
+	<emphasis>working directory</emphasis>.  An easy way to
+	remember the distinction is that the
+	<emphasis>repository</emphasis> contains the
+	<emphasis>history</emphasis> of your project, while the
+	<emphasis>working directory</emphasis> contains a
+	<emphasis>snapshot</emphasis> of your project at a particular
+	point in history.</para>
+
+    </sect2>
+    <sect2>
+      <title>Adding content to the repository</title>
+
+      <para>We currently have a repository that contains no files in its
+        working directory. Suppose we add a basic file to our working directory.</para>
+
+      &interaction.ch01-new.cat;
+
+      <para>Mercurial's <command role="hg-cmd">hg status</command>
+        command gives us a simple overview of the changed and unknown
+        files in the working directory.</para>
+
+      &interaction.ch01-new.status;
+
+      <para>In our case, we've created a new file, but we haven't informed
+        Mercurial about it yet. Since Mercurial doesn't know anything
+        about this file, it's displayed with a question mark beside it.
+        The file is currently an 'untracked file'.</para>
+
+      <para>We can inform Mercurial that we wish to start tracking our
+        newly created file, by using <command role="hg-cmd">hg add</command>.</para>
+
+      &interaction.ch01-new.add-single;
+
+      <para>Now that our file has been added, we can see that Mercurial treats
+        it differently.</para>
+
+      &interaction.ch01-new.status-added;
+
+      <para>It's somewhat helpful to know that we've modified
+        <filename>hello.c</filename>, but we might prefer to know
+        exactly <emphasis>what</emphasis> changes we've made to it.  To
+        do this, we use the <command role="hg-cmd">hg diff</command>
+        command.</para>
+
+      &interaction.ch01-new.diff;
+
+      <para>Once we have a file (or multiple) that's being tracked by Mercurial,
+        we can add it to our history. In Mercurial terminology,
+        we call each stored 'snapshot' of history a <emphasis>changeset</emphasis>,
+        because it can contain a record of changes to several files.</para>
+
+      <para>We can create a changeset ourselves, adding our new file
+        permanently to the history of our repository. We can use the
+        <command role="hg-cmd">hg commit</command> command for this purpose.
+        The process of creating a changeset is usually called "making a commit" or "committing".</para>
+
+      <para>The <command role="hg-cmd">hg status</command> command already
+        showed us earlier what will happen when we make a commit.
+        The 'A' next to our new file specifies that our file will
+        be added to the history.</para>
+
+      &interaction.ch01-new.commit-added;
+
+      <para>Now that we've committed our changes, we will no longer see them
+        in the output of <command role="hg-cmd">hg status</command>.
+        That makes sense: we usually only want to see the files
+        we're currently changing. It's possible to view other things as well, though,
+        and we'll go into more detail about that later.</para>
+
+      <para>Let's change one more thing in our repository: the contents of our
+        file aren't quite right. What happens if we change our file?</para>
+
+      &interaction.ch01-new.cat-change;
+
+      <para>Again, we can use the status and diff commands to investigate
+        what has changed in the repository.</para>
+
+      &interaction.ch01-new.changed-statusdiff;
+
+      <para>The <quote><literal>M</literal></quote> indicates that
+        Mercurial has noticed that we modified
+        <filename>hello.c</filename>.  We didn't need to
+        <emphasis>inform</emphasis> Mercurial that we were going to
+        modify the file before we started, or that we had modified the
+        file after we were done; it was able to figure this out
+        itself.</para>
+
+      <para>Once a file has been added to a repository, Mercurial will
+        see any changes we make to it. There's no need to take any
+        special action before committing: <command role="hg-cmd">hg commit</command>
+        will save the modifications into a changeset.</para>
+
+    </sect2>
 
     <sect2>
       <title>Making a local copy of a repository</title>
@@ -149,34 +409,37 @@
 	with our repository, safe in the knowledge that it's a private
 	<quote>sandbox</quote> that won't affect anyone else.</para>
 
-    </sect2>
-    <sect2>
-      <title>What's in a repository?</title>
+    <para id="x_39">The first thing we'll do is isolate our experiment in a
+      repository of its own.  We use the <command role="hg-cmd">hg
+	clone</command> command, but we don't need to clone a copy of
+      the remote repository.  Since we already have a copy of it
+      locally, we can just clone that instead.  This is much faster
+      than cloning over the network, and cloning a local repository
+      uses less disk space in most cases, too<footnote>
+	<para id="x_681">The saving of space arises when source and destination
+	  repositories are on the same filesystem, in which case
+	  Mercurial will use hardlinks to do copy-on-write sharing of
+	  its internal metadata.  If that explanation meant nothing to
+	  you, don't worry: everything happens transparently and
+	  automatically, and you don't need to understand it.</para>
+	</footnote>.</para>
 
-      <para id="x_18">When we take a more detailed look inside a repository, we
-	can see that it contains a directory named <filename
-	  class="directory">.hg</filename>.  This is where Mercurial
-	keeps all of its metadata for the repository.</para>
+    &interaction.tour.reclone;
 
-      &interaction.tour.ls-a;
+    <para id="x_3a">As an aside, it's often good practice to keep a
+      <quote>pristine</quote> copy of a remote repository around,
+      which you can then make temporary clones of to create sandboxes
+      for each task you want to work on.  This lets you work on
+      multiple tasks in parallel, each isolated from the others until
+      it's complete and you're ready to integrate it back.  Because
+      local clones are so cheap, there's almost no overhead to cloning
+      and destroying repositories whenever you want.</para>
 
-      <para id="x_19">The contents of the <filename
-	  class="directory">.hg</filename> directory and its
-	subdirectories are private to Mercurial.  Every other file and
-	directory in the repository is yours to do with as you
-	please.</para>
+      <para>When we make changes, we don't have any impact on the repository
+        we cloned. We can safely add a line to the local file
+        <filename>hello.c</filename>:</para>
 
-      <para id="x_1a">To introduce a little terminology, the <filename
-	  class="directory">.hg</filename> directory is the
-	<quote>real</quote> repository, and all of the files and
-	directories that coexist with it are said to live in the
-	<emphasis>working directory</emphasis>.  An easy way to
-	remember the distinction is that the
-	<emphasis>repository</emphasis> contains the
-	<emphasis>history</emphasis> of your project, while the
-	<emphasis>working directory</emphasis> contains a
-	<emphasis>snapshot</emphasis> of your project at a particular
-	point in history.</para>
+      &interaction.tour.diff;
 
     </sect2>
   </sect1>
@@ -432,210 +695,8 @@
 
   </sect1>
   <sect1>
-    <title>Making and reviewing changes</title>
+    <title>Good commit practices</title>
 
-    <para id="x_38">Now that we have a grasp of viewing history in Mercurial,
-      let's take a look at making some changes and examining
-      them.</para>
-
-    <para id="x_39">The first thing we'll do is isolate our experiment in a
-      repository of its own.  We use the <command role="hg-cmd">hg
-	clone</command> command, but we don't need to clone a copy of
-      the remote repository.  Since we already have a copy of it
-      locally, we can just clone that instead.  This is much faster
-      than cloning over the network, and cloning a local repository
-      uses less disk space in most cases, too<footnote>
-	<para id="x_681">The saving of space arises when source and destination
-	  repositories are on the same filesystem, in which case
-	  Mercurial will use hardlinks to do copy-on-write sharing of
-	  its internal metadata.  If that explanation meant nothing to
-	  you, don't worry: everything happens transparently and
-	  automatically, and you don't need to understand it.</para>
-	</footnote>.</para>
-
-    &interaction.tour.reclone;
-
-    <para id="x_3a">As an aside, it's often good practice to keep a
-      <quote>pristine</quote> copy of a remote repository around,
-      which you can then make temporary clones of to create sandboxes
-      for each task you want to work on.  This lets you work on
-      multiple tasks in parallel, each isolated from the others until
-      it's complete and you're ready to integrate it back.  Because
-      local clones are so cheap, there's almost no overhead to cloning
-      and destroying repositories whenever you want.</para>
-
-    <para id="x_3b">In our <filename class="directory">my-hello</filename>
-      repository, we have a file <filename>hello.c</filename> that
-      contains the classic <quote>hello, world</quote> program.</para>
-
-    &interaction.tour.cat1;
-
-    <para id="x_682">Let's edit this file so that it prints a second line of
-      output.</para>
-
-    &interaction.tour.cat2;
-
-    <para id="x_3c">Mercurial's <command role="hg-cmd">hg status</command>
-      command will tell us what Mercurial knows about the files in the
-      repository.</para>
-
-    &interaction.tour.status;
-
-    <para id="x_3d">The <command role="hg-cmd">hg status</command> command
-      prints no output for some files, but a line starting with
-      <quote><literal>M</literal></quote> for
-      <filename>hello.c</filename>.  Unless you tell it to, <command
-	role="hg-cmd">hg status</command> will not print any output
-      for files that have not been modified.</para>
-
-    <para id="x_3e">The <quote><literal>M</literal></quote> indicates that
-      Mercurial has noticed that we modified
-      <filename>hello.c</filename>.  We didn't need to
-      <emphasis>inform</emphasis> Mercurial that we were going to
-      modify the file before we started, or that we had modified the
-      file after we were done; it was able to figure this out
-      itself.</para>
-
-    <para id="x_3f">It's somewhat helpful to know that we've modified
-      <filename>hello.c</filename>, but we might prefer to know
-      exactly <emphasis>what</emphasis> changes we've made to it.  To
-      do this, we use the <command role="hg-cmd">hg diff</command>
-      command.</para>
-
-    &interaction.tour.diff;
-
-    <tip>
-      <title>Understanding patches</title>
-
-      <para id="x_683">Remember to take a look at <xref
-	  linkend="sec:mq:patch"/> if you don't know how to read
-	output above.</para>
-    </tip>
-  </sect1>
-  <sect1>
-    <title>Recording changes in a new changeset</title>
-
-    <para id="x_40">We can modify files, build and test our changes, and use
-      <command role="hg-cmd">hg status</command> and <command
-	role="hg-cmd">hg diff</command> to review our changes, until
-      we're satisfied with what we've done and arrive at a natural
-      stopping point where we want to record our work in a new
-      changeset.</para>
-
-    <para id="x_41">The <command role="hg-cmd">hg commit</command> command lets
-      us create a new changeset; we'll usually refer to this as
-      <quote>making a commit</quote> or
-      <quote>committing</quote>.</para>
-
-    <sect2>
-      <title>Setting up a username</title>
-
-      <para id="x_42">When you try to run <command role="hg-cmd">hg
-	  commit</command> for the first time, it is not guaranteed to
-	succeed.  Mercurial records your name and address with each
-	change that you commit, so that you and others will later be
-	able to tell who made each change.  Mercurial tries to
-	automatically figure out a sensible username to commit the
-	change with.  It will attempt each of the following methods,
-	in order:</para>
-      <orderedlist>
-	<listitem><para id="x_43">If you specify a <option
-	      role="hg-opt-commit">-u</option> option to the <command
-	      role="hg-cmd">hg commit</command> command on the command
-	    line, followed by a username, this is always given the
-	    highest precedence.</para></listitem>
-	<listitem><para id="x_44">If you have set the <envar>HGUSER</envar>
-	    environment variable, this is checked
-	    next.</para></listitem>
-	<listitem><para id="x_45">If you create a file in your home
-	    directory called <filename
-	      role="special">.hgrc</filename>, with a <envar
-	      role="rc-item-ui">username</envar> entry, that will be
-	    used next.  To see what the contents of this file should
-	    look like, refer to <xref
-	      linkend="sec:tour-basic:username"/>
-	    below.</para></listitem>
-	<listitem><para id="x_46">If you have set the <envar>EMAIL</envar>
-	    environment variable, this will be used
-	    next.</para></listitem>
-	<listitem><para id="x_47">Mercurial will query your system to find out
-	    your local user name and host name, and construct a
-	    username from these components. Since this often results
-	    in a username that is not very useful, it will print a
-	    warning if it has to do
-	    this.</para></listitem>
-      </orderedlist>
-      <para id="x_48">If all of these mechanisms fail, Mercurial will
-	  fail, printing an error message.  In this case, it will not
-	  let you commit until you set up a
-	  username.</para>
-      <para id="x_49">You should think of the <envar>HGUSER</envar> environment
-	variable and the <option role="hg-opt-commit">-u</option>
-	option to the <command role="hg-cmd">hg commit</command>
-	command as ways to <emphasis>override</emphasis> Mercurial's
-	default selection of username.  For normal use, the simplest
-	and most robust way to set a username for yourself is by
-	creating a <filename role="special">.hgrc</filename> file; see
-	below for details.</para>
-      <sect3 id="sec:tour-basic:username">
-	<title>Creating a Mercurial configuration file</title>
-
-	<para id="x_4a">To set a user name, use your favorite editor
-	  to create a file called <filename
-	    role="special">.hgrc</filename> in your home directory.
-	  Mercurial will use this file to look up your personalised
-	  configuration settings.  The initial contents of your
-	  <filename role="special">.hgrc</filename> should look like
-	  this.</para>
-
-	<tip>
-	  <title><quote>Home directory</quote> on Windows</title>
-
-	  <para id="x_716">When we refer to your home directory, on an English
-	    language installation of Windows this will usually be a
-	    folder named after your user name in
-	    <filename>C:\Documents and Settings</filename>.  You can
-	    find out the exact name of your home directory by opening
-	    a command prompt window and running the following
-	    command.</para>
-
-	  <screen><prompt>C:\></prompt> <userinput>echo %UserProfile%</userinput></screen>
-	</tip>
-
-	<programlisting># This is a Mercurial configuration file.
-[ui]
-username = Firstname Lastname &lt;email.address@example.net&gt;</programlisting>
-
-	<para id="x_4b">The <quote><literal>[ui]</literal></quote> line begins a
-	  <emphasis>section</emphasis> of the config file, so you can
-	  read the <quote><literal>username = ...</literal></quote>
-	  line as meaning <quote>set the value of the
-	    <literal>username</literal> item in the
-	    <literal>ui</literal> section</quote>. A section continues
-	  until a new section begins, or the end of the file.
-	  Mercurial ignores empty lines and treats any text from
-	  <quote><literal>#</literal></quote> to the end of a line as
-	  a comment.</para>
-      </sect3>
-
-      <sect3>
-	<title>Choosing a user name</title>
-
-	<para id="x_4c">You can use any text you like as the value of
-	  the <literal>username</literal> config item, since this
-	  information is for reading by other people, but will not be
-	  interpreted by Mercurial.  The convention that most people
-	  follow is to use their name and email address, as in the
-	  example above.</para>
-	<note>
-	  <para id="x_4d">Mercurial's built-in web server obfuscates
-	    email addresses, to make it more difficult for the email
-	    harvesting tools that spammers use. This reduces the
-	    likelihood that you'll start receiving more junk email if
-	    you publish a Mercurial repository on the
-	    web.</para></note>
-      </sect3>
-    </sect2>
     <sect2>
       <title>Writing a commit message</title>
 
@@ -726,25 +787,13 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
       <title>Admiring our new handiwork</title>
 
       <para id="x_56">Once we've finished the commit, we can use the
-	<command role="hg-cmd">hg tip</command> command to display the
-	changeset we just created.  This command produces output that
-	is identical to <command role="hg-cmd">hg log</command>, but
-	it only displays the newest revision in the repository.</para>
+	<command role="hg-cmd">hg log --rev .</command> command to display the
+	changeset we just created.  In this command, the '.' specifies
+    that we want to view the current changeset. In other words,
+    it will show us what we just committed.</para>
 
-      &interaction.tour.tip;
+      &interaction.tour.tip-log;
 
-      <para id="x_57">We refer to the newest revision in the
-	repository as the <emphasis>tip revision</emphasis>, or simply
-	the <emphasis>tip</emphasis>.</para>
-
-      <para id="x_684">By the way, the <command role="hg-cmd">hg tip</command>
-	command accepts many of the same options as <command
-	  role="hg-cmd">hg log</command>, so <option
-	  role="hg-opt-global">-v</option> above indicates <quote>be
-	  verbose</quote>, <option role="hg-opt-tip">-p</option>
-	specifies <quote>print a patch</quote>.  The use of <option
-	  role="hg-opt-tip">-p</option> to print patches is another
-	example of the consistent naming we mentioned earlier.</para>
     </sect2>
   </sect1>
 
@@ -788,8 +837,7 @@ summary:     include buildmeister/commondefs. Add exports.</programlisting>
 
       &interaction.tour.pull;
 
-      <para id="x_5d">As you can see from the before-and-after output
-	of <command role="hg-cmd">hg tip</command>, we have
+      <para id="x_5d">As you can see from the before-and-after output, we have
 	successfully pulled changes into our repository.  However,
 	Mercurial separates pulling changes in from updating the
 	working directory. There remains one step before we will see
@@ -975,40 +1023,10 @@ default-push = http://hg.example.com/hg</programlisting>
 	understandably not set up to let anonymous users push to
 	it.</para>
 
-      &interaction.tour.push.net;
     </sect2>
   </sect1>
-
   <sect1>
-    <title>Starting a new project</title>
-
-    <para id="x_71c">It is just as easy to begin a new project as to work on one
-      that already exists.  The <command>hg init</command> command
-      creates a new, empty Mercurial repository.</para>
-
-    &interaction.ch01-new.init;
-
-    <para id="x_71d">This simply creates a repository named
-      <filename>myproject</filename> in the current directory.</para>
-
-    &interaction.ch01-new.ls;
-
-    <para id="x_71e">We can tell that <filename>myproject</filename> is a
-      Mercurial repository, because it contains a
-      <filename>.hg</filename> directory.</para>
-
-    &interaction.ch01-new.ls2;
-
-    <para id="x_71f">If we want to add some pre-existing files to the repository,
-      we copy them into place, and tell Mercurial to start tracking
-      them using the <command>hg add</command> command.</para>
-
-    &interaction.ch01-new.add;
-
-    <para id="x_720">Once we are satisfied that our project looks right, we
-      commit our changes.</para>
-
-    &interaction.ch01-new.commit;
+    <title>Conclusion</title>
 
     <para id="x_721">It takes just a few moments to start using Mercurial on a
       new project, which is part of its appeal. Revision control is
