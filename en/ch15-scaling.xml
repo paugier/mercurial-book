@@ -41,6 +41,18 @@
     the narrowhg extension allows you
     to only clone the subset of files you are interested in.</para>
 
+    <para>Large repositories can also be quite resource-intensive
+    for servers that host them.
+    A central Mercurial server can provide repositories to hundreds
+    or thousands of users.
+    Every time a user clones a repository, the server generates
+    a bundle containing the contents of that repository.
+    This bundle is transmitted to the user and extracted.
+    Generating a bundle for a large repository takes a lot of processing
+    power and disk access.
+    A feature called 'clonebundles' allows reusing pre-generated bundles,
+    resulting in a much-reduced load for the server.</para>
+
     <para>Finally, a very branchy history can also impact performance.
     Specifically, Mercurial by default does not efficiently store changes
     in lots of different branches developed at the same time.
@@ -88,7 +100,8 @@
     <para>In other words, this extension results in
     downloading 4 times less data from the server on the initial clone!
     We can reduce this even further by combining this change with
-    history compression (TODO: link to history compression -- generaldelta)</para>
+    efficient storage of many branches as mentioned in
+     <xref linkend="sec:scaling:branches"/>.</para>
 
     <para>To get started with remotefilelog, clone the extension from
     <ulink url="https://bitbucket.org/facebook/remotefilelog">Bitbucket</ulink>
@@ -308,6 +321,18 @@ patterns =
 
     <para>In conclusion: the largefiles extension is very useful,
     but keep in mind its downsides before you start using it!</para>
+  </sect1>
+
+  <sect1>
+    <title>Scaling repositories with many files</title>
+
+    <para>TODO</para>
+  </sect1>
+
+  <sect1 id="sec:scaling:branches">
+    <title>Scaling repositories with many branches</title>
+
+    <para>TODO</para>
   </sect1>
 </chapter>
 
