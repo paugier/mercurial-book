@@ -327,7 +327,20 @@ patterns =
   <sect1>
     <title>Scaling repositories with many files</title>
 
-    <para>TODO</para>
+    <para>Repositories with hundreds of thousands of files
+    have their own set of scalability issues.
+    Running a command like <command role="hg-cmd">hg status</command>
+    or <command role="hg-cmd">hg update</command> requires accessing
+    every file in the repository to check if it has changed.
+    This is not even noticeable on small repositories,
+    but can become a problem with very large repositories.
+    </para>
+
+    <para>Most operating systems provide the possibility to <emphasis>watch</emphasis>
+    a certain directory and be informed automatically when files change.
+    This avoids having to scan through all files.
+    A tool called <emphasis>watchman</emphasis> handles watching files
+    on different operating systems.</para>
   </sect1>
 
   <sect1 id="sec:scaling:branches">
