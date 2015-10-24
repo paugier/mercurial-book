@@ -41,7 +41,23 @@ for filename in glob.glob('en/ch*.xml'):
         text = text.replace(m.group(0), ".. include:: examples/results/%s.lxo" % m.group(1))
     writefile(filename_part, text)
 
-    subprocess.call("pandoc -f docbook -t rst -s en/%s-%d.xml -o en/%s.rst" % (filename_part, target_index, filename_part), shell=True)
+    #Replace images -- Zalgo is coming for me after this
+    matches = re.finditer('<figure id="(.*?)">(.*?)</figure>', text, re.MULTILINE | re.DOTALL)
+    for m in matches:
+        ref = m.group(1)
+        figure_contents = m.group(2)
+        title = ""
+        title_m = re.search('<title>(.*?)</title>', figure_contents, re.MULTILINE | re.DOTALL)
+        if title_m:
+            title = re.sub('<.*?>', '', title_m.group(1), 0, re.MULTILINE | re.DOTALL).replace('\n', '')
+        fileref_m = re.search('fileref="(.*?)"', figure_contents)
+        fileref = fileref_m.group(1)
+
+        replacement = "\n.. _{ref}:\n.. image:: {fileref}\n   :alt: {title}\n".format(ref=ref, fileref=fileref, title=title)
+        text = text.replace(m.group(0), replacement)
+    writefile(filename_part, text)
+
+    subprocess.call("pandoc -f docbook --columns 150 -t rst -s en/%s-%d.xml -o en/%s.rst" % (filename_part, target_index, filename_part), shell=True)
 
     #Some of the earlier converted RST parts aren't very clean, fix those up
     with open('en/%s.rst' % filename_part, 'r') as f:
@@ -58,10 +74,18 @@ for filename in glob.glob('en/ch*.xml'):
         text = text.replace(m.group(0), '%s:%s:%s_' % (m.group(1), m.group(2), m.group(3)))
 
     #Remove newlines from Mercurial commands
-    matches = re.finditer('``(.*?)``', text, re.MULTILINE | re.DOTALL)
+    matches = re.finditer('``(.*?)``' , text, re.MULTILINE | re.DOTALL)
     for m in matches:
         if '\n' in m.group(0):
             text = text.replace(m.group(0), re.sub('\s+', ' ', m.group(0)))
+
+    #Fix images after pandoc screw-up
+    matches = re.finditer('.. _(.*?): .. image:: (.*?) :alt: ([^\n]*)', text)
+    for m in matches:
+        ref = m.group(1)
+        imageref = m.group(2)
+        alt = m.group(3)
+        text = text.replace(m.group(0), '.. _%s:\n.. figure:: %s\n\n   %s\n' % (ref, imageref, alt))
 
     with open('en/%s.rst' % filename_part, 'w') as f:
         f.write(text)
