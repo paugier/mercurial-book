@@ -14,26 +14,31 @@ def writefile(filename_part, text):
     with open("en/%s-%d.xml" % (filename_part, target_index), 'w') as f:
         f.write(text)
 
-for filename in glob.glob('en/ch*.xml'):
+for filename in (glob.glob('en/ch*.xml') + glob.glob('en/app*.xml')):
     target_index = 0
     m = re.search('en/ch\d+-(.*).xml', filename)
+    if m:
+        filename_part = m.group(1)
     if not m:
-        continue
-    filename_part = m.group(1)
+        m = re.search('en/app[A-Z]-(.*).xml', filename)
+        if not m:
+            continue
+        else:
+            filename_part = 'app-' + m.group(1)
 
     #Replace references
     with open(filename, 'r') as f:
         text = f.read()
         matches = re.finditer('<xref\s*linkend="(.*?)"/>', text, re.MULTILINE)
         for m in matches:
-            text = text.replace(m.group(0), m.group(1) + '_')
+            text = text.replace(m.group(0), "FOOBAR" + m.group(1) + '_')
     writefile(filename_part, text)
 
     #Replace reference targets
     matches = re.finditer('<(.*?)id="(.*?)"(.*?)>', text)
     for m in matches:
-        if any([m.group(2).startswith(x) for x in ['sec:']]):
-            text = text.replace(m.group(0), '<%s%s>\n.. _%s:\n\n' % (m.group(1), m.group(3), m.group(2)))
+        if any([m.group(2).startswith(x) for x in ['sec:', 'chap:']]):
+            text = text.replace(m.group(0), '.. _%s:\n\n<%s%s>\n' % (m.group(2), m.group(1), m.group(3)))
     writefile(filename_part, text)
 
     #Replace examples
@@ -132,6 +137,23 @@ for filename in glob.glob('en/ch*.xml'):
 
     text = text.replace('examples/results/ch09-check\\_whitespace.py.lst.lxo',
         'examples/results/ch09-check_whitespace.py.lst.lxo')
+
+    #Fix references for sphinx (thanks to our 'FOOBAR' hint to detect them)
+    matches = re.finditer('FOOBAR([^\s]*)_', text)
+    for m in matches:
+        text = text.replace(m.group(0), ':ref:`%s <%s>`' % (m.group(1), m.group(1)))
+
+    #Only keep the chapters as top-level RST sections
+    newtext = []
+    first = True
+    for line in text.splitlines():
+        if '===' in line:
+            if first:
+                first = False
+            else:
+                line = '~' * len(line)
+        newtext.append(line)
+    text = '\n'.join(newtext)
 
     with open('en/%s.rst' % filename_part, 'w') as f:
         f.write(text)
