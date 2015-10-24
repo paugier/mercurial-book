@@ -127,11 +127,9 @@ class static_example(example):
         s = open(self.name).read().rstrip()
         s = s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
         ofp = wopen(result_name(self.name + '.tmp'))
-        ofp.write('<!-- BEGIN %s -->\n' % self.name)
-        ofp.write('<programlisting>')
-        ofp.write(s)
-        ofp.write('</programlisting>\n')
-        ofp.write('<!-- END %s -->\n' % self.name)
+        ofp.write('.. code::\n\n')
+        for line in s.splitlines():
+            ofp.write('  ' + line + '\n')
         ofp.close()
         self.rename_output(self.name)
         norm = self.name.replace(os.sep, '-')
@@ -311,8 +309,6 @@ class shell_example(example):
                                 return 1
                             assert os.sep not in out
                             if ofp is not None:
-                                ofp.write('</screen>\n')
-                                ofp.write('<!-- END %s -->\n' % ofp_basename)
                                 ofp.close()
                                 err |= self.rename_output(ofp_basename, ignore)
                             if out:
@@ -325,8 +321,7 @@ class shell_example(example):
                                     % (norm, norm)] = 1
                                 read_hint = ofp_basename + ' '
                                 ofp = wopen(result_name(ofp_basename + '.tmp'))
-                                ofp.write('<!-- BEGIN %s -->\n' % ofp_basename)
-                                ofp.write('<screen>')
+                                ofp.write('.. code::\n\n')
                             else:
                                 ofp = None
                         elif pi == 'ignore':
@@ -339,14 +334,14 @@ class shell_example(example):
                         # first, print the command we ran
                         if not hunk.startswith('#'):
                             nl = hunk.endswith('\n')
-                            hunk = ('<prompt>%s</prompt> '
-                                    '<userinput>%s</userinput>' %
-                                    (prompts[ps],
-                                     xml_escape(hunk.rstrip('\n'))))
+                            hunk = ('  %s %s' % (prompts[ps], hunk.rstrip('\n')))
                             if nl: hunk += '\n'
+                        else:
+                            hunk = '  ' + hunk
                         ofp.write(hunk)
                         # then its output
-                        ofp.write(xml_escape(output))
+                        for line in output.splitlines():
+                            ofp.write('  %s\n' % line)
                         ps = newps
                 self.status('\n')
             except:
@@ -359,8 +354,6 @@ class shell_example(example):
                     ps, output = self.sendreceive('exit\n', read_hint)
                     if ofp is not None:
                         ofp.write(output)
-                        ofp.write('</screen>\n')
-                        ofp.write('<!-- END %s -->\n' % ofp_basename)
                         ofp.close()
                         err |= self.rename_output(ofp_basename, ignore)
                     os.close(self.cfd)

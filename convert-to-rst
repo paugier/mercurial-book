@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 import glob
 import subprocess
@@ -41,6 +42,11 @@ for filename in glob.glob('en/ch*.xml'):
         text = text.replace(m.group(0), ".. include:: examples/results/%s.lxo" % m.group(1))
     writefile(filename_part, text)
 
+    matches = re.finditer('&(ch.*?);', text)
+    for m in matches:
+        text = text.replace(m.group(0), ".. include:: examples/results/%s.lxo" % m.group(1))
+    writefile(filename_part, text)
+
     #Replace images -- Zalgo is coming for me after this
     matches = re.finditer('<figure id="(.*?)">(.*?)</figure>', text, re.MULTILINE | re.DOTALL)
     for m in matches:
@@ -57,6 +63,17 @@ for filename in glob.glob('en/ch*.xml'):
         text = text.replace(m.group(0), replacement)
     writefile(filename_part, text)
 
+    #Replace shell scripting in document itself (this is separate for each case, eww)
+    replacements = [
+        ('<screen><prompt>C:\\></prompt> <userinput>echo %UserProfile%</userinput></screen>',
+         '\n.. code::\n\n  C:\\> echo %UserProfile%')
+    ]
+    for (from_repl, to_repl) in replacements:
+        text = text.replace(from_repl, to_repl)
+
+    writefile(filename_part, text)
+
+    #Call pandoc
     subprocess.call("pandoc -f docbook --columns 150 -t rst -s en/%s-%d.xml -o en/%s.rst" % (filename_part, target_index, filename_part), shell=True)
 
     #Some of the earlier converted RST parts aren't very clean, fix those up
@@ -76,8 +93,8 @@ for filename in glob.glob('en/ch*.xml'):
     #Remove newlines from Mercurial commands
     matches = re.finditer('``(.*?)``' , text, re.MULTILINE | re.DOTALL)
     for m in matches:
-        if '\n' in m.group(0):
-            text = text.replace(m.group(0), re.sub('\s+', ' ', m.group(0)))
+        res = re.sub('\s+', ' ', "``%s``" % m.group(1).strip())
+        text = text.replace(m.group(0), res)
 
     #Fix images after pandoc screw-up
     matches = re.finditer('.. _(.*?): .. image:: (.*?) :alt: ([^\n]*)', text)
@@ -86,6 +103,35 @@ for filename in glob.glob('en/ch*.xml'):
         imageref = m.group(2)
         alt = m.group(3)
         text = text.replace(m.group(0), '.. _%s:\n.. figure:: %s\n\n   %s\n' % (ref, imageref, alt))
+
+    #Fix code example
+    matches = re.finditer('\s*.. code:: (.*)', text)
+    for m in matches:
+        text = text.replace(m.group(0), '\n\n.. code::\n\n  %s' % m.group(1))
+
+    matches = re.finditer('.. include:: .*?.lxo ', text)
+    for m in matches:
+        text = text.replace(m.group(0), m.group(0).strip() + '\n\n')
+
+    matches = re.finditer('.. include:: .*?lxo', text)
+    for m in matches:
+        text = text.replace(m.group(0), m.group(0) + '\n\n')
+
+    #Avoid the next part being interpreted as part of the include
+    matches = re.finditer('.. include:: ([^\s]*)(\s*)\*\*(\w+)\*\*', text)
+    for m in matches:
+        text = text.replace(m.group(0), ".. include:: %s\n\n|%s**%s**" % (m.group(1), m.group(2), m.group(3)))
+
+    matches = re.finditer('.. _fig:undo:bad-merge-(\d+):\n.. figure:: figs/bad-merge-(\d+).png', text)
+    for m in matches:
+        num = m.group(1)
+        text = text.replace(m.group(0), '.. _fig:undo:bad-merge-%s:\n   .. figure:: figs/bad-merge-%s.png' % (num, num))
+
+    #Get rid of 'EMDASH' weird conversion
+    text = text.replace('EMDASH', '—')
+
+    text = text.replace('examples/results/ch09-check\\_whitespace.py.lst.lxo',
+        'examples/results/ch09-check_whitespace.py.lst.lxo')
 
     with open('en/%s.rst' % filename_part, 'w') as f:
         f.write(text)
