@@ -208,6 +208,8 @@ def getparser():
              " (default: $%s or %d)" % defaults['jobs'])
     parser.add_option("--keep-tmpdir", action="store_true",
         help="keep temporary directory after running tests")
+    parser.add_option("--keep-outputdir", action="store_true",
+        help="keep output file after running tests")
     parser.add_option("-k", "--keywords",
         help="run tests matching keywords")
     parser.add_option("-l", "--local", action="store_true",
@@ -430,7 +432,7 @@ class Test(unittest.TestCase):
                  debug=False,
                  timeout=defaults['timeout'],
                  startport=defaults['port'], extraconfigopts=None,
-                 py3kwarnings=False, shell=None):
+                 py3kwarnings=False, shell=None, keepoutputdir=False):
         """Create a test from parameters.
 
         path is the full path to the file defining the test.
@@ -464,6 +466,10 @@ class Test(unittest.TestCase):
         self.name = _strpath(self.bname)
         self._testdir = os.path.dirname(path)
         self.errpath = os.path.join(self._testdir, b'%s.err' % self.bname)
+        if keepoutputdir:
+            self.outputpath = os.path.join(self._testdir, 'results', b'%s.out' % self.bname)
+        else:
+            self.outputpath = None
 
         self._threadtmp = tmpdir
         self._keeptmpdir = keeptmpdir
@@ -609,6 +615,12 @@ class Test(unittest.TestCase):
         self._finished = True
         self._ret = ret
         self._out = out
+
+        if self.outputpath:
+            f = open(self.outputpath, 'wb')
+            for line in out:
+                f.write(line)
+            f.close()
 
         def describe(ret):
             if ret < 0:
@@ -1981,7 +1993,8 @@ class TestRunner(object):
                     startport=self._getport(count),
                     extraconfigopts=self.options.extra_config_opt,
                     py3kwarnings=self.options.py3k_warnings,
-                    shell=self.options.shell)
+                    shell=self.options.shell,
+                    keepoutputdir=self.options.keep_outputdir)
         t.should_reload = True
         return t
 
