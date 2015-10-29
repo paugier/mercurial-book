@@ -1062,6 +1062,7 @@ class TTest(Test):
 
                 r = TTest.linematch(el, lout)
                 if isinstance(r, str):
+                    #TODO: handle this differently for the book output!
                     if r == '+glob':
                         lout = el[:-1] + ' (glob)\n'
                         r = '' # Warn only this line.
@@ -1102,7 +1103,8 @@ class TTest(Test):
                     postout.append(b'  [%d]\n' % ret)
                 if pos in after:
                     # Merge in non-active test bits.
-                    postout += after.pop(pos)
+                    while pos in after:
+                        postout += after.pop(pos)
                 pos = int(lcmd.split()[0])
 
         if pos in after:
