@@ -611,14 +611,14 @@ class Test(unittest.TestCase):
 
         vlog('# Test', self.name)
 
-        ret, out = self._run(env)
+        ret, out, outexact = self._run(env)
         self._finished = True
         self._ret = ret
         self._out = out
 
         if self.outputpath:
             f = open(self.outputpath, 'wb')
-            for line in out:
+            for line in outexact:
                 f.write(line)
             f.close()
 
@@ -1058,6 +1058,7 @@ class TTest(Test):
 
         pos = -1
         postout = []
+        postoutexact = []
         for l in output:
             lout, lcmd = l, None
             if salt in l:
@@ -1071,6 +1072,7 @@ class TTest(Test):
                 el = None
                 if expected.get(pos, None):
                     el = expected[pos].pop(0)
+                    postoutexact.append(b'  ' + lout)
 
                 r = TTest.linematch(el, lout)
                 if isinstance(r, str):
@@ -1107,6 +1109,7 @@ class TTest(Test):
                     expected[pos].insert(0, el)
                     break
                 postout.append(b'  ' + el)
+                postoutexact.append(el)
 
             if lcmd:
                 # Add on last return code.
@@ -1116,7 +1119,9 @@ class TTest(Test):
                 if pos in after:
                     # Merge in non-active test bits.
                     while pos in after:
-                        postout += after.pop(pos)
+                        af = after.pop(pos)
+                        postout += af
+                        postoutexact += af
                 pos = int(lcmd.split()[0])
 
         if pos in after:
@@ -1125,7 +1130,7 @@ class TTest(Test):
         if warnonly == 2:
             exitcode = False # Set exitcode to warned.
 
-        return exitcode, postout
+        return exitcode, postout, postoutexact
 
     @staticmethod
     def rematch(el, l):
