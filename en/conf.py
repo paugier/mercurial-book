@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Mercurial: the definite guide documentation build configuration file, created by
+# Mercurial: the definitive guide documentation build configuration file, created by
 # sphinx-quickstart on Sat Oct 24 17:21:48 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -48,7 +48,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Mercurial: the definite guide'
+project = 'Mercurial: the definitive guide'
 copyright = '2015, Bryan O\'Sullivan'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -181,7 +181,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Mercurialthedefiniteguidedoc'
+htmlhelp_basename = 'Mercurialthedefinitiveguidedoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -201,7 +201,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Mercurialthedefiniteguide.tex', 'Mercurial: the definite guide Documentation',
+  ('index', 'Mercurialthedefinitiveguide.tex', 'Mercurial: the definitive guide Documentation',
    'Bryan O\'Sullivan', 'manual'),
 ]
 
@@ -231,7 +231,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'mercurialthedefiniteguide', 'Mercurial: the definite guide Documentation',
+    ('index', 'mercurialthedefinitiveguide', 'Mercurial: the definitive guide Documentation',
      ['Bryan O\'Sullivan'], 1)
 ]
 
@@ -245,8 +245,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Mercurialthedefiniteguide', 'Mercurial: the definite guide Documentation',
-   'Bryan O\'Sullivan', 'Mercurialthedefiniteguide', 'One line description of project.',
+  ('index', 'Mercurialthedefinitiveguide', 'Mercurial: the definitive guide Documentation',
+   'Bryan O\'Sullivan', 'Mercurialthedefinitiveguide', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -265,6 +265,6 @@ texinfo_documents = [
 # -- Options for PDF output -------------------------------------------
 
 pdf_documents = [
-  ('index', 'Mercurialthedefiniteguide', 'Mercurial: the definite guide Documentation',
+  ('index', 'Mercurialthedefinitiveguide', 'Mercurial: the definite guide Documentation',
    'Bryan O\'Sullivan'),
 ]
