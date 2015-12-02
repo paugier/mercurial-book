@@ -1,7 +1,9 @@
 help:
+	@echo "Targets:"
+	@echo "========"
 	@echo "make html"
 
-example-sources := $(addprefix en/examples/,$(shell ls en/examples)) $(wildcard en/examples/ch*/*)
+example-sources := $(wildcard en/examples/*.t) $(wildcard en/examples/ch*/*)
 
 fig-source-dot := $(wildcard en/figs/*.dot)
 fig-source-svg := $(wildcard en/figs/*.svg)
@@ -11,7 +13,8 @@ fig-targets := $(fig-source-dot:%.dot=%.png) $(fig-source-svg:%.svg=%.png) $(fig
 
 #TODO: return code
 en/examples/.run: $(example-sources)
-	cd en/examples && (./run-example -a || echo "Examples complete")
+	mkdir en/examples/results
+	$(PRETEST) (cd en/examples && ./run-tests.py --with-hg=`which hg` -j `nproc` --keep-outputdir && ./process-examples.py && ./process-configfiles.py)
 
 .PHONY: examples
 examples: en/examples/.run

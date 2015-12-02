@@ -734,6 +734,7 @@ class Test(unittest.TestCase):
         env["HGPORT"] = str(self._startport)
         env["HGPORT1"] = str(self._startport + 1)
         env["HGPORT2"] = str(self._startport + 2)
+        env["TESTS_ROOT"] = os.getcwd()
         env["HGRCPATH"] = os.path.join(self._threadtmp, b'.hgrc')
         env["DAEMON_PIDS"] = os.path.join(self._threadtmp, b'daemon.pids')
         env["HGEDITOR"] = ('"' + sys.executable + '"'

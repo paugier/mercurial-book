@@ -9,6 +9,8 @@ def trailing_whitespace(difflines):
     linenum, header = 0, False
 
     for line in difflines:
+        if line.endswith('\n'):
+            line = line[:-1]
         if header:
             # remember the name of the file that this diff affects
             m = re.match(r'(?:---|\+\+\+) ([^\t]+)', line)

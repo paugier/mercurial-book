@@ -5,6 +5,7 @@ import glob
 import subprocess
 import re
 import sys
+import shutil
 
 target_index = 0
 
@@ -37,7 +38,7 @@ for filename in (glob.glob('en/ch*.xml') + glob.glob('en/app*.xml')):
     #Replace reference targets
     matches = re.finditer('<(.*?)id="(.*?)"(.*?)>', text)
     for m in matches:
-        if any([m.group(2).startswith(x) for x in ['sec:', 'chap:']]):
+        if any([m.group(2).startswith(x) for x in ['sec:', 'chap:', 'svn.filemap', 'mq-collab']]):
             text = text.replace(m.group(0), '.. _%s:\n\n<%s%s>\n' % (m.group(2), m.group(1), m.group(3)))
     writefile(filename_part, text)
 
@@ -71,7 +72,21 @@ for filename in (glob.glob('en/ch*.xml') + glob.glob('en/app*.xml')):
     #Replace shell scripting in document itself (this is separate for each case, eww)
     replacements = [
         ('<screen><prompt>C:\\></prompt> <userinput>echo %UserProfile%</userinput></screen>',
-         '\n.. code::\n\n  C:\\> echo %UserProfile%')
+         '\n.. code::\n\n  C:\\> echo %UserProfile%'),
+        ('<screen><prompt>$</prompt> <userinput>hg convert http://python-nose.googlecode.com/svn/trunk</userinput></screen>',
+        '\n.. code::\n\n  $ hg convert http://python-nose.googlecode.com/svn/trunk'),
+        ('<screen><prompt>$</prompt> <userinput>svnadmin create memcached-mirror</userinput></screen>',
+         '\n.. code::\n\n  $ svnadmin create memcached-mirror'),
+        ("<screen><prompt>$</prompt> <userinput>echo '#!/bin/sh' > memcached-mirror/hooks/pre-revprop-change</userinput>\n<prompt>$</prompt> <userinput>chmod +x memcached-mirror/hooks/pre-revprop-change</userinput></screen>",
+         "\n.. code::\n\n  $ echo '#!/bin/sh' > memcached-mirror/hooks/pre-revprop-change\n  $ chmod +x memcached-mirror/hooks/pre-revprop-change"),
+        ("<screen><prompt>$</prompt> <userinput>svnsync --init file://`pwd`/memcached-mirror \\\n  http://code.sixapart.com/svn/memcached</userinput></screen>",
+         "\n.. code::\n\n  $ svnsync --init file://`pwd`/memcached-mirror http://code.sixapart.com/svn/memcached"),
+        ("<screen><prompt>$</prompt> <userinput>svnsync sync file://`pwd`/memcached-mirror</userinput></screen>",
+         "\n.. code::\n\n  $ svnsync sync file://`pwd`/memcached-mirror"),
+        ("<screen><prompt>$</prompt> <userinput>hg convert memcached-mirror</userinput></screen>",
+         "\n.. code::\n\n  $ hg convert memcached-mirror"),
+        ("<screen><prompt>$</prompt> <userinput>hg status `hg root`</userinput></screen>",
+         "\n.. code::\n\n  $ hg status `hg root`")
     ]
     for (from_repl, to_repl) in replacements:
         text = text.replace(from_repl, to_repl)
@@ -80,6 +95,8 @@ for filename in (glob.glob('en/ch*.xml') + glob.glob('en/app*.xml')):
 
     #Call pandoc
     subprocess.call("pandoc -f docbook --columns 150 -t rst -s en/%s-%d.xml -o en/%s.rst" % (filename_part, target_index, filename_part), shell=True)
+
+    #shutil.copyfile('en/%s.rst' % filename_part, 'en/%s-old.rst' % filename_part)
 
     #Some of the earlier converted RST parts aren't very clean, fix those up
     with open('en/%s.rst' % filename_part, 'r') as f:
@@ -143,11 +160,74 @@ for filename in (glob.glob('en/ch*.xml') + glob.glob('en/app*.xml')):
     for m in matches:
         text = text.replace(m.group(0), ':ref:`%s <%s>`' % (m.group(1), m.group(1)))
 
+    text = text.replace("Informal sharing with ``hg serve``\n", "Informal sharing with ``hg serve``\n========")
+    text = text.replace("Options specific to the ``hg serve`` command\n", "Options specific to the ``hg serve`` command\n~~~~~~~~~~~~~~~~")
+
+    print filename
+    if filename == "en/appA-svn.xml":
+        text = text.replace("hg convert http://python-nose.googlecode.com/svn/trunk", "hg convert http://python-nose.googlecode.com/svn/trunk\n\n")
+        text = text.replace("svnadmin create memcached-mirror", "svnadmin create memcached-mirror\n\n")
+        text = text.replace(" $ chmod +x memcached-mirror/hooks/pre-revprop-change", "\n  $ chmod +x memcached-mirror/hooks/pre-revprop-change\n\n")
+        text = text.replace("svnsync --init file://\`pwd\`/memcached-mirror http://code.sixapart.com/svn/memcached",
+            "svnsync --init file://`pwd`/memcached-mirror http://code.sixapart.com/svn/memcached\n\n")
+        text = text.replace("$ svnsync sync file://\`pwd\`/memcached-mirror", "$ svnsync sync file://`pwd`/memcached-mirror\n\n")
+        text = text.replace("$ hg convert memcached-mirror", "$ hg convert memcached-mirror\n\n")
+        text = text.replace("$ hg status \`hg root\`", "$ hg status `hg root`\n\n")
+
+        text = text.replace("| ``svn commit``          | ``hg commit``; ``hg |``hg push``publishes after commit | | | push``           |                                        |",
+            "| ``svn commit``          | ``hg commit; hg push``     | ``hg push`` publishes after commit     |")
+        text = text.replace("| ``svn delete`` (``svn |``hg remove``| | | remove``)     |                            |                                        |",
+            "| ``svn delete``          | ``hg remove``              |                                        |")
+        text = text.replace("| ``svn import``          | ``hg addremove``; ``hg | | | | commit``         |                                        |",
+            "| ``svn import``          | ``hg addremove``;          |                                        |\n|                         | ``hg commit``              |                                        |")
+        text = text.replace("| ``svn info``            | ``hg showconfig | Shows what URL is checked out | | | paths.parent``   |                                        |",
+            "| ``svn info``            | ``hg showconfig paths``    | Shows what URL is checked out          |")
+        text = text.replace("| ``svn move`` (``svn |``hg rename``| | | rename``)     |                            |                                        |",
+            "| ``svn move``            | ``hg move``                |                                        |\n| (``svn rename``)        | (``hg rename``)            |                                        |")
+    elif filename == "en/ch00-preface.xml":
+        text = text.replace("We have a web page for this book, where we list errata, examples, and any additional information. You can access this page at:",
+            "We have a web page for this book, where we list errata, examples, and any additional information. You can access this page at " \
+            "http://www.oreilly.com/catalog/errataunconfirmed.csp?isbn=9780596801311.")
+        text = text.replace("To comment or ask technical questions about this book, send email to:\n\nbookquestions@oreilly.com",
+            "To comment or ask technical questions about this book, send email to bookquestions@oreilly.com.")
+        text = text.replace("For more information about our books, conferences, Resource Centers, and the O’Reilly Network, see our web site at:",
+            "For more information about our books, conferences, Resource Centers, and the O’Reilly Network, see our web site at http://www.oreilly.com.")
+        text = text.replace("\nO’Reilly Media, Inc.\n", "\n| O’Reilly Media, Inc.\n")
+        text = text.replace("1005 Gravenstein Highway North", "| 1005 Gravenstein Highway North")
+        text = text.replace("Sebastopol, CA 95472", "| Sebastopol, CA 95472")
+        text = text.replace("800-998-9938 (in the United States or Canada)", "| 800-998-9938 (in the United States or Canada)")
+        text = text.replace("707-829-0515 (international or local)", "| 707-829-0515 (international or local)")
+        text = text.replace("707 829-0104 (fax)", "| 707 829-0104 (fax)\n")
+    elif filename == "en/ch03-tour-merge.xml":
+        text = text.replace("   Divergent recent\n\n\n\nhistories of the my-hello and my-new-hello repositories",
+                            "   Divergent recent histories of the my-hello and my-new-hello repositories\n")
+    elif filename == "en/ch06-collab.xml":
+        text = text.replace("`the ``puttygen``\n   documentation <http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter8.html#pubkey-puttygen>`__",
+                            "`the puttygen documentation <http://the.earth.li/~sgtatham/putty/0.60/htmldoc/Chapter8.html#pubkey-puttygen>`_")
+        text = text.replace("``pageant`` <http://www.chiark.greenend.org.uk/%7Esgtatham/putty/download.html>",
+                            "pageant <http://www.chiark.greenend.org.uk/%7Esgtatham/putty/download.html>")
+    elif filename == "en/ch07-filenames.xml":
+        text = text.replace(".. include::\nexamples/results/filenames.files.lxo", "\n\n.. include:: examples/results/filenames.files.lxo")
+    elif filename == "en/ch09-undo.xml":
+        text = text.replace(".. _fig:undo:bad-merge-1:", "   .. _fig:undo:bad-merge-1:")
+        text = text.replace(".. include:: examples/results/backout.simple.log.lxo", "\n\n.. include:: examples/results/backout.simple.log.lxo")
+    text = text.replace("    **Caution**", ".. Caution::")
+    text = text.replace("    **Tip**", ".. Tip::")
+    text = text.replace("    **Note**", ".. Note::")
+
+    #Fix up final references
+    replacements = [(":ref:`sec:undo:bisect <sec:undo:bisect>`", ":ref:`\"Finding the source of a bug\" <sec:undo:bisect>`"),
+        (":ref:`chap:scaling\ <chap:scaling\>`", ":ref:`\"Scaling Mercurial\" <chap:scaling>`"),
+        (":ref:`sec:scaling:largefiles <sec:scaling:largefiles>`", ":ref:`\"Mercurial Largefiles\" <sec:scaling:largefiles>`")]
+    for (fro, to) in replacements:
+        text = text.replace(fro, to)
+
     #Only keep the chapters as top-level RST sections
     newtext = []
     first = True
     for line in text.splitlines():
-        if '===' in line:
+        #Make sure it's a line only containing '='
+        if '===' in line and not line.replace("=", "").replace("\n", ""):
             if first:
                 first = False
             else:
