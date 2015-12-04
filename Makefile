@@ -13,7 +13,7 @@ fig-targets := $(fig-source-dot:%.dot=%.png) $(fig-source-svg:%.svg=%.png) $(fig
 
 #TODO: return code
 en/examples/.run: $(example-sources)
-	mkdir en/examples/results
+	mkdir -p en/examples/results
 	$(PRETEST) (cd en/examples && ./run-tests.py --with-hg=`which hg` -j `nproc` --keep-outputdir && ./process-examples.py && ./process-configfiles.py)
 
 .PHONY: examples
