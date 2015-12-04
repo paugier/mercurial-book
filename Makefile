@@ -2,6 +2,9 @@ help:
 	@echo "Targets:"
 	@echo "========"
 	@echo "make html"
+	@echo "make html-single"
+	@echo "make pdf"
+	@echo "make gettext"
 
 example-sources := $(wildcard en/examples/*.t) $(wildcard en/examples/ch*/*)
 
