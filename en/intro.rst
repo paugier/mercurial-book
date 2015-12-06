@@ -270,17 +270,11 @@ Git
 Git is a distributed revision control tool that was developed for managing the Linux kernel source tree. Like Mercurial, its early design was somewhat
 influenced by early distributed version control tools like Monotone and Bitkeeper.
 
-Git has a very large command set, with version 1.5.0 providing 139 individual commands. It has something of a reputation for being difficult to learn.
+Git has a very large command set, with version 2.6 providing 140 individual commands. It has something of a reputation for being difficult to learn.
 Compared to Git, Mercurial has a strong focus on simplicity.
 
 In terms of performance, Git is extremely fast. In several cases, it is faster than Mercurial, at least on Linux, while Mercurial performs better on
 other operations.
-
-(TODO: fix this: this is no longer the case) While a Mercurial repository needs no maintenance, a Git repository requires frequent manual “repacks” of
-its metadata. Without these, performance degrades, while space usage grows rapidly. A server that contains many Git repositories that are not
-rigorously and frequently repacked will become heavily disk-bound during backups, and there have been instances of daily backups taking far longer
-than 24 hours as a result. A freshly packed Git repository is slightly smaller than a Mercurial repository, but an unpacked repository is several
-orders of magnitude larger.
 
 The core of Git is written in C. Many Git commands are originally implemented as shell or Perl scripts, but move to C for better performance.
 
