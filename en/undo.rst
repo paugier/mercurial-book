@@ -545,13 +545,6 @@ merges, or multiple heads in a repository. It can prune entire branches of histo
 Using the ``hg bisect`` command
 -------------------------------
 
-Here's an example of ``hg bisect`` in action.
-
-.. Note::
-
-    In versions 0.9.5 and earlier of Mercurial, ``hg bisect`` was not a core command: it was distributed with Mercurial as an extension. This section
-    describes the built-in command, not the old extension.
-
 Now let's create a repository, so that we can try out the ``hg bisect`` command in isolation.
 
 .. include:: examples/results/bisect.init.lxo
