@@ -222,15 +222,6 @@ merge:
 
 .. include:: examples/results/tour-merge-conflict.commit.lxo
 
-|
-
-
-.. Note::
-
-    The ``hg resolve`` command was introduced in Mercurial 1.1, which was released in December 2008. If you are using an older version of Mercurial
-    (run ``hg version`` to see), this command will not be present. If your version of Mercurial is older than 1.1, you should strongly consider
-    upgrading to a newer version before trying to tackle complicated merges.
-
 .. _sec:tour-merge:fetch:
 
 
