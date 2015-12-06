@@ -126,6 +126,5 @@ Please address comments and questions concerning this book to the publisher:
 
 We have a web page for this book, where we list errata, examples, and any additional information. You can access this page at http://www.oreilly.com/catalog/errataunconfirmed.csp?isbn=9780596801311.
 
-Don’t forget to update the <url> attribute, too.
 To comment or ask technical questions about this book, send email to bookquestions@oreilly.com.
 For more information about our books, conferences, Resource Centers, and the O’Reilly Network, see our web site at http://www.oreilly.com.
