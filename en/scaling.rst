@@ -237,4 +237,27 @@ scan through all files. A tool called *watchman* handles watching files on diffe
 Scaling repositories with many branches
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+Mercurial in general compresses changesets very well. However, the original Mercurial storage format had an inefficiency for repositories
+that have a very branchy history.
+In this particular case, changesets were not always compared to their parents. This resulted in much more space being used.
+In some cases, the size of the *manifest file* could be 10 times larger than in the ideal case.
+
+Starting with Mercurial 1.9, a new storage format called *generaldelta* was developed.
+This format no longer has the weakness of the previous one.
+
+TODO: format comparison for mozilla-central
+
+In Mercurial 3.5, a new network format was introduced, which supports transmitting generaldelta when cloning, pulling and pushing.
+Previously, pushing or pulling required converting the transmitted data back to the old format.
+
+Converting a large Mercurial repository between the old and new format is very computationally expensive.
+Mercurial 3.7 no longer requires this conversion. Instead, it's possible to have an older part of your repository stored in the older format,
+and take in new parts as generaldelta.
+
+Since no recomputation is required anymore for Mercurial 3.7, that release enables generaldelta by default.
+It's still possible to explicitly convert repositories to generaldelta, which is recommended on the server.
+You can do this using a particular configuration option::
+
+  $ hg clone --config format.generaldelta=1 --pull project-source project-generaldelta
+
+The generated *project-generaldelta* repository will use generaldelta and be more efficient for storing very branchy history.
