@@ -230,6 +230,31 @@ problem with very large repositories.
 
 Most operating systems provide the possibility to *watch* a certain directory and be informed automatically when files change. This avoids having to
 scan through all files. A tool called *watchman* handles watching files on different operating systems.
+The Mercurial extension *hgwatchman* uses the watchman tool to improve the speed of ``hg status`` and similar commands.
+
+You'll first need to make sure watchman is installed. It can be downloaded from `the official website <https://facebook.github.io/watchman/>`__,
+where installation instructions are available as well.
+
+The next step is installing hgwatchman::
+
+  $ hg clone https://bitbucket.org/facebook/hgwatchman
+  $ cd hgwatchman
+  $ make local
+
+You can activate the extension by adding it to your hgrc::
+
+  [extensions]
+  hgwatchman = path/to/this/directory/hgwatchman
+
+The extension shouldn't result in any behavioral differences. The only change is that actions on your working directory
+will be faster.
+Every time commands like ``hg status`` are called, hgwatchman will contact the watchman application, that automatically
+runs in the background.
+
+The first time you make contact, watchman will scan your repository once. It will also register itself to the operating system,
+so any change to your repository contents will be sent back to it.
+The next time you run your command, watchman doesn't do any scanning. It only needs to send the list of relevant files to Mercurial.
+
 
 .. _sec:scaling:branches:
 
