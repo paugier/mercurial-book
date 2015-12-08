@@ -46,12 +46,13 @@ However, if you have an extremely large project with hundreds of developers addi
 slow pulls and a very large amount of disk space being used. In this case, the benefits of local history may be outweighed by its downsides.
 
 Luckily, there's a solution: the remotefilelog extension. This extension allows you to make 'shallow clones', keeping all of the different file
-versions purely on the server. As an example, here are the sizes of the history for a large repository (mozilla-central) with and without the full
+versions purely on the server. Some information about each changeset is kept, but that takes up a lot less space.
+As an example, here are the sizes of the history for a large repository (mozilla-central) with and without the full
 history:
 
--  with history: 2256 MB
+-  with full history: 2256 MB
 
--  without history: 557 MB
+-  without full history: 557 MB
 
 In other words, this extension results in downloading 4 times less data from the server on the initial clone! We can reduce this even further by
 combining this change with efficient storage of many branches as mentioned in :ref:`sec:scaling:branches <sec:scaling:branches>`.
