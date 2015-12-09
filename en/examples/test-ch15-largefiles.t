@@ -1,3 +1,5 @@
+  $ cp $HGRCPATH $HGRCPATH.old
+
   $ echo '[extensions]' >> $HGRCPATH
   $ echo 'largefiles =' >> $HGRCPATH
 
@@ -20,3 +22,13 @@
 #$ name: add-largefile
   $ hg add --large randomdata
   $ hg commit -m 'added randomdata as largefile'
+
+#$ name:
+  $ cp $HGRCPATH.old $HGRCPATH
+  $ cd ..
+
+#$ name: no-largefile-support
+  $ hg clone foo target
+  abort: repository requires features unknown to this Mercurial: largefiles!
+  (see https://mercurial-scm.org/wiki/MissingRequirement for more information)
+  [255]

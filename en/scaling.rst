@@ -141,10 +141,7 @@ To enable the largefiles extension, simply add the following to your hgrc file:
 
 If you're concerned one of your users will forget to enable the extension, don't worry! Upon cloning, an informative error message will show up:
 
-::
-
-    abort: repository requires features unknown to this Mercurial: largefiles!
-    (see http://mercurial.selenic.com/wiki/MissingRequirement for more information)
+.. include:: examples/results/ch15-largefiles.no-largefile-support.lxo
 
 So how do we start using the largefiles extension to manage our large binaries? Let's setup a repository and create a large binary file:
 
