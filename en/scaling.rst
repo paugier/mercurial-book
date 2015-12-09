@@ -21,8 +21,7 @@ repository growing very fast. This also results in slower clones and pulls. This
 
 Repositories with hundreds of thousands of files can also pose scalability issues. Some common Mercurial commands (like 'hg status') need to check all
 of the files in the repository. This is almost not noticeable on small repositories, but can become an issue if you have a lot of files. The
-hgwatchman extension automatically detects and remembers repository changes, to avoid a slowdown. Additionally, if you don't require all files in the
-repository, the narrowhg extension allows you to only clone the subset of files you are interested in.
+hgwatchman extension automatically detects and remembers repository changes, to avoid a slowdown.
 
 Large repositories can also be quite resource-intensive for servers that host them. A central Mercurial server can provide repositories to hundreds or
 thousands of users. Every time a user clones a repository, the server generates a bundle containing the contents of that repository. This bundle is
