@@ -288,7 +288,8 @@ In some cases, the size of the *manifest file* could be 10 times larger than in 
 Starting with Mercurial 1.9, a new storage format called *generaldelta* was developed.
 This format no longer has the weakness of the previous one.
 
-TODO: format comparison for mozilla-central
+As an example, in the case of the mozilla-central repository,
+using generaldelta reduces the size of the manifest file from 467 MB to 335 MB.
 
 In Mercurial 3.5, a new network format was introduced, which supports transmitting generaldelta when cloning, pulling and pushing.
 Previously, pushing or pulling required converting the transmitted data back to the old format.
