@@ -251,9 +251,31 @@ The first time you make contact, watchman will scan your repository once. It wil
 so any change to your repository contents will be sent back to it.
 The next time you run your command, watchman doesn't do any scanning. It only needs to send the list of relevant files to Mercurial.
 
+Improving server scalability and cloning speed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An organization with a lot of developers and large repositories may run into issues
+due to limitations of a central *official* server.
+
+Every time a user pulls from another machine, a *bundle* is generated, containing
+the changesets requested by the user. For pulls, this usually doesn't take a lot of resources,
+since the generated bundle is small.
+This is no longer the case if either a large amount of changesets have been added since the last
+pull, or the user is cloning a complete repository.
+
+Cloning a complete repository requires generating a gzipped bundle of the entire repository!
+This means a very large amount of CPU is used every time, stressing the server.
+Generating a bundle can take several minutes, but the result of the calculation is thrown away afterwards.
+
+One alternative option would be to use the ``hg bundle`` command to generate a bundle.
+You could let people know they should download the bundle and clone from it into a repository.
+Sadly, that requires quite a bit of manual action and is more complicated than just cloning.
+
+This is where the *clonebundles* extension comes in.
+This server-side extension can point the client towards a hosted bundle file
+which is automatically downloaded when the client makes a clone.
 
 .. _sec:scaling:branches:
-
 
 Scaling repositories with many branches
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
