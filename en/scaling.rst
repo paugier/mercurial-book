@@ -275,6 +275,34 @@ This is where the *clonebundles* extension comes in.
 This server-side extension can point the client towards a hosted bundle file
 which is automatically downloaded when the client makes a clone.
 
+Some setup work needs to be done on the server:
+
+- First of all, a server operator needs to regularly generate bundle files.
+  A full bundle of the repository can be created using ``hg bundle --all``.
+  The generated files need to be placed on a webserver, so they are easily accessible.
+- Secondly, a server operator needs to maintain a file in the repository, *.hg/clonebundles.manifest*.
+  This file contains a list of available bundle files that can be used by clients.
+  Each line in the file specifies a specific bundle.
+
+Once the server has been set up correctly, the client will automatically execute the following steps upon clone:
+
+1. The client contacts the server and sees its capabilities include clone bundles.
+2. The client fetches the manifest and checks which bundle files are most appropriate.
+3. The client retrieves and applies the most appropriate bundle file.
+4. The client contacts the server once more, to retrieve changesets and other repository data that was not present
+   in the clone. The clone bundle should contain almost all of the repository data, so
+   this final operation should take much less time and processing power.
+
+Generating bundle files
+-----------------------
+
+TODO
+
+Specifying correct manifest lines
+---------------------------------
+
+TODO
+
 .. _sec:scaling:branches:
 
 Scaling repositories with many branches
