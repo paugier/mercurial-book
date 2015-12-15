@@ -296,7 +296,25 @@ Once the server has been set up correctly, the client will automatically execute
 Generating bundle files
 -----------------------
 
-TODO
+There are two ways to generate bundle files.
+
+The first approach is to use ``hg bundle --all``. This command will generate a bundle containing all of the changesets
+in a repository.
+You can specify a specific type of bundle using the *--type* parameter.
+As of Mercurial 3.7, there are 3 compression types available (none, gzip and bzip2) and 2 format types (v1 and v2).
+The default compression type is bzip2, while the default format type depends on the repository.
+Combining the two choices in the type parameter results in:
+
+.. include:: examples/results/ch15-clonebundles.bundle.lxo
+
+The output file now contains a bundle of our complete repository and can be used to speed up cloning using clonebundles.
+
+Each of the bundle compression types has some benefits and downsides. The *none* compression type is faster,
+but is also quite large. The *gzip* and *bzip2* types are smaller, but can (especially on large repositories) take
+much more time to compress and decompress.
+
+This is where the second approach to bundles shines.
+It's possible to generate a special *streaming bundle*, used specifically for clonebundles.
 
 Specifying correct manifest lines
 ---------------------------------
