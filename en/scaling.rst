@@ -277,7 +277,7 @@ which is automatically downloaded when the client makes a clone.
 
 Some setup work needs to be done on the server:
 
-- First of all, a server operator needs to regularly generate bundle files.
+- First of all, a server operator needs to regularly (for example once a day) generate bundle files.
   A full bundle of the repository can be created using ``hg bundle --all``.
   The generated files need to be placed on a webserver, so they are easily accessible.
 - Secondly, a server operator needs to maintain a file in the repository, *.hg/clonebundles.manifest*.
