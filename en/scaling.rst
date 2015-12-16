@@ -314,7 +314,30 @@ but is also quite large. The *gzip* and *bzip2* types are smaller, but can (espe
 much more time to compress and decompress.
 
 This is where the second approach to bundles shines.
-It's possible to generate a special *streaming bundle*, used specifically for clonebundles.
+It's possible to generate special *streaming bundles*, used specifically for clonebundles.
+These are larger than compressed bundles (though smaller than uncompressed bundles),
+but can be made and applied very fast.
+
+Generating streaming bundles is done using a special command:
+
+.. include:: examples/results/ch15-clonebundles.streambundle.lxo
+
+The command prints the requirements of this streaming bundle. We'll need this later on
+when we create a clonebundles manifest.
+
+As an example, I've generated different types of bundles for a Mercurial repository,
+with the following size results:
+
+* Compressed bzip2 bundle: 21 MB
+* Compressed gzip bundle: 29 MB
+* Uncompressed bundle: 101 MB
+* Streaming bundle: 53 MB
+
+You need to look at your specific situation when deciding which bundles you want to use.
+A high-bandwidth connection should use a streaming bundle, while a low-bandwidth connection is
+best served using well-compressed bzip2 bundles.
+
+The manifest file can help us here, by offering multiple bundles for different situations.
 
 Specifying correct manifest lines
 ---------------------------------
