@@ -49,10 +49,6 @@
   
    init  create a new repository in the given directory
    paths show aliases for remote repositories
-  
-  Extension Commands:
-  
-   qinit init a new queue repository (DEPRECATED)
 
 #$ name: clone
 
