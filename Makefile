@@ -5,6 +5,10 @@ help:
 	@echo "make html-single"
 	@echo "make pdf"
 	@echo "make gettext"
+	@echo ""
+	@echo "Additional parameters:"
+	@echo "======================"
+	@echo "SKIP_TESTS=1: don't run the tests"
 
 example-sources := $(wildcard en/examples/*.t) $(wildcard en/examples/ch*/*)
 
@@ -14,7 +18,10 @@ fig-source-gif := $(wildcard en/figs/*.gif)
 fig-source-png := $(wildcard en/figs/*.png)
 fig-targets := $(fig-source-dot:%.dot=%.png) $(fig-source-svg:%.svg=%.png) $(fig-source-gif) $(fig-source-png)
 
-#TODO: return code
+ifdef SKIP_TESTS
+	PRETEST = echo 'Skipping tests' ||
+endif
+
 en/examples/.run: $(example-sources)
 	mkdir -p en/examples/results
 	$(PRETEST) (cd en/examples && ./run-tests.py --with-hg=`which hg` -j `nproc` --keep-outputdir && ./process-examples.py && ./process-configfiles.py)
