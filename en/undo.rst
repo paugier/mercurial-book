@@ -360,8 +360,8 @@ with all the changes *between* the change you're backing out and the current tip
 
 If you're backing out a changeset that's 100 revisions back in your project's history, the chances that the ``patch`` command will be able to apply a
 reverse diff cleanly are not good, because intervening changes are likely to have “broken the context” that ``patch`` uses to determine whether it can
-apply a patch (if this sounds like gibberish, see :ref:`sec:mq:patch <sec:mq:patch>` for a discussion of the ``patch`` command). Also, Mercurial's merge machinery
-will handle files and directories being renamed, permission changes, and modifications to binary files, none of which ``patch`` can deal with.
+apply a patch. Also, Mercurial's merge machinery will handle files and directories being renamed, permission changes, and modifications to binary files,
+none of which ``patch`` can deal with.
 
 .. _sec:undo:aaaiiieee:
 

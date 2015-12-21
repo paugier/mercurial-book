@@ -16,9 +16,6 @@ already discussed a few of these extensions in earlier chapters.
 -  In :ref:`chap:hook\ <chap:hook\>`, we covered several extensions that are useful for hook-related functionality: ``acl`` adds access control lists; ``bugzilla``
    adds integration with the Bugzilla bug tracking system; and ``notify`` sends notification emails on new changes.
 
--  The Mercurial Queues patch management extension is so invaluable that it merits two chapters and an appendix all to itself. :ref:`chap:mq\ <chap:mq\>` covers
-   the basics; :ref:`chap:mq-collab\ <chap:mq-collab\>` discusses advanced topics; and :ref:`chap:mqref\ <chap:mqref\>` goes into detail on each command.
-
 In this chapter, we'll cover some of the other extensions that are available for Mercurial, and briefly touch on some of the machinery you'll need to
 know about if you want to write an extension of your own.
 
@@ -152,9 +149,6 @@ Launching a visual diff tool is just as easy. Here's how to launch the ``kdiff3`
 
     hg extdiff -p kdiff3 -o
 
-If your diff viewing command can't deal with directories, you can easily work around this with a little scripting. For an example of such scripting in
-action with the ``mq`` extension and the ``interdiff`` command, see :ref:`mq-collab:tips:interdiff <mq-collab:tips:interdiff>`.
-
 Defining command aliases
 ------------------------
 
@@ -253,7 +247,7 @@ variations through command line options.
 
 -  To change the email address from which the messages originate, use the ``hg -f`` option. This takes one argument, the email address to use.
 
--  The default behavior is to send unified diffs (see :ref:`sec:mq:patch <sec:mq:patch>` for a description of the format), one per message. You can send a binary
+-  The default behavior is to send unified diffs, one per message. You can send a binary
    bundle instead with the ``hg -b`` option.
 
 -  Unified diffs are normally prefaced with a metadata header. You can omit this, and send unadorned diffs, with the ``hg --plain`` option.

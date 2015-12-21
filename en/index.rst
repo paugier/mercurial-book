@@ -23,12 +23,9 @@ Contents:
    undo
    hook
    template
-   mq
-   mq-collab
    hgext
    scaling
    app-license.rst
-   app-mq-ref.rst
    app-srcinstall.rst
    app-svn.rst
 

@@ -384,7 +384,7 @@ of the change, or a list of the files changed, if you're trying to decide whethe
 
 
 If you want to see both the description and content of a change, add the ``-p`` (or ``--patch``) option. This displays the content of a change as a
-*unified diff* (if you've never seen a unified diff before, see :ref:`sec:mq:patch <sec:mq:patch>` for an overview).
+*unified diff*.
 
 .. include:: examples/results/tour.log-vp.lxo
 
