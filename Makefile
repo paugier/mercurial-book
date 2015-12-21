@@ -55,3 +55,14 @@ gettext: examples images
 	sphinx-build -b gettext en build/gettext
 
 all: html html-single pdf gettext
+
+website-repo:
+	hg clone https://bitbucket.org/hgbook/website website-repo
+
+website: html website-repo
+	hg -R website-repo pull
+	rm -rf website-repo/*
+	cp -R build/html/* website-repo
+	hg -R website-repo add
+	hg -R website-repo commit -m "Update website"
+	hg -R website-repo push
