@@ -17,7 +17,7 @@
   $ hg -R srcrepo commit -m "added woop"
 
 #$ name: clone
-  $ hg clone --shallow ssh://localhost//$PWD/srcrepo --remotecmd `which hg` targetrepo
+  $ hg clone --shallow ssh://localhost//$PWD/srcrepo --remotecmd "`which hg`" --ssh "python \"$TESTDIR/forwardssh\"" targetrepo
   requesting all changes
   adding changesets
   adding manifests
