@@ -19,6 +19,8 @@ fig-source-gif := $(wildcard en/figs/*.gif)
 fig-source-png := $(wildcard en/figs/*.png)
 fig-targets := $(fig-source-dot:%.dot=%.png) $(fig-source-svg:%.svg=%.png) $(fig-source-gif) $(fig-source-png)
 
+SPHINX_FLAGS := -W
+
 ifdef SKIP_TESTS
 	PRETEST = echo 'Skipping tests' ||
 endif
@@ -42,17 +44,17 @@ en/figs/%.png: en/figs/%.svg
 images: $(fig-targets)
 
 html: examples images
-	sphinx-build en build/html
+	sphinx-build $(SPHINX_FLAGS) en build/html
 
 html-single: examples images
-	sphinx-build -b singlehtml en build/html-single
+	sphinx-build $(SPHINX_FLAGS) -b singlehtml en build/html-single
 
 pdf: examples images
 	#requires rst2pdf
-	sphinx-build -b pdf en build/pdf
+	sphinx-build $(SPHINX_FLAGS) -b pdf en build/pdf
 
 gettext: examples images
-	sphinx-build -b gettext en build/gettext
+	sphinx-build $(SPHINX_FLAGS) -b gettext en build/gettext
 
 all: html html-single pdf gettext
 
