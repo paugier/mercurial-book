@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Mercurial: the definitive guide's documentation!
-=========================================================
+===========================================================
 
 Contents:
 
