@@ -265,6 +265,6 @@ texinfo_documents = [
 # -- Options for PDF output -------------------------------------------
 
 pdf_documents = [
-  ('index', 'Mercurialthedefinitiveguide', 'Mercurial: the definite guide Documentation',
+  ('index', 'Mercurialthedefinitiveguide', 'Mercurial: the definitive guide Documentation',
    'Bryan O\'Sullivan'),
 ]
