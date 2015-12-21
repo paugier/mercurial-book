@@ -5,6 +5,7 @@ help:
 	@echo "make html-single"
 	@echo "make pdf"
 	@echo "make gettext"
+	@echo "make all"
 	@echo ""
 	@echo "Additional parameters:"
 	@echo "======================"
@@ -52,3 +53,5 @@ pdf: examples images
 
 gettext: examples images
 	sphinx-build -b gettext en build/gettext
+
+all: html html-single pdf gettext
