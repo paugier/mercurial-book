@@ -58,6 +58,9 @@ gettext: examples images
 
 all: html html-single pdf gettext
 
+clean:
+	rm -rf build
+
 website-repo:
 	hg clone https://bitbucket.org/hgbook/website website-repo
 
