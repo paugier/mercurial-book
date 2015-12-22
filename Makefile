@@ -28,6 +28,7 @@ endif
 en/examples/.run: $(example-sources)
 	mkdir -p en/examples/results
 	$(PRETEST) (cd en/examples && ./run-tests.py --with-hg=`which hg` -j `nproc` --keep-outputdir && ./process-examples.py && ./process-configfiles.py)
+	touch $@
 
 .PHONY: examples
 examples: en/examples/.run
@@ -41,29 +42,37 @@ en/figs/%.png: en/figs/%.svg
 	inkscape -D --export-png=$@ $<-tmp.svg
 	rm $<-tmp.svg
 
+.PHONY: images
 images: $(fig-targets)
 
+.PHONY: html
 html: examples images
 	sphinx-build $(SPHINX_FLAGS) en build/html
 
+.PHONY: html-single
 html-single: examples images
 	sphinx-build $(SPHINX_FLAGS) -b singlehtml en build/html-single
 
+.PHONY: pdf
 pdf: examples images
 	#requires rst2pdf
 	sphinx-build $(SPHINX_FLAGS) -b pdf en build/pdf
 
+.PHONY: gettext
 gettext: examples images
 	sphinx-build $(SPHINX_FLAGS) -b gettext en build/gettext
 
+.PHONY: all
 all: html html-single pdf gettext
 
+.PHONY: clean
 clean:
 	rm -rf build
 
 website-repo:
 	hg clone https://bitbucket.org/hgbook/website website-repo
 
+.PHONY: website
 website: html website-repo
 	hg -R website-repo pull
 	rm -rf website-repo/*
