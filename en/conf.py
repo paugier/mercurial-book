@@ -22,6 +22,7 @@ import subprocess
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath(os.path.join('..', 'asciidag', '_extensions')))
 
 # -- General configuration ------------------------------------------------
 
@@ -31,7 +32,7 @@ import subprocess
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = ['asciidag']
 
 if find_executable('rst2pdf'):
     extensions.append('rst2pdf.pdfbuilder')
@@ -189,14 +190,7 @@ htmlhelp_basename = 'Mercurialthedefinitiveguidedoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
-
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
-
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    'preamble': r'\usepackage{tikz}'
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -270,3 +264,5 @@ pdf_documents = [
   ('index', 'Mercurialthedefinitiveguide', 'Mercurial: the definitive guide Documentation',
    'Bryan O\'Sullivan'),
 ]
+
+dag_latex_preamble = 'bitbucket'

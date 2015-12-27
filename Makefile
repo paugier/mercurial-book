@@ -45,21 +45,24 @@ en/figs/%.png: en/figs/%.svg
 .PHONY: images
 images: $(fig-targets)
 
+asciidag:
+	hg clone https://bitbucket.org/Mathiasdm/asciidag
+
 .PHONY: html
-html: examples images
+html: examples images asciidag
 	sphinx-build $(SPHINX_FLAGS) en build/html
 
 .PHONY: html-single
-html-single: examples images
+html-single: examples images asciidag
 	sphinx-build $(SPHINX_FLAGS) -b singlehtml en build/html-single
 
 .PHONY: pdf
-pdf: examples images
+pdf: examples images asciidag
 	#requires rst2pdf
 	sphinx-build $(SPHINX_FLAGS) -b pdf en build/pdf
 
 .PHONY: gettext
-gettext: examples images
+gettext: examples images asciidag
 	sphinx-build $(SPHINX_FLAGS) -b gettext en build/gettext
 
 .PHONY: all
