@@ -293,6 +293,8 @@ Once the server has been set up correctly, the client will automatically execute
    in the clone. The clone bundle should contain almost all of the repository data, so
    this final operation should take much less time and processing power.
 
+.. _sec:scaling:generatebundles:
+
 Generating bundle files
 -----------------------
 
@@ -332,7 +334,56 @@ The manifest file can help us here, by offering multiple bundles for different s
 Specifying correct manifest lines
 ---------------------------------
 
-TODO
+As we saw in the initial flow of using clonebundles, the client analyzes a *manifest file*
+to decide which bundle to download. This manifest file needs to be created on the server
+in *.hg/clonebundles.manifest*.
+An example manifest file is the following::
+
+  https://hgbook.org/examplebundles/clonebundle.gz BUNDLESPEC=gzip-v2
+  https://hgbook.eu/examplebundles/clonebundle.gz BUNDLESPEC=gzip-v2 location=europe
+  https://hgbook.org/examplebundles/clonebundle.bz2 BUNDLESPEC=bzip2-v2 REQUIRESNI=true
+  https://hgbook.eu/examplebundles/clonebundle.bz2 BUNDLESPEC=bzip2-v2 location=europe
+
+We already start to see the format of the manifest file from the above example.
+Each line in the manifest file contains the address of a bundle, along with a number of requirements.
+In a more rigorous specification, the format looks as follows:
+
+  <URL> [<key>=<value>[ <key>=<value>]]
+
+You'll notice that the example contains both uppercase and lowercase keys.
+The uppercase keys are used for Mercurial itself, you should not create custom
+uppercase keys yourself! The lowercase keys can be used as you prefer.
+
+Currently defined uppercase keys are:
+
+  - *BUNDLESPEC*: a specification of the bundle, describing
+    its properties. Relevant properties are the compression type
+    and the format type that we discussed in
+    :ref:`Generating bundle files <sec:scaling:generatebundles>`.
+    Combining these yields a specification formatted like *<bundle>-<format>*,
+    for example *gzip-v2*.
+  - *REQUIRESNI*: specifies if Server Name Indicating (SNI) is required.
+    SNI is meant for TLS-enabled servers that have different hostnames
+    on the same IP. Often, these hostnames are covered by different certificates,
+    which can be handled correctly using SNI.
+    Some Python versions do not support SNI. The REQUIRESNI key
+    allows clients to ignore these bundles.
+
+Mercurial analyzes the different lines in the manifest file.
+
+  - It will first check the uppercase keys. If an unknown key
+    or an unsupported key is specified, the entry will be ignored.
+  - The remaining entries are sorted by preference.
+    This is done using the configuration option *ui.clonebundleprefers*.
+    A user located in Europe might prefer bundles located there,
+    as well as well-compressed bundles::
+
+      [ui]
+      clonebundleprefers = location=europe, BUNDLESPEC=bzip2-v2
+
+We now have everything we need to allow all our users to use clonebundles,
+resulting in a much reduced load on our server and faster clones.
+
 
 .. _sec:scaling:branches:
 
