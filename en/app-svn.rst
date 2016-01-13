@@ -1,5 +1,5 @@
-Migrating to Mercurial
-======================
+Appendix: Migrating to Mercurial
+================================
 
 A common way to test the waters with a new revision control tool is to experiment with switching an existing project, rather than starting a new
 project from scratch.

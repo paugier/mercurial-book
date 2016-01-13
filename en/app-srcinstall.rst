@@ -1,8 +1,8 @@
 .. _chap:srcinstall:
 
 
-Installing Mercurial from source
-================================
+Appendix: Installing Mercurial from source
+==========================================
 
 .. _sec:srcinstall:unixlike:
 
