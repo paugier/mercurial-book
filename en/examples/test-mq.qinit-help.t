@@ -14,7 +14,7 @@
       repository.
   
       This command is deprecated. Without -c, it's implied by other relevant
-      commands. With -c, use "hg init --mq" instead.
+      commands. With -c, use 'hg init --mq' instead.
   
   options:
   

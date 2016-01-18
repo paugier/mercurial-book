@@ -20,8 +20,8 @@
   
       If no directory is given, the current directory is used.
   
-      It is possible to specify an "ssh://" URL as the destination. See "hg help
-      urls" for more information.
+      It is possible to specify an "ssh://" URL as the destination. See 'hg help
+      urls' for more information.
   
       Returns 0 on success.
   
