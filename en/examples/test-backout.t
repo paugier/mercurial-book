@@ -84,11 +84,10 @@ three-way command-line merge, and kdiff3 may not be available.
 
   $ echo third change >> myfile
   $ hg commit -m 'third change'
-  $ hg backout 1
+  $ hg backout 1 -m "back out second change"
   merging myfile
   0 files updated, 1 files merged, 0 files removed, 0 files unresolved
-  changeset 3f53b6599e2a backed out, don't forget to commit.
-  $ hg commit -m 'back out second change'
+  changeset 3:376c7740c33a backs out changeset 1:3f53b6599e2a
 
 #$ name: manual.log
 
