@@ -238,10 +238,10 @@ class shell_example(example):
         if hg:
             #Load hg from user environment
             path.insert(0, hg)
-        def re_export(envar):
-            v = os.getenv(envar)
+        def re_export(envvar):
+            v = os.getenv(envvar)
             if v is not None:
-                print >> rcfp, 'export ' + envar + '=' + v
+                print >> rcfp, 'export ' + envvar + '=' + v
         print >> rcfp, 'export PATH=' + ':'.join(path)
         re_export('PYTHONPATH')
         print >> rcfp, 'export EXAMPLE_DIR="%s"' % os.getcwd()
