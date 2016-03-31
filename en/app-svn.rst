@@ -110,7 +110,7 @@ To specify a file map, use the ``--filemap`` option and supply a file name. A fi
     rename from/some/path to/some/other/place
 
 The ``include`` directive causes a file, or all files under a directory, to be included in the destination repository. This also excludes all other
-files and dirs not explicitely included. The ``exclude`` directive causes files or directories to be omitted, and others not explicitly mentioned to
+files and dirs not explicitly included. The ``exclude`` directive causes files or directories to be omitted, and others not explicitly mentioned to
 be included.
 
 To move a file or directory from one location to another, use the ``rename`` directive. If you need to move a file or directory from a subdirectory
