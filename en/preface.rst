@@ -12,7 +12,7 @@ almost no published literature to refer people to.
 
 Although at that time I spent some time working on the internals of Mercurial itself, I switched to writing this book because that seemed like the
 most effective way to help the software to reach a wide audience, along with the idea that revision control ought to be distributed in nature. I
-publish the book online under a liberal license for the same reason: to get the word out.
+publish this book online under a liberal license for the same reason: to get the word out.
 
 There's a familiar rhythm to a good software book that closely resembles telling a story: What is this thing? Why does it matter? How will it help me?
 How do I use it? In this book, I try to answer those questions for distributed revision control in general, and for Mercurial in particular.
