@@ -35,7 +35,7 @@ My children, Cian and Ruairi, always stood ready to help me to unwind with wonde
 Shannon, for her support.
 
 My colleagues and friends provided help and support in innumerable ways. This list of people is necessarily very incomplete: Stephen Hahn, Karyn
-Ritter, Bonnie Corwin, James Vasile, Matt Norwood, Eben Moglen, Bradley Kuhn, Robert Walsh, Jeremy Fitzhardinge, Rachel Chalmers.
+Ritter, Bonnie Corwin, James Vasile, Matt Norwood, Eben Moglen, Bradley Kuhn, Robert Walsh, Jeremy Fitzhardinge, and Rachel Chalmers.
 
 I developed this book in the open, posting drafts of chapters to the book web site as I completed them. Readers then submitted feedback using a web
 application that I developed. By the time I finished writing the book, more than 100 people had submitted comments, an amazing number considering that
@@ -45,7 +45,7 @@ I would particularly like to recognize the following people, who between them co
 to thank them for their care and effort in providing so much detailed feedback.
 
 Martin Geisler, Damien Cassou, Alexey Bakhirkin, Till Plewe, Dan Himes, Paul Sargent, Gokberk Hamurcu, Matthijs van der Vleuten, Michael Chermside,
-John Mulligan, Jordi Fita, Jon Parise.
+John Mulligan, Jordi Fita, and Jon Parise.
 
 I also want to acknowledge the help of the many people who caught errors and provided helpful suggestions throughout the book.
 
@@ -58,7 +58,7 @@ Tesałék, Peter R. Annema, Paul Bonser, Olivier Scherler, Olivier Fournier, Nic
 Mietek Bák, Michael Maloney, László Nagy, Kent Johnson, Julio Nobrega, Jord Fita, Jonathan March, Jonas Nockert, Jim Tittsler, Jeduan Cornejo
 Legorreta, Jan Larres, James Murphy, Henri Wiechers, Hagen Möbius, Gábor Farkas, Fabien Engels, Evert Rol, Evan Willms, Eduardo Felipe Castegnaro,
 Dennis Decker Jensen, Deniz Dogan, David Smith, Daed Lee, Christine Slotty, Charles Merriam, Guillaume Catto, Brian Dorsey, Bob Nystrom, Benoit
-Boissinot, Avi Rosenschein, Andrew Watts, Andrew Donkin, Alexey Rodriguez, Ahmed Chaudhary.
+Boissinot, Avi Rosenschein, Andrew Watts, Andrew Donkin, Alexey Rodriguez, and Ahmed Chaudhary.
 
 Conventions Used in This Book
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
