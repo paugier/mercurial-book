@@ -7,7 +7,7 @@ Preface
 Technical storytelling
 ~~~~~~~~~~~~~~~~~~~~~~
 
-A few years ago, when I wanted to explain why I believed that distributed revision control is important, the field was then so new that there was
+A few years ago, when I wanted to explain why I believed that distributed revision control was important, the field was then so new that there was
 almost no published literature to refer people to.
 
 Although at that time I spent some time working on the internals of Mercurial itself, I switched to writing this book because that seemed like the
