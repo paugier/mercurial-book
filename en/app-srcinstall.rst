@@ -10,7 +10,7 @@ Appendix: Installing Mercurial from source
 On a Unix-like system
 ~~~~~~~~~~~~~~~~~~~~~
 
-If you are using a Unix-like system that has a sufficiently recent version of Python (2.3 or newer) available, it is easy to install Mercurial from
+If you are using a Unix-like system that has a sufficiently recent version of Python (2.6 or newer) available, it is easy to install Mercurial from
 source.
 
 1. Download a recent source tarball from http://www.selenic.com/mercurial/download.
