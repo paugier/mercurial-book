@@ -31,7 +31,7 @@ command.
 
 For longer-lived repositories that you'd like to have permanently available, there are several public hosting services available. Some are free to
 open source projects, while others offer paid commercial hosting. An up-to-date list is available at
-http://www.selenic.com/mercurial/wiki/index.cgi/MercurialHosting.
+https://www.mercurial-scm.org/wiki/MercurialHosting.
 
 If you would prefer to host your own repositories, Mercurial has built-in support for several popular hosting technologies, most notably CGI (Common
 Gateway Interface), and WSGI (Web Services Gateway Interface). See :ref:`sec:collab:cgi <sec:collab:cgi>` for details of CGI and WSGI configuration.

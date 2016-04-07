@@ -323,7 +323,7 @@ Other name-related corner cases
 -------------------------------
 
 Mercurial has a longstanding bug in which it fails to handle a merge where one side has a file with a given name, while another has a directory with
-the same name. This is documented as `issue 29 <http://www.selenic.com/mercurial/bts/issue29>`__.
+the same name. This is documented as `issue 29 <https://bz.mercurial-scm.org/show_bug.cgi?id=29>`__.
 
 .. include:: examples/results/issue29.go.lxo
 

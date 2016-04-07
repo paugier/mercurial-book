@@ -27,7 +27,7 @@
   $ hg ci -m 'Rename foo to quux'
 
 #$ name: merge
-# See http://www.selenic.com/mercurial/bts/issue455
+# See https://bz.mercurial-scm.org/show_bug.cgi?id=455
 
   $ cd ../orig
   $ hg pull -u ../anne

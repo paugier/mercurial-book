@@ -13,7 +13,7 @@ On a Unix-like system
 If you are using a Unix-like system that has a sufficiently recent version of Python (2.6 or newer) available, it is easy to install Mercurial from
 source.
 
-1. Download a recent source tarball from http://www.selenic.com/mercurial/download.
+1. Download a recent source tarball from https://www.mercurial-scm.org/downloads.
 
 2. Unpack the tarball:
 
@@ -44,4 +44,4 @@ Building and installing Mercurial on Windows requires a variety of tools, a fair
 instead.
 
 If you are intent on building Mercurial from source on Windows, follow the “hard way” directions on the Mercurial wiki at
-http://www.selenic.com/mercurial/wiki/index.cgi/WindowsInstall, and expect the process to involve a lot of fiddly work.
+https://www.mercurial-scm.org/wiki/WindowsInstall, and expect the process to involve a lot of fiddly work.

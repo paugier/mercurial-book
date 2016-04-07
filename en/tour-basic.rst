@@ -10,7 +10,7 @@ A tour of Mercurial: the basics
 Installing Mercurial on your system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Prebuilt binary packages of Mercurial are available for every popular operating system from the Mercurial website at https://mercurial.selenic.com.
+Prebuilt binary packages of Mercurial are available for every popular operating system from the Mercurial website at https://www.mercurial-scm.org.
 These make it easy to start using Mercurial on your computer immediately. Additionally, specifically for Linux, your package manager should include
 the possibility to install Mercurial.
 
@@ -31,7 +31,7 @@ Other choices
 
 The above only gives an overview of the most popular graphical interfaces for Mercurial. There are more such applications, and many editors, IDE's,
 review tools, continuous integration tools... have Mercurial integration as well. You can find an overview of these on the Mercurial wiki at
-https://mercurial.selenic.com/wiki/OtherTools.
+https://www.mercurial-scm.org/wiki/OtherTools.
 
 Basic configuration
 ~~~~~~~~~~~~~~~~~~~
