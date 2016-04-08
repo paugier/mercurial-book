@@ -129,41 +129,41 @@ The ```svnsync`` <http://svn.collab.net/repos/svn/trunk/notes/svnsync.txt>`__ co
 It is a read-only mirroring program for Subversion repositories. The idea is that you create a local mirror of your Subversion tree, then convert the
 mirror into a Mercurial repository.
 
-Suppose we want to convert the Subversion repository for the popular Memcached project into a Mercurial tree. First, we create a local Subversion
+Suppose we want to convert the Subversion repository for the Apache Continuum project into a Mercurial tree. First, we create a local Subversion
 repository.
 
 .. code::
 
-  $ svnadmin create memcached-mirror
+  $ svnadmin create continuum-mirror
 
 
 Next, we set up a Subversion hook that ``svnsync`` needs.
 
 .. code::
 
-  $ echo '#!/bin/sh' > memcached-mirror/hooks/pre-revprop-change
-  $ chmod +x memcached-mirror/hooks/pre-revprop-change
+  $ echo '#!/bin/sh' > continuum-mirror/hooks/pre-revprop-change
+  $ chmod +x continuum-mirror/hooks/pre-revprop-change
 
 
 We then initialize ``svnsync`` in this repository.
 
 .. code::
 
-  $ svnsync --init file://`pwd`/memcached-mirror http://code.sixapart.com/svn/memcached
+  $ svnsync --init file://`pwd`/continuum-mirror https://svn.apache.org/repos/asf/continuum
 
 
 Our next step is to begin the ``svnsync`` mirroring process.
 
 .. code::
 
-  $ svnsync sync file://`pwd`/memcached-mirror
+  $ svnsync sync file://`pwd`/continuum-mirror
 
 
 Finally, we import the history of our local Subversion mirror into Mercurial.
 
 .. code::
 
-  $ hg convert memcached-mirror
+  $ hg convert continuum-mirror
 
 
 We can use this process incrementally if the Subversion repository is still in use. We run ``svnsync`` to pull new changes into our mirror, then ``hg convert`` to import them into our Mercurial tree.
