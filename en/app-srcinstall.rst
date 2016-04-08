@@ -43,5 +43,5 @@ Building and installing Mercurial on Windows requires a variety of tools, a fair
 *do not recommend* this route if you are a “casual user”. Unless you intend to hack on Mercurial, I strongly suggest that you use a binary package
 instead.
 
-If you are intent on building Mercurial from source on Windows, follow the “hard way” directions on the Mercurial wiki at
+If you are intent on building Mercurial from source on Windows, follow the directions on the Mercurial wiki at
 https://www.mercurial-scm.org/wiki/WindowsInstall, and expect the process to involve a lot of fiddly work.
