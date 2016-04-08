@@ -266,7 +266,8 @@ Quick reference
 | ``svn import``          | ``hg addremove``;          |                                        |
 |                         | ``hg commit``              |                                        |
 +-------------------------+----------------------------+----------------------------------------+
-| ``svn info``            | ``hg parents``             | Shows what revision is checked out     |
+| ``svn info``            | ``hg parents``;            | Shows what revision is checked out     |
+|                         | ``hg summary``             | Shows combined information             |
 +-------------------------+----------------------------+----------------------------------------+
 | ``svn info``            | ``hg showconfig paths``    | Shows what URL is checked out          |
 +-------------------------+----------------------------+----------------------------------------+
