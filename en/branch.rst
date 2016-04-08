@@ -35,6 +35,8 @@ beyond a few that are necessary to ensure that a tag can be parsed unambiguously
 
 -  Newline (ASCII 10, “``\n``”)
 
+-  Null (ASCII 0, “``\0``”)
+
 You can use the ``hg tags`` command to display the tags present in your repository. In the output, each tagged revision is identified first by its
 name, then by revision number, and finally by the unique hash of the revision.
 
