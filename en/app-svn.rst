@@ -27,6 +27,8 @@ book was written, it could import history from the following systems:
 
 -  GNU Arch
 
+-  Perforce
+
 -  Mercurial
 
 (To see why Mercurial itself is supported as a source, see :ref:`svn.filemap\ <svn.filemap\>`.)
