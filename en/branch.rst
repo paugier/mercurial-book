@@ -255,7 +255,7 @@ Dealing with multiple named branches in a repository
 
 If you have more than one named branch in a repository, Mercurial will remember the branch that your working directory is on when you start a command
 like ``hg update`` or ``hg pull -u``. It will update the working directory to the tip of this branch, no matter what the “repo-wide” tip is. To update to a revision that's on a
-different named branch, you may need to use the ``-C`` option to ``hg update``.
+different named branch, you may need to use the ``-c`` (or ``-C``) option to ``hg update``.
 
 This behavior is a little subtle, so let's see it in action. First, let's remind ourselves what branch we're currently on, and what branches are in
 our repository.
