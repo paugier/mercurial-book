@@ -223,7 +223,7 @@ This way, the exact changesets you mention are rebased:
 
 .. include:: examples/results/rebase.rebase-rev.lxo
 
-A second way to specify changesets is to to mention the root, using **--source**.
+A second way to specify changesets is to mention the root, using **--source**.
 The specified changeset and all of its descendants will be rebased:
 
 .. include:: examples/results/rebase.rebase-source.lxo
