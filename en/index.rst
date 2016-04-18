@@ -21,6 +21,7 @@ Contents:
    filenames
    branch
    undo
+   changing-history
    hook
    template
    hgext
