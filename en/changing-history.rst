@@ -327,7 +327,7 @@ without interaction, we will specify the changesets using a file
 and the *--commands* parameter.
 Don't do this yourself, it's much more enjoyable to just call ``hg histedit``.
 
-We'll simply swap a few lines, so we can already push our Banana Split bugfix
+We'll simply swap a few lines, so we can push our Banana Split bugfix
 without taking the other changes along.
 
 .. include:: examples/results/histedit.histedit-reorder-commands.lxo
@@ -345,12 +345,12 @@ Let's see what needs to be done:
 
 - We need to remove the extra debug info added while developing our new feature.
   It was useful during development, but it's no longer needed now.
-- Our 'Apple Slicer done' changeset actually still contains a bug,
+- Our 'Apple Slicer done' changeset still contains a bug,
   causing it to output sliced pears when there's a full moon.
   We should edit that changeset to fix the issue before pushing our feature.
-- There's not really a need to have changesets with parts of our feature,
+- There's no real need to have changesets with parts of our feature,
   as it's just a dump of 'changes done so far'.
-  Let's combine all our changes into one changeset.
+  Let's combine all of our changes into one changeset.
 
 By default, when executing ``hg histedit``, all of the changesets
 are prefixed with the word *pick*. This means: take this changeset along,
