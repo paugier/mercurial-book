@@ -255,7 +255,7 @@ and try to rebase those changes:
 
 .. include:: examples/results/rebase.rebase-noparams.lxo
 
-To ensure obvious behaviour, it's better to explicitly specify what to rebase
+To ensure understandable behaviour, it's better to explicitly specify what to rebase
 and to which destination.
 
 .. Note::
