@@ -20,43 +20,26 @@ Before we take a look at Mercurial's bundled styles, let's review its normal out
 
 .. include:: examples/results/template.simple.normal.lxo
 
-
-
-
 This is somewhat informative, but it takes up a lot of space—five lines of output per changeset. The ``compact`` style reduces this to three
 lines, presented in a sparse manner.
 
 .. include:: examples/results/template.simple.compact.lxo
-
 
 The ``changelog`` style hints at the expressive power of Mercurial's templating engine. This style attempts to follow the GNU Project's changelog
 guidelinesweb:changelog.
 
 .. include:: examples/results/template.simple.changelog.lxo
 
-
 You will not be shocked to learn that Mercurial's default output style is named ``default``.
 
-Setting a default style
------------------------
+It's possible to get a full overview of template styles:
 
-You can modify the output style that Mercurial will use for every command by editing your ``~/.hgrc`` file, naming the style you would prefer to use.
-
-::
-
-    [ui]
-    style = compact
-
-If you write a style of your own, you can use it by either providing the path to your style file, or copying your style file into a location where
-Mercurial can find it (typically the ``templates`` subdirectory of your Mercurial install directory).
+.. include:: examples/results/template.simple.templatelist.lxo
 
 Commands that support styles and templates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All of Mercurial's “``log``-like” commands let you use styles and templates: ``hg incoming``, ``hg log``, ``hg outgoing``, and ``hg tip``.
-
-As I write this manual, these are so far the only commands that support styles and templates. Since these are the most important commands that need
-customizable output, there has been little pressure from the Mercurial user community to add style and template support to other commands.
+All of Mercurial's “``log``-like” commands let you use styles and templates: ``hg incoming``, ``hg log``, ``hg outgoing`` and so on.
 
 The basics of templating
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,9 +50,6 @@ when necessary.
 Before we continue, let's look again at a simple example of Mercurial's normal output.
 
 .. include:: examples/results/template.simple.normal.lxo
-
-
-
 
 Now, let's run the same command, but using a template to change its output.
 
@@ -102,7 +82,7 @@ You can start writing simple templates immediately using the keywords below.
 
 -  ``author``: String. The unmodified author of the changeset.
 
--  ``branches``: String. The name of the branch on which the changeset was committed. Will be empty if the branch name was ``default``.
+-  ``branch``: String. The name of the branch on which the changeset was committed. Will be empty if the branch name was ``default``.
 
 -  ``date``: Date information. The date when the changeset was committed. This is *not* human-readable; you must pass it through a filter that will
    render it appropriately. See :ref:`sec:template:filter <sec:template:filter>` for more information on filters. The date is expressed as a pair of numbers. The first
@@ -128,12 +108,12 @@ A few simple experiments will show us what to expect when we use these keywords;
 
 .. include:: examples/results/template.simple.keywords.lxo
 
+New template keywords are added to Mercurial every so often, you can see a full overview by executing ``hg help templates``.
 
 As we noted above, the date keyword does not produce human-readable output, so we must treat it specially. This involves using a *filter*, about which
 more in :ref:`sec:template:filter <sec:template:filter>`.
 
 .. include:: examples/results/template.simple.datekeyword.lxo
-
 
 .. _sec:template:escape:
 
@@ -227,8 +207,10 @@ specific circumstances. The name of each filter is followed first by an indicati
 
 .. Note::
 
-    If you try to apply a filter to a piece of data that it cannot process, Mercurial will fail and print a Python exception. For example, trying to
-    run the output of the ``desc`` keyword into the ``isodate`` filter is not a good idea.
+    If you try to apply a filter to a piece of data that it cannot process, Mercurial will print an error clarifying the incompatibility.
+    For example, trying to apply the 'isodate' filter to the 'desc' keyword is not possible.
+
+    .. include:: examples/results/template.simple.incompatible.lxo
 
 Combining filters
 -----------------
@@ -246,98 +228,96 @@ lines *except* the first.
 Keep in mind that the order of filters in a chain is significant. The first filter is applied to the result of the keyword; the second to the result
 of the first filter; and so on. For example, using ``fill68|tabindent`` gives very different results from ``tabindent|fill68``.
 
-From templates to styles
-~~~~~~~~~~~~~~~~~~~~~~~~
+Adding logic
+------------
+
+It's possible to make more advanced templates by using the built-in functions Mercurial provides.
+All of these can be found using ``hg help templates``.
+An overview of commonly used functions is listed below:
+
+- ``date(date[, fmt])``: display (and format) a date. By default, this will show a date formatted like ``Mon Sep 04 15:13:13 2006 0700``.
+      You can specify your own date formatting as specified in the Python string formatting:
+      https://docs.python.org/2/library/time.html#time.strftime . For example if you specify ``%Y-%m-%d``,
+      a formatted date like ``2006-09-04`` will be shown.
+- ``fill(text[, width[, initialindent[, hangindent]]])``: fill the given text to a specified length.
+      If the string initialindent is specified as well, additional indentation will be used for the first line.
+      If the string hangindent is specified as well, additional indentation will be used for all lines except the first one.
+      The fill function limits the total length of each line, including the additional indentation.
+- ``get(dict, key)``: extract an attribute from a complex object.
+      Some of the keywords that you can use in a template, are complex objects. One example is the *{extras}* keyword,
+      which is a dictionary. The extras field in a changeset stores information like the branch name,
+      but can also contain additional information. The *get* function allows you to extract a specific field,
+      both from the *extras* and other complex objects.
+- ``if(expr, then[, else])``: conditionally execute template parts based on the result of the given expression.
+- ``ifcontains(search, thing, then[, else])``: conditionally execute based on whether
+      the item "search" is in "thing".
+- ``indent(text, indentchars[, firstline])``: indent text using the contents of "indentchars",
+      optionally using a different indentation for the first line.
+- ``join(list, sep)``: join all the items in the list using the given separator.
+- ``label(label, expr)``: apply a specific label to the given expression.
+      This is used specifically by the *color extension* to colour different parts of command output.
+      A number of existing labels can be found by viewing *hg help color*, or you can define your own labels.
+
+It's not always obvious how to use these functions, so here's an overview of examples for each of the above:
+
+.. include:: examples/results/template.simple.functions.lxo
+
+.. Note::
+
+  The example for the use of *labels* to add colours doesn't actually show any colours above.
+  Executing the commands in your terminal should give you pretty colours (as long as your terminal supports them).
+
+Additionally, it's possible to apply a template to a list of items in an expression. For example:
+
+.. include:: examples/results/template.simple.list.lxo
+
+Setting a default template
+--------------------------
+
+You can modify the output template that Mercurial will use for every command by editing your ``~/.hgrc`` file, naming the template you would prefer to use.
+
+::
+
+    [ui]
+    logtemplate = {node}: {desc}\n
+
+From templates to commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A command line template provides a quick and simple way to format some output. Templates can become verbose, though, and it's useful to be able to
-give a template a name. A style file is a template with a name, stored in a file.
+provide a name. This is possible using aliases (more details at :ref:`sec:hgext:aliases <sec:hgext:aliases>`) and template aliases.
 
-More than that, using a style file unlocks the power of Mercurial's templating engine in ways that are not possible using the command line
-``--template`` option.
+The simplest of template aliases
+--------------------------------
 
-The simplest of style files
----------------------------
-
-Our simple style file contains just one line:
+Our simple template alias consists of just one line:
 
 .. include:: examples/results/template.simple.rev.lxo
 
+This tells Mercurial, “if you're printing the 'changeset' template, use the text on the right as the template”.
 
-This tells Mercurial, “if you're printing a changeset, use the text on the right as the template”.
+Templates by example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Style file syntax
------------------
-
-The syntax rules for a style file are simple.
-
--  The file is processed one line at a time.
-
--  Leading and trailing white space are ignored.
-
--  Empty lines are skipped.
-
--  If a line starts with either of the characters “``#``” or “``;``”, the entire line is treated as a comment, and skipped as if empty.
-
--  A line starts with a keyword. This must start with an alphabetic character or underscore, and can subsequently contain any alphanumeric character
-   or underscore. (In regexp notation, a keyword must match ``[A-Za-z_][A-Za-z0-9_]*``.)
-
--  The next element must be an “``=``” character, which can be preceded or followed by an arbitrary amount of white space.
-
--  If the rest of the line starts and ends with matching quote characters (either single or double quote), it is treated as a template body.
-
--  If the rest of the line *does not* start with a quote character, it is treated as the name of a file; the contents of this file will be read and
-   used as a template body.
-
-Style files by example
-~~~~~~~~~~~~~~~~~~~~~~
-
-To illustrate how to write a style file, we will construct a few by example. Rather than provide a complete style file and walk through it, we'll
-mirror the usual process of developing a style file by starting with something very simple, and walking through a series of successively more complete
+To illustrate how to write templates and template aliases, we will construct a few by example. Rather than provide a complete alias and walk through it, we'll
+mirror the usual process of developing an alias by starting with something very simple, and walking through a series of successively more complete
 examples.
 
-Identifying mistakes in style files
------------------------------------
+Identifying mistakes in templates
+---------------------------------
 
-If Mercurial encounters a problem in a style file you are working on, it prints a terse error message that, once you figure out what it means, is
+If Mercurial encounters a problem in a template you are working on, it prints a terse error message that, once you figure out what it means, is
 actually quite useful.
 
 .. include:: examples/results/template.svnstyle.syntax.input.lxo
 
-
-Notice that ``broken.style`` attempts to define a ``changeset`` keyword, but forgets to give any content for it. When instructed to use this style
-file, Mercurial promptly complains.
+Notice that the broken template alias attempts to define a ``cs`` keyword, but uses an incorrect number of arguments for this keyword.
+Mercurial promptly complains:
 
 .. include:: examples/results/template.svnstyle.syntax.error.lxo
 
-
-This error message looks intimidating, but it is not too hard to follow.
-
--  The first component is simply Mercurial's way of saying “I am giving up”.
-
-   ::
-
-       ___abort___: broken.style:1: parse error
-
--  Next comes the name of the style file that contains the error.
-
-   ::
-
-       abort: ___broken.style___:1: parse error
-
--  Following the file name is the line number where the error was encountered.
-
-   ::
-
-       abort: broken.style:___1___: parse error
-
--  Finally, a description of what went wrong.
-
-   ::
-
-       abort: broken.style:1: ___parse error___
-
--  The description of the problem is not always clear (as in this case), but even when it is cryptic, it is almost always trivial to visually inspect
-   the offending line in the style file and see what is wrong.
+The description of the problem is not always clear (though it is in this case), but even when it is cryptic, it is almost always trivial to visually inspect
+the offending part of the template and see what is wrong.
 
 Uniquely identifying a repository
 ---------------------------------
@@ -378,30 +358,18 @@ Let's try to emulate the default output format used by another revision control 
 .. include:: examples/results/template.svnstyle.short.lxo
 
 
-Since Subversion's output style is fairly simple, it is easy to copy-and-paste a hunk of its output into a file, and replace the text produced above
-by Subversion with the template values we'd like to see expanded.
+Since Subversion's output style is fairly simple, we can easily create a few aliases and combine them into a new '{svn}' keyword.
 
-.. include:: examples/results/template.svnstyle.template.lxo
+.. include:: examples/results/template.svnstyle.templatealias.lxo
 
+The date is a bit more complicated.
+Mercurial doesn't have a keyword to replicate the Subversion 'readable' date.
+Instead, we create our own 'svndate' function, which in turn uses the 'date' function.
 
-There are a few small ways in which this template deviates from the output produced by Subversion.
+Our template doesn't perfectly match the output produced by Subversion.
+Subversion's output includes a count in the header of the number of lines in the commit message. We cannot replicate this in Mercurial; the
+templating engine does not currently provide a filter that counts the number of lines the template generates.
 
--  Subversion prints a “readable” date (the “``Wed, 27 Sep 2006``” in the example output above) in parentheses. Mercurial's templating engine does not
-   provide a way to display a date in this format without also printing the time and time zone.
+Using a number of template aliases keeps everything readable and makes it easy to generate output similar to subversion:
 
--  We emulate Subversion's printing of “separator” lines full of “``-``” characters by ending the template with such a line. We use the templating
-   engine's ``header`` keyword to print a separator line as the first line of output (see below), thus achieving similar output to Subversion.
-
--  Subversion's output includes a count in the header of the number of lines in the commit message. We cannot replicate this in Mercurial; the
-   templating engine does not currently provide a filter that counts the number of lines the template generates.
-
-It took me no more than a minute or two of work to replace literal text from an example of Subversion's output with some keywords and filters to give
-the template above. The style file simply refers to the template.
-
-.. include:: examples/results/template.svnstyle.style.lxo
-
-
-We could have included the text of the template file directly in the style file by enclosing it in quotes and replacing the newlines with “``\n``”
-sequences, but it would have made the style file too difficult to read. Readability is a good guide when you're trying to decide whether some text
-belongs in a style file, or in a template file that the style file points to. If the style file will look too big or cluttered if you insert a literal
-piece of text, drop it into a template instead.
+.. include:: examples/results/template.svnstyle.result.lxo

@@ -149,6 +149,8 @@ Launching a visual diff tool is just as easy. Here's how to launch the ``kdiff3`
 
     hg extdiff -p kdiff3 -o
 
+.. _sec:hgext:aliases:
+
 Defining command aliases
 ------------------------
 

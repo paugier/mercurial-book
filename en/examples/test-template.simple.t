@@ -28,7 +28,7 @@
 
 #$ name: compact
 
-  $ hg log --style compact
+  $ hg log --template compact
   3[tip]   91900a8c91ee   1970-01-01 00:00 +0000   test
     Added tag v0.1 for changeset e8277000e239
   
@@ -44,7 +44,7 @@
 
 #$ name: changelog
 
-  $ hg log --style changelog
+  $ hg log --template changelog
   1970-01-01  test  <test>
   
   	* .hgtags:
@@ -66,6 +66,13 @@
   	added hello
   	[0312f545d1d7]
   
+
+#$ name: templatelist
+
+  $ hg log --template list
+  available styles: bisect, changelog, compact, default, phases, status, xml
+  abort: specify a template
+  [255]
 
 #$ name: simplest
 
@@ -181,6 +188,98 @@
   $ hg log -r1 --template '{node|short}\n'
   c8ec776f4fca
 
+#$ name: incompatible
+
+  $ hg log -r1 --template '{desc|isodate}\n'
+  abort: template filter 'isodate' is not compatible with keyword 'desc'
+  [255]
+
+#$ name: functions
+
+  $ hg log -r1 --template '{date(date)}\n'
+  Thu Jan 01 00:00:00 1970 +0000
+  $ hg log -r1 --template '{date(date, "%Y-%m-%d")}\n'
+  1970-01-01
+  $ hg log -r1 --template '{fill(desc, 40, "   ", "      ")}'
+     added line to end of <<hello>> file.
+  
+     in addition, added a file with the
+        helpful name (at least i hope that
+        some might consider it so) of
+        goodbye. (no-eol)
+  $ hg log -r1 --template '{fill(desc, 20, "*** ", "====== ")}'
+  *** added line to
+  ====== end of
+  ====== <<hello>>
+  ====== file.
+  
+  *** in addition,
+  ====== added a file
+  ====== with the
+  ====== helpful name
+  ====== (at least i
+  ====== hope that
+  ====== some might
+  ====== consider it
+  ====== so) of
+  ====== goodbye. (no-eol)
+
+  $ hg update -r 2
+  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  $ touch foobar
+  $ hg add foobar
+  $ hg commit -m "Add additional file"
+  created new head
+  $ hg --config extensions.rebase= rebase
+  rebasing * "Add additional file" (tip) (glob)
+  saved backup bundle to * (glob)
+
+  $ hg log -r4 --template '{extras}\n'
+  branch=defaultrebase_source=43f5284fffa0c882f04e7ddf9048685a4d932f9e
+  $ hg log -r4 --template "{get(extras, 'rebase_source')}\n"
+  43f5284fffa0c882f04e7ddf9048685a4d932f9e
+
+  $ hg log --template "{if(tags, '--> {tags}','')} - {desc|firstline}\n"
+  --> tip - Add additional file
+   - Added tag v0.1 for changeset e8277000e239
+  --> v0.1 - Added tag mytag for changeset c8ec776f4fca
+  --> mytag - added line to end of <<hello>> file.
+   - added hello
+
+  $ hg log --template "{ifcontains('hello', desc, '>> SAYING HELLO << ', '')} - {desc|firstline}\n"
+   - Add additional file
+   - Added tag v0.1 for changeset e8277000e239
+   - Added tag mytag for changeset c8ec776f4fca
+  >> SAYING HELLO <<  - added line to end of <<hello>> file.
+  >> SAYING HELLO <<  - added hello
+
+  $ hg log -r1 --template "{indent(desc, '    ', '  ')}\n"
+    added line to end of <<hello>> file.
+  
+      in addition, added a file with the helpful name (at least i hope that some might consider it so) of goodbye.
+
+  $ hg log --template "{rev}: {join(files, ' -- ')}\n"
+  4: foobar
+  3: .hgtags
+  2: .hgtags
+  1: goodbye -- hello
+  0: hello
+
+  $ echo '[extensions]' >> $HGRCPATH
+  $ echo 'color =' >> $HGRCPATH
+  $ hg log --template "{label('log.branch', branch)} - {desc|firstline}\n"
+  default - Add additional file
+  default - Added tag v0.1 for changeset e8277000e239
+  default - Added tag mytag for changeset c8ec776f4fca
+  default - added line to end of <<hello>> file.
+  default - added hello
+
+#$ name: list
+
+  $ hg log -r1 --template "{files % ' - {file}\n'}"
+   - goodbye
+   - hello
+
 #$ name: combine
 
   $ hg log -r1 --template 'description:\n\t{desc|strip|fill68|tabindent}\n'
@@ -192,6 +291,9 @@
 
 #$ name: rev
 
-  $ echo 'changeset = "rev: {rev}"\n' > rev
-  $ hg log -l1 --style ./rev
+  $ cat >> $HGRCPATH << EOF
+  > [templatealias]
+  > changeset = "rev: {rev}"
+  > EOF
+  $ hg log -r3 -l1 --template "{changeset}"
   rev: 3 (no-eol)

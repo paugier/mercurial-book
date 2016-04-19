@@ -5,10 +5,10 @@
 
 #$ name: go
 
-  $ cat > multiline << EOF
-  > changeset = "Changed in {node|short}:\n{files}"
-  > file = "  {file}\n"
+  $ cat > $HGRCPATH << EOF
+  > [templatealias]
+  > changeset = "Changed in {node|short}:\n{files % '  {file}\n'}"
   > EOF
-  $ hg log --style multiline
+  $ hg log --template "{changeset}"
   Changed in *: (glob)
     test.c

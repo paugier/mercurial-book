@@ -53,45 +53,42 @@
 
 #$ name:
 
-  $ echo 'changeset =' > broken.style
+  $ cp $HGRCPATH hgrcpath.safe
+  $ echo '[templatealias]' > $HGRCPATH
+  $ echo 'cs = "startswith(bar, baz, bos, bzz)"' > $HGRCPATH
 
 #$ name: syntax.input
 
-  $ cat broken.style
-  changeset =
+  $ cat $HGRCPATH
+  cs = "startswith(bar, baz, bos, bzz)"
 
 #$ name: syntax.error
 
-  $ hg log -r1 --style broken.style
-  hg: parse error at broken.style:1: missing value
+  $ hg log -r1 --template "{startswith(foo, bar, wup, huy)}"
+  hg: parse error: startswith expects two arguments
   [255]
 
 #$ name:
+  $ cp hgrcpath.safe $HGRCPATH
 
-  $ cp $TESTS_ROOT/svn.style .
-  $ cp $TESTS_ROOT/svn.template .
+#$ name: templatealias
 
-#$ name: template
-
-  $ cat svn.template
-  r{rev} | {author|user} | {date|isodate} ({date|rfc822date})
-  
-  {desc|strip|fill76}
-  
-  ------------------------------------------------------------------------
-
-#$ name: style
-
-  $ cat svn.style
-  header = '------------------------------------------------------------------------\n\n'
-  changeset = svn.template
+  $ cat > svn.templatealias << EOF
+  > [templatealias]
+  > header = '------------------------------------------------------------------------'
+  > svndate(d) = '{date(d, "%a, %d %b %Y")}'
+  > headerline = 'r{rev} | {author|user} | {date|isodate} ({svndate(date)})'
+  > description = '{desc|strip|fill76}'
+  > svn = '{header}\n\n{headerline}\n\n{description}\n\n{header}'
+  > EOF
 
 #$ name: result
 
-  $ hg log -r1 --style svn.style
+  $ cat svn.templatealias >> $HGRCPATH
+  $ hg log -r1 --template '{svn}\n'
   ------------------------------------------------------------------------
   
-  r1 | test | 1970-01-01 00:00 +0000 (Thu, 01 Jan 1970 00:00:00 +0000)
+  r1 | test | 1970-01-01 00:00 +0000 (Thu, 01 Jan 1970)
   
   added line to end of <<hello>> file.
   
