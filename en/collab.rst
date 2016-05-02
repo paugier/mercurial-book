@@ -10,7 +10,7 @@ Mercurial's web interface
 Mercurial has a powerful web interface that provides several useful capabilities.
 
 For interactive use, the web interface lets you browse a single repository or a collection of repositories. You can view the history of a repository,
-examine each change (comments and diffs), and view the contents of each directory and file. You can even get a view of history that gives a graphical
+examine each change (commit message and diffs), and view the contents of each directory and file. You can even get a view of history that gives a graphical
 view of the relationships between individual changes and merges.
 
 Also for human consumption, the web interface provides Atom and RSS feeds of the changes in a repository. This lets you “subscribe” to a repository
@@ -68,7 +68,7 @@ unusual situations.
 
 As one example, many projects have a loose-knit group of collaborators who rarely physically meet each other. Some groups like to overcome the
 isolation of working at a distance by organizing occasional “sprints”. In a sprint, a number of people get together in a single location (a company's
-conference room, a hotel meeting room, that kind of place) and spend several days more or less locked in there, hacking intensely on a handful of
+conference room, a hotel meeting room, that kind of place...) and spend several days more or less locked in there, hacking intensely on a handful of
 projects.
 
 A sprint or a hacking session in a coffee shop are the perfect places to use the ``hg serve`` command, since ``hg serve`` does not require any fancy
@@ -77,7 +77,7 @@ to you that you're running a server, send the URL to them in an instant message,
 They can type your URL into their web browser and quickly review your changes; or they can pull a bugfix from you and verify it; or they can clone a
 branch containing a new feature and try it out.
 
-The charm, and the problem, with doing things in an ad hoc fashion like this is that only people who know about your changes, and where they are, can
+The charm, and the problem, with doing things in an ad-hoc fashion like this is that only people who know about your changes, and where they are, can
 see them. Such an informal approach simply doesn't scale beyond a handful people, because each individual needs to know about *n* different
 repositories to pull from.
 
@@ -291,14 +291,14 @@ A few things to keep in mind
 Because it provides unauthenticated read access to all clients, you should only use ``hg serve`` in an environment where you either don't care, or have complete control over, who can access your network and pull data from your
 repository.
 
-The ``hg serve`` command knows nothing about any firewall software you might have installed on your system or network. It cannot detect or control
+The ``hg serve`` command knows nothing about the firewall software you might have installed on your system or network. It cannot detect or control
 your firewall software. If other people are unable to talk to a running ``hg serve`` instance, the second thing you should do (*after* you make sure
-that they're using the correct URL) is check your firewall configuration.
+that they're using the correct URL) is to check your firewall configuration.
 
-By default, ``hg serve`` listens for incoming connections on port 8000. If another process is already listening on the port you want to use, you can
-specify a different port to listen on using the ``-p`` option.
+By default, ``hg serve`` listens for incoming connections on port 8000. If another process is already listening on the port you are trying to use, you can
+specify a different port to listen to using the ``-p`` option.
 
-Normally, when ``hg serve`` starts, it prints no output, which can be a bit unnerving. If you'd like to confirm that it is indeed running correctly,
+Normally, when ``hg serve`` is run with ``-p``, it does not print any output, which can be a bit unnerving. If you'd like to confirm that it is indeed running correctly,
 and find out what URL you should send to your collaborators, start it with the ``-v`` option.
 
 .. _sec:collab:ssh:
@@ -310,7 +310,7 @@ Using the Secure Shell (ssh) protocol
 You can pull and push changes securely over a network connection using the Secure Shell (``ssh``) protocol. To use this successfully, you may have to
 do a little bit of configuration on the client or server sides.
 
-If you're not familiar with ssh, it's the name of both a command and a network protocol that let you securely communicate with another computer. To
+If you're not familiar with ssh, it's the name of both a command and a network protocol that lets you securely communicate with another computer. To
 use it with Mercurial, you'll be setting up one or more user accounts on a server so that remote users can log in and execute commands.
 
 (If you *are* familiar with ssh, you'll probably find some of the material that follows to be elementary in nature.)

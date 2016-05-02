@@ -4,7 +4,7 @@
 Finding and fixing mistakes
 ===========================
 
-To err might be human, but to really handle the consequences well takes a top-notch revision control system. In this chapter, we'll discuss some of
+To err might be human, but to really handle the consequences will take a top-notch revision control system. In this chapter, we'll discuss some of
 the techniques you can use when you find that a problem has crept into your project. Mercurial has some highly capable features that will help you to
 isolate the sources of problems, and to handle them appropriately.
 
@@ -14,7 +14,7 @@ Erasing local history
 The accidental commit
 ---------------------
 
-I have the occasional but persistent problem of typing rather more quickly than I can think, which sometimes results in me committing a changeset that
+I have the occasional but persistent problem of typing quicker than I can think, which sometimes results in me committing a changeset that
 is either incomplete or plain wrong. In my case, the usual kind of incomplete changeset is one in which I've created a new source file, but forgotten
 to ``hg add`` it. A “plain wrong” changeset is not as common, but no less annoying.
 
@@ -28,7 +28,7 @@ In :ref:`sec:concepts:txn <sec:concepts:txn>`, I mentioned that Mercurial treats
 or pull changes from another repository, Mercurial remembers what you did. You can undo, or *roll back*, exactly one of these actions using the
 ``hg rollback`` command. (See :ref:`sec:undo:rollback-after-push <sec:undo:rollback-after-push>` for an important caveat about the use of this command.)
 
-Here's a mistake that I often find myself making: committing a change in which I've created a new file, but forgotten to ``hg add`` it.
+Here's a mistake that I often find myself making: committing a change in which I've created and referenced a new file, but forgotten to ``hg add`` it.
 
 .. include:: examples/results/rollback.commit.lxo
 
@@ -49,7 +49,7 @@ changeset vanish.
 
 
 Notice that the changeset is no longer present in the repository's history, and the working directory once again thinks that the file ``a`` is
-modified. The commit and rollback have left the working directory exactly as it was prior to the commit; the changeset has been completely erased. I
+modified. The commit and subsequent rollback have left the working directory exactly as it was prior to the commit; the changeset has been completely erased. I
 can now safely ``hg add`` the file ``b``, and rerun my commit.
 
 .. include:: examples/results/rollback.add.lxo
@@ -177,7 +177,7 @@ Dealing with committed changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Consider a case where you have committed a change *a*, and another change *b* on top of it; you then realise that change *a* was incorrect. Mercurial
-lets you “back out” an entire changeset automatically, and building blocks that let you reverse part of a changeset by hand.
+lets you “back out” an entire changeset automatically, and provides building blocks that let you reverse part of a changeset by hand.
 
 Before you read this section, here's something to keep in mind: the ``hg backout`` command undoes the effect of a change by *adding* to your
 repository's history, not by modifying or erasing it. It's the right tool to use if you're fixing bugs, but not if you're trying to undo some change
@@ -259,7 +259,7 @@ The result is that you end up “back where you were”, only with some extra hi
 
 You might wonder why Mercurial does not commit the result of the merge that it performed. The reason lies in Mercurial behaving conservatively: a
 merge naturally has more scope for error than simply undoing the effect of the tip changeset, so your work will be safest if you first inspect (and
-test!) the result of the merge, *then* commit it.
+test!) the result of the merge, and *then* commit it.
 
 Always use the ``--merge`` option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -283,7 +283,7 @@ As with our earlier example, We'll commit a third changeset, then back out its p
 .. include:: examples/results/backout.manual.backout.lxo
 
 
-Our new changeset is again a descendant of the changeset we backout out; it's thus a new head, *not* a descendant of the changeset that was the tip.
+Our new changeset is again a descendant of the changeset we backed out; it's thus a new head, *not* a descendant of the changeset that was the tip.
 The ``hg backout`` command was quite explicit in telling us this.
 
 .. include:: examples/results/backout.manual.log.lxo
@@ -336,11 +336,11 @@ Why ``hg backout`` works as it does
 
 Here's a brief description of how the ``hg backout`` command works.
 
-1. It ensures that the working directory is “clean”, i.e. that the output of ``hg status`` would be empty.
+1. It ensures that the working directory is “clean”, i.e. that the output of ``hg status -amrd`` would be empty.
 
 2. It remembers the current parent of the working directory. Let's call this changeset ``orig``.
 
-3. It does the equivalent of a ``hg update`` to sync the working directory to the changeset you want to back out. Let's call this changeset
+3. It does the equivalent of an ``hg update`` to sync the working directory to the changeset you want to back out. Let's call this changeset
    ``backout``.
 
 4. It finds the parent of that changeset. Let's call that changeset ``parent``.
@@ -379,7 +379,7 @@ almost no intrinsic value, and they're *big*, so they increase the size of the r
 Before I discuss the options that you have if you commit a “brown paper bag” change (the kind that's so bad that you want to pull a brown paper bag
 over your head), let me first discuss some approaches that probably won't work.
 
-Since Mercurial treats history as accumulative—every change builds on top of all changes that preceded it—you generally can't just make
+Since Mercurial treats history as cumulative—every change builds on top of all changes that preceded it—you generally can't just make
 disastrous changes disappear. The one exception is when you've just committed a change, and it hasn't been pushed or pulled into another repository.
 That's when you can safely use the ``hg rollback`` command, as I detailed in :ref:`sec:undo:rollback <sec:undo:rollback>`.
 
@@ -463,7 +463,7 @@ protect yourself ahead of time against some classes of bad changeset. This is pa
 repository.
 
 By configuring some hooks on that repository to validate incoming changesets (see chapter :ref:`chap:hook\ <chap:hook\>`), you can automatically prevent some kinds
-of bad changeset from being pushed to the central repository at all. With such a configuration in place, some kinds of bad changeset will naturally
+of bad changesets from being pushed to the central repository at all. With such a configuration in place, some kinds of bad changesets will naturally
 tend to “die out” because they can't propagate into the central repository. Better yet, this happens without any need for explicit intervention.
 
 For instance, an incoming change hook that verifies that a changeset will actually compile can prevent people from inadvertently “breaking the build”.
@@ -484,7 +484,7 @@ but there are good reasons why these are not possible.
 
 Mercurial does not provide an audit trail of who has pulled changes from a repository, because it is usually either impossible to record such
 information or trivial to spoof it. In a multi-user or networked environment, you should thus be extremely skeptical of yourself if you think that you
-have identified every place that a sensitive changeset has propagated to. Don't forget that people can and will send bundles by email, have their
+have identified every place to which a sensitive changeset has propagated. Don't forget that people can and will send bundles by email, have their
 backup software save data offsite, carry repositories on USB sticks, and find other completely innocent ways to confound your attempts to track down
 every copy of a problematic change.
 

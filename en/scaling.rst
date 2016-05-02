@@ -21,7 +21,7 @@ repository growing very fast. This also results in slower clones and pulls. This
 
 Repositories with hundreds of thousands of files can also pose scalability issues. Some common Mercurial commands (like 'hg status') need to check all
 of the files in the repository. This is almost not noticeable on small repositories, but can become an issue if you have a lot of files. The
-hgwatchman extension automatically detects and remembers repository changes, to avoid a slowdown.
+fsmonitor extension automatically detects and remembers repository changes, to avoid a slowdown.
 
 Large repositories can also be quite resource-intensive for servers that host them. A central Mercurial server can provide repositories to hundreds or
 thousands of users. Every time a user clones a repository, the server generates a bundle containing the contents of that repository. This bundle is
@@ -53,7 +53,7 @@ history:
 
 -  without full history: 557 MB
 
-In other words, this extension results in downloading 4 times less data from the server on the initial clone! We can reduce this even further by
+In other words, this extension results in downloading 1/4th as much data from the server on the initial clone! We can reduce this even further by
 combining this change with efficient storage of many branches as mentioned in :ref:`sec:scaling:branches <sec:scaling:branches>`.
 
 To get started with remotefilelog, clone the extension from `Bitbucket <https://bitbucket.org/facebook/remotefilelog>`__ and add it to your hgrc:
@@ -109,7 +109,7 @@ server.
     cacheprocess = /path/to/remotefilelog/remotefilelog/cacheclient.py MEMCACHEIP:MEMCACHEPORT MEMCACHEPREFIX
 
 One major downside to using remotefilelog is that your history is no longer kept locally. This means you will no longer be able to update to any
-revision you want without network access. This may not be a major issue for your use case, but it's a trade-off you shouldn't forget.
+revision you want without network access. This may not be a major issue for your use case, but it's a trade-off you should keep in mind.
 
 .. _sec:scaling:largefiles:
 
@@ -185,22 +185,22 @@ Alternatively, you can also use the '--lfrev' flag:
 
 This allows you to easily download all largefiles, be it for offline access or for backup purposes.
 
-Once you've added a single largefile to a repository, new files over 10 MB that you add to the repository will automatically be added as largefile.
+Once you've added a single largefile to a repository, new files over 10 MB that you add to the repository will automatically be added as largefiles.
 It's possible to configure your system in a different way, using two specific configuration options.
 
--  The largefiles.minsize option allows specifying a size (in MB). All new files larger than this size will automatically be added as largefile.
+-  The largefiles.minsize option allows specifying a size (in MB). All new files larger than this size will automatically be added as largefiles.
 
--  The largefiles.patterns option allow specifying regex or glob patterns. All files that match one of the patterns will automatically be added as
-   largefile, even if they are smaller than largefiles.minsize!
+-  The largefiles.patterns option allows specifying regex or glob patterns. All files that match one of the patterns will automatically be added as
+   largefiles, even if they are smaller than largefiles.minsize!
 
 An example configuration:
 
 ::
 
     [largefiles]
-    # Add all files over 3 MB as largefile
+    # Add all files over 3 MB as largefiles
     minsize = 3
-    # All files matching one of the below patterns will be added as largefile
+    # All files matching one of the below patterns will be added as largefiles
     patterns =
       *.jpg
       re:.*\.(png|bmp)$
@@ -226,25 +226,19 @@ problem with very large repositories.
 
 Most operating systems provide the possibility to *watch* a certain directory and be informed automatically when files change. This avoids having to
 scan through all files. A tool called *watchman* handles watching files on different operating systems.
-The Mercurial extension *hgwatchman* uses the watchman tool to improve the speed of ``hg status`` and similar commands.
+The Mercurial extension *fsmonitor* uses the watchman tool to improve the speed of ``hg status`` and similar commands.
 
 You'll first need to make sure watchman is installed. It can be downloaded from `the official website <https://facebook.github.io/watchman/>`__,
 where installation instructions are available as well.
 
-The next step is installing hgwatchman::
-
-  $ hg clone https://bitbucket.org/facebook/hgwatchman
-  $ cd hgwatchman
-  $ make local
-
 You can activate the extension by adding it to your hgrc::
 
   [extensions]
-  hgwatchman = path/to/this/directory/hgwatchman
+  fsmonitor = 
 
 The extension shouldn't result in any behavioral differences. The only change is that actions on your working directory
 will be faster.
-Every time commands like ``hg status`` are called, hgwatchman will contact the watchman application, that automatically
+Every time commands like ``hg status`` are called, fsmonitor will contact the watchman application, that automatically
 runs in the background.
 
 The first time you make contact, watchman will scan your repository once. It will also register itself to the operating system,
@@ -316,7 +310,7 @@ but is also quite large. The *gzip* and *bzip2* types are smaller, but can (espe
 much more time to compress and decompress.
 
 There is a second type of bundle in development, a so-called *streaming bundle*.
-These will be larger then compressed bundles, but apply very fast.
+These will be larger than compressed bundles, but apply very fast.
 
 As an example, I've generated different types of bundles for a Mercurial repository,
 with the following size results:
@@ -352,7 +346,7 @@ In a more rigorous specification, the format looks as follows:
 
 You'll notice that the example contains both uppercase and lowercase keys.
 The uppercase keys are used for Mercurial itself, you should not create custom
-uppercase keys yourself! The lowercase keys can be used as you prefer.
+uppercase keys yourself! The lowercase keys can be used as in whatever way you wish.
 
 Currently defined uppercase keys are:
 
@@ -396,7 +390,7 @@ In this particular case, changesets were not always compared to their parents. T
 In some cases, the size of the *manifest file* could be 10 times larger than in the ideal case.
 
 Starting with Mercurial 1.9, a new storage format called *generaldelta* was developed.
-This format no longer has the weakness of the previous one.
+This format does not have the weakness of the previous one.
 
 As an example, in the case of the mozilla-central repository,
 using generaldelta reduces the size of the manifest file from 467 MB to 335 MB.
@@ -415,3 +409,7 @@ You can do this using a particular configuration option::
   $ hg clone --config format.generaldelta=1 --pull project-source project-generaldelta
 
 The generated *project-generaldelta* repository will use generaldelta and be more efficient for storing very branchy history.
+
+After you've done this, you will want to copy over the
+.hg/hgrc file and then move project-source out of the way
+and rename project-generaldelta to project-source.

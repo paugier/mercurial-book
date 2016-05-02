@@ -7,8 +7,9 @@ Handling repository events with hooks
 Mercurial offers a powerful mechanism to let you perform automated actions in response to events that occur in a repository. In some cases, you can
 even control Mercurial's response to those events.
 
-The name Mercurial uses for one of these actions is a *hook*. Hooks are called “triggers” in some revision control systems, but the two names refer to
-the same idea.
+Mercurial calls one of these actions a *hook*. Some
+revision control systems call them "triggers",
+but the two names refer to the same idea.
 
 An overview of hooks in Mercurial
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,16 +19,16 @@ Here is a brief list of the hooks that Mercurial supports. We will revisit each 
 Each of the hooks whose description begins with the word “Controlling” has the ability to determine whether an activity can proceed. If the hook
 succeeds, the activity may proceed; if it fails, the activity is either not permitted or undone, depending on the hook.
 
--  ``changegroup``: This is run after a group of changesets has been brought into the repository from elsewhere.
+-  ``changegroup``: This is run after a group of changesets has been added to the repository from elsewhere.
 
 -  ``commit``: This is run after a new changeset has been created in the local repository.
 
--  ``incoming``: This is run once for each new changeset that is brought into the repository from elsewhere. Notice the difference from
-   ``changegroup``, which is run once per *group* of changesets brought in.
+-  ``incoming``: This is run once for each new changeset that is added to the repository from elsewhere. Notice the difference from
+   ``changegroup``, which is run once per *group* of added changesets.
 
 -  ``outgoing``: This is run after a group of changesets has been transmitted from this repository.
 
--  ``prechangegroup``: This is run before starting to bring a group of changesets into the repository.
+-  ``prechangegroup``: This is run before starting to add a group of changesets to the repository.
 
 -  ``precommit``: Controlling. This is run before starting a commit.
 
@@ -35,11 +36,11 @@ succeeds, the activity may proceed; if it fails, the activity is either not perm
 
 -  ``pretag``: Controlling. This is run before creating a tag.
 
--  ``pretxnchangegroup``: Controlling. This is run after a group of changesets has been brought into the local repository from another, but before the
-   transaction completes that will make the changes permanent in the repository.
+-  ``pretxnchangegroup``: Controlling. This is run after a group of changesets has been added to the local repository from another, but before the
+   transaction that will make the changes permanent in the repository completes.
 
--  ``pretxncommit``: Controlling. This is run after a new changeset has been created in the local repository, but before the transaction completes
-   that will make it permanent.
+-  ``pretxncommit``: Controlling. This is run after a new changeset has been created in the local repository, but before the transaction
+   that will make it permanent completes.
 
 -  ``preupdate``: Controlling. This is run before starting an update or merge of the working directory.
 

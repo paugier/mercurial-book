@@ -51,8 +51,8 @@ However, the ``hg pull`` command says something about “heads”.
 Head changesets
 ---------------
 
-Remember that Mercurial records what the parent of each change is. If a change has a parent, we call it a child or descendant of the parent. A head is
-a change that has no children. The tip revision is thus a head, because the newest revision in a repository doesn't have any children. There are times
+Remember that Mercurial records what the parent of each changeset is. If a changeset has a parent, we call it a child or descendant of the parent. A head is
+a changeset that has no children. The tip revision is thus a head, because the newest revision in a repository doesn't have any children. There are times
 when a repository can contain more than one head.
 
 .. _fig:tour-merge:pull:
@@ -96,7 +96,7 @@ the output of ``hg parents`` and the contents of ``hello.c``.
 Committing the results of the merge
 -----------------------------------
 
-Whenever we've done a merge, ``hg parents`` will display two parents until we ``hg commit`` the results of the merge.
+Once we've started a merge, ``hg parents`` will display two parents until we ``hg commit`` the results of the merge.
 
 .. include:: examples/results/tour.merge.commit.lxo
 
@@ -215,7 +215,7 @@ Because ``merge`` can't resolve the conflicting changes, it leaves *merge marker
 conflicts, and whether they came from our version of the file or theirs.
 
 Mercurial can tell from the way ``merge`` exits that it wasn't able to merge successfully, so it tells us what commands we'll need to run if we want
-to redo the merging operation. This could be useful if, for example, we were running a graphical merge tool and quit because we were confused or
+to redo the merge operation. This could be useful if, for example, we were running a graphical merge tool and quit because we were confused or
 realised we had made a mistake.
 
 If automatic or manual merges fail, there's nothing to prevent us from “fixing up” the affected files ourselves, and committing the results of our
@@ -261,7 +261,7 @@ Enabling the ``fetch`` extension is easy. Edit the ``.hgrc`` file in your home d
     fetch =
 
 (Normally, the right-hand side of the “``=``” would indicate where to find the extension, but since the ``fetch`` extension is in the standard
-distribution, Mercurial knows where to search for it.)
+distribution, Mercurial knows where to find it.)
 
 Renaming, copying, and merging
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

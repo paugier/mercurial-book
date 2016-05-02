@@ -353,7 +353,7 @@ We'll take the following actions in our histedit operation:
 
 .. include:: examples/results/histedit.histedit-change-commands.lxo
 
-In other words, we'll fold all our changes together, except for the debugging info (we'll get rid of that).
+In other words, we'll fold all our changes together, except for the debugging info (which we'll omit).
 
 Your editor will pop up and allow you to change the commit messages while running histedit.
 That's not really an option in this book, so we'll just show you the overview of everything that happens
