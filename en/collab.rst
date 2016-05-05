@@ -310,7 +310,7 @@ Using the Secure Shell (ssh) protocol
 You can pull and push changes securely over a network connection using the Secure Shell (``ssh``) protocol. To use this successfully, you may have to
 do a little bit of configuration on the client or server sides.
 
-If you're not familiar with ssh, it's the name of both a command and a network protocol that lets you securely communicate with another computer. To
+If you *aren't* familiar with ssh, it's the name of both a command and a network protocol that lets you securely communicate with another computer. To
 use it with Mercurial, you'll be setting up one or more user accounts on a server so that remote users can log in and execute commands.
 
 (If you *are* familiar with ssh, you'll probably find some of the material that follows to be elementary in nature.)
