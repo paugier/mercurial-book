@@ -78,8 +78,9 @@ What happens if we try to use the normal ``hg update`` command to update to the 
 .. include:: examples/results/tour.merge.update.lxo
 
 
-Mercurial is telling us that the ``hg update`` command won't do a merge; it won't update the working directory when it thinks we might want to do a
-merge, unless we force it to do so. (Incidentally, forcing the update with ``hg update -C`` would revert any uncommitted changes in the working directory.)
+Mercurial is telling us that the ``hg update`` command keeps us on the same head (no files have been changed).
+It informs us of the other head, but it won't do the merge itself, unless we force it do so.
+(Incidentally, forcing an update to the other head with ``hg update -C`` would revert any uncommitted changes in the working directory.)
 
 To start a merge between the two heads, we use the ``hg merge`` command.
 

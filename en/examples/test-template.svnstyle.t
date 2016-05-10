@@ -63,7 +63,7 @@
 #$ name: syntax.error
 
   $ hg log -r1 --style broken.style
-  abort: broken.style:1: missing value
+  hg: parse error at broken.style:1: missing value
   [255]
 
 #$ name:

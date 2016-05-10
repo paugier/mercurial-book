@@ -53,21 +53,6 @@
   (run 'hg heads' to see heads, 'hg merge' to merge)
 
   $ cd rebaserepo1
-#$ name: rebase-noparams
-  $ hg log --graph --template "{rev}: {desc}\n"
-  @  4: e
-  |
-  o  3: d
-  |
-  | o  2: c
-  | |
-  | o  1: b
-  |/
-  o  0: a
-  
-  $ hg rebase
-  nothing to rebase - working directory parent is also destination
-  [1]
 
 #$ name:
   $ cd ..

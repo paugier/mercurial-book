@@ -61,9 +61,8 @@
   adding manifests
   adding file changes
   added 1 changesets with 1 changes to 1 files (+1 heads)
-  abort: not updating: not a linear update
-  (merge or update --check to force update)
-  [255]
+  0 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  1 other heads for branch "default"
 
 #$ name: merge
 

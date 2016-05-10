@@ -35,6 +35,8 @@
   #
   # Commits are listed from least to most recent
   #
+  # You can reorder changesets by reordering the lines
+  #
   # Commands:
   #
   #  e, edit = use commit, but stop for amending
@@ -78,7 +80,6 @@
   
 
   $ hg histedit --commands histedit-reorder
-  0 files updated, 0 files merged, 3 files removed, 0 files unresolved
   saved backup bundle to * (glob)
   $ hg log -G --template "{node|short}: {desc}\n"
   @  6b3e1ceeab1c: Apple Slicer done
@@ -120,9 +121,6 @@
 
 #$ name: histedit-change
   $ hg histedit --commands histedit-change
-  1 files updated, 0 files merged, 1 files removed, 0 files unresolved
-  reverting appleslicer
-  0 files updated, 0 files merged, 1 files removed, 0 files unresolved
   Apple Slicer basics
   ***
   more Apple Slicer work
@@ -135,9 +133,6 @@
   HG: user: test
   HG: branch 'default'
   HG: added appleslicer
-  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
-  merging appleslicer
-  0 files updated, 0 files merged, 1 files removed, 0 files unresolved
   Apple Slicer basics
   ***
   more Apple Slicer work
@@ -152,7 +147,6 @@
   HG: user: test
   HG: branch 'default'
   HG: added appleslicer
-  1 files updated, 0 files merged, 0 files removed, 0 files unresolved
   saved backup bundle to $TESTTMP/repo/.hg/strip-backup/ca4523aafc9c-8cf333b6-backup.hg (glob)
   saved backup bundle to $TESTTMP/repo/.hg/strip-backup/e71e82a798fe-750904b9-backup.hg (glob)
   saved backup bundle to $TESTTMP/repo/.hg/strip-backup/0ea5f1b222af-fb81c5af-backup.hg (glob)

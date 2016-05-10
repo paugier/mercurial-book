@@ -238,31 +238,14 @@ will be rebased:
 Finally, it's possible to execute the ``hg rebase`` command without any parameters,
 in which case a rebase equivalent to the following is executed::
 
-  $ hg rebase --base . --dest "max(branch(.))"
+  $ hg rebase --base . --dest "max(branch(.) and not descendants(.))"
 
 In other words, we would rebase the current changeset, along with its ancestors
 and descendants.
-This rebase would be done to the last changeset of the current branch:
+This rebase would be done to the last changeset of the current branch
+that is not a descendant of the current changeset:
 
 .. include:: examples/results/rebase.rebase-noparams-otherhead.lxo
-
-The above makes a lot of sense if you make changes, pull from another repository
-and then rebase your changes.
-
-However, it can also behave quite non-intuitive in other cases.
-Suppose you pull from another repository, *then* make changes
-and try to rebase those changes:
-
-.. include:: examples/results/rebase.rebase-noparams.lxo
-
-To ensure understandable behaviour, it's better to explicitly specify what to rebase
-and to which destination.
-
-.. Note::
-
-   The behaviour of rebase without arguments is likely to change in the future,
-   to ensure a more consistent behaviour.
-   There is already `a plan to improve this behaviour <https://www.mercurial-scm.org/wiki/DefaultDestinationPlan#Default_Rebase_Destination>`__.
 
 To summarize: ``hg rebase`` allows you to simplify your history by making it more
 linear. That's not the only way to improve history, you can do quite a bit more...

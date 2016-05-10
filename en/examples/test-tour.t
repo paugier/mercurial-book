@@ -585,9 +585,8 @@
 #$ name: merge.update
 
   $ hg update
-  abort: not a linear update
-  (merge or update --check to force update)
-  [255]
+  0 files updated, 0 files merged, 0 files removed, 0 files unresolved
+  1 other heads for branch "default"
 
 #$ name: merge.merge
 
