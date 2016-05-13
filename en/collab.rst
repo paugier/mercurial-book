@@ -326,7 +326,8 @@ An ssh URL tends to look like this:
 
 1. The “``ssh://``” part tells Mercurial to use the ssh protocol.
 
-2. The “``bos@``” component indicates what username to log into the server as. You can leave this out if the remote username is the same as your local
+2. The “``bos@``” component indicates what username to log into the server as
+   (i.e. ``bos``). You can leave this out if the remote username is the same as your local
    username.
 
 3. The “``hg.serpentine.com``” gives the hostname of the server to log into.
