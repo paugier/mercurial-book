@@ -666,27 +666,22 @@ though I've used Apache for over a decade, and this was my first exposure to ``l
 Sharing multiple repositories with one CGI script
 -------------------------------------------------
 
-The ``hgweb.cgi`` script only lets you publish a single repository, which is an annoying restriction. If you want to publish more than one without
-wracking yourself with multiple copies of the same script, each with different names, a better choice is to use the ``hgwebdir.cgi`` script.
+The ``hgweb.cgi`` script can publish multiple repositories (since 1.6).
 
-The procedure to configure ``hgwebdir.cgi`` is only a little more involved than for ``hgweb.cgi``. First, you must obtain a copy of the script. If you
-don't have one handy, you can download a copy from the master Mercurial repository at http://www.selenic.com/repo/hg/raw-file/tip/hgwebdir.cgi.
+The procedure to configure publishing multiple repositories is only a little
+more involved than for a single directory.
 
-You'll need to copy this script into your ``public_html`` directory, and ensure that it's executable.
-
-::
-
-    cp .../hgwebdir.cgi ~/public_html
-    chmod 755 ~/public_html ~/public_html/hgwebdir.cgi
-
-With basic configuration out of the way, try to visit ``http://myhostname/~myuser/hgwebdir.cgi`` in your browser. It should display an empty list of
+With basic configuration out of the way, try to visit ``http://myhostname/~myuser/hgweb.cgi`` in your browser. It should display an empty list of
 repositories. If you get a blank window or error message, try walking through the list of potential problems in :ref:`sec:collab:wtf <sec:collab:wtf>`.
 
-The ``hgwebdir.cgi`` script relies on an external configuration file. By default, it searches for a file named ``hgweb.config`` in the same directory
-as itself. You'll need to create this file, and make it world-readable. The format of the file is similar to a Windows “ini” file, as understood by
+The ``hgweb.cgi`` script relies on an external configuration file.
+Set ``config = "/path/to/config"`` in ``hgweb.cgi`` to the external
+configuration file.
+
+You'll need to create this file, and make it world-readable. The format of the file is similar to a Windows “ini” file, as understood by
 Python's ``ConfigParser`` web:configparser module.
 
-The easiest way to configure ``hgwebdir.cgi`` is with a section named ``collections``. This will automatically publish *every* repository under the
+The easiest way to configure ``hgweb.cgi`` is with a section named ``collections``. This will automatically publish *every* repository under the
 directories you name. The section should look like this:
 
 ::
@@ -700,22 +695,22 @@ component of a path after this stripping has occurred is called a “virtual pat
 
 Given the example above, if we have a repository whose local path is ``/my/root/this/repo``, the CGI script will strip the leading ``/my/root`` from
 the name, and publish the repository with a virtual path of ``this/repo``. If the base URL for our CGI script is
-``http://myhostname/~myuser/hgwebdir.cgi``, the complete URL for that repository will be ``http://myhostname/~myuser/hgwebdir.cgi/this/repo``.
+``http://myhostname/~myuser/hgweb.cgi``, the complete URL for that repository will be ``http://myhostname/~myuser/hgweb.cgi/this/repo``.
 
-If we replace ``/my/root`` on the left hand side of this example with ``/my``, then ``hgwebdir.cgi`` will only strip off ``/my`` from the repository
+If we replace ``/my/root`` on the left hand side of this example with ``/my``, then ``hgweb.cgi`` will only strip off ``/my`` from the repository
 name, and will give us a virtual path of ``root/this/repo`` instead of ``this/repo``.
 
-The ``hgwebdir.cgi`` script will recursively search each directory listed in the ``collections`` section of its configuration file, but it will
+The ``hgweb.cgi`` script will recursively search each directory listed in the ``collections`` section of its configuration file, but it will
 ``not`` recurse into the repositories it finds.
 
 The ``collections`` mechanism makes it easy to publish many repositories in a “fire and forget” manner. You only need to set up the CGI script and
 configuration file one time. Afterwards, you can publish or unpublish a repository at any time by simply moving it into, or out of, the directory
-hierarchy in which you've configured ``hgwebdir.cgi`` to look.
+hierarchy in which you've configured ``hgweb.cgi`` to look.
 
 Explicitly specifying which repositories to publish
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In addition to the ``collections`` mechanism, the ``hgwebdir.cgi`` script allows you to publish a specific list of repositories. To do so, create a
+In addition to the ``collections`` mechanism, the ``hgweb.cgi`` script allows you to publish a specific list of repositories. To do so, create a
 ``paths`` section, with contents of the following form.
 
 ::
@@ -732,7 +727,7 @@ If you wish, you can use both the ``collections`` and ``paths`` mechanisms simul
 
 .. Note::
 
-    If several repositories have the same virtual path, ``hgwebdir.cgi`` will not report an error. Instead, it will behave unpredictably.
+    If several repositories have the same virtual path, ``hgweb.cgi`` will not report an error. Instead, it will behave unpredictably.
 
 Downloading source archives
 ---------------------------
@@ -746,7 +741,7 @@ for details.
 Web configuration options
 -------------------------
 
-Mercurial's web interfaces (the ``hg serve`` command, and the ``hgweb.cgi`` and ``hgwebdir.cgi`` scripts) have a number of configuration options that you can set. These belong in a
+Mercurial's web interfaces (the ``hg serve`` command, and the ``hgweb.cgi`` and ``hgweb.cgi`` scripts) have a number of configuration options that you can set. These belong in a
 section named ``web``.
 
 -  allow\_archive: Determines which (if any) archive download mechanisms Mercurial supports. If you enable this feature, users of the web interface
@@ -804,7 +799,7 @@ section named ``web``.
 
 -  templates: Path. The directory in which to search for template files. By default, Mercurial searches in the directory in which it was installed.
 
-If you are using ``hgwebdir.cgi``, you can place a few configuration items in a ``web`` section of the ``hgweb.config`` file instead of a ``~/.hgrc``
+If you are using ``hgweb.cgi``, you can place a few configuration items in a ``web`` section of the ``hgweb.config`` file instead of a ``~/.hgrc``
 file, for convenience. These items are motd and style.
 
 Options specific to an individual repository
