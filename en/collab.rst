@@ -638,8 +638,8 @@ installation of Mercurial, instead of a system-wide version. Remember that the w
 variables that you take for granted in an interactive session. If this error happens to you, edit your copy of ``hgweb.cgi`` and follow the directions
 inside it to correctly set your PYTHONPATH environment variable.
 
-Finally, you are *certain* to be served with another colourful Python backtrace: this one will complain that it can't find ``/path/to/repository``.
-Edit your ``hgweb.cgi`` script and replace the ``/path/to/repository`` string with the complete path to the repository you want to serve up.
+Finally, you are *certain* to be served with another colourful Python backtrace: this one will complain that it can't find ``/path/to/repo/or/config``.
+Edit your ``hgweb.cgi`` script and replace the ``/path/to/repo/or/config`` string with the complete path to the repository you want to serve up.
 
 At this point, when you try to reload the page, you should be presented with a nice HTML view of your repository's history. Whew!
 
