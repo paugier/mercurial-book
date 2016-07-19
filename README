@@ -9,15 +9,34 @@ copy of the source tree using Mercurial as follows:
 The sources can be found in the directory 'en'.
 You can build using 'make', output will show up in the 'build' directory.
 
-Build dependencies:
+Build dependencies
+==================
 
-* mercurial (duh)
-* rcs (for the 'merge' command)
-* openssh-server (or any other, for localhost ssh)
-* graphviz (for making graph images with dot)
-* inkscape (for converting image formats)
-* python-sphinx
-* pgf/tikz (for asciidag)
-* texlive-latex-extra (for asciidag)
-* diffstat
-* patchutils (for 'lsdiff')
+On Ubuntu, you need to run the following command to install all of the dependencies:
+sudo apt-get update && sudo apt-get install \
+        make \
+        python \
+        unzip \
+        bzip2 \
+        wget \
+        python-dev \
+        build-essential \
+        python-docutils \
+        rcs \
+        inkscape \
+        graphviz \
+        python-sphinx \
+        texlive-latex-base \
+        texlive-latex-extra \
+        pgf \
+        poppler-utils \
+        openssh-server
+
+Docker build
+============
+
+As an alternative to getting all the dependencies set up properly,
+you can also run 'make docker-%', with '%' being the make target.
+Adding 'docker-' as prefix results in creating a Docker image
+with all the dependencies you need. The book will then be built
+inside that image.

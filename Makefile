@@ -7,6 +7,11 @@ help:
 	@echo "make gettext"
 	@echo "make all"
 	@echo ""
+	@echo "Docker build:"
+	@echo "Add 'docker-' before your target."
+	@echo "For example:"
+	@echo "make docker-html"
+	@echo ""
 	@echo "Additional parameters:"
 	@echo "======================"
 	@echo "SKIP_TESTS=1: don't run the tests"
@@ -51,6 +56,9 @@ asciidag:
 .PHONY: html
 html: examples images asciidag
 	sphinx-build $(SPHINX_FLAGS) en build/html
+
+docker-%:
+	./dockerbuild $*
 
 .PHONY: html-single
 html-single: examples images asciidag

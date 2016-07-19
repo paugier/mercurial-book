@@ -1,0 +1,13 @@
+#!/bin/bash
+
+TARGET=$1
+DOCKERTAG=hgbook-docker
+DOCKERUSER=hgbook
+
+#Create Docker container
+cp Dockerfile.input Dockerfile
+echo "RUN groupadd $DOCKERUSER -g `id -g` -o" >> Dockerfile
+echo "RUN useradd $DOCKERUSER -u `id -u` -g $DOCKERUSER -o" >> Dockerfile
+
+docker build --tag $DOCKERTAG .
+docker run -u $DOCKERUSER -i -t --rm -v $(pwd):/hgbook $DOCKERTAG sh -c "cd /hgbook && RUNNING_INSIDE_DOCKER=1 make html"
