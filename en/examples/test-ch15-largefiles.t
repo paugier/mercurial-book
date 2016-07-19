@@ -9,7 +9,7 @@
   $ dd if=/dev/urandom of=randomdata count=2000
   2000+0 records in
   2000+0 records out
-  1024000 bytes (1.0 MB) copied, * s, * MB/s (glob)
+  1024000 bytes (*) copied, * s, * MB/s (glob)
 
 #$ name: add-regular
   $ hg add randomdata
