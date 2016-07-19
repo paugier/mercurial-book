@@ -1,3 +1,5 @@
+#if nodocker
+
   $ hg clone -q https://bitbucket.org/facebook/remotefilelog remotefilelog
   $ echo '[extensions]' >> $HGRCPATH
   $ echo 'remotefilelog = $TESTTMP/remotefilelog/remotefilelog' >> $HGRCPATH
@@ -30,3 +32,5 @@
   $ ls -a targetrepo/.hg/store/data
   .
   ..
+
+#endif
