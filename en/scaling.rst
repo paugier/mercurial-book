@@ -8,7 +8,7 @@ Scalability issues
 ~~~~~~~~~~~~~~~~~~
 
 Mercurial has been used in deployments containing over 100 000 files and 200 000 changesets, `still working very
-well <https://mercurial.selenic.com/wiki/BigRepositories>`__. It has received, release after release, improvements to scalability.
+well <https://www.mercurial-scm.org/wiki/BigRepositories>`__. It has received, release after release, improvements to scalability.
 
 Even so, some repositories manage to outgrow the default Mercurial setup.
 
