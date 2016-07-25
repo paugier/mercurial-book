@@ -61,8 +61,8 @@ copyright = '2015, Bryan O\'Sullivan'
 # The short X.Y version.
 version = '1.90'
 # The full version, including alpha/beta/rc tags.
-changeset = subprocess.check_output(['hg', 'id', '--id'])
-hg_full_version = subprocess.check_output(['hg', 'version', '-q'])
+changeset = subprocess.check_output(['hg', 'id', '--id']).strip()
+hg_full_version = subprocess.check_output(['hg', 'version', '-q']).strip()
 m = re.search('\d+\.\d+\.\d+', hg_full_version)
 if m:
     hg_version = ' (for Mercurial %s)' % m.group(0)
