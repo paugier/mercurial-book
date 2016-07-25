@@ -88,6 +88,7 @@ website: html website-repo
 	hg -R website-repo pull
 	rm -rf website-repo/*
 	cp -R build/html/* website-repo
+	cp en/top.html website-repo
 	hg -R website-repo add
 	hg -R website-repo commit -m "Update website"
 	hg -R website-repo push
