@@ -58,6 +58,7 @@ Now, let's run the same command, but using a template to change its output.
 
 The example above illustrates the simplest possible template; it's just a piece of static text, printed once for each changeset. The ``--template``
 option to the ``hg log`` command tells Mercurial to use the given text as the template when printing each changeset.
+You can also use the shorthand ``-T`` option.
 
 Notice that the template string above ends with the text “``\n``”. This is an *escape sequence*, telling Mercurial to print a newline at the end of
 each template item. If you omit this newline, Mercurial will run each piece of output together. See :ref:`sec:template:escape <sec:template:escape>` for more details of
