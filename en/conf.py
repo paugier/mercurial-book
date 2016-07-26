@@ -197,7 +197,7 @@ htmlhelp_basename = 'Mercurialthedefinitiveguidedoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-    'preamble': r'\usepackage{tikz}'
+    'preamble': r'\usepackage{tikz}' + '\n' + r'\usetikzlibrary{arrows.meta, fadings, graphs, shapes, decorations.markings, calc}'
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
