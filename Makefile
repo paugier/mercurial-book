@@ -66,8 +66,8 @@ html-single: examples images asciidag
 
 .PHONY: pdf
 pdf: examples images asciidag
-	#requires rst2pdf
-	sphinx-build $(SPHINX_FLAGS) -b pdf en build/pdf
+	sphinx-build $(SPHINX_FLAGS) -b latex en build/pdf
+	make -C build/pdf all-pdf
 
 .PHONY: gettext
 gettext: examples images asciidag
