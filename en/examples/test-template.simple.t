@@ -297,3 +297,41 @@
   > EOF
   $ hg log -r3 -l1 --template "{changeset}"
   rev: 3 (no-eol)
+
+#$ name: xml
+
+  $ hg log -r . -Txml
+  <?xml version="1.0"?>
+  <log>
+  <logentry revision="4" node="938bdbcaf6eedf1faddd64c849568c6e9750beb5">
+  <tag>tip</tag>
+  <author email="test">test</author>
+  <date>1970-01-01T00:00:00+00:00</date>
+  <msg xml:space="preserve">Add additional file</msg>
+  </logentry>
+  </log>
+
+#$ name: json
+
+  $ hg log -r . --template json
+  [
+   {
+    "rev": 4,
+    "node": "938bdbcaf6eedf1faddd64c849568c6e9750beb5",
+    "branch": "default",
+    "phase": "draft",
+    "user": "test",
+    "date": [0, 0],
+    "desc": "Add additional file",
+    "bookmarks": [],
+    "tags": ["tip"],
+    "parents": ["91900a8c91eeb65a4da9ae79f9d86db6fadccbc8"]
+   }
+  ]
+  $ hg status --change . -Tjson
+  [
+   {
+    "path": "foobar",
+    "status": "A"
+   }
+  ]

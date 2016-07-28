@@ -374,3 +374,25 @@ templating engine does not currently provide a filter that counts the number of 
 Using a number of template aliases keeps everything readable and makes it easy to generate output similar to subversion:
 
 .. include:: examples/results/template.svnstyle.result.lxo
+
+Parsing Mercurial output
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mercurial developers put a lot of effort in keeping Mercurial backwards compatible.
+That's not just the case for repository formats or communication between different version.
+Even the output format of Mercurial commands is kept as stable as possible.
+This is even mentioned explicitly in the `Compatibility Rules <https://www.mercurial-scm.org/wiki/CompatibilityRules>`__.
+You could parse the output of ``hg log`` over a huge range of Mercurial versions and not experience any problem at all.
+
+Of course, just because you *can* parse the output of the commands, that doesn't mean you *should*.
+First of all, you can use the `--template` option with the necessary keywords and functions
+to specify exactly the information you want to extract from a specific command.
+
+Secondly, you can use the styles Mercurial provides with the explicit goal of making output easy to parse.
+Mercurial allows you to use the *xml* and *json* style. The latter is available for a large amount of commands:
+
+.. include:: examples/results/template.simple.xml.lxo
+
+.. include:: examples/results/template.simple.json.lxo
+
+You can use the built-in XML or JSON libraries from whichever programming language you prefer to parse the output.
