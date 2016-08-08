@@ -295,7 +295,7 @@
   > [templatealias]
   > changeset = "rev: {rev}"
   > EOF
-  $ hg log -r3 -l1 --template "{changeset}"
+  $ hg log -r3 --template "{changeset}"
   rev: 3 (no-eol)
 
 #$ name: rev-template
@@ -304,7 +304,7 @@
   > [templates]
   > simplechangeset = "{desc}\n{changeset}"
   > EOF
-  $ hg log -r3 -l1 -Tsimplechangeset
+  $ hg log -r3 -Tsimplechangeset
   Added tag v0.1 for changeset e8277000e239
   rev: 3 (no-eol)
 
