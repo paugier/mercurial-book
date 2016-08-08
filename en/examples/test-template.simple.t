@@ -302,9 +302,9 @@
 
   $ cat >> $HGRCPATH << EOF
   > [templates]
-  > awesomechangeset = "{desc}\n{changeset}"
+  > simplechangeset = "{desc}\n{changeset}"
   > EOF
-  $ hg log -r3 -l1 -Tawesomechangeset
+  $ hg log -r3 -l1 -Tsimplechangeset
   Added tag v0.1 for changeset e8277000e239
   rev: 3 (no-eol)
 
