@@ -6,9 +6,9 @@
 #$ name: go
 
   $ cat > $HGRCPATH << EOF
-  > [templatealias]
+  > [templates]
   > changeset = "Changed in {node|short}:\n{files % '  {file}\n'}"
   > EOF
-  $ hg log --template "{changeset}"
+  $ hg log --template changeset
   Changed in *: (glob)
     test.c

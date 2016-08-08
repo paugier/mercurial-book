@@ -79,13 +79,14 @@
   > svndate(d) = '{date(d, "%a, %d %b %Y")}'
   > headerline = 'r{rev} | {author|user} | {date|isodate} ({svndate(date)})'
   > description = '{desc|strip|fill76}'
-  > svn = '{header}\n\n{headerline}\n\n{description}\n\n{header}'
+  > [templates]
+  > svn = '{header}\n\n{headerline}\n\n{description}\n\n{header}\n'
   > EOF
 
 #$ name: result
 
   $ cat svn.templatealias >> $HGRCPATH
-  $ hg log -r1 --template '{svn}\n'
+  $ hg log -r1 -Tsvn
   ------------------------------------------------------------------------
   
   r1 | test | 1970-01-01 00:00 +0000 (Thu, 01 Jan 1970)

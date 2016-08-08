@@ -298,6 +298,16 @@
   $ hg log -r3 -l1 --template "{changeset}"
   rev: 3 (no-eol)
 
+#$ name: rev-template
+
+  $ cat >> $HGRCPATH << EOF
+  > [templates]
+  > awesomechangeset = "{desc}\n{changeset}"
+  > EOF
+  $ hg log -r3 -l1 -Tawesomechangeset
+  Added tag v0.1 for changeset e8277000e239
+  rev: 3 (no-eol)
+
 #$ name: xml
 
   $ hg log -r . -Txml

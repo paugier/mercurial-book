@@ -286,16 +286,20 @@ From templates to commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A command line template provides a quick and simple way to format some output. Templates can become verbose, though, and it's useful to be able to
-provide a name. This is possible using aliases (more details at :ref:`sec:hgext:aliases <sec:hgext:aliases>`) and template aliases.
+provide a name. This is possible using the Mercurial configuration sections '[templates]' and '[templatealias]'.
+Both of these allow us to combine different parts of templates together and get powerful results.
 
 The simplest of template aliases
 --------------------------------
 
-Our simple template alias consists of just one line:
+A simple template alias consists of just one line:
 
 .. include:: examples/results/template.simple.rev.lxo
 
 This tells Mercurial, “if you're printing the 'changeset' template, use the text on the right as the template”.
+We can use this template alias in a custom template:
+
+.. include:: examples/results/template.simple.rev-template.lxo
 
 Templates by example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
