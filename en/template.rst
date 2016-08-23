@@ -287,7 +287,13 @@ From templates to commands
 
 A command line template provides a quick and simple way to format some output. Templates can become verbose, though, and it's useful to be able to
 provide a name. This is possible using the Mercurial configuration sections '[templates]' and '[templatealias]'.
-Both of these allow us to combine different parts of templates together and get powerful results.
+
+The section '[templatealias]' allows us to define new functions and keywords,
+which we can use in our templates.
+
+The section '[templates]' makes it possible to create new template strings,
+which work in the same way as the styles that come bundled with Mercurial.
+You can specify the template string you want in your .hgrc, after which you can use it with ``--template`` or ``-T``.
 
 The simplest of template aliases
 --------------------------------
