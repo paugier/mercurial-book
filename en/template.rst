@@ -425,3 +425,18 @@ You can use the built-in XML or JSON libraries from whichever programming langua
 
 The *json* style is available for almost all output commands, because it's generated using a generic template system.
 This also means other popular data formats can easily be added in the future.
+
+Overview of the template system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mercurial provides an advanced template system, which provides a number of ways to customize output of its commands.
+To summarize, here's an overview of what we mentioned in this chapter:
+
+* It's possible to specify the contents of a template on the command line: ``--template "{node}\n"``.
+  Such a template can contain built-in functions and keywords,
+  as well as those specified in the ``[templatealias]`` section.
+* We can pass a file to be used as template: ``--template path/to/template/file``.
+* Another option is to use a template we've specified in the ``[templates]`` section: ``--template templatename``.
+* We can pass template styles defined by Mercurial, for example: ``--template compact``.
+  A list can be seen with ``--template list``.
+* Finally, the generic template system allows generating output in formats like *json*: ``--template json``.
