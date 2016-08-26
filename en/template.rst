@@ -399,10 +399,13 @@ First of all, you can use the `--template` option with the necessary keywords an
 to specify exactly the information you want to extract from a specific command.
 
 Secondly, you can use the styles Mercurial provides with the explicit goal of making output easy to parse.
-Mercurial allows you to use the *xml* and *json* style. The latter is available for a large amount of commands:
+Mercurial allows you to use the *xml* and *json* style:
 
 .. include:: examples/results/template.simple.xml.lxo
 
 .. include:: examples/results/template.simple.json.lxo
 
 You can use the built-in XML or JSON libraries from whichever programming language you prefer to parse the output.
+
+The *json* style is available for almost all output commands, because it's generated using a generic template system.
+This also means other popular data formats can easily be added in the future.
