@@ -83,10 +83,57 @@
   > svn = '{header}\n\n{headerline}\n\n{description}\n\n{header}\n'
   > EOF
 
+#$ name: multiline
+
+  $ cat > svn.multiline << EOF
+  > [templates]
+  > svnmulti = {header}\n
+  >  {headerline}\n
+  >  {description}\n
+  >  {header}\n
+  > EOF
+
+#$ name: multiline-separate
+  $ cat > multiline << EOF
+  > {header}\n
+  > {headerline}\n
+  > {description}\n
+  > {header}
+  > EOF
+
 #$ name: result
 
   $ cat svn.templatealias >> $HGRCPATH
   $ hg log -r1 -Tsvn
+  ------------------------------------------------------------------------
+  
+  r1 | test | 1970-01-01 00:00 +0000 (Thu, 01 Jan 1970)
+  
+  added line to end of <<hello>> file.
+  
+  in addition, added a file with the helpful name (at least i hope that some
+  might consider it so) of goodbye.
+  
+  ------------------------------------------------------------------------
+
+
+#$ name: result-multiline
+
+  $ cat svn.multiline >> $HGRCPATH
+  $ hg log -r1 -Tsvnmulti
+  ------------------------------------------------------------------------
+  
+  r1 | test | 1970-01-01 00:00 +0000 (Thu, 01 Jan 1970)
+  
+  added line to end of <<hello>> file.
+  
+  in addition, added a file with the helpful name (at least i hope that some
+  might consider it so) of goodbye.
+  
+  ------------------------------------------------------------------------
+
+#$ name: result-multiline-separate
+  $ hg log -r1 -T./multiline
   ------------------------------------------------------------------------
   
   r1 | test | 1970-01-01 00:00 +0000 (Thu, 01 Jan 1970)

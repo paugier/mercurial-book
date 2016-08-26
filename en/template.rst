@@ -282,6 +282,7 @@ You can modify the output template that Mercurial will use for every command by 
     [ui]
     logtemplate = {node}: {desc}\n
 
+
 From templates to commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -294,6 +295,9 @@ which we can use in our templates.
 The section '[templates]' makes it possible to create new template strings,
 which work in the same way as the styles that come bundled with Mercurial.
 You can specify the template string you want in your .hgrc, after which you can use it with ``--template`` or ``-T``.
+
+Alternatively, you can also use a template file. You can create a text file containing a single template string
+and refer to this template string by specifying ``--template /path/to/template/file``.
 
 The simplest of template aliases
 --------------------------------
@@ -384,6 +388,18 @@ templating engine does not currently provide a filter that counts the number of 
 Using a number of template aliases keeps everything readable and makes it easy to generate output similar to subversion:
 
 .. include:: examples/results/template.svnstyle.result.lxo
+
+We can also use a more readable multiline template to get the same result:
+
+.. include:: examples/results/template.svnstyle.multiline.lxo
+
+Finally, we can also use a separate template file for our multiline template:
+
+.. include:: examples/results/template.svnstyle.multiline-separate.lxo
+
+The end result is still the same, we just need to pass the template file path:
+
+.. include:: examples/results/template.svnstyle.result-multiline-separate.lxo
 
 Parsing Mercurial output
 ~~~~~~~~~~~~~~~~~~~~~~~~
