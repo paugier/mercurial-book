@@ -267,6 +267,7 @@ It's not always obvious how to use these functions, so here's an overview of exa
 
   The example for the use of *labels* to add colours doesn't actually show any colours above.
   Executing the commands in your terminal should give you pretty colours (as long as your terminal supports them).
+  You can view the available colors and what they look like on your system using the *hg debugcolor* command.
 
 Additionally, it's possible to apply a template to a list of items in an expression. For example:
 
