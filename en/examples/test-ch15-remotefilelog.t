@@ -1,8 +1,8 @@
 #if nodocker
 
-  $ hg clone -q https://bitbucket.org/facebook/remotefilelog remotefilelog
+  $ hg clone -q https://bitbucket.org/facebook/hg-experimental/ hg-experimental
   $ echo '[extensions]' >> $HGRCPATH
-  $ echo 'remotefilelog = $TESTTMP/remotefilelog/remotefilelog' >> $HGRCPATH
+  $ echo 'remotefilelog = $TESTTMP/hg-experimental/remotefilelog' >> $HGRCPATH
   $ echo '[remotefilelog]' >> $HGRCPATH
   $ echo 'server = True' >> $HGRCPATH
   $ echo 'cachepath = $TESTTMP/cachepath' >> $HGRCPATH
