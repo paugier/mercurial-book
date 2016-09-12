@@ -6,30 +6,17 @@
 Welcome to Mercurial: the definitive guide's documentation!
 ===========================================================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 1
+   :caption: Table of Contents
+   :maxdepth: 2
 
-   preface
-   intro
-   tour-basic
-   tour-merge
-   concepts
-   daily
-   collab
-   filenames
-   branch
-   undo
-   changing-history
-   hook
-   template
-   hgext
-   scaling
-   app-license.rst
-   app-srcinstall.rst
-   app-svn.rst
+   part-getting-started
 
+   part-daily-usage
+
+   part-advanced-concepts
+
+   part-appendix
 
 Indices and tables
 ==================
