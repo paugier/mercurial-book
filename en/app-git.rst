@@ -171,8 +171,8 @@ you can show somebody your intent instead of merely describing it.
 That's very powerful.
 
 So while Mercurial may not have the cheatah-like speed as Git,
-a Mercurial developer may say *it is fast enough **and** you get
-powerful extensibility*. That's not an excuse for being slow: it is
+a Mercurial developer may say "it is fast enough **and** you get
+powerful extensibility". That's not an excuse for being slow: it is
 a partial justification for sacrificing speed for features.
 
 References and Garbage Collection
