@@ -143,7 +143,7 @@ depending on what the comparison is judged on! But there is one
 fundamental difference that make Mercurial extensions more powerful
 than Git's approach: you can monkeypatch nearly everything without
 having to create a new distribution. Git's approach is less flexible
-arguably more difficult to maintain. Your options are:
+and arguably more difficult to maintain. Your options are:
 
 1. Recompile Git with your changes and distribute it to others (adding
    a feature to the canonical Git distribution is equivalent to this).
