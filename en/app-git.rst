@@ -37,7 +37,7 @@ with a reference to a manifest of files that holds the names, file
 modes, and hashes of file content). Both share concepts like being
 able to work on multiple heads and merging heads together. In fact,
 Mercurial and Git are so similar that tools like
-`hg-git <https://github.com/schacon/hg-git>`_ enable lossless,
+`hg-git <https://www.mercurial-scm.org/wiki/HgGit>`_ enable lossless,
 bi-directional conversion between the repository formats in most
 situations!
 
