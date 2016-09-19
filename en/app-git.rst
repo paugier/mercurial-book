@@ -416,45 +416,14 @@ that allows you to customize the output of commands. You can pass
 template string and have Mercurial generate output suitable for you.
 
 For example, to print a simple list of all changeset SHA-1s and their
-parent SHA-1s::
+parent SHA-1s:
 
-  $ hg log -T '{node} {p1node} {p2node}\n'
-  95ec041d51b1c72994246c9cd6bec7bfd041efca d749f8b915a6e92ee4774deee54420c82fd59e3f d22acd7ac030d742ed4ae2a161dfd63b2c42dbc2
-  d749f8b915a6e92ee4774deee54420c82fd59e3f 1bfb7453809ef2718ee506f46c45207a048f5d0b 1df44783b08de73b61d78241cf01bef617f561c6
-  1bfb7453809ef2718ee506f46c45207a048f5d0b c342979eb7ff93555f71d3fb44ce5297bb04e955 0000000000000000000000000000000000000000
-  d22acd7ac030d742ed4ae2a161dfd63b2c42dbc2 2bb57d7a6e081ef3c91624edbbca2790d127e9df 1df44783b08de73b61d78241cf01bef617f561c6
+.. include:: examples/results/app-git.print-nodes.lxo
 
 You can even get machine readable output by using pre-defined
-templates::
+templates:
 
-  $ hg log -T json -r tip
-  [
-    {
-      "rev": 4684,
-      "node": "17dc52e6e97f7b3461913d3d737f3207b0f694ab",
-      "branch": "default",
-      "phase": "draft",
-      "user": "Gregory Szorc <gps@mozilla.com>",
-      "date": [1414815768, 25200],
-      "desc": "docs: mercurial for git users guide",
-      "bookmarks": ["docs-hg-for-git"],
-      "tags": ["tip"],
-      "parents": ["4a7444b8e597c8ad9575cafb2b6c0075611a4653"]
-    }
-  ]
-
-  $ hg log -T xml -r tip
-  <?xml version="1.0"?>
-  <log>
-    <logentry revision="4684" node="17dc52e6e97f7b3461913d3d737f3207b0f694ab">
-      <bookmark>docs-hg-for-git</bookmark>
-      <tag>tip</tag>
-      <parent revision="4676" node="4a7444b8e597c8ad9575cafb2b6c0075611a4653" />
-      <author email="gps@mozilla.com">Gregory Szorc</author>
-      <date>2014-10-31T21:22:48-07:00</date>
-      <msg xml:space="preserve">docs: mercurial for git users guide</msg>
-    </logentry>
-  </log>
+.. include:: examples/results/app-git.machine-output.lxo
 
 Templates make interfacing with Mercurial from machines trivial. If you
 don't like Mercurial's default output or don't want to parse it, just
@@ -487,11 +456,9 @@ than Git!
 In Git, new branches must have names. e.g. ``git branch my-branch``.
 In Mercurial, there is no such requirement. To create a new branch
 in Mercurial, one simply commits on top of an existing non-head to
-create a new head::
+create a new head:
 
-   $ hg up 68576a5a9d09
-   $ hg commit -m 'my new branch'
-   created new head
+.. include:: examples/results/app-git.anonymous-head.lxo
 
 The equivalent in Git would be something like::
 

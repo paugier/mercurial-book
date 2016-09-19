@@ -1,21 +1,22 @@
 FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y \
-	make \
-	python \
-	unzip \
-	bzip2 \
-	wget \
-	python-dev \
 	build-essential \
-	python-docutils \
-	rcs \
-	inkscape \
+	bzip2 \
+	git \
 	graphviz \
-	python-sphinx \
-	texlive-latex-base \
-	texlive-latex-extra \
+	inkscape \
+	make \
 	pgf \
 	poppler-utils \
+	python \
+	python-dev \
+	python-docutils \
+	python-sphinx \
+	rcs \
+	texlive-latex-base \
+	texlive-latex-extra \
+	unzip \
+	wget \
    && rm -rf /var/lib/apt/lists/*
 RUN wget https://www.mercurial-scm.org/release/mercurial-3.8.4.tar.gz
 RUN tar -xf mercurial-3.8.4.tar.gz
