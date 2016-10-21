@@ -24,7 +24,7 @@ fig-source-gif := $(wildcard en/figs/*.gif)
 fig-source-png := $(wildcard en/figs/*.png)
 fig-targets := $(fig-source-dot:%.dot=%.png) $(fig-source-svg:%.svg=%.png) $(fig-source-gif) $(fig-source-png)
 
-SPHINX_FLAGS := -W
+SPHINX_FLAGS := -W -n
 
 ifdef SKIP_TESTS
 	PRETEST = echo 'Skipping tests' ||
