@@ -3,11 +3,6 @@ Daily use of Mercurial
 
 .. toctree::
 
-   tour-merge
-   daily
-   collab
-   filenames
-   branch
+   files
    undo
-   template
    hgext

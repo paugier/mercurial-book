@@ -14,6 +14,8 @@ Welcome to Mercurial: the definitive guide's documentation!
 
    part-daily-usage
 
+   part-working-together
+
    part-advanced-concepts
 
    part-appendix

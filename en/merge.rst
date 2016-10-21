@@ -1,11 +1,11 @@
 .. _chap:tour-merge:
 
 
-A tour of Mercurial: merging work
-=================================
+Merging changes
+===============
 
-We've now covered cloning a repository, making changes in a repository, and pulling or pushing changes from one repository into another. Our next step
-is *merging* changes from separate repositories.
+We've now covered cloning a repository, making changes in a repository, and pulling or pushing changes from one repository into another.
+Working together not only requires us to send around changes, we also need to be able to combine or *merge* those changes.
 
 Merging streams of work
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -272,7 +272,218 @@ or as complex as restructuring the entire hierarchy of files within the project.
 Mercurial supports these kinds of complex changes fluently, provided we tell it what we're doing. If we want to rename a file, we should use the
 ``hg rename``\  [1]_ command to rename it, so that Mercurial can do the right thing later when we merge.
 
-We will cover the use of these commands in more detail in :ref:`chap:daily.copy\ <chap:daily.copy\>`.
-
 .. [1]
    If you're a Unix user, you'll be glad to know that the ``hg rename`` command can be abbreviated as ``hg mv``.
+
+The results of copying during a merge
+-------------------------------------
+
+What happens during a merge is that changes “follow” a copy. To best illustrate what this means, let's create an example. We'll start with the usual
+tiny repository that contains a single file.
+
+.. include:: examples/results/daily.copy.init.lxo
+
+
+We need to do some work in parallel, so that we'll have something to merge. So let's clone our repository.
+
+.. include:: examples/results/daily.copy.clone.lxo
+
+
+Back in our initial repository, let's use the ``hg copy`` command to make a copy of the first file we created.
+
+.. include:: examples/results/daily.copy.copy.lxo
+
+
+If we look at the output of the ``hg status`` command afterwards, the copied file looks just like a normal added file.
+
+.. include:: examples/results/daily.copy.status.lxo
+
+
+But if we pass the ``-C`` option to ``hg status``, it prints another line of output: this is the file that our newly-added file was copied *from*.
+
+.. include:: examples/results/daily.copy.status-copy.lxo
+
+
+Now, back in the repository we cloned, let's make a change in parallel. We'll add a line of content to the original file that we created.
+
+.. include:: examples/results/daily.copy.other.lxo
+
+
+Now we have a modified ``file`` in this repository. When we pull the changes from the first repository, and merge the two heads, Mercurial will
+propagate the changes that we made locally to ``file`` into its copy, ``new-file``.
+
+.. include:: examples/results/daily.copy.merge.lxo
+
+
+.. _sec:daily:why-copy:
+
+
+Why should changes follow copies?
+---------------------------------
+
+This behavior—of changes to a file propagating out to copies of the file—might seem esoteric, but in most cases it's highly desirable.
+
+First of all, remember that this propagation *only* happens when you merge. So if you ``hg copy`` a file, and subsequently modify the original file
+during the normal course of your work, nothing will happen.
+
+The second thing to know is that modifications will only propagate across a copy as long as the changeset that you're merging changes from *hasn't yet
+seen* the copy.
+
+The reason that Mercurial does this is as follows. Let's say I make an important bug fix in a source file, and commit my changes. Meanwhile, you've
+decided to ``hg copy`` the file in your repository, without knowing about the bug or having seen the fix, and you have started hacking on your copy of
+the file.
+
+If you pulled and merged my changes, and Mercurial *didn't* propagate changes across copies, your new source file would now contain the bug, and
+unless you knew to propagate the bug fix by hand, the bug would *remain* in your copy of the file.
+
+By automatically propagating the change that fixed the bug from the original file to the copy, Mercurial prevents this class of problem. To my
+knowledge, Mercurial is the *only* revision control system that propagates changes across copies like this.
+
+Once your change history has a record that the copy and subsequent merge occurred, there's usually no further need to propagate changes from the
+original file to the copied file, and that's why Mercurial only propagates changes across copies at the first merge, and not afterwards.
+
+How to make changes *not* follow a copy
+---------------------------------------
+
+If, for some reason, you decide that this business of automatically propagating changes across copies is not for you, simply use your system's normal
+file copy command (on Unix-like systems, that's ``cp``) to make a copy of a file, then ``hg add`` the new copy by hand. Before you do so, though,
+please do reread :ref:`sec:daily:why-copy <sec:daily:why-copy>`, and make an informed decision that this behavior is not appropriate to your specific case.
+
+Renaming files and merging changes
+----------------------------------
+
+Since Mercurial's rename is implemented as copy-and-remove, the same propagation of changes happens when you merge after a rename as after a copy.
+
+If I modify a file, and you rename it to a new name, and then we merge our respective changes, my modifications to the file under its original name
+will be propagated into the file under its new name. (This is something you might expect to “simply work,” but not all revision control systems
+actually do this.)
+
+Whereas having changes follow a copy is a feature where you can perhaps nod and say “yes, that might be useful,” it should be clear that having them
+follow a rename is definitely important. Without this facility, it would simply be too easy for changes to become orphaned when files are renamed.
+
+Divergent renames and merging
+-----------------------------
+
+The case of diverging names occurs when two developers start with a file—let's call it ``foo``\ —in their respective repositories.
+
+.. include:: examples/results/rename.divergent.clone.lxo
+
+
+Anne renames the file to ``bar``.
+
+.. include:: examples/results/rename.divergent.rename.anne.lxo
+
+
+Meanwhile, Bob renames it to ``quux``. (Remember that ``hg mv`` is an alias for ``hg rename``.)
+
+.. include:: examples/results/rename.divergent.rename.bob.lxo
+
+
+I like to think of this as a conflict because each developer has expressed different intentions about what the file ought to be named.
+
+What do you think should happen when they merge their work? Mercurial's actual behavior is that it always preserves *both* names when it merges
+changesets that contain divergent renames.
+
+.. include:: examples/results/rename.divergent.merge.lxo
+
+
+Notice that while Mercurial warns about the divergent renames, it leaves it up to you to do something about the divergence after the merge.
+
+Convergent renames and merging
+------------------------------
+
+Another kind of rename conflict occurs when two people choose to rename different *source* files to the same *destination*. In this case, Mercurial
+runs its normal merge machinery, and lets you guide it to a suitable resolution.
+
+Other name-related corner cases
+-------------------------------
+
+Mercurial has a longstanding bug in which it fails to handle a merge where one side has a file with a given name, while another has a directory with
+the same name. This is documented as `issue 29 <https://bz.mercurial-scm.org/show_bug.cgi?id=29>`__.
+
+.. include:: examples/results/issue29.go.lxo
+
+Dealing with tricky merges
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In a complicated or large project, it's not unusual for a merge of two changesets to result in some headaches. Suppose there's a big source file
+that's been extensively edited by each side of a merge: this is almost inevitably going to result in conflicts, some of which can take a few tries to
+sort out.
+
+Let's develop a simple case of this and see how to deal with it. We'll start off with a repository containing one file, and clone it twice.
+
+.. include:: examples/results/ch04-resolve.init.lxo
+
+
+In one clone, we'll modify the file in one way.
+
+.. include:: examples/results/ch04-resolve.left.lxo
+
+
+In another, we'll modify the file differently.
+
+.. include:: examples/results/ch04-resolve.right.lxo
+
+
+Next, we'll pull each set of changes into our original repo.
+
+.. include:: examples/results/ch04-resolve.pull.lxo
+
+
+We expect our repository to now contain two heads.
+
+.. include:: examples/results/ch04-resolve.heads.lxo
+
+
+Normally, if we run ``hg merge`` at this point, it will drop us into a GUI that will let us manually resolve the conflicting edits to ``myfile.txt``. However, to simplify
+things for presentation here, we'd like the merge to fail immediately instead. Here's one way we can do so.
+
+.. include:: examples/results/ch04-resolve.export.lxo
+
+
+We've told Mercurial's merge machinery to run the command ``false`` (which, as we desire, fails immediately) if it detects a merge that it can't sort
+out automatically.
+
+If we now fire up ``hg merge``, it should grind to a halt and report a failure.
+
+.. include:: examples/results/ch04-resolve.merge.lxo
+
+
+Even if we don't notice that the merge failed, Mercurial will prevent us from accidentally committing the result of a failed merge.
+
+.. include:: examples/results/ch04-resolve.cifail.lxo
+
+
+When ``hg commit`` fails in this case, it suggests that we use the unfamiliar ``hg resolve`` command. As usual, ``hg help resolve`` will print a
+helpful synopsis.
+
+File resolution states
+----------------------
+
+When a merge occurs, most files will usually remain unmodified. For each file where Mercurial has to do something, it tracks the state of the file.
+
+-  A *resolved* file has been successfully merged, either automatically by Mercurial or manually with human intervention.
+
+-  An *unresolved* file was not merged successfully, and needs more attention.
+
+If Mercurial sees *any* file in the unresolved state after a merge, it considers the merge to have failed. Fortunately, we do not need to restart the
+entire merge from scratch.
+
+The ``--list`` or ``-l`` option to ``hg resolve`` prints out the state of each merged file.
+
+.. include:: examples/results/ch04-resolve.list.lxo
+
+
+In the output from ``hg resolve``, a resolved file is marked with ``R``, while an unresolved file is marked with ``U``. If any files are listed with ``U``, we know that
+an attempt to commit the results of the merge will fail.
+
+Resolving a file merge
+----------------------
+
+We have several options to move a file from the unresolved into the resolved state. By far the most common is to rerun ``hg resolve``. If we pass the
+names of individual files or directories, it will retry the merges of any unresolved files present in those locations. We can also pass the ``--all``
+or ``-a`` option, which will retry the merges of *all* unresolved files.
+
+Mercurial also lets us modify the resolution state of a file directly. We can manually mark a file as resolved using the ``--mark`` option, or as
+unresolved using the ``--unmark`` option. This allows us to clean up a particularly messy merge by hand, and to keep track of our progress with each
+file as we go.
