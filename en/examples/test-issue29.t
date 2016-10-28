@@ -16,5 +16,5 @@
   adding b/b
   created new head
   $ hg merge
-  abort: Is a directory: '$TESTTMP/issue29/b'
+  abort: Directory not empty: '$TESTTMP/issue29/b'
   [255]

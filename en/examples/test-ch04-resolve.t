@@ -70,7 +70,7 @@
 
 #$ name: cifail
   $ hg commit -m 'Attempt to commit a failed merge'
-  abort: unresolved merge conflicts (see "hg help resolve")
+  abort: unresolved merge conflicts (see 'hg help resolve')
   [255]
 
 #$ name: list
