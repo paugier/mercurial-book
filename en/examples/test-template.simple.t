@@ -70,7 +70,7 @@
 #$ name: templatelist
 
   $ hg log --template list
-  available styles: bisect, changelog, compact, default, phases, status, xml
+  available styles: bisect, changelog, compact, default, phases, show, status, xml
   abort: specify a template
   [255]
 

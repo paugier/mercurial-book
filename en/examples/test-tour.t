@@ -42,7 +42,7 @@
    config      Configuration Files
    glossary    Glossary
    merge-tools Merge Tools
-   revsets     Specifying Revision Sets
+   revisions   Specifying Revisions
    templating  Template Usage
   
   Commands:

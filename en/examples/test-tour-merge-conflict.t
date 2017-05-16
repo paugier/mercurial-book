@@ -81,7 +81,7 @@
   I am Shehu Musa Abacha, cousin to the former
   =======
   I am Alhaji Abba Abacha, son of the former
-  >>>>>>> /tmp/letter.txt~other* (glob)
+  >>>>>>> /tmp/letter* (glob)
   Nigerian dictator Sani Abacha.
 
 #$ name: commit
